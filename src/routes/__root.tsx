@@ -116,6 +116,25 @@ function RootComponent() {
     return () => sub.subscription.unsubscribe();
   }, [router, queryClient]);
 
+  // Lightweight page view tracker
+  useEffect(() => {
+    const unsub = router.subscribe("onResolved", ({ toLocation }) => {
+      const path = toLocation.pathname;
+      if (path.startsWith("/admin") || path.startsWith("/auth") || path.startsWith("/api/")) return;
+      let geo: { country_name?: string; city?: string } | null = null;
+      try { const c = JSON.parse(localStorage.getItem("epg.geo.v1") || "null"); geo = c?.v ?? null; } catch {}
+      supabase.from("page_views" as any).insert({
+        path,
+        country: geo?.country_name ?? null,
+        city: geo?.city ?? null,
+        referrer: typeof document !== "undefined" ? document.referrer || null : null,
+      } as any).then(() => {});
+    });
+    return () => { unsub(); };
+  }, [router]);
+
+
+
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>

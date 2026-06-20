@@ -1,9 +1,10 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Briefcase, FileText, Home, LayoutGrid, LogOut, Mail, MessageSquare } from "lucide-react";
+import { Bell, Briefcase, FileText, Home, LayoutGrid, LogOut, MessageSquare, Sparkles, BarChart3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { NotificationsBell } from "@/components/admin/NotificationsBell";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Backoffice — EmploiPlus Group" }, { name: "robots", content: "noindex,nofollow" }] }),
@@ -15,7 +16,10 @@ const items: { to: string; label: string; icon: any; exact?: boolean }[] = [
   { to: "/admin/jobs", label: "Offres d'emploi", icon: Briefcase },
   { to: "/admin/services", label: "Services", icon: LayoutGrid },
   { to: "/admin/blog", label: "Blog", icon: FileText },
+  { to: "/admin/cms", label: "CMS", icon: Sparkles },
   { to: "/admin/messages", label: "Messages", icon: MessageSquare },
+  { to: "/admin/notifications", label: "Notifications", icon: Bell },
+  { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
 function AdminLayout() {
@@ -33,7 +37,7 @@ function AdminLayout() {
   return (
     <div className="grid lg:grid-cols-[260px_1fr] min-h-[calc(100vh-4rem)]">
       <aside className="bg-sidebar text-sidebar-foreground border-r border-sidebar-border p-4 hidden lg:flex flex-col">
-        <div className="px-3 py-4">
+        <div className="px-3 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="size-9 rounded-lg gradient-brand grid place-items-center text-brand-foreground font-display font-bold shadow-brand">E+</div>
             <div>
@@ -41,6 +45,7 @@ function AdminLayout() {
               <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/60">EmploiPlus</div>
             </div>
           </div>
+          <NotificationsBell />
         </div>
         <nav className="mt-4 flex-1 space-y-1">
           {items.map((it) => {
@@ -78,7 +83,10 @@ function AdminLayout() {
             </Link>
           );
         })}
-        <Button onClick={signOut} size="sm" variant="ghost" className="text-sidebar-foreground/80"><LogOut className="size-3.5" /></Button>
+        <div className="ml-auto flex items-center gap-1">
+          <NotificationsBell />
+          <Button onClick={signOut} size="sm" variant="ghost" className="text-sidebar-foreground/80"><LogOut className="size-3.5" /></Button>
+        </div>
       </div>
 
       <main className="p-6 md:p-10 bg-background">
