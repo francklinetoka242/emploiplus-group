@@ -70,9 +70,7 @@ function PostPage() {
   const pageUrl = typeof window !== "undefined" ? window.location.href : `/blog/${post.slug}`;
 
   useEffect(() => {
-    supabase.rpc("increment_post_views" as any, { p_id: post.id }).catch(() => {
-      supabase.from("blog_posts").update({ views_count: (post.views_count ?? 0) + 1 }).eq("id", post.id);
-    });
+    supabase.from("blog_posts").update({ views_count: (post.views_count ?? 0) + 1 }).eq("id", post.id).then(() => {});
   }, [post.id]);
 
   return (

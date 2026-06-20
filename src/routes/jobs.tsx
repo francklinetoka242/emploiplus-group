@@ -39,8 +39,8 @@ function JobsPage() {
   const q = search.q ?? "";
   const contract = search.contract ?? "all";
 
-  const setQ = (v: string) => navigate({ search: (p) => ({ ...p, q: v || undefined }) });
-  const setContract = (v: string) => navigate({ search: (p) => ({ ...p, contract: v === "all" ? undefined : v }) });
+  const setQ = (v: string) => navigate({ search: (p: any) => ({ ...p, q: v || undefined }) });
+  const setContract = (v: string) => navigate({ search: (p: any) => ({ ...p, contract: v === "all" ? undefined : v }) });
 
   const { data, isLoading } = useQuery({
     queryKey: ["jobs-list"],
