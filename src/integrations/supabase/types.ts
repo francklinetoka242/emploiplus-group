@@ -23,7 +23,12 @@ export type Database = {
           external_link: string | null
           id: string
           image: string | null
+          meta_description: string | null
+          meta_title: string | null
+          og_image: string | null
           publish_at: string | null
+          reading_time: number | null
+          scheduled_at: string | null
           slug: string
           status: Database["public"]["Enums"]["post_status"]
           subtitle: string | null
@@ -31,6 +36,7 @@ export type Database = {
           title: string
           updated_at: string
           video_url: string | null
+          views_count: number
         }
         Insert: {
           category?: string | null
@@ -40,7 +46,12 @@ export type Database = {
           external_link?: string | null
           id?: string
           image?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          og_image?: string | null
           publish_at?: string | null
+          reading_time?: number | null
+          scheduled_at?: string | null
           slug: string
           status?: Database["public"]["Enums"]["post_status"]
           subtitle?: string | null
@@ -48,6 +59,7 @@ export type Database = {
           title: string
           updated_at?: string
           video_url?: string | null
+          views_count?: number
         }
         Update: {
           category?: string | null
@@ -57,7 +69,12 @@ export type Database = {
           external_link?: string | null
           id?: string
           image?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          og_image?: string | null
           publish_at?: string | null
+          reading_time?: number | null
+          scheduled_at?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["post_status"]
           subtitle?: string | null
@@ -65,6 +82,34 @@ export type Database = {
           title?: string
           updated_at?: string
           video_url?: string | null
+          views_count?: number
+        }
+        Relationships: []
+      }
+      cms_sections: {
+        Row: {
+          content_json: Json
+          created_at: string
+          id: string
+          key: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content_json?: Json
+          created_at?: string
+          id?: string
+          key: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content_json?: Json
+          created_at?: string
+          id?: string
+          key?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -113,15 +158,21 @@ export type Database = {
           description: string
           expires_at: string | null
           external_link: string | null
+          featured_until: string | null
           id: string
           location_city: string | null
           location_country: string | null
+          meta_description: string | null
+          meta_title: string | null
+          og_image: string | null
           publish_at: string | null
+          published_at: string | null
           requirements: string | null
           slug: string
           status: Database["public"]["Enums"]["job_status"]
           title: string
           updated_at: string
+          views_count: number
         }
         Insert: {
           application_email?: string | null
@@ -134,15 +185,21 @@ export type Database = {
           description: string
           expires_at?: string | null
           external_link?: string | null
+          featured_until?: string | null
           id?: string
           location_city?: string | null
           location_country?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          og_image?: string | null
           publish_at?: string | null
+          published_at?: string | null
           requirements?: string | null
           slug: string
           status?: Database["public"]["Enums"]["job_status"]
           title: string
           updated_at?: string
+          views_count?: number
         }
         Update: {
           application_email?: string | null
@@ -155,15 +212,78 @@ export type Database = {
           description?: string
           expires_at?: string | null
           external_link?: string | null
+          featured_until?: string | null
           id?: string
           location_city?: string | null
           location_country?: string | null
+          meta_description?: string | null
+          meta_title?: string | null
+          og_image?: string | null
           publish_at?: string | null
+          published_at?: string | null
           requirements?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["job_status"]
           title?: string
           updated_at?: string
+          views_count?: number
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          read_at: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title: string
+          type: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      page_views: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          id: number
+          path: string
+          referrer: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: number
+          path: string
+          referrer?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: number
+          path?: string
+          referrer?: string | null
         }
         Relationships: []
       }
@@ -232,6 +352,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      expire_jobs: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -240,6 +361,8 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      publish_scheduled_jobs: { Args: never; Returns: number }
+      publish_scheduled_posts: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "super_admin" | "admin" | "editor"
@@ -251,7 +374,7 @@ export type Database = {
         | "consultance"
         | "temps_partiel"
         | "interim"
-      job_status: "draft" | "published" | "archived" | "expired"
+      job_status: "draft" | "scheduled" | "published" | "archived" | "expired"
       message_status: "new" | "read" | "archived"
       post_status: "draft" | "published" | "archived"
     }
@@ -391,7 +514,7 @@ export const Constants = {
         "temps_partiel",
         "interim",
       ],
-      job_status: ["draft", "published", "archived", "expired"],
+      job_status: ["draft", "scheduled", "published", "archived", "expired"],
       message_status: ["new", "read", "archived"],
       post_status: ["draft", "published", "archived"],
     },
