@@ -14,7 +14,7 @@ function AnalyticsAdmin() {
     queryFn: async () => {
       const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const { data } = await supabase.from("page_views" as any).select("path, country, created_at").gte("created_at", since).limit(5000);
-      return (data ?? []) as { path: string; country: string | null; created_at: string }[];
+      return (data ?? []) as unknown as { path: string; country: string | null; created_at: string }[];
     },
   });
 
