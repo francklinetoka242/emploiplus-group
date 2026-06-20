@@ -20,7 +20,7 @@ export const Route = createFileRoute("/services")({
 });
 
 const fallback = [
-  { icon: Briefcase, title: "Diffusion d'offres d'emploi", description: "Publiez vos offres et atteignez les meilleurs candidats grâce à notre audience qualifiée." },
+  { icon: Briefcase, title: "Diffusion d'offres d'emploi", description: "Publiez vos offres, atteignez les meilleurs candidats et laissez-nous aider votre entreprise à recruter les profils idéaux." },
   { icon: Rocket, title: "Développement web & applications", description: "Sites, plateformes SaaS, applications métier — conçus pour performer." },
   { icon: Sparkles, title: "Contenu média & blog", description: "Rédaction d'articles, stratégie éditoriale et publication régulière." },
   { icon: Building2, title: "Branding employeur", description: "Mettez en valeur votre marque pour attirer et fidéliser les talents." },

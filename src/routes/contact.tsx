@@ -114,7 +114,7 @@ function ContactPage() {
               <div className="size-10 rounded-lg bg-accent grid place-items-center text-brand"><Phone className="size-4" /></div>
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">Téléphone</div>
-                <div className="text-sm font-semibold">+243 000 000 000</div>
+                <a href="tel:+242067311033" className="text-sm font-semibold hover:underline">+242067311033</a>
               </div>
             </div>
           </div>
@@ -123,7 +123,7 @@ function ContactPage() {
               <div className="size-10 rounded-lg bg-accent grid place-items-center text-brand"><MapPin className="size-4" /></div>
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">Localisation</div>
-                <div className="text-sm font-semibold">Kinshasa · RDC</div>
+                <div className="text-sm font-semibold">Pointe-Noire · République du Congo</div>
               </div>
             </div>
           </div>

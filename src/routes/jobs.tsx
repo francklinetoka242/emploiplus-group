@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { Briefcase, MapPin, Search, Sparkles } from "lucide-react";
+import { Briefcase, MapPin, MessageSquare, Search, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -76,6 +76,15 @@ function JobsPage() {
             <MapPin className="size-3" /> {t("jobs.geo.sortedBy")} {geo.city}, {geo.country_name}
           </div>
         )}
+
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-md px-3 py-2 bg-green-600 text-white hover:bg-green-700">
+            <MessageSquare className="size-4" /> Chaîne WhatsApp
+          </a>
+          <a href="https://chat.whatsapp.com/JxHlaMwrzBA6gUopLg7C5s" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-md px-3 py-2 border border-border hover:bg-accent">
+            <MessageSquare className="size-4" /> Groupe WhatsApp
+          </a>
+        </div>
       </div>
 
       <div className="mt-8 grid gap-3 md:grid-cols-[1fr_220px] sticky top-16 z-10 bg-background/80 backdrop-blur py-3 -mx-4 px-4 rounded-xl">
