@@ -55,9 +55,14 @@ const FR: Dict = {
   "jobs.detail.applyEmail": "Postuler par email",
   "jobs.detail.applyWhatsapp": "Postuler via WhatsApp",
   "jobs.detail.applyExternal": "Postuler sur le site",
+  "jobs.geo.near": "Près de vous",
+  "jobs.geo.country": "Dans votre pays",
+  "jobs.geo.sortedBy": "Trié pour",
   "blog.title": "Blog EmploiPlus",
   "blog.subtitle": "Articles, conseils et actualités.",
   "blog.sidebar.recentJobs": "Offres récentes",
+  "blog.sidebar.jobsNear": "Offres près de vous",
+  "blog.sidebar.popular": "Articles populaires",
   "blog.sidebar.categories": "Catégories",
   "services.title": "Nos services",
   "services.subtitle": "Solutions tech, diffusion d'offres et contenu média.",
@@ -122,9 +127,14 @@ const EN: Dict = {
   "jobs.detail.applyEmail": "Apply by email",
   "jobs.detail.applyWhatsapp": "Apply via WhatsApp",
   "jobs.detail.applyExternal": "Apply on company site",
+  "jobs.geo.near": "Near you",
+  "jobs.geo.country": "In your country",
+  "jobs.geo.sortedBy": "Sorted for",
   "blog.title": "EmploiPlus Blog",
   "blog.subtitle": "Articles, advice and news.",
   "blog.sidebar.recentJobs": "Recent jobs",
+  "blog.sidebar.jobsNear": "Jobs near you",
+  "blog.sidebar.popular": "Popular articles",
   "blog.sidebar.categories": "Categories",
   "services.title": "Our services",
   "services.subtitle": "Tech solutions, job broadcasting and media content.",
@@ -143,18 +153,24 @@ const DICTS: Record<Locale, Dict> = { fr: FR, en: EN };
 type Ctx = { locale: Locale; setLocale: (l: Locale) => void; t: (k: string) => string };
 const I18nContext = createContext<Ctx>({ locale: "fr", setLocale: () => {}, t: (k) => k });
 
+function detectInitial(): Locale {
+  if (typeof window === "undefined") return "fr";
+  try {
+    const saved = window.localStorage.getItem("epg.locale") as Locale | null;
+    if (saved === "fr" || saved === "en") return saved;
+    const nav = (navigator.language || "fr").toLowerCase();
+    return nav.startsWith("en") ? "en" : "fr";
+  } catch { return "fr"; }
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("fr");
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const saved = window.localStorage.getItem("epg.locale") as Locale | null;
-    if (saved === "fr" || saved === "en") setLocaleState(saved);
-  }, []);
+  useEffect(() => { setLocaleState(detectInitial()); }, []);
   const setLocale = (l: Locale) => {
     setLocaleState(l);
     if (typeof window !== "undefined") window.localStorage.setItem("epg.locale", l);
   };
-  const t = (k: string) => DICTS[locale][k] ?? k;
+  const t = (k: string) => DICTS[locale][k] ?? FR[k] ?? k;
   return <I18nContext.Provider value={{ locale, setLocale, t }}>{children}</I18nContext.Provider>;
 }
 
