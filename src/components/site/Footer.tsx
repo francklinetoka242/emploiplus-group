@@ -9,9 +9,7 @@ export function SiteFooter() {
       <div className="container-page py-12 grid gap-8 md:grid-cols-4">
         <div className="space-y-3 md:col-span-2">
           <div className="flex items-center gap-2">
-            <div className="size-9 rounded-lg gradient-brand grid place-items-center text-brand-foreground font-display font-bold shadow-brand">
-              E+
-            </div>
+            <img src="/Logo.png" alt="EmploiPlus Group" className="h-9 w-9 rounded-lg object-cover shadow-brand" />
             <div className="font-display text-lg font-bold">EmploiPlus Group</div>
           </div>
           <p className="text-sm text-muted-foreground max-w-md">{t("footer.tagline")}</p>

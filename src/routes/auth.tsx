@@ -54,8 +54,8 @@ function AuthPage() {
     <div className="min-h-[calc(100vh-4rem)] grid place-items-center px-4 py-16 surface-glow">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2">
-            <div className="size-10 rounded-xl gradient-brand grid place-items-center text-brand-foreground font-display font-bold shadow-brand">E+</div>
+          <Link to="/" className="inline-flex items-center justify-center">
+            <img src="/Logo.png" alt="EmploiPlus Group" className="h-16 w-16 rounded-3xl object-cover shadow-brand" />
           </Link>
           <h1 className="mt-6 font-display text-2xl font-extrabold">Espace administrateur</h1>
           <p className="mt-2 text-sm text-muted-foreground">EmploiPlus Group — backoffice</p>

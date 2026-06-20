@@ -39,7 +39,7 @@ function AdminLayout() {
       <aside className="bg-sidebar text-sidebar-foreground border-r border-sidebar-border p-4 hidden lg:flex flex-col">
         <div className="px-3 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="size-9 rounded-lg gradient-brand grid place-items-center text-brand-foreground font-display font-bold shadow-brand">E+</div>
+            <img src="/Logo.png" alt="EmploiPlus Group" className="h-9 w-9 rounded-lg object-cover shadow-brand" />
             <div>
               <div className="font-display font-bold text-sm">Backoffice</div>
               <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/60">EmploiPlus</div>

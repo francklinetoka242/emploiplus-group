@@ -36,10 +36,8 @@ export function SiteHeader() {
       )}
     >
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="size-9 rounded-lg gradient-brand grid place-items-center text-brand-foreground font-display font-bold shadow-brand">
-            E+
-          </div>
+        <Link to="/" className="flex items-center gap-3 group">
+          <img src="/Logo.png" alt="EmploiPlus Group" className="h-9 w-9 rounded-lg object-cover shadow-brand" />
           <div className="leading-tight hidden sm:block">
             <div className="font-display font-bold text-foreground">EmploiPlus</div>
             <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Group</div>
