@@ -22,7 +22,7 @@ export function CrudDialog({
   trigger, title, children, onSubmit, submitting, open, onOpenChange,
 }: {
   trigger?: ReactNode; title: string; children: ReactNode;
-  onSubmit: () => void | Promise<void>; submitting?: boolean;
+  onSubmit: () => any; submitting?: boolean;
   open?: boolean; onOpenChange?: (o: boolean) => void;
 }) {
   return (
