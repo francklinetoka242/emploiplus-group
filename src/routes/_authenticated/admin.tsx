@@ -46,7 +46,7 @@ function AdminLayout() {
           {items.map((it) => {
             const active = it.exact ? pathname === it.to : pathname.startsWith(it.to);
             return (
-              <Link key={it.to} to={it.to}
+              <Link key={it.to} to={it.to as any}
                 className={cn(
                   "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
                   active ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"
@@ -71,7 +71,7 @@ function AdminLayout() {
         {items.map((it) => {
           const active = it.exact ? pathname === it.to : pathname.startsWith(it.to);
           return (
-            <Link key={it.to} to={it.to}
+            <Link key={it.to} to={it.to as any}
               className={cn("inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs whitespace-nowrap",
                 active ? "bg-sidebar-primary text-sidebar-primary-foreground" : "bg-sidebar-accent/40")}>
               <it.icon className="size-3.5" /> {it.label}
