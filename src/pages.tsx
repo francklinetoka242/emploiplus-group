@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
 import {
+  FileText,
   Briefcase,
   ChevronLeft,
   ChevronRight,
@@ -834,7 +835,7 @@ function AdminSidebar({
   const navItems: { id: AdminView; label: string; icon: LucideIcon }[] = [
     { id: "dashboard", label: "Tableau de bord", icon: LayoutDashboard },
     { id: "jobs", label: "Offres d'emploi", icon: Briefcase },
-    { id: "blog", label: "Articles de blog", icon: Article },
+    { id: "blog", label: "Articles de blog", icon: FileText },
     { id: "team", label: "Équipe Admin", icon: Users },
   ];
 
