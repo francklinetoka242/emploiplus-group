@@ -8,6 +8,7 @@ import {
   AdminHomePage,
   AdminPage,
   AdminBlogPage,
+  AdminTeamPage,
   AdminBlogCreatePage,
   AdminJobsPage,
   AdminJobCreatePage,
@@ -43,6 +44,7 @@ export default function App() {
               <Route path="jobs/new" element={<AdminJobCreatePage />} />
               <Route path="blog" element={<AdminBlogPage />} />
               <Route path="blog/new" element={<AdminBlogCreatePage />} />
+              <Route path="team" element={<AdminTeamPage />} />
             </Route>
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

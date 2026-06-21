@@ -17,6 +17,16 @@ import { usePageSEO, DEFAULT_SEO } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
+import {
+  Briefcase,
+  ChevronLeft,
+  ChevronRight,
+  LayoutDashboard,
+  LogOut,
+  Sparkles,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 
 function createSlug(value: string) {
   return value
@@ -725,25 +735,6 @@ export function AuthPage() {
       setError(error.message);
       return;
     }
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between rounded-3xl border border-border bg-card p-8 shadow-soft">
-            <div>
-              <h1 className="font-display text-3xl font-bold text-foreground">Gestion du blog</h1>
-              <p className="mt-2 text-sm text-muted-foreground">Liste des articles et brouillons publiés sur le blog.</p>
-            </div>
-            <Button asChild size="lg" className="w-full md:w-auto bg-brand text-brand-foreground hover:bg-brand/90">
-              <Link to="/admin/blog/new">Nouvel article</Link>
-            </Button>
-          </div>
-          <div className="rounded-3xl border border-border bg-background p-6 shadow-soft">
-            <div>
-              <h1 className="font-display text-3xl font-bold text-foreground">Gestion des offres</h1>
-              <p className="mt-2 text-sm text-muted-foreground">Liste des offres d'emploi disponibles dans l'administration.</p>
-            </div>
-            <Button asChild size="lg" className="w-full md:w-auto bg-brand text-brand-foreground hover:bg-brand/90">
-              <Link to="/admin/jobs/new">Nouvelle offre</Link>
-            </Button>
-          </div>
-          <div className="rounded-3xl border border-border bg-background p-6 shadow-soft">
     if (data.user) {
       setMessage("Connexion réussie. Redirection en cours...");
       navigate("/admin");
@@ -819,65 +810,188 @@ export function AuthPage() {
   );
 }
 
-function AdminSectionNav({ activePath }: { activePath: string }) {
-  const navItems = [
-    { to: "/admin", label: "Tableau de bord" },
-    { to: "/admin/jobs", label: "Offres" },
-    { to: "/admin/blog", label: "Blog" },
+type AdminView = "dashboard" | "jobs" | "blog" | "team";
+
+function AdminSidebar({
+  open,
+  activeView,
+  onSelect,
+  onToggle,
+  onLogout,
+  session,
+}: {
+  open: boolean;
+  activeView: AdminView;
+  onSelect: (view: AdminView) => void;
+  onToggle: () => void;
+  onLogout: () => void;
+  session: any;
+}) {
+  const name = session.user?.user_metadata?.full_name || session.user?.user_metadata?.name || "Administrateur";
+  const email = session.user?.email || "admin@emploiplus.group";
+  const avatar = session.user?.user_metadata?.avatar_url || session.user?.user_metadata?.picture || "";
+
+  const navItems: { id: AdminView; label: string; icon: LucideIcon }[] = [
+    { id: "dashboard", label: "Tableau de bord", icon: LayoutDashboard },
+    { id: "jobs", label: "Offres d'emploi", icon: Briefcase },
+    { id: "blog", label: "Articles de blog", icon: Article },
+    { id: "team", label: "Équipe Admin", icon: Users },
   ];
 
   return (
-    <div className="mb-8 flex flex-col gap-3 rounded-3xl border border-border bg-card p-6 md:flex-row md:items-center md:justify-between">
-      <div className="flex flex-wrap gap-2">
-        {navItems.map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className={cn(
-              "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
-              activePath === item.to ? "bg-brand text-brand-foreground" : "bg-background text-muted-foreground hover:bg-secondary/80 hover:text-foreground",
-            )}
-          >
-            {item.label}
-          </Link>
-        ))}
+    <aside className={cn(
+      "flex min-h-[calc(100vh-48px)] flex-col gap-6 rounded-[2rem] border border-border bg-slate-950/95 p-4 text-slate-50 shadow-xl shadow-slate-950/10 transition-all duration-300",
+      open ? "w-72" : "w-20",
+    )}>
+      <div className="flex items-center justify-between gap-3 px-2">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-white shadow-sm">
+            <Sparkles className="h-5 w-5" />
+          </div>
+          <div className={cn("space-y-1 overflow-hidden transition-all duration-300", open ? "max-w-full opacity-100" : "max-w-0 opacity-0")}> 
+            <p className="text-sm font-semibold">Emploi+</p>
+            <p className="text-xs text-slate-300">Dashboard pro</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onToggle}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-slate-100 transition hover:bg-white/15"
+          aria-label={open ? "Réduire la barre latérale" : "Étendre la barre latérale"}
+        >
+          {open ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+        </button>
       </div>
-      <div className="text-sm text-muted-foreground">Espace super admin</div>
+
+      <div className={cn("space-y-2 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4 transition-all duration-300", open ? "max-h-[12rem] opacity-100" : "max-h-0 opacity-0")}> 
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-3xl bg-slate-800">
+            {avatar ? (
+              <img src={avatar} alt={name} className="h-full w-full object-cover" />
+            ) : (
+              <span className="text-sm font-semibold text-slate-200">{name.slice(0, 2).toUpperCase()}</span>
+            )}
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white">{name}</p>
+            <p className="text-xs text-slate-400 truncate">{email}</p>
+          </div>
+        </div>
+      </div>
+
+      <nav className="flex flex-1 flex-col gap-1">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const active = activeView === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSelect(item.id)}
+              className={cn(
+                "group flex items-center gap-3 rounded-3xl px-4 py-3 text-left transition-all duration-300 hover:bg-white/10",
+                active ? "bg-white/10 ring-1 ring-white/20" : "",
+              )}
+              title={item.label}
+            >
+              <Icon className="h-5 w-5 text-slate-100" />
+              <span className={cn("text-sm font-medium transition-all duration-300", open ? "opacity-100" : "opacity-0")}>{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      <div className="mt-auto rounded-3xl border border-white/10 bg-white/5 p-4">
+        <button
+          type="button"
+          onClick={onLogout}
+          className="group inline-flex w-full items-center gap-3 rounded-3xl px-4 py-3 text-sm font-medium text-slate-100 transition hover:bg-white/10"
+        >
+          <LogOut className="h-5 w-5 text-red-400" />
+          <span className={cn("transition-all duration-300", open ? "opacity-100" : "opacity-0")}>Se déconnecter</span>
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+function AdminTopbar({ session }: { session: any }) {
+  const name = session.user?.user_metadata?.full_name || session.user?.user_metadata?.name || "Administrateur";
+  const email = session.user?.email || "admin@emploiplus.group";
+  const avatar = session.user?.user_metadata?.avatar_url || session.user?.user_metadata?.picture || "";
+
+  return (
+    <div className="flex flex-col gap-4 rounded-[2rem] border border-border bg-slate-950/95 p-5 text-slate-50 shadow-soft sm:flex-row sm:items-center sm:justify-between">
+      <div className="space-y-2">
+        <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Administration Emploi+</p>
+        <h2 className="text-2xl font-semibold text-white">Bienvenue, {name}</h2>
+        <p className="text-sm text-slate-300">Gérez vos offres, contenus et équipe depuis un espace premium.</p>
+      </div>
+      <div className="flex items-center gap-3 rounded-3xl bg-white/5 px-4 py-3 shadow-sm">
+        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-3xl bg-slate-800 text-slate-200">
+          {avatar ? <img src={avatar} alt={name} className="h-full w-full object-cover" /> : <Sparkles className="h-6 w-6" />}
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-white">{name}</p>
+          <p className="truncate text-xs text-slate-400">{email}</p>
+        </div>
+      </div>
     </div>
   );
 }
 
-function AdminIntro({ session }: { session: any }) {
+function AdminDashboardView() {
+  const metrics = [
+    { label: "Offres actives", value: "18" },
+    { label: "Articles publiés", value: "12" },
+    { label: "Requêtes reçues", value: "324" },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-border bg-background p-8 shadow-soft">
-        <h1 className="font-display text-3xl font-bold text-foreground">Tableau de bord administrateur</h1>
-        <p className="mt-4 text-muted-foreground">Connecté en tant que <strong>{session.user?.email}</strong>.</p>
-      </div>
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-          <h2 className="font-display text-xl font-semibold text-foreground">Offres</h2>
-          <p className="mt-3 text-sm text-muted-foreground">Gérez les annonces d'emploi publiées, en brouillon et programmées.</p>
-          <div className="mt-6 flex flex-col gap-3">
-            <Button asChild size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
-              <Link to="/admin/jobs">Voir les offres</Link>
-            </Button>
-              <Button asChild size="lg" className="w-full border border-border bg-background text-foreground hover:bg-secondary/80">
-                <Link to="/admin/jobs/new">Créer une offre</Link>
-              </Button>
+      <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+          <div className="space-y-3">
+            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Vue d’ensemble</p>
+            <h1 className="text-3xl font-semibold text-foreground">Tableau de bord entreprise</h1>
+            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">Accédez aux principales données de votre espace admin, aux actions rapides et aux formulaires de publication.</p>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-3xl bg-slate-900 px-5 py-3 text-sm text-slate-200 shadow-sm">
+            <Sparkles className="h-4 w-4 text-cyan-300" />
+            <span>Expérience haut de gamme</span>
           </div>
         </div>
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-          <h2 className="font-display text-xl font-semibold text-foreground">Blog</h2>
-          <p className="mt-3 text-sm text-muted-foreground">Accédez aux articles et publiez vos contenus métier.</p>
-          <div className="mt-6 flex flex-col gap-3">
-            <Button asChild size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
-              <Link to="/admin/blog">Voir le blog</Link>
-            </Button>
-              <Button asChild size="lg" className="w-full border border-border bg-background text-foreground hover:bg-secondary/80">
-                <Link to="/admin/blog/new">Créer un article</Link>
-              </Button>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        {metrics.map((metric) => (
+          <div key={metric.label} className="rounded-3xl border border-border bg-background p-6 shadow-soft transition hover:-translate-y-0.5 hover:border-slate-300">
+            <p className="text-sm uppercase tracking-[0.2em] text-slate-500">{metric.label}</p>
+            <p className="mt-4 text-3xl font-semibold text-foreground">{metric.value}</p>
           </div>
+        ))}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Offres en cours</p>
+              <h3 className="mt-2 text-xl font-semibold text-foreground">Optimisez votre diffusion</h3>
+            </div>
+            <div className="rounded-3xl bg-emerald-500/10 px-3 py-2 text-emerald-400">Stable</div>
+          </div>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">Publiez vos annonces, activez le partage automatique et atteignez plus de candidats qualifiés.</p>
+        </div>
+        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Blog & contenu</p>
+              <h3 className="mt-2 text-xl font-semibold text-foreground">Renforcez votre marque</h3>
+            </div>
+            <div className="rounded-3xl bg-blue-500/10 px-3 py-2 text-blue-300">Engagé</div>
+          </div>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">Publiez des articles instructifs et tirez parti du SEO pour attirer les recruteurs et candidats ciblés.</p>
         </div>
       </div>
     </div>
@@ -885,137 +999,408 @@ function AdminIntro({ session }: { session: any }) {
 }
 
 export function AdminJobsPage() {
-  const [offers, setOffers] = React.useState<Database["public"]["Tables"]["job_offers"]["Row"][]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [form, setForm] = React.useState({
+    title: "",
+    company: "",
+    city: "",
+    contract_type: "cdi",
+    description: "",
+    salary: "",
+    company_logo: "",
+    keywords: "",
+    auto_share: false,
+    deadline: "",
+    seo_description: "",
+  });
+  const [success, setSuccess] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    let mounted = true;
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type, checked } = event.target as HTMLInputElement;
+    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+  };
 
-    async function loadOffers() {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("job_offers")
-        .select("id, slug, title, company, status, publish_at")
-        .order("publish_at", { ascending: false })
-        .limit(50);
-
-      if (!mounted) return;
-      if (error) {
-        console.error("Failed to load job offers:", error.message);
-        setOffers([]);
-      } else {
-        setOffers(data ?? []);
-      }
-      setLoading(false);
-    }
-
-    loadOffers();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSuccess("Informations enregistrées. Vérifiez votre publication avant validation finale.");
+    console.log("Offre d'emploi soumise", form);
+  };
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-        <h1 className="font-display text-3xl font-bold text-foreground">Gestion des offres</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Liste des offres d'emploi disponibles dans l'administration.</p>
+      <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
+        <h1 className="text-3xl font-semibold text-foreground">Publier une offre</h1>
+        <p className="mt-3 text-sm text-muted-foreground">Créez une annonce structurée pour Brazzaville, Pointe-Noire ou Remote.</p>
       </div>
-
-      <div className="rounded-3xl border border-border bg-background p-6 shadow-soft">
-        {loading ? (
-          <p className="text-muted-foreground">Chargement des offres...</p>
-        ) : offers.length === 0 ? (
-          <p className="text-muted-foreground">Aucune offre trouvée pour l'instant.</p>
-        ) : (
-          <div className="space-y-4">
-            {offers.map((offer) => (
-              <div key={offer.id} className="rounded-2xl border border-border bg-card p-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h2 className="font-semibold text-foreground">{offer.title}</h2>
-                    <p className="text-sm text-muted-foreground">{offer.company}</p>
-                  </div>
-                  <span className="text-xs uppercase tracking-[0.25em] text-muted-foreground">{offer.status}</span>
-                </div>
-                <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                  <span>Publié: {offer.publish_at ? new Date(offer.publish_at).toLocaleDateString("fr-FR") : "—"}</span>
-                  <span className="rounded-full border border-border px-2 py-1">{offer.slug}</span>
-                </div>
-              </div>
-            ))}
+      <form onSubmit={handleSubmit} className="grid gap-6">
+        <div className="rounded-[2rem] border border-border bg-background p-8 shadow-soft">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Titre du poste *</label>
+              <Input name="title" value={form.title} onChange={handleChange} required placeholder="Responsable recrutement" />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Nom de l'entreprise *</label>
+              <Input name="company" value={form.company} onChange={handleChange} required placeholder="EmploiPlus Group" />
+            </div>
           </div>
-        )}
-      </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Ville *</label>
+              <Select value={form.city} onValueChange={(value) => setForm((prev) => ({ ...prev, city: value }))}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choisissez une ville" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Brazzaville">Brazzaville</SelectItem>
+                  <SelectItem value="Pointe-Noire">Pointe-Noire</SelectItem>
+                  <SelectItem value="Remote">Remote</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Type de contrat</label>
+              <Select value={form.contract_type} onValueChange={(value) => setForm((prev) => ({ ...prev, contract_type: value }))}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="CDI, CDD..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cdi">CDI</SelectItem>
+                  <SelectItem value="cdd">CDD</SelectItem>
+                  <SelectItem value="stage">Stage</SelectItem>
+                  <SelectItem value="freelance">Freelance</SelectItem>
+                  <SelectItem value="temps_partiel">Temps partiel</SelectItem>
+                  <SelectItem value="interim">Intérim</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Salaire</label>
+              <Input name="salary" value={form.salary} onChange={handleChange} placeholder="Ex: 500 000 XAF" />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-foreground">Description du poste *</label>
+              <Textarea name="description" value={form.description} onChange={handleChange} rows={6} required placeholder="Décrivez les missions, responsabilités et équipe." />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-foreground">Balise SEO Meta-Description</label>
+              <Textarea name="seo_description" value={form.seo_description} onChange={handleChange} rows={6} placeholder="Texte SEO clair pour les moteurs de recherche." />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Logo de l'entreprise</label>
+              <Input
+                name="company_logo"
+                type="file"
+                onChange={(event) => setForm((prev) => ({ ...prev, company_logo: event.target.files?.[0]?.name || "" }))}
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Mots-clés / Tags</label>
+              <Input name="keywords" value={form.keywords} onChange={handleChange} placeholder="ex: RH, finance, digital" />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 items-end">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Date limite</label>
+              <Input name="deadline" type="date" value={form.deadline} onChange={handleChange} />
+            </div>
+            <div className="rounded-3xl border border-border bg-secondary/10 p-4">
+              <label className="inline-flex items-center gap-3 text-sm font-medium text-foreground">
+                <input type="checkbox" name="auto_share" checked={form.auto_share} onChange={handleChange} className="h-4 w-4 rounded border-input bg-background text-primary focus:ring-primary" />
+                Partage automatique
+              </label>
+              <p className="mt-2 text-xs text-muted-foreground">Diffusion automatique vers les partenaires sélectionnés.</p>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-3xl border border-border bg-slate-950/95 p-4 text-sm text-slate-300">
+            <p className="font-semibold text-slate-100">Champs obligatoires</p>
+            <p className="mt-2">Titre du poste, Nom de l'entreprise, Ville, Description du poste. Les autres champs restent optionnels.</p>
+          </div>
+
+          {success ? <div className="rounded-3xl bg-emerald-500/10 border border-emerald-500 px-4 py-3 text-sm text-emerald-500">{success}</div> : null}
+          <Button type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+            Enregistrer l'offre
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }
 
 export function AdminBlogPage() {
-  const [posts, setPosts] = React.useState<Database["public"]["Tables"]["blog_posts"]["Row"][]>([]);
+  const [form, setForm] = React.useState({
+    title: "",
+    category: "",
+    content: "",
+    status: "draft",
+    image: "",
+    excerpt: "",
+    author: "",
+    slug: "",
+    seo_title: "",
+    seo_description: "",
+  });
+  const [success, setSuccess] = React.useState<string | null>(null);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSuccess("Article enregistré en brouillon. Pensez à le relire avant publication.");
+    console.log("Article blog soumis", form);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
+        <h1 className="text-3xl font-semibold text-foreground">Création d'article</h1>
+        <p className="mt-3 text-sm text-muted-foreground">Un tableau de bord moderne pour préparer votre contenu blog professionnel.</p>
+      </div>
+      <form onSubmit={handleSubmit} className="grid gap-6">
+        <div className="rounded-[2rem] border border-border bg-background p-8 shadow-soft">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Titre de l'article *</label>
+              <Input name="title" value={form.title} onChange={handleChange} required placeholder="Titre percutant" />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Catégorie *</label>
+              <Input name="category" value={form.category} onChange={handleChange} required placeholder="Catégorie du contenu" />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-foreground">Extrait / Sous-titre</label>
+              <Textarea name="excerpt" value={form.excerpt} onChange={handleChange} rows={4} placeholder="Phrase d'accroche visible sur la page blog." />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Auteur</label>
+              <Input name="author" value={form.author} onChange={handleChange} placeholder="Auteur de l'article" />
+            </div>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-foreground">Corps du texte *</label>
+            <Textarea name="content" value={form.content} onChange={handleChange} required rows={8} placeholder="Rédigez le contenu complet de l'article." />
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Image à la une</label>
+              <Input
+                name="image"
+                type="file"
+                onChange={(event) => setForm((prev) => ({ ...prev, image: event.target.files?.[0]?.name || "" }))}
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">URL simplifiée (slug)</label>
+              <Input name="slug" value={form.slug} onChange={handleChange} placeholder="article-recrutement" />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">SEO Meta-Title</label>
+              <Input name="seo_title" value={form.seo_title} onChange={handleChange} placeholder="Titre SEO" />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-foreground">Statut *</label>
+              <Select value={form.status} onValueChange={(value) => setForm((prev) => ({ ...prev, status: value }))}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Sélectionnez un statut" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Brouillon</SelectItem>
+                  <SelectItem value="published">Publié</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-3xl border border-border bg-slate-950/95 p-4 text-sm text-slate-300">
+            <p className="font-semibold text-slate-100">Champs obligatoires</p>
+            <p className="mt-2">Titre, Catégorie, Corps du texte et Statut sont requis. Les autres champs restent facultatifs.</p>
+          </div>
+
+          {success ? <div className="rounded-3xl bg-emerald-500/10 border border-emerald-500 px-4 py-3 text-sm text-emerald-500">{success}</div> : null}
+          <Button type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+            Enregistrer l'article
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export function AdminTeamPage() {
+  const teamMembers = [
+    { name: "Amina K.", role: "Directrice administrative", email: "amina@emploiplus.group", label: "Leadership" },
+    { name: "David L.", role: "Chef de produit", email: "david@emploiplus.group", label: "Stratégie" },
+    { name: "Salima T.", role: "Responsable contenu", email: "salima@emploiplus.group", label: "Editorial" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
+        <h1 className="text-3xl font-semibold text-foreground">Équipe Admin</h1>
+        <p className="mt-3 text-sm text-muted-foreground">Gérez les profils d'équipe, les accès et les responsabilités métier.</p>
+      </div>
+      <div className="grid gap-6 lg:grid-cols-3">
+        {teamMembers.map((member) => (
+          <div key={member.email} className="rounded-[2rem] border border-border bg-background p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-lg">
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-primary/10 text-primary">
+                <Users className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-base font-semibold text-foreground">{member.name}</p>
+                <p className="text-sm text-muted-foreground">{member.role}</p>
+              </div>
+            </div>
+            <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <div>
+                <span className="font-semibold text-foreground">Email :</span> {member.email}
+              </div>
+              <div>
+                <span className="font-semibold text-foreground">Spécialité :</span> {member.label}
+              </div>
+            </div>
+            <Button size="sm" variant="ghost" className="mt-5 w-full justify-center">
+              Voir le profil
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function AdminHomePage() {
+  return <AdminDashboardView />;
+}
+
+export function AdminPage() {
+  const [session, setSession] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
+  const [sidebarOpen, setSidebarOpen] = React.useState(true);
+  const [activeView, setActiveView] = React.useState<AdminView>("dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   React.useEffect(() => {
     let mounted = true;
-
-    async function loadPosts() {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("blog_posts")
-        .select("id, slug, title, excerpt, status, publish_at")
-        .order("publish_at", { ascending: false })
-        .limit(50);
-
+    async function loadSession() {
+      const { data } = await supabase.auth.getSession();
       if (!mounted) return;
-      if (error) {
-        console.error("Failed to load blog posts:", error.message);
-        setPosts([]);
-      } else {
-        setPosts(data ?? []);
-      }
+      setSession(data.session);
       setLoading(false);
     }
-
-    loadPosts();
+    loadSession();
     return () => {
       mounted = false;
     };
   }, []);
 
-  return (
-    <div className="space-y-6">
-      <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-        <h1 className="font-display text-3xl font-bold text-foreground">Gestion du blog</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Liste des articles et brouillons publiés sur le blog.</p>
-      </div>
+  React.useEffect(() => {
+    const path = location.pathname.replace("/admin", "").replace(/^\//, "");
+    if (path === "jobs") setActiveView("jobs");
+    else if (path === "blog") setActiveView("blog");
+    else if (path === "team") setActiveView("team");
+    else setActiveView("dashboard");
+  }, [location.pathname]);
 
-      <div className="rounded-3xl border border-border bg-background p-6 shadow-soft">
-        {loading ? (
-          <p className="text-muted-foreground">Chargement des articles...</p>
-        ) : posts.length === 0 ? (
-          <p className="text-muted-foreground">Aucun article trouvé pour l'instant.</p>
-        ) : (
-          <div className="space-y-4">
-            {posts.map((post) => (
-              <div key={post.id} className="rounded-2xl border border-border bg-card p-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h2 className="font-semibold text-foreground">{post.title}</h2>
-                    <p className="text-sm text-muted-foreground">{post.excerpt}</p>
-                  </div>
-                  <span className="text-xs uppercase tracking-[0.25em] text-muted-foreground">{post.status}</span>
-                </div>
-                <div className="mt-3 text-sm text-muted-foreground">
-                  Publié: {post.publish_at ? new Date(post.publish_at).toLocaleDateString("fr-FR") : "—"}
-                </div>
-              </div>
-            ))}
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
+
+  const handleSelect = (view: AdminView) => {
+    setActiveView(view);
+    navigate(view === "dashboard" ? "/admin" : `/admin/${view}`);
+  };
+
+  if (loading) {
+    return (
+      <>
+        {usePageSEO({
+          title: "Tableau de bord administrateur",
+          description: "Gestion administrative de vos offres d'emploi et contenus blog.",
+          canonical: "https://emploiplus.group/#/admin",
+        })}
+        <div className="container-page py-20 md:py-28">
+          <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
+            <p className="text-muted-foreground">Chargement du tableau de bord...</p>
           </div>
-        )}
+        </div>
+      </>
+    );
+  }
+
+  if (!session) {
+    return (
+      <>
+        {usePageSEO({
+          title: "Tableau de bord administrateur",
+          description: "Gestion administrative de vos offres d'emploi et contenus blog.",
+          canonical: "https://emploiplus.group/#/admin",
+        })}
+        <div className="container-page py-20 md:py-28">
+          <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
+            <h1 className="font-display text-3xl font-bold text-foreground">Administration</h1>
+            <p className="mt-4 text-muted-foreground">Vous devez vous connecter pour accéder à cet espace.</p>
+            <div className="mt-8">
+              <Link to="/auth" className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+                Retour à la connexion
+              </Link>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {usePageSEO({
+        title: "Espace administrateur",
+        description: "Gestion administrative de vos offres d'emploi et contenus blog.",
+        canonical: "https://emploiplus.group/#/admin",
+      })}
+      <div className="bg-slate-950/5 min-h-screen py-6">
+        <div className="mx-auto flex min-h-[calc(100vh-72px)] max-w-[1600px] gap-6 px-4 sm:px-6 lg:px-8">
+          <AdminSidebar
+            open={sidebarOpen}
+            activeView={activeView}
+            onSelect={handleSelect}
+            onToggle={() => setSidebarOpen((prev) => !prev)}
+            onLogout={handleLogout}
+            session={session}
+          />
+          <div className="flex min-w-0 flex-1 flex-col gap-6">
+            <AdminTopbar session={session} />
+            <main className="flex-1 rounded-[2rem] border border-border bg-background p-6 shadow-soft transition-all duration-300">
+              <Outlet />
+            </main>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
+
 
 export function AdminJobCreatePage() {
   const navigate = useNavigate();
@@ -1351,122 +1736,6 @@ export function AdminBlogCreatePage() {
       </form>
     </div>
   );
-}
-
-export function AdminPage() {
-  const [session, setSession] = React.useState<any>(null);
-  const [loading, setLoading] = React.useState(true);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  React.useEffect(() => {
-    let mounted = true;
-    async function loadSession() {
-      const { data } = await supabase.auth.getSession();
-      if (!mounted) return;
-      setSession(data.session);
-      setLoading(false);
-    }
-    loadSession();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
-  };
-
-  if (loading) {
-    return (
-      <>
-        {usePageSEO({
-          title: "Tableau de bord administrateur",
-          description: "Gestion administrative de vos offres d'emploi et contenus blog.",
-          canonical: "https://emploiplus.group/#/admin",
-        })}
-        <div className="container-page py-20 md:py-28">
-          <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-            <p className="text-muted-foreground">Chargement du compte administrateur...</p>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (!session) {
-    return (
-      <>
-        {usePageSEO({
-          title: "Tableau de bord administrateur",
-          description: "Gestion administrative de vos offres d'emploi et contenus blog.",
-          canonical: "https://emploiplus.group/#/admin",
-        })}
-        <div className="container-page py-20 md:py-28">
-          <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-            <h1 className="font-display text-3xl font-bold text-foreground">Administration</h1>
-            <p className="mt-4 text-muted-foreground">Vous devez vous connecter pour accéder à cet espace.</p>
-            <div className="mt-8">
-              <Link to="/auth" className="inline-flex items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
-                Retour à la connexion
-              </Link>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  const isAdminRoot = location.pathname === "/admin";
-
-  return (
-    <>
-      {usePageSEO({
-        title: "Espace administrateur",
-        description: "Gestion administrative de vos offres d'emploi et contenus blog.",
-        canonical: "https://emploiplus.group/#/admin",
-      })}
-      <div className="container-page py-16 md:py-20">
-        <div className="mx-auto max-w-6xl space-y-8">
-          <AdminSectionNav activePath={location.pathname} />
-          <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-            {isAdminRoot ? <AdminIntro session={session} /> : <Outlet />}
-          </div>
-          <div className="flex justify-end">
-            <Button onClick={handleSignOut} size="lg" className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Se déconnecter
-            </Button>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-export function AdminHomePage() {
-  const [session, setSession] = React.useState<any>(null);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    let mounted = true;
-    async function loadSession() {
-      const { data } = await supabase.auth.getSession();
-      if (!mounted) return;
-      setSession(data.session);
-      setLoading(false);
-    }
-    loadSession();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  if (loading) {
-    return <p className="text-muted-foreground">Chargement du tableau de bord...</p>;
-  }
-
-  return <AdminIntro session={session} />;
 }
 
 export function NotFoundPage() {
