@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Menu, X, Globe } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -46,15 +46,19 @@ export function SiteHeader() {
 
         <nav className="hidden lg:flex items-center gap-1">
           {links.map((l) => (
-            <Link
+            <NavLink
               key={l.to}
               to={l.to}
-              activeOptions={{ exact: l.to === "/" }}
-              className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md transition-colors"
-              activeProps={{ className: "px-3 py-2 text-sm font-medium text-foreground rounded-md bg-accent" }}
+              end={l.to === "/"}
+              className={({ isActive }) =>
+                cn(
+                  "px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                  isActive ? "text-foreground bg-accent" : "text-muted-foreground hover:text-foreground",
+                )
+              }
             >
               {l.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
 
