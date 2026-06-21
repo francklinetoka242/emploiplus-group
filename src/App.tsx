@@ -1,0 +1,39 @@
+import { Routes, Route } from "react-router-dom";
+import { I18nProvider } from "@/lib/i18n";
+import { SiteFooter } from "@/components/site/Footer";
+import { SiteHeader } from "@/components/site/Header";
+import { Toaster } from "@/components/ui/sonner";
+import {
+  AboutPage,
+  AuthPage,
+  BlogPage,
+  ContactPage,
+  HomePage,
+  JobsPage,
+  NotFoundPage,
+  ServicesPage,
+} from "./pages";
+
+export default function App() {
+  return (
+    <I18nProvider>
+      <div className="min-h-screen flex flex-col bg-background text-foreground">
+        <SiteHeader />
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/jobs" element={<JobsPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </main>
+        <SiteFooter />
+        <Toaster richColors position="top-right" />
+      </div>
+    </I18nProvider>
+  );
+}
