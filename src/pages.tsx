@@ -118,13 +118,13 @@ export function HomePage() {
           <div className="grid gap-12 lg:grid-cols-[1fr_320px] items-center">
             <div>
               <p className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-primary/10 fade-up" style={{ animationDelay: '80ms' }}>
-                <strong>Portail de l'emploi en République du Congo</strong>
+                Tech · Emplois · Médias
               </p>
               <h1 className="mt-8 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white fade-up" style={{ animationDelay: '180ms' }}>
-                <strong>Offres d'emploi au Congo-Brazzaville</strong> et <strong>Emploi et stage en République du Congo</strong>.
+                Construisez votre prochaine étape professionnelle avec EmploiPlus Group.
               </h1>
               <p className="mt-6 max-w-2xl text-base text-white/90 leading-relaxed fade-up" style={{ animationDelay: '260ms' }}>
-                EmploiPlus Group est votre portail de l'emploi en République du Congo pour découvrir des <strong>offres d'emploi au Congo-Brazzaville</strong>, des opportunités de stage et des services numériques dédiés aux talents et aux entreprises.
+                EmploiPlus Group offre une présence digitale moderne, une diffusion ciblée d'offres d'emploi et des services numériques pour les talents et les entreprises.
               </p>
               <div className="mt-10 flex flex-wrap gap-3 fade-up" style={{ animationDelay: '340ms' }}>
                 <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand">
