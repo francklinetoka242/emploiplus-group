@@ -1,11 +1,12 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import heroBg from "./assets/hero-bg.jpg";
 import logoMonago from "./assets/logo-monago.jpg";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { usePageSEO, DEFAULT_SEO } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
 
 function PageHeading({ title, description }: { title: string; description: string }) {
