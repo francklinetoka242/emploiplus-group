@@ -16,9 +16,36 @@ function PageHeading({ title, description }: { title: string; description: strin
 export function HomePage() {
   const { t } = useI18n();
 
+  const stats = [
+    { value: "50+", label: "Offres diffusées" },
+    { value: "11+", label: "Entreprises partenaires" },
+    { value: "20+", label: "Lecteurs / mois" },
+  ];
+
+  const services = [
+    { title: "Services numériques", description: "Solutions web et expérience digitale pour vous démarquer." },
+    { title: "Diffusion d’offres", description: "Publiez vos offres et touchez des candidats qualifiés." },
+    { title: "Contenu média", description: "Articles métiers et insights pour faire grandir votre visibilité." },
+  ];
+
+  const jobs = [
+    { title: "Chargé(e) de communication digitale", company: "EmploiPlus Group", location: "Pointe-Noire, Congo" },
+    { title: "Développeur(se) front-end", company: "Tech Partners", location: "Télétravail" },
+  ];
+
+  const posts = [
+    { title: "Tendances recrutement 2026", excerpt: "Les nouvelles attentes des talents et les bons leviers pour vos annonces." },
+    { title: "Optimiser votre présence digitale", excerpt: "Boostez votre visibilité avec une stratégie média claire et efficace." },
+    { title: "Créer du contenu qui engage", excerpt: "Comment parler aux candidats et aux clients sur les bons canaux." },
+  ];
+
   return (
     <div className="bg-background">
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand/10 via-transparent to-accent/5">
+      <section className="relative overflow-hidden min-h-[600px] md:min-h-[700px]">
+        <div className="absolute inset-0 -z-10">
+          <img src="/hero-bg.jpg" alt="" width={1920} height={1080} className="size-full object-cover opacity-90" fetchPriority="high" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.15_0.06_255/0.25)] via-[oklch(0.15_0.06_255/0.4)] to-[rgba(255,255,255,0.08)]" />
+        </div>
         <div className="container-page py-20 md:py-28">
           <div className="grid gap-12 lg:grid-cols-[1fr_320px] items-center">
             <div>
@@ -55,20 +82,95 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="container-page py-20 md:py-24">
-        <div className="grid gap-8 md:grid-cols-3">
-          {[
-            { title: "Services numériques", description: "Solutions web et expérience digitale pour vous démarquer." },
-            { title: "Diffusion d’offres", description: "Publiez vos offres et touchez des candidats qualifiés." },
-            { title: "Contenu média", description: "Articles métiers et insights pour faire grandir votre visibilité." },
-          ].map((card) => (
-            <article key={card.title} className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-              <h2 className="font-display text-xl font-bold text-foreground">{card.title}</h2>
-              <p className="mt-3 text-muted-foreground leading-relaxed">{card.description}</p>
+      <section className="container-page py-16 md:py-20">
+        <div className="grid gap-4 md:grid-cols-3">
+          {stats.map((item) => (
+            <article key={item.label} className="rounded-3xl border border-border bg-card p-8 text-center shadow-soft">
+              <div className="text-4xl font-display font-extrabold text-foreground">{item.value}</div>
+              <div className="mt-3 text-sm text-muted-foreground">{item.label}</div>
             </article>
           ))}
         </div>
       </section>
+
+      <section className="container-page py-20 md:py-24">
+        <SectionHeader title="Nos services" subtitle="Une plateforme pensée pour les entreprises et les talents." />
+        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {services.map((item) => (
+            <article key={item.title} className="rounded-3xl border border-border bg-card p-8 shadow-soft hover:border-brand transition-colors">
+              <h2 className="font-display text-xl font-bold text-foreground">{item.title}</h2>
+              <p className="mt-3 text-muted-foreground leading-relaxed">{item.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-secondary/10 border-y border-border">
+        <div className="container-page py-20 md:py-24">
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+            <div>
+              <h2 className="font-display text-3xl md:text-4xl font-extrabold">Dernières offres</h2>
+              <p className="mt-2 text-muted-foreground">Trouvez votre prochain poste parmi nos opportunités sélectionnées.</p>
+            </div>
+            <Button asChild variant="ghost">
+              <Link to="/jobs">Voir toutes les offres</Link>
+            </Button>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {jobs.map((job) => (
+              <article key={job.title} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all">
+                <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{job.company}</div>
+                <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
+                <div className="mt-3 text-sm text-muted-foreground">{job.location}</div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="container-page py-20 md:py-24">
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+          <div>
+            <h2 className="font-display text-3xl md:text-4xl font-extrabold">Du blog</h2>
+            <p className="mt-2 text-muted-foreground">Conseils et actualités pour les talents et les entreprises.</p>
+          </div>
+          <Button asChild variant="ghost">
+            <Link to="/blog">Voir le blog</Link>
+          </Button>
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          {posts.map((post) => (
+            <article key={post.title} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all">
+              <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
+              <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="container-page pb-24">
+        <div className="rounded-3xl gradient-brand p-10 md:p-16 text-center shadow-brand relative overflow-hidden">
+          <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 20% 30%, white, transparent 40%), radial-gradient(circle at 80% 70%, white, transparent 40%)" }} />
+          <div className="relative">
+            <h2 className="font-display text-3xl md:text-5xl font-extrabold text-brand-foreground">Travaillons ensemble.</h2>
+            <p className="mt-3 text-brand-foreground/80 max-w-2xl mx-auto">
+              Une opportunité à diffuser, un projet tech à lancer ou une collaboration média ? Parlons-en.
+            </p>
+            <Button asChild size="lg" className="mt-7 bg-white text-[--brand-deep] hover:bg-white/90 font-semibold">
+              <Link to="/contact">Contactez-nous</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div className="text-center max-w-2xl mx-auto">
+      <h2 className="font-display text-3xl md:text-4xl font-extrabold text-foreground">{title}</h2>
+      {subtitle && <p className="mt-3 text-muted-foreground">{subtitle}</p>}
     </div>
   );
 }
