@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import heroBg from "./assets/hero-bg.jpg";
 import logoMonago from "./assets/logo-monago.jpg";
 import { Button } from "@/components/ui/button";
@@ -649,6 +649,7 @@ export function ContactPage() {
 }
 
 export function AuthPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -675,9 +676,7 @@ export function AuthPage() {
 
     if (data.user) {
       setMessage("Connexion réussie. Redirection en cours...");
-      window.setTimeout(() => {
-        window.location.assign("/");
-      }, 800);
+      navigate("/admin");
     }
   };
 
@@ -738,6 +737,80 @@ export function AuthPage() {
             {loading ? "Connexion..." : "Se connecter"}
           </Button>
         </form>
+      </div>
+    </div>
+  );
+}
+
+export function AdminPage() {
+  const [session, setSession] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let mounted = true;
+    async function loadSession() {
+      const { data } = await supabase.auth.getSession();
+      if (!mounted) return;
+      setSession(data.session);
+      setLoading(false);
+    }
+    loadSession();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    window.location.assign("/auth");
+  };
+
+  if (loading) {
+    return (
+      <div className="container-page py-20 md:py-28">
+        <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
+          <p className="text-muted-foreground">Chargement du compte administrateur...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="container-page py-20 md:py-28">
+        <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
+          <h1 className="font-display text-3xl font-bold text-foreground">Administration</h1>
+          <p className="mt-4 text-muted-foreground">Vous devez vous connecter pour accéder à cet espace.</p>
+          <div className="mt-8">
+            <Link to="/auth" className="inline-flex items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
+              Retour à la connexion
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container-page py-20 md:py-28">
+      <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-card p-10 shadow-soft">
+        <h1 className="font-display text-3xl font-bold text-foreground">Tableau de bord administrateur</h1>
+        <p className="mt-4 text-muted-foreground">Connecté en tant que <strong>{session.user?.email}</strong>.</p>
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <div className="rounded-3xl border border-border bg-background p-6">
+            <h2 className="font-display text-lg font-semibold text-foreground">Offres</h2>
+            <p className="mt-3 text-sm text-muted-foreground">Gérez les annonces d'emploi publiées et celles à venir.</p>
+          </div>
+          <div className="rounded-3xl border border-border bg-background p-6">
+            <h2 className="font-display text-lg font-semibold text-foreground">Blog</h2>
+            <p className="mt-3 text-sm text-muted-foreground">Accédez aux articles et publiez vos contenus métier.</p>
+          </div>
+        </div>
+        <div className="mt-8 text-right">
+          <Button onClick={handleSignOut} size="lg" className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Se déconnecter
+          </Button>
+        </div>
       </div>
     </div>
   );
