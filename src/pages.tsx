@@ -4,6 +4,7 @@ import heroBg from "./assets/hero-bg.jpg";
 import logoMonago from "./assets/logo-monago.jpg";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
+import { usePageSEO, DEFAULT_SEO } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -106,6 +107,7 @@ export function HomePage() {
 
   return (
     <div className="bg-background">
+      {usePageSEO(DEFAULT_SEO)}
       <section
         className="relative overflow-hidden min-h-[600px] md:min-h-[700px] bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroBg})` }}
@@ -116,13 +118,13 @@ export function HomePage() {
           <div className="grid gap-12 lg:grid-cols-[1fr_320px] items-center">
             <div>
               <p className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-primary/10 fade-up" style={{ animationDelay: '80ms' }}>
-                Tech · Emplois · Médias
+                <strong>Portail de l'emploi en République du Congo</strong>
               </p>
               <h1 className="mt-8 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white fade-up" style={{ animationDelay: '180ms' }}>
-                Construisez votre prochaine étape professionnelle avec EmploiPlus Group.
+                <strong>Offres d'emploi au Congo-Brazzaville</strong> et <strong>Emploi et stage en République du Congo</strong>.
               </h1>
               <p className="mt-6 max-w-2xl text-base text-white/90 leading-relaxed fade-up" style={{ animationDelay: '260ms' }}>
-                EmploiPlus Group offre une présence digitale moderne, une diffusion ciblée d'offres d'emploi et des services numériques pour les talents et les entreprises.
+                EmploiPlus Group est votre portail de l'emploi en République du Congo pour découvrir des <strong>offres d'emploi au Congo-Brazzaville</strong>, des opportunités de stage et des services numériques dédiés aux talents et aux entreprises.
               </p>
               <div className="mt-10 flex flex-wrap gap-3 fade-up" style={{ animationDelay: '340ms' }}>
                 <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand">
@@ -283,6 +285,12 @@ export function AboutPage() {
 
   return (
     <>
+      {usePageSEO({
+        title: "À propos - EmploiPlus Group",
+        description: "Découvrez notre mission, nos valeurs et nos trois piliers: développement numérique, diffusion d'offres d'emploi et services médias.",
+        keywords: "à propos, mission, valeurs, services numériques, emploi, Congo",
+        canonical: "https://emploiplus.group/#/about",
+      })}
       <section className="container-page py-16 md:py-20">
         <div className="grid gap-12 lg:grid-cols-2 items-center">
           <div className="space-y-6">
@@ -375,6 +383,12 @@ export function AboutPage() {
 export function ServicesPage() {
   return (
     <>
+      {usePageSEO({
+        title: "Nos services",
+        description: "Services de diffusion d'offres d'emploi, développement web, stratégie média et conseils digital pour les entreprises.",
+        keywords: "services, offres emploi, développement web, stratégie média, branding employeur",
+        canonical: "https://emploiplus.group/#/services",
+      })}
       <PageHeading
         title="Nos services"
         description="Des solutions sur mesure pour la diffusion, le développement numérique et la communication média."
@@ -410,6 +424,12 @@ export function JobsPage() {
 
   return (
     <>
+      {usePageSEO({
+        title: "Offres d'emploi",
+        description: "Découvrez nos dernières offres d'emploi en Afrique et accédez à des opportunités professionnelles sélectionnées.",
+        keywords: "offres d'emploi, opportunités, recrutement, emploi Congo",
+        canonical: "https://emploiplus.group/#/jobs",
+      })}
       <PageHeading title={t("jobs.title")} description={t("jobs.subtitle")} />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
@@ -461,6 +481,12 @@ export function BlogPage() {
 
   return (
     <>
+      {usePageSEO({
+        title: "Blog - Articles et conseils emploi",
+        description: "Articles, conseils carrière et actualités pour les talents et les entreprises.",
+        keywords: "blog, articles, conseils carrière, actualités emploi, recrutement",
+        canonical: "https://emploiplus.group/#/blog",
+      })}
       <PageHeading
         title="Blog EmploiPlus"
         description="Articles, conseils carrière et actualités pour les talents et les entreprises."
@@ -505,6 +531,12 @@ export function ContactPage() {
 
   return (
     <>
+      {usePageSEO({
+        title: "Nous contacter",
+        description: "Contactez EmploiPlus Group pour vos besoins en recrutement, développement web ou stratégie média.",
+        keywords: "contact, nous contacter, support, recrutement, développement web",
+        canonical: "https://emploiplus.group/#/contact",
+      })}
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr]">
           {/* Contact Form */}
@@ -681,64 +713,71 @@ export function AuthPage() {
   };
 
   return (
-    <div className="container-page py-20 md:py-28">
-      <div className="mx-auto max-w-xl rounded-3xl border border-border bg-card p-10 shadow-soft">
-        <h1 className="font-display text-3xl font-bold text-foreground text-center">Espace administrateur</h1>
-        <p className="mt-4 text-muted-foreground text-center">
-          Connectez-vous avec votre email et mot de passe pour accéder à l'espace d'administration.
-        </p>
+    <>
+      {usePageSEO({
+        title: "Connexion administrateur",
+        description: "Connectez-vous à votre espace administrateur EmploiPlus Group pour gérer vos offres et contenus.",
+        canonical: "https://emploiplus.group/#/auth",
+      })}
+      <div className="container-page py-20 md:py-28">
+        <div className="mx-auto max-w-xl rounded-3xl border border-border bg-card p-10 shadow-soft">
+          <h1 className="font-display text-3xl font-bold text-foreground text-center">Espace administrateur</h1>
+          <p className="mt-4 text-muted-foreground text-center">
+            Connectez-vous avec votre email et mot de passe pour accéder à l'espace d'administration.
+          </p>
 
-        <form onSubmit={handleSubmit} className="mt-10 space-y-6">
-          <div>
-            <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="auth-email">
-              Email
-            </label>
-            <input
-              id="auth-email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-              className="w-full rounded-xl border border-border bg-input px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-              placeholder="votre@email.com"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="auth-password">
-              Mot de passe
-            </label>
-            <input
-              id="auth-password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              className="w-full rounded-xl border border-border bg-input px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-              placeholder="••••••••"
-            />
-          </div>
-
-          {error ? (
-            <div className="rounded-2xl bg-destructive/10 border border-destructive px-4 py-3 text-sm text-destructive">
-              {error}
+          <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="auth-email">
+                Email
+              </label>
+              <input
+                id="auth-email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+                className="w-full rounded-xl border border-border bg-input px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                placeholder="votre@email.com"
+              />
             </div>
-          ) : null}
 
-          {message ? (
-            <div className="rounded-2xl bg-success/10 border border-success px-4 py-3 text-sm text-success">
-              {message}
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="auth-password">
+                Mot de passe
+              </label>
+              <input
+                id="auth-password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+                className="w-full rounded-xl border border-border bg-input px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                placeholder="••••••••"
+              />
             </div>
-          ) : null}
 
-          <Button type="submit" size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
-            {loading ? "Connexion..." : "Se connecter"}
-          </Button>
-        </form>
+            {error ? (
+              <div className="rounded-2xl bg-destructive/10 border border-destructive px-4 py-3 text-sm text-destructive">
+                {error}
+              </div>
+            ) : null}
+
+            {message ? (
+              <div className="rounded-2xl bg-success/10 border border-success px-4 py-3 text-sm text-success">
+                {message}
+              </div>
+            ) : null}
+
+            <Button type="submit" size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
+              {loading ? "Connexion..." : "Se connecter"}
+            </Button>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -767,65 +806,93 @@ export function AdminPage() {
 
   if (loading) {
     return (
-      <div className="container-page py-20 md:py-28">
-        <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-          <p className="text-muted-foreground">Chargement du compte administrateur...</p>
+      <>
+        {usePageSEO({
+          title: "Tableau de bord administrateur",
+          description: "Gestion administrative de vos offres d'emploi et contenus blog.",
+          canonical: "https://emploiplus.group/#/admin",
+        })}
+        <div className="container-page py-20 md:py-28">
+          <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
+            <p className="text-muted-foreground">Chargement du compte administrateur...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!session) {
     return (
-      <div className="container-page py-20 md:py-28">
-        <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-          <h1 className="font-display text-3xl font-bold text-foreground">Administration</h1>
-          <p className="mt-4 text-muted-foreground">Vous devez vous connecter pour accéder à cet espace.</p>
-          <div className="mt-8">
-            <Link to="/auth" className="inline-flex items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
-              Retour à la connexion
-            </Link>
+      <>
+        {usePageSEO({
+          title: "Tableau de bord administrateur",
+          description: "Gestion administrative de vos offres d'emploi et contenus blog.",
+          canonical: "https://emploiplus.group/#/admin",
+        })}
+        <div className="container-page py-20 md:py-28">
+          <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
+            <h1 className="font-display text-3xl font-bold text-foreground">Administration</h1>
+            <p className="mt-4 text-muted-foreground">Vous devez vous connecter pour accéder à cet espace.</p>
+            <div className="mt-8">
+              <Link to="/auth" className="inline-flex items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
+                Retour à la connexion
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="container-page py-20 md:py-28">
-      <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-card p-10 shadow-soft">
-        <h1 className="font-display text-3xl font-bold text-foreground">Tableau de bord administrateur</h1>
-        <p className="mt-4 text-muted-foreground">Connecté en tant que <strong>{session.user?.email}</strong>.</p>
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          <div className="rounded-3xl border border-border bg-background p-6">
-            <h2 className="font-display text-lg font-semibold text-foreground">Offres</h2>
-            <p className="mt-3 text-sm text-muted-foreground">Gérez les annonces d'emploi publiées et celles à venir.</p>
+    <>
+      {usePageSEO({
+        title: "Tableau de bord administrateur",
+        description: "Gestion administrative de vos offres d'emploi et contenus blog.",
+        canonical: "https://emploiplus.group/#/admin",
+      })}
+      <div className="container-page py-20 md:py-28">
+        <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-card p-10 shadow-soft">
+          <h1 className="font-display text-3xl font-bold text-foreground">Tableau de bord administrateur</h1>
+          <p className="mt-4 text-muted-foreground">Connecté en tant que <strong>{session.user?.email}</strong>.</p>
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
+            <div className="rounded-3xl border border-border bg-background p-6">
+              <h2 className="font-display text-lg font-semibold text-foreground">Offres</h2>
+              <p className="mt-3 text-sm text-muted-foreground">Gérez les annonces d'emploi publiées et celles à venir.</p>
+            </div>
+            <div className="rounded-3xl border border-border bg-background p-6">
+              <h2 className="font-display text-lg font-semibold text-foreground">Blog</h2>
+              <p className="mt-3 text-sm text-muted-foreground">Accédez aux articles et publiez vos contenus métier.</p>
+            </div>
           </div>
-          <div className="rounded-3xl border border-border bg-background p-6">
-            <h2 className="font-display text-lg font-semibold text-foreground">Blog</h2>
-            <p className="mt-3 text-sm text-muted-foreground">Accédez aux articles et publiez vos contenus métier.</p>
+          <div className="mt-8 text-right">
+            <Button onClick={handleSignOut} size="lg" className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Se déconnecter
+            </Button>
           </div>
-        </div>
-        <div className="mt-8 text-right">
-          <Button onClick={handleSignOut} size="lg" className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-            Se déconnecter
-          </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
 export function NotFoundPage() {
   return (
-    <div className="container-page py-20 md:py-28">
-      <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-        <h1 className="font-display text-4xl font-bold text-foreground">404</h1>
-        <p className="mt-4 text-muted-foreground">Page introuvable.</p>
-        <Link to="/" className="mt-8 inline-flex items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
-          Retour à l'accueil
-        </Link>
+    <>
+      {usePageSEO({
+        title: "Page non trouvée - 404",
+        description: "La page que vous recherchez n'existe pas ou a été supprimée.",
+        canonical: "https://emploiplus.group/#/404",
+      })}
+      <div className="container-page py-20 md:py-28">
+        <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
+          <h1 className="font-display text-4xl font-bold text-foreground">404</h1>
+          <p className="mt-4 text-muted-foreground">Page introuvable.</p>
+          <Link to="/" className="mt-8 inline-flex items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
+            Retour à l'accueil
+          </Link>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

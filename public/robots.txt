@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /auth
+Sitemap: https://emploiplus-group.com/sitemap.xml
