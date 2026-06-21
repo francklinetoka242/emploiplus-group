@@ -781,9 +781,209 @@ export function AuthPage() {
   );
 }
 
+function AdminSectionNav({ activePath }: { activePath: string }) {
+  const navItems = [
+    { to: "/admin", label: "Tableau de bord" },
+    { to: "/admin/jobs", label: "Offres" },
+    { to: "/admin/blog", label: "Blog" },
+  ];
+
+  return (
+    <div className="mb-8 flex flex-col gap-3 rounded-3xl border border-border bg-card p-6 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-wrap gap-2">
+        {navItems.map((item) => (
+          <Link
+            key={item.to}
+            to={item.to}
+            className={cn(
+              "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+              activePath === item.to ? "bg-brand text-brand-foreground" : "bg-background text-muted-foreground hover:bg-secondary/80 hover:text-foreground",
+            )}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </div>
+      <div className="text-sm text-muted-foreground">Espace super admin</div>
+    </div>
+  );
+}
+
+function AdminIntro({ session }: { session: any }) {
+  return (
+    <div className="space-y-6">
+      <div className="rounded-3xl border border-border bg-background p-8 shadow-soft">
+        <h1 className="font-display text-3xl font-bold text-foreground">Tableau de bord administrateur</h1>
+        <p className="mt-4 text-muted-foreground">Connecté en tant que <strong>{session.user?.email}</strong>.</p>
+      </div>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+          <h2 className="font-display text-xl font-semibold text-foreground">Offres</h2>
+          <p className="mt-3 text-sm text-muted-foreground">Gérez les annonces d'emploi publiées, en brouillon et programmées.</p>
+          <div className="mt-6 flex flex-col gap-3">
+            <Button asChild size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
+              <Link to="/admin/jobs">Voir les offres</Link>
+            </Button>
+            <Button size="lg" className="w-full border border-border bg-background text-foreground hover:bg-secondary/80">
+              Créer une offre
+            </Button>
+          </div>
+        </div>
+        <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+          <h2 className="font-display text-xl font-semibold text-foreground">Blog</h2>
+          <p className="mt-3 text-sm text-muted-foreground">Accédez aux articles et publiez vos contenus métier.</p>
+          <div className="mt-6 flex flex-col gap-3">
+            <Button asChild size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
+              <Link to="/admin/blog">Voir le blog</Link>
+            </Button>
+            <Button size="lg" className="w-full border border-border bg-background text-foreground hover:bg-secondary/80">
+              Créer un article
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdminJobsPage() {
+  const [offers, setOffers] = React.useState<Database["public"]["Tables"]["job_offers"]["Row"][]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    async function loadOffers() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("job_offers")
+        .select("id, slug, title, company, status, publish_at")
+        .order("publish_at", { ascending: false })
+        .limit(50);
+
+      if (!mounted) return;
+      if (error) {
+        console.error("Failed to load job offers:", error.message);
+        setOffers([]);
+      } else {
+        setOffers(data ?? []);
+      }
+      setLoading(false);
+    }
+
+    loadOffers();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+        <h1 className="font-display text-3xl font-bold text-foreground">Gestion des offres</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Liste des offres d'emploi disponibles dans l'administration.</p>
+      </div>
+
+      <div className="rounded-3xl border border-border bg-background p-6 shadow-soft">
+        {loading ? (
+          <p className="text-muted-foreground">Chargement des offres...</p>
+        ) : offers.length === 0 ? (
+          <p className="text-muted-foreground">Aucune offre trouvée pour l'instant.</p>
+        ) : (
+          <div className="space-y-4">
+            {offers.map((offer) => (
+              <div key={offer.id} className="rounded-2xl border border-border bg-card p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="font-semibold text-foreground">{offer.title}</h2>
+                    <p className="text-sm text-muted-foreground">{offer.company}</p>
+                  </div>
+                  <span className="text-xs uppercase tracking-[0.25em] text-muted-foreground">{offer.status}</span>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                  <span>Publié: {offer.publish_at ? new Date(offer.publish_at).toLocaleDateString("fr-FR") : "—"}</span>
+                  <span className="rounded-full border border-border px-2 py-1">{offer.slug}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AdminBlogPage() {
+  const [posts, setPosts] = React.useState<Database["public"]["Tables"]["blog_posts"]["Row"][]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    async function loadPosts() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("blog_posts")
+        .select("id, slug, title, excerpt, status, publish_at")
+        .order("publish_at", { ascending: false })
+        .limit(50);
+
+      if (!mounted) return;
+      if (error) {
+        console.error("Failed to load blog posts:", error.message);
+        setPosts([]);
+      } else {
+        setPosts(data ?? []);
+      }
+      setLoading(false);
+    }
+
+    loadPosts();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+        <h1 className="font-display text-3xl font-bold text-foreground">Gestion du blog</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Liste des articles et brouillons publiés sur le blog.</p>
+      </div>
+
+      <div className="rounded-3xl border border-border bg-background p-6 shadow-soft">
+        {loading ? (
+          <p className="text-muted-foreground">Chargement des articles...</p>
+        ) : posts.length === 0 ? (
+          <p className="text-muted-foreground">Aucun article trouvé pour l'instant.</p>
+        ) : (
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <div key={post.id} className="rounded-2xl border border-border bg-card p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="font-semibold text-foreground">{post.title}</h2>
+                    <p className="text-sm text-muted-foreground">{post.excerpt}</p>
+                  </div>
+                  <span className="text-xs uppercase tracking-[0.25em] text-muted-foreground">{post.status}</span>
+                </div>
+                <div className="mt-3 text-sm text-muted-foreground">
+                  Publié: {post.publish_at ? new Date(post.publish_at).toLocaleDateString("fr-FR") : "—"}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function AdminPage() {
   const [session, setSession] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   React.useEffect(() => {
     let mounted = true;
@@ -801,7 +1001,7 @@ export function AdminPage() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    window.location.assign("/auth");
+    navigate("/auth");
   };
 
   if (loading) {
@@ -847,25 +1047,17 @@ export function AdminPage() {
   return (
     <>
       {usePageSEO({
-        title: "Tableau de bord administrateur",
+        title: "Espace administrateur",
         description: "Gestion administrative de vos offres d'emploi et contenus blog.",
         canonical: "https://emploiplus.group/#/admin",
       })}
-      <div className="container-page py-20 md:py-28">
-        <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-card p-10 shadow-soft">
-          <h1 className="font-display text-3xl font-bold text-foreground">Tableau de bord administrateur</h1>
-          <p className="mt-4 text-muted-foreground">Connecté en tant que <strong>{session.user?.email}</strong>.</p>
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
-            <div className="rounded-3xl border border-border bg-background p-6">
-              <h2 className="font-display text-lg font-semibold text-foreground">Offres</h2>
-              <p className="mt-3 text-sm text-muted-foreground">Gérez les annonces d'emploi publiées et celles à venir.</p>
-            </div>
-            <div className="rounded-3xl border border-border bg-background p-6">
-              <h2 className="font-display text-lg font-semibold text-foreground">Blog</h2>
-              <p className="mt-3 text-sm text-muted-foreground">Accédez aux articles et publiez vos contenus métier.</p>
-            </div>
+      <div className="container-page py-16 md:py-20">
+        <div className="mx-auto max-w-6xl space-y-8">
+          <AdminSectionNav activePath={location.pathname} />
+          <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+            <Outlet />
           </div>
-          <div className="mt-8 text-right">
+          <div className="flex justify-end">
             <Button onClick={handleSignOut} size="lg" className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Se déconnecter
             </Button>
@@ -874,6 +1066,31 @@ export function AdminPage() {
       </div>
     </>
   );
+}
+
+export function AdminHomePage() {
+  const [session, setSession] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let mounted = true;
+    async function loadSession() {
+      const { data } = await supabase.auth.getSession();
+      if (!mounted) return;
+      setSession(data.session);
+      setLoading(false);
+    }
+    loadSession();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  if (loading) {
+    return <p className="text-muted-foreground">Chargement du tableau de bord...</p>;
+  }
+
+  return <AdminIntro session={session} />;
 }
 
 export function NotFoundPage() {
