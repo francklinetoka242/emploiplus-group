@@ -649,13 +649,95 @@ export function ContactPage() {
 }
 
 export function AuthPage() {
+  const [email, setEmail] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [message, setMessage] = React.useState<string | null>(null);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    setMessage(null);
+    setLoading(true);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    setLoading(false);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    if (data.user) {
+      setMessage("Connexion réussie. Redirection en cours...");
+      window.setTimeout(() => {
+        window.location.assign("/");
+      }, 800);
+    }
+  };
+
   return (
     <div className="container-page py-20 md:py-28">
-      <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-        <h1 className="font-display text-3xl font-bold text-foreground">Espace administrateur</h1>
-        <p className="mt-4 text-muted-foreground leading-relaxed">
-          Cette interface est réservée aux administrateurs. La connexion sera bientôt rétablie pour la version SPA.
+      <div className="mx-auto max-w-xl rounded-3xl border border-border bg-card p-10 shadow-soft">
+        <h1 className="font-display text-3xl font-bold text-foreground text-center">Espace administrateur</h1>
+        <p className="mt-4 text-muted-foreground text-center">
+          Connectez-vous avec votre email et mot de passe pour accéder à l'espace d'administration.
         </p>
+
+        <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="auth-email">
+              Email
+            </label>
+            <input
+              id="auth-email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              className="w-full rounded-xl border border-border bg-input px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+              placeholder="votre@email.com"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="auth-password">
+              Mot de passe
+            </label>
+            <input
+              id="auth-password"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              className="w-full rounded-xl border border-border bg-input px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+              placeholder="••••••••"
+            />
+          </div>
+
+          {error ? (
+            <div className="rounded-2xl bg-destructive/10 border border-destructive px-4 py-3 text-sm text-destructive">
+              {error}
+            </div>
+          ) : null}
+
+          {message ? (
+            <div className="rounded-2xl bg-success/10 border border-success px-4 py-3 text-sm text-success">
+              {message}
+            </div>
+          ) : null}
+
+          <Button type="submit" size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
+            {loading ? "Connexion..." : "Se connecter"}
+          </Button>
+        </form>
       </div>
     </div>
   );
