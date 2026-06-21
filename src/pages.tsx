@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import heroBg from "./assets/hero-bg.jpg";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 
@@ -41,12 +42,13 @@ export function HomePage() {
 
   return (
     <div className="bg-background">
-      <section className="relative overflow-hidden min-h-[600px] md:min-h-[700px]">
-        <div className="absolute inset-0 -z-10">
-          <img src="/hero-bg.jpg" alt="" width={1920} height={1080} className="size-full object-cover opacity-90" fetchPriority="high" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.15_0.06_255/0.25)] via-[oklch(0.15_0.06_255/0.4)] to-[rgba(255,255,255,0.08)]" />
-        </div>
-        <div className="container-page py-20 md:py-28">
+      <section
+        className="relative overflow-hidden min-h-[600px] md:min-h-[700px] bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroBg})` }}
+      >
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.55),rgba(2,6,23,0.8))]" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="relative z-10 container-page py-20 md:py-28">
           <div className="grid gap-12 lg:grid-cols-[1fr_320px] items-center">
             <div>
               <p className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary-foreground ring-1 ring-primary/10">
@@ -67,39 +69,38 @@ export function HomePage() {
                 </Button>
               </div>
             </div>
-            <div className="rounded-3xl border border-border bg-card p-8 shadow-elev">
-              <div className="text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground">Notre mission</div>
-              <p className="mt-4 text-foreground/90 leading-relaxed">
-                Connecter les talents, les entreprises et les médias dans un espace numérique simple, performant et accessible.
-              </p>
-              <ul className="mt-8 space-y-4 text-sm text-muted-foreground">
-                <li>✓ Diffusion d’offres qualifiées</li>
-                <li>✓ Stratégie digitale et visibilité</li>
-                <li>✓ Contenu média professionnel</li>
-              </ul>
-            </div>
+            {/* Right column removed per request (Notre mission) */}
+            <div className="hidden lg:block" />
           </div>
         </div>
       </section>
 
       <section className="container-page py-16 md:py-20">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-3">
           {stats.map((item) => (
-            <article key={item.label} className="rounded-3xl border border-border bg-card p-8 text-center shadow-soft">
-              <div className="text-4xl font-display font-extrabold text-foreground">{item.value}</div>
-              <div className="mt-3 text-sm text-muted-foreground">{item.label}</div>
-            </article>
+            <div key={item.label} className="rounded-3xl overflow-hidden transform transition-transform hover:-translate-y-1 hover:scale-[1.02]">
+              <div className="p-[1px] bg-gradient-to-r from-sky-600 via-blue-500 to-amber-400 rounded-3xl">
+                <article className="rounded-3xl bg-card p-8 text-center shadow-lg">
+                  <div className="text-4xl font-display font-extrabold text-foreground">{item.value}</div>
+                  <div className="mt-3 text-sm text-muted-foreground">{item.label}</div>
+                </article>
+              </div>
+            </div>
           ))}
         </div>
       </section>
 
       <section className="container-page py-20 md:py-24">
         <SectionHeader title="Nos services" subtitle="Une plateforme pensée pour les entreprises et les talents." />
-        <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {services.map((item) => (
-            <article key={item.title} className="rounded-3xl border border-border bg-card p-8 shadow-soft hover:border-brand transition-colors">
-              <h2 className="font-display text-xl font-bold text-foreground">{item.title}</h2>
-              <p className="mt-3 text-muted-foreground leading-relaxed">{item.description}</p>
+            <article key={item.title} className="rounded-3xl transform transition-transform hover:-translate-y-1 hover:shadow-xl">
+              <div className="p-[1px] rounded-3xl bg-gradient-to-br from-sky-600 to-amber-400">
+                <div className="rounded-3xl bg-card p-6 h-full">
+                  <h2 className="font-display text-lg font-bold text-foreground">{item.title}</h2>
+                  <p className="mt-3 text-muted-foreground leading-relaxed">{item.description}</p>
+                </div>
+              </div>
             </article>
           ))}
         </div>
