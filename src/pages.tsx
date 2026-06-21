@@ -3,11 +3,30 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import heroBg from "./assets/hero-bg.jpg";
 import logoMonago from "./assets/logo-monago.jpg";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useI18n } from "@/lib/i18n";
 import { usePageSEO, DEFAULT_SEO } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/integrations/supabase/types";
+
+function createSlug(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/--+/g, "-")
+    .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
+}
 
 function PageHeading({ title, description }: { title: string; description: string }) {
   return (
@@ -706,7 +725,25 @@ export function AuthPage() {
       setError(error.message);
       return;
     }
-
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between rounded-3xl border border-border bg-card p-8 shadow-soft">
+            <div>
+              <h1 className="font-display text-3xl font-bold text-foreground">Gestion du blog</h1>
+              <p className="mt-2 text-sm text-muted-foreground">Liste des articles et brouillons publiés sur le blog.</p>
+            </div>
+            <Button asChild size="lg" className="w-full md:w-auto bg-brand text-brand-foreground hover:bg-brand/90">
+              <Link to="/admin/blog/new">Nouvel article</Link>
+            </Button>
+          </div>
+          <div className="rounded-3xl border border-border bg-background p-6 shadow-soft">
+            <div>
+              <h1 className="font-display text-3xl font-bold text-foreground">Gestion des offres</h1>
+              <p className="mt-2 text-sm text-muted-foreground">Liste des offres d'emploi disponibles dans l'administration.</p>
+            </div>
+            <Button asChild size="lg" className="w-full md:w-auto bg-brand text-brand-foreground hover:bg-brand/90">
+              <Link to="/admin/jobs/new">Nouvelle offre</Link>
+            </Button>
+          </div>
+          <div className="rounded-3xl border border-border bg-background p-6 shadow-soft">
     if (data.user) {
       setMessage("Connexion réussie. Redirection en cours...");
       navigate("/admin");
@@ -825,9 +862,9 @@ function AdminIntro({ session }: { session: any }) {
             <Button asChild size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
               <Link to="/admin/jobs">Voir les offres</Link>
             </Button>
-            <Button size="lg" className="w-full border border-border bg-background text-foreground hover:bg-secondary/80">
-              Créer une offre
-            </Button>
+              <Button asChild size="lg" className="w-full border border-border bg-background text-foreground hover:bg-secondary/80">
+                <Link to="/admin/jobs/new">Créer une offre</Link>
+              </Button>
           </div>
         </div>
         <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
@@ -837,9 +874,9 @@ function AdminIntro({ session }: { session: any }) {
             <Button asChild size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
               <Link to="/admin/blog">Voir le blog</Link>
             </Button>
-            <Button size="lg" className="w-full border border-border bg-background text-foreground hover:bg-secondary/80">
-              Créer un article
-            </Button>
+              <Button asChild size="lg" className="w-full border border-border bg-background text-foreground hover:bg-secondary/80">
+                <Link to="/admin/blog/new">Créer un article</Link>
+              </Button>
           </div>
         </div>
       </div>
@@ -847,7 +884,7 @@ function AdminIntro({ session }: { session: any }) {
   );
 }
 
-function AdminJobsPage() {
+export function AdminJobsPage() {
   const [offers, setOffers] = React.useState<Database["public"]["Tables"]["job_offers"]["Row"][]>([]);
   const [loading, setLoading] = React.useState(true);
 
@@ -914,7 +951,7 @@ function AdminJobsPage() {
   );
 }
 
-function AdminBlogPage() {
+export function AdminBlogPage() {
   const [posts, setPosts] = React.useState<Database["public"]["Tables"]["blog_posts"]["Row"][]>([]);
   const [loading, setLoading] = React.useState(true);
 
@@ -976,6 +1013,342 @@ function AdminBlogPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+export function AdminJobCreatePage() {
+  const navigate = useNavigate();
+  const [form, setForm] = React.useState({
+    title: "",
+    company: "",
+    company_logo: "",
+    location_city: "",
+    location_country: "",
+    contract_type: "cdi",
+    description: "",
+    requirements: "",
+    application_email: "",
+    application_whatsapp: "",
+    external_link: "",
+    cover_image: "",
+    status: "draft",
+    publish_at: "",
+    expires_at: "",
+  });
+  const [saving, setSaving] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [success, setSuccess] = React.useState<string | null>(null);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setSaving(true);
+
+    const slug = createSlug(form.title || `${form.company}-${Date.now()}`);
+    const payload = {
+      slug,
+      title: form.title,
+      company: form.company,
+      company_logo: form.company_logo || null,
+      location_city: form.location_city || null,
+      location_country: form.location_country || null,
+      contract_type: form.contract_type as Database["public"]["Enums"]["contract_type"],
+      description: form.description,
+      requirements: form.requirements || null,
+      application_email: form.application_email || null,
+      application_whatsapp: form.application_whatsapp || null,
+      external_link: form.external_link || null,
+      cover_image: form.cover_image || null,
+      status: form.status as Database["public"]["Enums"]["job_status"],
+      publish_at: form.publish_at ? new Date(form.publish_at).toISOString() : null,
+      expires_at: form.expires_at ? new Date(form.expires_at).toISOString() : null,
+    };
+
+    const { error } = await supabase.from("job_offers").insert([payload]);
+
+    setSaving(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    setSuccess("Offre créée avec succès.");
+    navigate("/admin/jobs");
+  };
+
+  return (
+    <div className="space-y-6">
+      {usePageSEO({
+        title: "Créer une offre",
+        description: "Publiez une nouvelle offre d'emploi depuis l'administration EmploiPlus.",
+        canonical: "https://emploiplus.group/#/admin/jobs/new",
+      })}
+      <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="font-display text-3xl font-bold text-foreground">Nouvelle offre d'emploi</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Saisissez les informations essentielles pour une publication professionnelle.</p>
+          </div>
+          <Button size="lg" variant="outline" onClick={() => navigate("/admin/jobs")}>Retour aux offres</Button>
+        </div>
+      </div>
+      <form onSubmit={handleSubmit} className="grid gap-6">
+        <div className="rounded-3xl border border-border bg-card p-8 shadow-soft grid gap-6">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Titre du poste</label>
+              <Input name="title" value={form.title} onChange={handleChange} required placeholder="Consultant commercial" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Entreprise</label>
+              <Input name="company" value={form.company} onChange={handleChange} required placeholder="EmploiPlus Group" />
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Ville</label>
+              <Input name="location_city" value={form.location_city} onChange={handleChange} placeholder="Brazzaville" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Pays</label>
+              <Input name="location_country" value={form.location_country} onChange={handleChange} placeholder="Congo" />
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Type de contrat</label>
+              <Select value={form.contract_type} onValueChange={(value) => setForm((prev) => ({ ...prev, contract_type: value }))}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choisir" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cdi">CDI</SelectItem>
+                  <SelectItem value="cdd">CDD</SelectItem>
+                  <SelectItem value="stage">Stage</SelectItem>
+                  <SelectItem value="freelance">Freelance</SelectItem>
+                  <SelectItem value="consultance">Consultance</SelectItem>
+                  <SelectItem value="temps_partiel">Temps partiel</SelectItem>
+                  <SelectItem value="interim">Intérim</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Statut</label>
+              <Select value={form.status} onValueChange={(value) => setForm((prev) => ({ ...prev, status: value }))}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choisir" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Brouillon</SelectItem>
+                  <SelectItem value="published">Publié</SelectItem>
+                  <SelectItem value="archived">Archivé</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Email de candidature</label>
+              <Input name="application_email" value={form.application_email} onChange={handleChange} placeholder="recrutement@entreprise.com" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Lien externe / WhatsApp</label>
+              <Input name="external_link" value={form.external_link} onChange={handleChange} placeholder="https://... / +242 ..." />
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Date de publication</label>
+              <Input name="publish_at" type="datetime-local" value={form.publish_at} onChange={handleChange} />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Date d'expiration</label>
+              <Input name="expires_at" type="datetime-local" value={form.expires_at} onChange={handleChange} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-2">Résumé de l'offre</label>
+            <Textarea name="description" value={form.description} onChange={handleChange} required rows={6} placeholder="Décrivez les missions, les objectifs et la valeur proposée." />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-2">Compétences & exigences</label>
+            <Textarea name="requirements" value={form.requirements} onChange={handleChange} rows={5} placeholder="Exemples : expérience, formation, compétences techniques." />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Logo entreprise (URL)</label>
+              <Input name="company_logo" value={form.company_logo} onChange={handleChange} placeholder="https://..." />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Image de couverture (URL)</label>
+              <Input name="cover_image" value={form.cover_image} onChange={handleChange} placeholder="https://..." />
+            </div>
+          </div>
+          {error ? <div className="rounded-2xl bg-destructive/10 border border-destructive px-4 py-3 text-sm text-destructive">{error}</div> : null}
+          {success ? <div className="rounded-2xl bg-success/10 border border-success px-4 py-3 text-sm text-success">{success}</div> : null}
+          <Button type="submit" size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90" disabled={saving}>
+            {saving ? "Enregistrement..." : "Publier l'offre"}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export function AdminBlogCreatePage() {
+  const navigate = useNavigate();
+  const [form, setForm] = React.useState({
+    title: "",
+    subtitle: "",
+    excerpt: "",
+    content: "",
+    category: "",
+    tags: "",
+    image: "",
+    video_url: "",
+    external_link: "",
+    status: "draft",
+    publish_at: "",
+  });
+  const [saving, setSaving] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [success, setSuccess] = React.useState<string | null>(null);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setSaving(true);
+
+    const slug = createSlug(form.title || `article-${Date.now()}`);
+    const payload = {
+      slug,
+      title: form.title,
+      subtitle: form.subtitle || null,
+      content: form.content,
+      excerpt: form.excerpt || null,
+      image: form.image || null,
+      video_url: form.video_url || null,
+      external_link: form.external_link || null,
+      category: form.category || null,
+      tags: form.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+      status: form.status as Database["public"]["Enums"]["post_status"],
+      publish_at: form.publish_at ? new Date(form.publish_at).toISOString() : null,
+    };
+
+    const { error } = await supabase.from("blog_posts").insert([payload]);
+
+    setSaving(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    setSuccess("Article créé avec succès.");
+    navigate("/admin/blog");
+  };
+
+  return (
+    <div className="space-y-6">
+      {usePageSEO({
+        title: "Créer un article",
+        description: "Publiez un nouvel article sur le blog depuis l'administration EmploiPlus.",
+        canonical: "https://emploiplus.group/#/admin/blog/new",
+      })}
+      <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="font-display text-3xl font-bold text-foreground">Nouvel article</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Créez un article clair, professionnel et orienté entreprise.</p>
+          </div>
+          <Button size="lg" variant="outline" onClick={() => navigate("/admin/blog")}>Retour au blog</Button>
+        </div>
+      </div>
+      <form onSubmit={handleSubmit} className="grid gap-6">
+        <div className="rounded-3xl border border-border bg-card p-8 shadow-soft grid gap-6">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Titre</label>
+              <Input name="title" value={form.title} onChange={handleChange} required placeholder="Titre de l'article" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Sous-titre</label>
+              <Input name="subtitle" value={form.subtitle} onChange={handleChange} placeholder="Résumé sous le titre" />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-2">Extrait</label>
+            <Textarea name="excerpt" value={form.excerpt} onChange={handleChange} rows={4} placeholder="Phrase d'accroche visible sur la page blog." />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-2">Contenu</label>
+            <Textarea name="content" value={form.content} onChange={handleChange} required rows={8} placeholder="Rédigez votre article ici avec un message clair pour les entreprises." />
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Catégorie</label>
+              <Input name="category" value={form.category} onChange={handleChange} placeholder="Recrutement, SaaS, RH..." />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Mots-clés</label>
+              <Input name="tags" value={form.tags} onChange={handleChange} placeholder="talent, recrutement, marque employeur" />
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Image principale (URL)</label>
+              <Input name="image" value={form.image} onChange={handleChange} placeholder="https://..." />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Lien vidéo</label>
+              <Input name="video_url" value={form.video_url} onChange={handleChange} placeholder="https://..." />
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Lien externe</label>
+              <Input name="external_link" value={form.external_link} onChange={handleChange} placeholder="https://..." />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Statut</label>
+              <Select value={form.status} onValueChange={(value) => setForm((prev) => ({ ...prev, status: value }))}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choisir" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Brouillon</SelectItem>
+                  <SelectItem value="published">Publié</SelectItem>
+                  <SelectItem value="archived">Archivé</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Date de publication</label>
+              <Input name="publish_at" type="datetime-local" value={form.publish_at} onChange={handleChange} />
+            </div>
+            <div className="pt-8 text-sm text-muted-foreground">Laisser vide pour publier immédiatement selon le statut.</div>
+          </div>
+          {error ? <div className="rounded-2xl bg-destructive/10 border border-destructive px-4 py-3 text-sm text-destructive">{error}</div> : null}
+          {success ? <div className="rounded-2xl bg-success/10 border border-success px-4 py-3 text-sm text-success">{success}</div> : null}
+          <Button type="submit" size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90" disabled={saving}>
+            {saving ? "Enregistrement..." : "Publier l'article"}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }
@@ -1045,6 +1418,8 @@ export function AdminPage() {
     );
   }
 
+  const isAdminRoot = location.pathname === "/admin";
+
   return (
     <>
       {usePageSEO({
@@ -1056,7 +1431,7 @@ export function AdminPage() {
         <div className="mx-auto max-w-6xl space-y-8">
           <AdminSectionNav activePath={location.pathname} />
           <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-            <Outlet />
+            {isAdminRoot ? <AdminIntro session={session} /> : <Outlet />}
           </div>
           <div className="flex justify-end">
             <Button onClick={handleSignOut} size="lg" className="bg-destructive text-destructive-foreground hover:bg-destructive/90">

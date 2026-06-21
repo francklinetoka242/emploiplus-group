@@ -5,7 +5,12 @@ import { SiteHeader } from "@/components/site/Header";
 import { Toaster } from "@/components/ui/sonner";
 import {
   AboutPage,
+  AdminHomePage,
   AdminPage,
+  AdminBlogPage,
+  AdminBlogCreatePage,
+  AdminJobsPage,
+  AdminJobCreatePage,
   AuthPage,
   BlogPage,
   ContactPage,
@@ -32,7 +37,13 @@ export default function App() {
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/auth" element={<AuthPage />} />
-            <Route path="/admin/*" element={<AdminPage />} />
+            <Route path="/admin/*" element={<AdminPage />}>
+              <Route index element={<AdminHomePage />} />
+              <Route path="jobs" element={<AdminJobsPage />} />
+              <Route path="jobs/new" element={<AdminJobCreatePage />} />
+              <Route path="blog" element={<AdminBlogPage />} />
+              <Route path="blog/new" element={<AdminBlogCreatePage />} />
+            </Route>
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
