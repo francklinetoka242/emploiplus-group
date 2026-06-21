@@ -82,7 +82,7 @@ export function HomePage() {
         <div className="grid gap-6 md:grid-cols-3">
           {stats.map((item, i) => (
             <div key={item.label} className="rounded-3xl overflow-hidden transform transition-transform hover:-translate-y-1 hover:scale-[1.02] fade-up" style={{ animationDelay: `${i * 120}ms` }}>
-              <div className="p-[1px] bg-gradient-to-r from-sky-600 via-blue-500 to-amber-400 rounded-3xl">
+              <div className="p-[1px] rounded-3xl gradient-brand">
                 <article className="rounded-3xl bg-card p-8 text-center shadow-lg">
                   <div className="text-4xl font-display font-extrabold text-foreground">{item.value}</div>
                   <div className="mt-3 text-sm text-muted-foreground">{item.label}</div>
@@ -98,7 +98,7 @@ export function HomePage() {
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {services.map((item, i) => (
             <article key={item.title} className="rounded-3xl transform transition-transform hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: `${i * 120}ms` }}>
-              <div className="p-[1px] rounded-3xl bg-gradient-to-br from-sky-600 to-amber-400">
+              <div className="p-[1px] rounded-3xl gradient-brand">
                 <div className="rounded-3xl bg-card p-6 h-full">
                   <h2 className="font-display text-lg font-bold text-foreground">{item.title}</h2>
                   <p className="mt-3 text-muted-foreground leading-relaxed">{item.description}</p>
@@ -224,7 +224,7 @@ export function AboutPage() {
             </div>
           </div>
           
-          <div className="rounded-2xl p-[1px] bg-gradient-to-br from-sky-600 to-amber-400">
+          <div className="rounded-2xl p-[1px] gradient-brand">
             <div className="rounded-2xl bg-card p-8 space-y-8">
               <div>
                 <h3 className="font-display text-2xl font-bold text-foreground mb-6">Nos valeurs</h3>
@@ -308,7 +308,7 @@ export function ServicesPage() {
             { title: "Support opérationnel", description: "Accompagnement de A à Z sur vos projets numériques. " },
           ].map((item, i) => (
             <article key={item.title} className="rounded-3xl transform transition-transform hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: `${i * 100}ms` }}>
-              <div className="p-[1px] rounded-3xl bg-gradient-to-br from-sky-600 to-amber-400">
+              <div className="p-[1px] rounded-3xl gradient-brand">
                 <div className="rounded-3xl bg-card p-6 h-full">
                   <h2 className="font-display text-lg font-semibold text-foreground">{item.title}</h2>
                   <p className="mt-3 text-muted-foreground leading-relaxed">{item.description}</p>
@@ -469,7 +469,7 @@ export function ContactPage() {
           {/* Contact Info Sidebar */}
           <div className="space-y-6">
             {/* Direct Contact Card */}
-            <div className="rounded-2xl p-[1px] bg-gradient-to-br from-sky-600 to-amber-400">
+            <div className="rounded-2xl p-[1px] gradient-brand">
               <div className="rounded-2xl bg-card p-8 space-y-6">
                 <div>
                   <h3 className="font-display text-xl font-bold text-foreground mb-6">Contact direct</h3>
