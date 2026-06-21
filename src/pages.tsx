@@ -4,6 +4,8 @@ import heroBg from "./assets/hero-bg.jpg";
 import logoMonago from "./assets/logo-monago.jpg";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
 function PageHeading({ title, description }: { title: string; description: string }) {
   return (
@@ -16,20 +18,79 @@ function PageHeading({ title, description }: { title: string; description: strin
   );
 }
 
-// Module-level data used across pages
-const jobs = [
-  { title: "Chargé(e) de communication digitale", company: "EmploiPlus Group", location: "Pointe-Noire, Congo" },
-  { title: "Développeur(se) front-end", company: "Tech Partners", location: "Télétravail" },
-];
+function usePublishedJobOffers(limit = 10) {
+  const [offers, setOffers] = React.useState<Database["public"]["Tables"]["job_offers"]["Row"][]>([]);
+  const [loading, setLoading] = React.useState(true);
 
-const posts = [
-  { title: "Tendances recrutement 2026", excerpt: "Les nouvelles attentes des talents et les bons leviers pour vos annonces." },
-  { title: "Optimiser votre présence digitale", excerpt: "Boostez votre visibilité avec une stratégie média claire et efficace." },
-  { title: "Créer du contenu qui engage", excerpt: "Comment parler aux candidats et aux clients sur les bons canaux." },
-];
+  React.useEffect(() => {
+    let mounted = true;
+
+    async function loadOffers() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("job_offers")
+        .select("id, slug, title, company, location_city, location_country, status, publish_at")
+        .eq("status", "published")
+        .order("publish_at", { ascending: false })
+        .limit(limit);
+
+      if (!mounted) return;
+      if (error) {
+        console.error("Failed to load job offers:", error.message);
+        setOffers([]);
+      } else {
+        setOffers(data ?? []);
+      }
+      setLoading(false);
+    }
+
+    loadOffers();
+    return () => {
+      mounted = false;
+    };
+  }, [limit]);
+
+  return { offers, loading };
+}
+
+function usePublishedBlogPosts(limit = 9) {
+  const [posts, setPosts] = React.useState<Database["public"]["Tables"]["blog_posts"]["Row"][]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    async function loadPosts() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("blog_posts")
+        .select("id, slug, title, excerpt, status, publish_at")
+        .eq("status", "published")
+        .order("publish_at", { ascending: false })
+        .limit(limit);
+
+      if (!mounted) return;
+      if (error) {
+        console.error("Failed to load blog posts:", error.message);
+        setPosts([]);
+      } else {
+        setPosts(data ?? []);
+      }
+      setLoading(false);
+    }
+
+    loadPosts();
+    return () => {
+      mounted = false;
+    };
+  }, [limit]);
+
+  return { posts, loading };
+}
 
 export function HomePage() {
-  const { t } = useI18n();
+  const { offers: homeJobs, loading: jobsLoading } = usePublishedJobOffers(4);
+  const { posts: homePosts, loading: postsLoading } = usePublishedBlogPosts(3);
 
   const stats = [
     { value: "50+", label: "Offres diffusées" },
@@ -121,13 +182,26 @@ export function HomePage() {
             </Button>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-              {jobs.map((job, i) => (
-                <article key={job.title} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 120}ms` }}>
-                <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{job.company}</div>
-                <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
-                <div className="mt-3 text-sm text-muted-foreground">{job.location}</div>
-              </article>
-            ))}
+            {jobsLoading ? (
+              <div className="rounded-3xl border border-border bg-card p-6 shadow-soft">
+                <div className="h-5 w-1/3 rounded-full bg-muted-foreground/20 animate-pulse" />
+                <div className="mt-4 h-4 w-2/3 rounded-full bg-muted-foreground/20 animate-pulse" />
+                <div className="mt-3 h-4 w-1/2 rounded-full bg-muted-foreground/20 animate-pulse" />
+              </div>
+            ) : homeJobs.length > 0 ? (
+              homeJobs.map((job, i) => {
+                const location = [job.location_city, job.location_country].filter(Boolean).join(", ") || "Télétravail";
+                return (
+                  <article key={job.id} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 120}ms` }}>
+                    <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{job.company}</div>
+                    <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
+                    <div className="mt-3 text-sm text-muted-foreground">{location}</div>
+                  </article>
+                );
+              })
+            ) : (
+              <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">Aucune offre publiée disponible pour le moment.</div>
+            )}
           </div>
         </div>
       </section>
@@ -143,12 +217,20 @@ export function HomePage() {
           </Button>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
-          {posts.map((post, i) => (
-            <article key={post.title} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 120}ms` }}>
-              <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
-              <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt}</p>
-            </article>
-          ))}
+          {postsLoading ? (
+            [1, 2, 3].map((index) => (
+              <div key={index} className="rounded-3xl border border-border bg-card p-6 shadow-soft animate-pulse" />
+            ))
+          ) : homePosts.length > 0 ? (
+            homePosts.map((post, i) => (
+              <article key={post.id} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 120}ms` }}>
+                <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
+                <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt || post.subtitle || "Article à découvrir."}</p>
+              </article>
+            ))
+          ) : (
+            <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">Aucun article publié disponible pour le moment.</div>
+          )}
         </div>
       </section>
 
@@ -324,6 +406,7 @@ export function ServicesPage() {
 
 export function JobsPage() {
   const { t } = useI18n();
+  const { offers, loading } = usePublishedJobOffers(12);
 
   return (
     <>
@@ -338,13 +421,24 @@ export function JobsPage() {
               Pour consulter toutes les offres et contacter notre équipe recrutement, utilisez l'espace dédié ou envoyez-nous un message via le formulaire de contact.
             </p>
             <div className="mt-6 grid gap-4">
-              {jobs.map((job, i) => (
-                <article key={job.title} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 80}ms` }}>
-                  <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{job.company}</div>
-                  <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
-                  <div className="mt-3 text-sm text-muted-foreground">{job.location}</div>
-                </article>
-              ))}
+              {loading ? (
+                [1, 2, 3].map((index) => (
+                  <article key={index} className="rounded-3xl border border-border bg-card p-6 shadow-soft animate-pulse" />
+                ))
+              ) : offers.length > 0 ? (
+                offers.map((job, i) => {
+                  const location = [job.location_city, job.location_country].filter(Boolean).join(", ") || "Télétravail";
+                  return (
+                    <article key={job.id} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 80}ms` }}>
+                      <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{job.company}</div>
+                      <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
+                      <div className="mt-3 text-sm text-muted-foreground">{location}</div>
+                    </article>
+                  );
+                })
+              ) : (
+                <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">Aucune offre publiée disponible pour le moment.</div>
+              )}
             </div>
           </div>
           <aside className="rounded-3xl border border-border bg-card p-8 shadow-soft fade-up" style={{ animationDelay: '240ms' }}>
@@ -363,6 +457,8 @@ export function JobsPage() {
 }
 
 export function BlogPage() {
+  const { posts, loading } = usePublishedBlogPosts(9);
+
   return (
     <>
       <PageHeading
@@ -371,12 +467,20 @@ export function BlogPage() {
       />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-6 md:grid-cols-3">
-          {posts.map((post, i) => (
-            <article key={post.title} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 80}ms` }}>
-              <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
-              <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt}</p>
-            </article>
-          ))}
+          {loading ? (
+            [1, 2, 3].map((index) => (
+              <article key={index} className="rounded-3xl border border-border bg-card p-6 shadow-soft animate-pulse" />
+            ))
+          ) : posts.length > 0 ? (
+            posts.map((post, i) => (
+              <article key={post.id} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 80}ms` }}>
+                <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
+                <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt || post.subtitle || "Article à découvrir."}</p>
+              </article>
+            ))
+          ) : (
+            <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">Aucun article publié disponible pour le moment.</div>
+          )}
         </div>
       </section>
     </>
