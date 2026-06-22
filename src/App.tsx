@@ -1,4 +1,5 @@
 import { Routes, Route, useLocation } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import { I18nProvider } from "@/lib/i18n";
 import { SiteFooter } from "@/components/site/Footer";
 import { SiteHeader } from "@/components/site/Header";
@@ -53,6 +54,7 @@ export default function App() {
         </main>
         {!hideShell && <SiteFooter />}
         <Toaster richColors position="top-right" />
+        <Analytics />
       </div>
     </I18nProvider>
   );
