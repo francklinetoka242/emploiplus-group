@@ -61,7 +61,7 @@ function usePublishedJobOffers(limit = 10) {
       setLoading(true);
       const { data, error } = await supabase
         .from("job_offers")
-        .select("id, slug, title, company, location_city, location_country, status, publish_at")
+        .select("id, slug, title, company, contract_type, location_city, location_country, description, requirements, status, publish_at")
         .eq("status", "published")
         .order("publish_at", { ascending: false })
         .limit(limit);
@@ -121,19 +121,20 @@ function usePublishedBlogPosts(limit = 9) {
 }
 
 export function HomePage() {
+  const { t } = useI18n();
   const { offers: homeJobs, loading: jobsLoading } = usePublishedJobOffers(4);
   const { posts: homePosts, loading: postsLoading } = usePublishedBlogPosts(3);
 
   const stats = [
-    { value: "50+", label: "Offres diffusées" },
-    { value: "11+", label: "Entreprises partenaires" },
-    { value: "20+", label: "Lecteurs / mois" },
+    { value: "50+", label: "home.stats.jobs" },
+    { value: "11+", label: "home.stats.companies" },
+    { value: "20+", label: "home.stats.readers" },
   ];
 
   const services = [
-    { title: "Services numériques", description: "Solutions web et expérience digitale pour vous démarquer." },
-    { title: "Diffusion d'offres", description: "Publiez vos offres et touchez des candidats qualifiés." },
-    { title: "Contenu média", description: "Articles métiers et insights pour faire grandir votre visibilité." },
+    { title: "home.services.card1.title", description: "home.services.card1.description" },
+    { title: "home.services.card2.title", description: "home.services.card2.description" },
+    { title: "home.services.card3.title", description: "home.services.card3.description" },
   ];
 
   return (
@@ -149,20 +150,20 @@ export function HomePage() {
           <div className="grid gap-12 lg:grid-cols-[1fr_320px] items-center">
             <div>
               <p className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-primary/10 fade-up" style={{ animationDelay: '80ms' }}>
-                Tech · Emplois · Médias
+                {t("home.hero.eyebrow")}
               </p>
               <h1 className="mt-8 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white fade-up" style={{ animationDelay: '180ms' }}>
-                Construisez votre prochaine étape professionnelle avec EmploiPlus Group.
+                {t("home.hero.title")}
               </h1>
               <p className="mt-6 max-w-2xl text-base text-white/90 leading-relaxed fade-up" style={{ animationDelay: '260ms' }}>
-                EmploiPlus Group offre une présence digitale moderne, une diffusion ciblée d'offres d'emploi et des services numériques pour les talents et les entreprises.
+                {t("home.hero.subtitle")}
               </p>
               <div className="mt-10 flex flex-wrap gap-3 fade-up" style={{ animationDelay: '340ms' }}>
                 <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand">
-                  <Link to="/jobs">Voir les offres</Link>
+                  <Link to="/jobs">{t("home.hero.cta.jobs")}</Link>
                 </Button>
                 <Button asChild size="lg" className="bg-accent text-white hover:bg-accent/90 shadow-lg">
-                  <Link to="/services">Nos services</Link>
+                  <Link to="/services">{t("home.hero.cta.services")}</Link>
                 </Button>
               </div>
             </div>
@@ -179,7 +180,7 @@ export function HomePage() {
               <div className="p-[1px] rounded-3xl gradient-brand">
                 <article className="rounded-3xl bg-card p-8 text-center shadow-lg">
                   <div className="text-4xl font-display font-extrabold text-foreground">{item.value}</div>
-                  <div className="mt-3 text-sm text-muted-foreground">{item.label}</div>
+                  <div className="mt-3 text-sm text-muted-foreground">{t(item.label)}</div>
                 </article>
               </div>
             </div>
@@ -188,14 +189,14 @@ export function HomePage() {
       </section>
 
       <section className="container-page py-20 md:py-24">
-        <SectionHeader title="Nos services" subtitle="Une plateforme pensée pour les entreprises et les talents." />
+        <SectionHeader title={t("home.services.title")} subtitle={t("home.services.subtitle")} />
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {services.map((item, i) => (
             <article key={item.title} className="rounded-3xl transform transition-transform hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: `${i * 120}ms` }}>
               <div className="p-[1px] rounded-3xl gradient-brand">
                 <div className="rounded-3xl bg-card p-6 h-full">
-                  <h2 className="font-display text-lg font-bold text-foreground">{item.title}</h2>
-                  <p className="mt-3 text-muted-foreground leading-relaxed">{item.description}</p>
+                  <h2 className="font-display text-lg font-bold text-foreground">{t(item.title)}</h2>
+                  <p className="mt-3 text-muted-foreground leading-relaxed">{t(item.description)}</p>
                 </div>
               </div>
             </article>
@@ -207,11 +208,11 @@ export function HomePage() {
         <div className="container-page py-20 md:py-24">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
             <div>
-              <h2 className="font-display text-3xl md:text-4xl font-extrabold">Dernières offres</h2>
-              <p className="mt-2 text-muted-foreground">Trouvez votre prochain poste parmi nos opportunités sélectionnées.</p>
+              <h2 className="font-display text-3xl md:text-4xl font-extrabold">{t("home.jobs.title")}</h2>
+              <p className="mt-2 text-muted-foreground">{t("home.jobs.subtitle")}</p>
             </div>
             <Button asChild variant="ghost">
-              <Link to="/jobs">Voir toutes les offres</Link>
+              <Link to="/jobs">{t("home.jobs.viewAll")}</Link>
             </Button>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
@@ -223,7 +224,7 @@ export function HomePage() {
               </div>
             ) : homeJobs.length > 0 ? (
               homeJobs.map((job, i) => {
-                const location = [job.location_city, job.location_country].filter(Boolean).join(", ") || "Télétravail";
+                const location = [job.location_city, job.location_country].filter(Boolean).join(", ") || t("jobs.location.remote");
                 return (
                   <article key={job.id} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 120}ms` }}>
                     <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{job.company}</div>
@@ -233,7 +234,7 @@ export function HomePage() {
                 );
               })
             ) : (
-              <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">Aucune offre publiée disponible pour le moment.</div>
+              <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">{t("jobs.none")}</div>
             )}
           </div>
         </div>
@@ -242,11 +243,11 @@ export function HomePage() {
       <section className="container-page py-20 md:py-24">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
           <div>
-            <h2 className="font-display text-3xl md:text-4xl font-extrabold">Du blog</h2>
-            <p className="mt-2 text-muted-foreground">Conseils et actualités pour les talents et les entreprises.</p>
+            <h2 className="font-display text-3xl md:text-4xl font-extrabold">{t("home.blog.title")}</h2>
+            <p className="mt-2 text-muted-foreground">{t("home.blog.subtitle")}</p>
           </div>
           <Button asChild variant="ghost">
-            <Link to="/blog">Voir le blog</Link>
+            <Link to="/blog">{t("home.blog.viewAll")}</Link>
           </Button>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
@@ -258,19 +259,19 @@ export function HomePage() {
             homePosts.map((post, i) => (
               <article key={post.id} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 120}ms` }}>
                 <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
-                <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt || post.subtitle || "Article à découvrir."}</p>
+                <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt || post.subtitle || t('blog.article.placeholder')}</p>
               </article>
             ))
           ) : (
-            <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">Aucun article publié disponible pour le moment.</div>
+            <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">{t('blog.empty')}</div>
           )}
         </div>
       </section>
 
       <section className="container-page py-20 md:py-24">
-        <SectionHeader title="Nos partenaires" subtitle="Collaborations stratégiques pour vos projets." />
+        <SectionHeader title={t("home.partners.title")} subtitle={t("home.partners.subtitle")} />
         <div className="mt-12 flex items-center justify-center gap-8">
-          <img src={logoMonago} alt="Partenaire" className="h-16 md:h-20 rounded-lg bg-card border border-border p-2 shadow-soft hover:shadow-elev transition-all" />
+          <img src={logoMonago} alt={t("home.partners.title")} className="h-16 md:h-20 rounded-lg bg-card border border-border p-2 shadow-soft hover:shadow-elev transition-all" />
         </div>
       </section>
 
@@ -278,12 +279,12 @@ export function HomePage() {
         <div className="rounded-3xl gradient-brand p-10 md:p-16 text-center shadow-brand relative overflow-hidden">
           <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 20% 30%, white, transparent 40%), radial-gradient(circle at 80% 70%, white, transparent 40%)" }} />
           <div className="relative">
-            <h2 className="font-display text-3xl md:text-5xl font-extrabold text-brand-foreground">Travaillons ensemble.</h2>
+            <h2 className="font-display text-3xl md:text-5xl font-extrabold text-brand-foreground">{t("home.cta.title")}</h2>
             <p className="mt-3 text-brand-foreground/80 max-w-2xl mx-auto">
-              Une opportunité à diffuser, un projet tech à lancer ou une collaboration média ? Parlons-en.
+              {t("home.cta.subtitle")}
             </p>
             <Button asChild size="lg" className="mt-7 bg-white text-[--brand-deep] hover:bg-white/90 font-semibold">
-              <Link to="/contact">Contactez-nous</Link>
+              <Link to="/contact">{t("home.cta.button")}</Link>
             </Button>
           </div>
         </div>
@@ -302,23 +303,25 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }
 }
 
 export function AboutPage() {
+  const { t } = useI18n();
+
   const values = [
-    { icon: '🤝', title: 'Transparence et proximité', description: 'Nous travaillons en confiance, à l\'écoute de vos vrais besoins.' },
-    { icon: '⚙️', title: 'Expertise tech et emploi', description: 'Maîtrise profonde des technologies et de l\'écosystème recrutement.' },
-    { icon: '📈', title: 'Performances mesurables', description: 'Résultats concrets et chiffrés pour justifier votre investissement.' },
+    { icon: '🤝', title: t('about.values.item1.title'), description: t('about.values.item1.description') },
+    { icon: '⚙️', title: t('about.values.item2.title'), description: t('about.values.item2.description') },
+    { icon: '📈', title: t('about.values.item3.title'), description: t('about.values.item3.description') },
   ];
 
   const pillars = [
-    { title: 'Développement numérique', description: 'Accompagnement complet pour transformer votre présence digitale.' },
-    { title: 'Diffusion d\'offres', description: 'Stratégies pour atteindre les meilleurs talents sur les bons canaux.' },
-    { title: 'Médias & contenu', description: 'Production de contenus métier qui engagent vos audiences.' },
+    { title: t('about.pillars.item1.title'), description: t('about.pillars.item1.description') },
+    { title: t('about.pillars.item2.title'), description: t('about.pillars.item2.description') },
+    { title: t('about.pillars.item3.title'), description: t('about.pillars.item3.description') },
   ];
 
   return (
     <>
       {usePageSEO({
-        title: "À propos - EmploiPlus Group",
-        description: "Découvrez notre mission, nos valeurs et nos trois piliers: développement numérique, diffusion d'offres d'emploi et services médias.",
+        title: t('about.title'),
+        description: t('about.subtitle'),
         keywords: "à propos, mission, valeurs, services numériques, emploi, Congo",
         canonical: "https://emploiplus.group/#/about",
       })}
@@ -326,51 +329,75 @@ export function AboutPage() {
         <div className="grid gap-12 lg:grid-cols-2 items-center">
           <div className="space-y-6">
             <div>
-              <h2 className="font-display text-3xl font-bold text-foreground mb-4">Notre mission</h2>
+              <h2 className="font-display text-3xl font-bold text-foreground mb-4">{t('about.mission.title')}</h2>
               <p className="text-lg text-foreground/90 leading-relaxed">
-                EmploiPlus Group accompagne les entreprises dans leur développement numérique et accompagne les talents dans leur recherche d'opportunités.
+                {t('about.mission.description')}
               </p>
             </div>
             <div>
-              <h3 className="font-display text-xl font-semibold text-foreground mb-3">Notre approche</h3>
+              <h3 className="font-display text-xl font-semibold text-foreground mb-3">{t('about.approach.title')}</h3>
               <p className="text-base text-foreground/80 leading-relaxed">
-                Nous concevons des stratégies de diffusion, produisons du contenu métier et développons des solutions numériques adaptées aux besoins locaux et internationaux.
+                {t('about.approach.description')}
               </p>
             </div>
             <div>
-              <h3 className="font-display text-xl font-semibold text-foreground mb-3">Notre promesse</h3>
+              <h3 className="font-display text-xl font-semibold text-foreground mb-3">{t('about.promise.title')}</h3>
               <p className="text-base text-foreground/80 leading-relaxed">
-                Notre approche combine savoir-faire humain, technologies modernes et exigence sur l'expérience utilisateur pour délivrer des résultats mesurables.
+                {t('about.promise.description')}
               </p>
             </div>
           </div>
-          
-          <div className="rounded-2xl p-[1px] gradient-brand">
-            <div className="rounded-2xl bg-card p-8 space-y-8">
-              <div>
-                <h3 className="font-display text-2xl font-bold text-foreground mb-6">Nos valeurs</h3>
-                <div className="space-y-4">
-                  {values.map((value, i) => (
-                    <div key={i} className="flex gap-4">
-                      <span className="text-3xl flex-shrink-0">{value.icon}</span>
-                      <div>
-                        <p className="font-semibold text-foreground">{value.title}</p>
-                        <p className="text-sm text-foreground/70 mt-1">{value.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+          <div className="space-y-10">
+            <div>
+              <h3 className="font-display text-2xl font-bold text-foreground mb-6">{t('about.values.title')}</h3>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {values.map((item) => (
+                  <div key={item.title} className="rounded-3xl border border-border bg-card p-6">
+                    <div className="text-3xl">{item.icon}</div>
+                    <h4 className="mt-4 text-lg font-semibold text-foreground">{item.title}</h4>
+                    <p className="mt-2 text-muted-foreground leading-relaxed">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h3 className="font-display text-2xl font-bold text-foreground mb-6">{t('about.pillars.title')}</h3>
+              <div className="grid gap-4">
+                {pillars.map((pillar) => (
+                  <div key={pillar.title} className="rounded-3xl border border-border bg-card p-6">
+                    <h4 className="text-lg font-semibold text-foreground">{pillar.title}</h4>
+                    <p className="mt-2 text-muted-foreground leading-relaxed">{pillar.description}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
-      </section>
+      <div className="rounded-2xl p-[1px] gradient-brand">
+        <div className="rounded-2xl bg-card p-8 space-y-8">
+          <div>
+            <h3 className="font-display text-2xl font-bold text-foreground mb-6">{t('about.values.title')}</h3>
+            <div className="space-y-4">
+              {values.map((value, i) => (
+                <div key={i} className="flex gap-4">
+                  <span className="text-3xl flex-shrink-0">{value.icon}</span>
+                  <div>
+                    <p className="font-semibold text-foreground">{value.title}</p>
+                    <p className="text-sm text-foreground/70 mt-1">{value.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
       <section className="bg-secondary/10 border-y border-border py-16 md:py-20">
         <div className="container-page">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="font-display text-3xl font-bold text-foreground">Nos trois piliers</h2>
-            <p className="mt-3 text-muted-foreground">Les fondations de notre stratégie pour vos succès</p>
+            <h2 className="font-display text-3xl font-bold text-foreground">{t('about.pillars.title')}</h2>
+            <p className="mt-3 text-muted-foreground">{t('about.pillars.subtitle')}</p>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             {pillars.map((pillar, i) => (
@@ -389,19 +416,19 @@ export function AboutPage() {
       <section className="container-page py-16 md:py-20">
         <div className="rounded-2xl border border-border bg-card p-8 md:p-12">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="font-display text-2xl font-bold text-foreground mb-4">Pourquoi nous choisir ?</h2>
+            <h2 className="font-display text-2xl font-bold text-foreground mb-4">{t('about.whyChooseUs.title')}</h2>
             <div className="grid gap-6 md:grid-cols-3 mt-8">
               <div>
                 <p className="font-display text-2xl font-bold text-brand mb-2">50+</p>
-                <p className="text-foreground/80">Offres diffusées</p>
+                <p className="text-foreground/80">{t('about.stats.jobs')}</p>
               </div>
               <div>
                 <p className="font-display text-2xl font-bold text-brand mb-2">11+</p>
-                <p className="text-foreground/80">Entreprises partenaires</p>
+                <p className="text-foreground/80">{t('about.stats.companies')}</p>
               </div>
               <div>
                 <p className="font-display text-2xl font-bold text-brand mb-2">20+</p>
-                <p className="text-foreground/80">Lecteurs mensuels</p>
+                <p className="text-foreground/80">{t('about.stats.readers')}</p>
               </div>
             </div>
           </div>
@@ -412,33 +439,37 @@ export function AboutPage() {
 }
 
 export function ServicesPage() {
+  const { t } = useI18n();
+
+  const serviceCards = [
+    { title: 'services.card1.title', description: 'services.card1.description' },
+    { title: 'services.card2.title', description: 'services.card2.description' },
+    { title: 'services.card3.title', description: 'services.card3.description' },
+    { title: 'services.card4.title', description: 'services.card4.description' },
+    { title: 'services.card5.title', description: 'services.card5.description' },
+    { title: 'services.card6.title', description: 'services.card6.description' },
+  ];
+
   return (
     <>
       {usePageSEO({
-        title: "Nos services",
-        description: "Services de diffusion d'offres d'emploi, développement web, stratégie média et conseils digital pour les entreprises.",
+        title: t('services.title'),
+        description: t('services.subtitle'),
         keywords: "services, offres emploi, développement web, stratégie média, branding employeur",
         canonical: "https://emploiplus.group/#/services",
       })}
       <PageHeading
-        title="Nos services"
-        description="Des solutions sur mesure pour la diffusion, le développement numérique et la communication média."
+        title={t('services.title')}
+        description={t('services.subtitle')}
       />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[
-            { title: "Diffusion d'offres d'emploi", description: "Attirez les bons profils avec des annonces visibles et ciblées." },
-            { title: "Développement web", description: "Création de sites, applications et plateformes sur mesure." },
-            { title: "Stratégie média", description: "Contenu, blog et visibilité pour renforcer votre image." },
-            { title: "Branding employeur", description: "Valorisez votre marque pour attirer les meilleurs talents." },
-            { title: "Conseil digital", description: "Actions concrètes pour optimiser vos performances en ligne." },
-            { title: "Support opérationnel", description: "Accompagnement de A à Z sur vos projets numériques. " },
-          ].map((item, i) => (
+          {serviceCards.map((item, i) => (
             <article key={item.title} className="rounded-3xl transform transition-transform hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: `${i * 100}ms` }}>
               <div className="p-[1px] rounded-3xl gradient-brand">
                 <div className="rounded-3xl bg-card p-6 h-full">
-                  <h2 className="font-display text-lg font-semibold text-foreground">{item.title}</h2>
-                  <p className="mt-3 text-muted-foreground leading-relaxed">{item.description}</p>
+                  <h2 className="font-display text-lg font-semibold text-foreground">{t(item.title)}</h2>
+                  <p className="mt-3 text-muted-foreground leading-relaxed">{t(item.description)}</p>
                 </div>
               </div>
             </article>
@@ -452,33 +483,101 @@ export function ServicesPage() {
 export function JobsPage() {
   const { t } = useI18n();
   const { offers, loading } = usePublishedJobOffers(12);
+  const [query, setQuery] = React.useState("");
+  const [companyQuery, setCompanyQuery] = React.useState("");
+  const [locationQuery, setLocationQuery] = React.useState("");
+  const [contractType, setContractType] = React.useState("");
+
+  const q = query.trim().toLowerCase();
+  const companyFilter = companyQuery.trim().toLowerCase();
+  const lq = locationQuery.trim().toLowerCase();
+  const filteredOffers = offers.filter((job) => {
+    const hay = `${job.title || ""} ${job.company || ""} ${job.description || ""} ${job.requirements || ""}`.toLowerCase();
+    if (q && !hay.includes(q)) return false;
+    if (companyFilter && !job.company?.toLowerCase().includes(companyFilter)) return false;
+    if (lq) {
+      const location = `${job.location_city || ""} ${job.location_country || ""}`.toLowerCase();
+      if (!location.includes(lq)) return false;
+    }
+    if (contractType && job.contract_type !== contractType) return false;
+    return true;
+  });
 
   return (
     <>
       {usePageSEO({
-        title: "Offres d'emploi",
-        description: "Découvrez nos dernières offres d'emploi en Afrique et accédez à des opportunités professionnelles sélectionnées.",
+        title: t('jobs.page.title'),
+        description: t('jobs.page.description'),
         keywords: "offres d'emploi, opportunités, recrutement, emploi Congo",
         canonical: "https://emploiplus.group/#/jobs",
       })}
-      <PageHeading title={t("jobs.title")} description={t("jobs.subtitle")} />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6 text-foreground/90 leading-relaxed">
-            <p className="fade-up" style={{ animationDelay: '80ms' }}>
-              Retrouvez une sélection d'opportunités professionnelles triées pour vous aider à trouver votre prochain poste rapidement.
-            </p>
-            <p className="fade-up" style={{ animationDelay: '160ms' }}>
-              Pour consulter toutes les offres et contacter notre équipe recrutement, utilisez l'espace dédié ou envoyez-nous un message via le formulaire de contact.
-            </p>
+            {/* Search form (enterprise style) */}
+            <div className="rounded-3xl p-[1px] gradient-brand">
+              <div className="rounded-3xl bg-card p-6 md:p-8">
+                <h3 className="font-display text-lg font-bold text-foreground mb-3">{t('jobs.search.title')}</h3>
+                <form onSubmit={(e) => e.preventDefault()} className="grid gap-4 md:grid-cols-[1fr_1fr]">
+                  <div>
+                    <label className="text-sm font-semibold text-foreground mb-1 block">{t('jobs.search.keywords')}</label>
+                    <input
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder={t('jobs.search.keywords.placeholder')}
+                      className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-foreground mb-1 block">{t('jobs.search.company')}</label>
+                    <input
+                      value={companyQuery}
+                      onChange={(e) => setCompanyQuery(e.target.value)}
+                      placeholder={t('jobs.search.company.placeholder')}
+                      className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-foreground mb-1 block">{t('jobs.search.location')}</label>
+                    <input
+                      value={locationQuery}
+                      onChange={(e) => setLocationQuery(e.target.value)}
+                      placeholder={t('jobs.search.location.placeholder')}
+                      className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-foreground mb-1 block">{t('jobs.search.contractType')}</label>
+                    <select
+                      value={contractType}
+                      onChange={(e) => setContractType(e.target.value)}
+                      className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                    >
+                      <option value="">{t('jobs.search.all')}</option>
+                      <option value="cdi">{t('jobs.search.type.cdi')}</option>
+                      <option value="cdd">{t('jobs.search.type.cdd')}</option>
+                      <option value="stage">{t('jobs.search.type.stage')}</option>
+                      <option value="freelance">{t('jobs.search.type.freelance')}</option>
+                      <option value="temps_partiel">{t('jobs.search.type.temps_partiel')}</option>
+                      <option value="interim">{t('jobs.search.type.interim')}</option>
+                    </select>
+                  </div>
+                  <div className="md:col-span-2 flex flex-wrap justify-end gap-3 mt-2">
+                    <button type="button" onClick={() => { setQuery(''); setCompanyQuery(''); setLocationQuery(''); setContractType(''); }} className="rounded-md px-4 py-2 border border-border text-sm text-foreground hover:bg-primary/5">{t('jobs.search.reset')}</button>
+                    <button type="submit" className="rounded-md px-4 py-2 bg-brand text-brand-foreground font-semibold">{t('jobs.search.submit')}</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
             <div className="mt-6 grid gap-4">
               {loading ? (
                 [1, 2, 3].map((index) => (
                   <article key={index} className="rounded-3xl border border-border bg-card p-6 shadow-soft animate-pulse" />
                 ))
-              ) : offers.length > 0 ? (
-                offers.map((job, i) => {
-                  const location = [job.location_city, job.location_country].filter(Boolean).join(", ") || "Télétravail";
+              ) : filteredOffers.length > 0 ? (
+                filteredOffers.map((job, i) => {
+                  const location = [job.location_city, job.location_country].filter(Boolean).join(", ") || t('jobs.location.remote');
                   return (
                     <article key={job.id} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 80}ms` }}>
                       <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{job.company}</div>
@@ -488,18 +587,23 @@ export function JobsPage() {
                   );
                 })
               ) : (
-                <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">Aucune offre publiée disponible pour le moment.</div>
+                <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">{t('jobs.none')}</div>
               )}
             </div>
           </div>
           <aside className="rounded-3xl border border-border bg-card p-8 shadow-soft fade-up" style={{ animationDelay: '240ms' }}>
-            <div className="text-sm uppercase tracking-[0.25em] text-muted-foreground">Accès rapide</div>
+            <div className="text-sm uppercase tracking-[0.25em] text-muted-foreground">{t('jobs.quickAccess.title')}</div>
             <p className="mt-4 text-foreground/90 leading-relaxed">
-              Visitez notre chaîne WhatsApp pour recevoir les dernières offres et mises à jour emploi.
+              {t('jobs.quickAccess.description')}
             </p>
-            <a href="https://chat.whatsapp.com/JxHlaMwrzBA6gUopLg7C5s" target="_blank" rel="noreferrer" className="inline-flex mt-6 items-center justify-center rounded-full bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
-              Rejoindre WhatsApp
-            </a>
+            <div className="mt-6 flex flex-col gap-3">
+              <a href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
+                {t('jobs.quickAccess.channel1')}
+              </a>
+              <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full bg-brand/50 text-sm font-semibold text-brand hover:bg-brand/60">
+                {t('jobs.quickAccess.channel2')}
+              </a>
+            </div>
           </aside>
         </div>
       </section>
@@ -508,19 +612,20 @@ export function JobsPage() {
 }
 
 export function BlogPage() {
+  const { t } = useI18n();
   const { posts, loading } = usePublishedBlogPosts(9);
 
   return (
     <>
       {usePageSEO({
-        title: "Blog - Articles et conseils emploi",
-        description: "Articles, conseils carrière et actualités pour les talents et les entreprises.",
+        title: t('blog.title'),
+        description: t('blog.subtitle'),
         keywords: "blog, articles, conseils carrière, actualités emploi, recrutement",
         canonical: "https://emploiplus.group/#/blog",
       })}
       <PageHeading
-        title="Blog EmploiPlus"
-        description="Articles, conseils carrière et actualités pour les talents et les entreprises."
+        title={t('blog.title')}
+        description={t('blog.subtitle')}
       />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-6 md:grid-cols-3">
@@ -532,11 +637,11 @@ export function BlogPage() {
             posts.map((post, i) => (
               <article key={post.id} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 80}ms` }}>
                 <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
-                <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt || post.subtitle || "Article à découvrir."}</p>
+                <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt || post.subtitle || t('blog.article.placeholder')}</p>
               </article>
             ))
           ) : (
-            <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">Aucun article publié disponible pour le moment.</div>
+            <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">{t('blog.empty')}</div>
           )}
         </div>
       </section>
@@ -545,6 +650,7 @@ export function BlogPage() {
 }
 
 export function ContactPage() {
+  const { t } = useI18n();
   const [formData, setFormData] = React.useState({ name: '', email: '', subject: '', message: '' });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -563,126 +669,143 @@ export function ContactPage() {
   return (
     <>
       {usePageSEO({
-        title: "Nous contacter",
-        description: "Contactez EmploiPlus Group pour vos besoins en recrutement, développement web ou stratégie média.",
+        title: t('contact.title'),
+        description: t('contact.subtitle'),
         keywords: "contact, nous contacter, support, recrutement, développement web",
         canonical: "https://emploiplus.group/#/contact",
       })}
       <section className="container-page pb-20 md:pb-28">
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr]">
-          {/* Contact Form */}
-          <div>
-            <div className="mb-8">
-              <h2 className="font-display text-2xl font-bold text-foreground">Écrivez-nous</h2>
-              <p className="mt-2 text-muted-foreground">Nous répondons rapidement à toutes les demandes en recrutement, technologie ou stratégie médias.</p>
-            </div>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-8 md:grid-cols-2 items-start">
+          {/* Contact Form Card */}
+          <div className="rounded-3xl p-[1px] gradient-brand">
+            <div className="rounded-3xl bg-card p-8 md:p-10">
+              <div className="mb-4">
+                <h2 className="font-display text-2xl font-bold text-foreground">{t('contact.form.title')}</h2>
+                <p className="mt-2 text-muted-foreground">{t('contact.form.subtitle')}</p>
+              </div>
+              <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto md:mx-0">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-semibold text-foreground mb-1">{t('contact.form.label.name')}</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      placeholder={t('contact.form.placeholder.name')}
+                      className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-foreground mb-1">{t('contact.form.label.email')}</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      placeholder={t('contact.form.placeholder.email')}
+                      className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                    />
+                  </div>
+                </div>
                 <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Nom complet</label>
+                  <label className="block text-sm font-semibold text-foreground mb-1">{t('contact.form.label.subject')}</label>
                   <input
                     type="text"
-                    name="name"
-                    value={formData.name}
+                    name="subject"
+                    value={formData.subject}
                     onChange={handleChange}
                     required
-                    placeholder="Votre nom"
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                    placeholder={t('contact.form.placeholder.subject')}
+                    className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
+                  <label className="block text-sm font-semibold text-foreground mb-1">{t('contact.form.label.message')}</label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
                     onChange={handleChange}
                     required
-                    placeholder="votre@email.com"
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                    rows={4}
+                    placeholder={t('contact.form.placeholder.message')}
+                    className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand resize-none"
                   />
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">Sujet</label>
-                <input
-                  type="text"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  required
-                  placeholder="Parlez-nous de votre projet"
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">Message</label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  rows={6}
-                  placeholder="Décrivez votre besoin..."
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand resize-none"
-                />
-              </div>
-              <Button size="lg" className="w-full bg-brand hover:bg-brand/90 text-brand-foreground font-semibold shadow-brand">
-                Envoyer le message
-              </Button>
-            </form>
+                <div className="flex justify-end">
+                  <Button size="lg" className="w-full md:w-auto bg-brand hover:bg-brand/90 text-brand-foreground font-semibold shadow-brand">
+                    {t('contact.form.submit')}
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
 
           {/* Contact Info Sidebar */}
-          <div className="space-y-6">
+          <aside className="space-y-6 md:sticky md:top-24">
             {/* Direct Contact Card */}
             <div className="rounded-2xl p-[1px] gradient-brand">
-              <div className="rounded-2xl bg-card p-8 space-y-6">
+              <div className="rounded-2xl bg-card p-6 md:p-8 space-y-6">
                 <div>
-                  <h3 className="font-display text-xl font-bold text-foreground mb-6">Contact direct</h3>
+                  <h3 className="font-display text-xl font-bold text-foreground mb-4">{t('contact.info.directTitle')}</h3>
                   <div className="space-y-5">
                     {/* Phone */}
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 items-start">
                       <div className="flex-shrink-0">
                         <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-brand/10">
-                          <svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="h-5 w-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                           </svg>
                         </div>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">Téléphone</p>
-                        <a href="tel:+242067311033" className="text-lg font-semibold text-brand hover:text-brand/80">+242 0673 11033</a>
+                        <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{t('contact.info.phoneLabel')}</p>
+                        <a href="tel:+242067311033" className="text-lg font-semibold text-brand hover:text-brand/80">{t('contact.info.phoneValue')}</a>
+                        <p className="text-sm text-muted-foreground mt-1">{t('contact.info.phoneHelp')}</p>
                       </div>
                     </div>
 
                     {/* Email */}
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 items-start">
                       <div className="flex-shrink-0">
                         <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-brand/10">
-                          <svg className="h-6 w-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="h-5 w-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                         </div>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">Email</p>
-                        <a href="mailto:contact@emploiplus.group" className="text-lg font-semibold text-foreground hover:text-brand">contact@emploiplus.group</a>
+                        <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{t('contact.info.emailLabel')}</p>
+                        <a href="mailto:contact@emploiplus.group" className="text-lg font-semibold text-foreground hover:text-brand">{t('contact.info.emailValue')}</a>
                       </div>
                     </div>
 
-                    {/* WhatsApp */}
-                    <div className="flex gap-4">
-                      <div className="flex-shrink-0">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-brand/10">
-                          <svg className="h-6 w-6 text-brand" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-4.783 1.14L.855 2.6l1.508 4.514c-.915 1.594-1.395 3.472-1.395 5.441 0 5.346 4.357 9.704 9.704 9.704 2.592 0 5.023-.997 6.858-2.809 1.835-1.811 2.846-4.233 2.846-6.895 0-5.346-4.357-9.704-9.704-9.704z" />
-                          </svg>
+                    {/* WhatsApp channels */}
+                    <div className="flex flex-col gap-3">
+                      <div className="flex gap-3 items-start">
+                        <div className="flex-shrink-0">
+                          <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-green-50">
+                            <svg className="h-5 w-5 text-green-600" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-4.783 1.14L.855 2.6l1.508 4.514c-.915 1.594-1.395 3.472-1.395 5.441 0 5.346 4.357 9.704 9.704 9.704 2.592 0 5.023-.997 6.858-2.809 1.835-1.811 2.846-4.233 2.846-6.895 0-5.346-4.357-9.704-9.704-9.704z" /></svg>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{t('contact.info.whatsappLabel')}</p>
+                          <a href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43" target="_blank" rel="noreferrer" className="text-lg font-semibold text-brand hover:text-brand/80">{t('jobs.quickAccess.channel1')}</a>
                         </div>
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">WhatsApp</p>
-                        <a href="https://chat.whatsapp.com/JxHlaMwrzBA6gUopLg7C5s" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-lg font-semibold text-brand hover:text-brand/80">Rejoindre le groupe</a>
+
+                      <div className="flex gap-3 items-start">
+                        <div className="flex-shrink-0">
+                          <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-green-50">
+                            <svg className="h-5 w-5 text-green-600" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-4.783 1.14L.855 2.6l1.508 4.514c-.915 1.594-1.395 3.472-1.395 5.441 0 5.346 4.357 9.704 9.704 9.704 2.592 0 5.023-.997 6.858-2.809 1.835-1.811 2.846-4.233 2.846-6.895 0-5.346-4.357-9.704-9.704-9.704z" /></svg>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">{t('contact.info.whatsappLabel')}</p>
+                          <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631" target="_blank" rel="noreferrer" className="text-lg font-semibold text-brand hover:text-brand/80">{t('jobs.quickAccess.channel2')}</a>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -691,20 +814,34 @@ export function ContactPage() {
             </div>
 
             {/* Location Card */}
-            <div className="rounded-2xl border border-border bg-card p-8 shadow-soft">
-              <h3 className="font-display text-xl font-bold text-foreground mb-4">Localisation</h3>
-              <div className="space-y-4">
+            <div className="rounded-2xl border border-border bg-card p-6 md:p-8 shadow-soft">
+              <h3 className="font-display text-xl font-bold text-foreground mb-3">{t('contact.location.title')}</h3>
+              <div className="space-y-3">
                 <div>
-                  <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold mb-1">Siège social</p>
-                  <p className="text-lg text-foreground font-semibold">Pointe-Noire</p>
-                  <p className="text-foreground/80">République du Congo</p>
+                  <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold mb-1">{t('contact.location.headquarter')}</p>
+                  <p className="text-lg text-foreground font-semibold">{t('contact.location.city')}</p>
+                  <p className="text-foreground/80">{t('contact.location.country')}</p>
                 </div>
                 <a href="https://goo.gl/maps/" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center w-full rounded-lg border border-border bg-transparent px-4 py-3 text-sm font-semibold text-foreground hover:bg-primary/5 transition-colors">
-                  Voir sur la carte
+                  {t('contact.location.map')}
                 </a>
+
+                <div className="pt-4 border-t border-border mt-4">
+                  <p className="text-sm text-muted-foreground mb-2">{t('contact.social.title')}</p>
+                  <div className="flex gap-3">
+                    <a href="https://www.linkedin.com/company/emploiplus-consulting/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold border border-border hover:bg-primary/5">
+                      <svg className="h-4 w-4 text-foreground/80" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.5 1s2.48 1.12 2.48 2.5zM.5 24h4V7h-4v17zM8.5 7h3.8v2.3h.1c.5-.9 1.8-1.9 3.7-1.9 4 0 4.8 2.6 4.8 6v10.6h-4v-9.4c0-2.2 0-5-3-5s-3.4 2.3-3.4 4.8V24h-4V7z"/></svg>
+                      {t('contact.social.linkedin')}
+                    </a>
+                    <a href="https://www.facebook.com/EmploiplusConsulting" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold border border-border hover:bg-primary/5">
+                      <svg className="h-4 w-4 text-foreground/80" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 10-11.5 9.9v-7H7.9v-2.9h2.6V9.4c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.8-1.6 1.6v1.9h2.7l-.4 2.9h-2.3v7A10 10 0 0022 12z"/></svg>
+                      {t('contact.social.facebook')}
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </aside>
         </div>
       </section>
     </>
@@ -712,6 +849,7 @@ export function ContactPage() {
 }
 
 export function AuthPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
@@ -737,7 +875,7 @@ export function AuthPage() {
       return;
     }
     if (data.user) {
-      setMessage("Connexion réussie. Redirection en cours...");
+      setMessage(t("auth.successRedirect"));
       navigate("/admin");
     }
   };
@@ -745,21 +883,21 @@ export function AuthPage() {
   return (
     <>
       {usePageSEO({
-        title: "Connexion administrateur",
-        description: "Connectez-vous à votre espace administrateur EmploiPlus Group pour gérer vos offres et contenus.",
+        title: t("auth.page.title"),
+        description: t("auth.page.description"),
         canonical: "https://emploiplus.group/#/auth",
       })}
       <div className="container-page py-20 md:py-28">
         <div className="mx-auto max-w-xl rounded-3xl border border-border bg-card p-10 shadow-soft">
-          <h1 className="font-display text-3xl font-bold text-foreground text-center">Espace administrateur</h1>
+          <h1 className="font-display text-3xl font-bold text-foreground text-center">{t("auth.heading")}</h1>
           <p className="mt-4 text-muted-foreground text-center">
-            Connectez-vous avec votre email et mot de passe pour accéder à l'espace d'administration.
+            {t("auth.subtitle")}
           </p>
 
           <form onSubmit={handleSubmit} className="mt-10 space-y-6">
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="auth-email">
-                Email
+                {t("common.email")}
               </label>
               <input
                 id="auth-email"
@@ -769,13 +907,13 @@ export function AuthPage() {
                 onChange={(event) => setEmail(event.target.value)}
                 required
                 className="w-full rounded-xl border border-border bg-input px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                placeholder="votre@email.com"
+                placeholder={t("auth.placeholder.email")}
               />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="auth-password">
-                Mot de passe
+                {t("common.password")}
               </label>
               <input
                 id="auth-password"
@@ -785,7 +923,7 @@ export function AuthPage() {
                 onChange={(event) => setPassword(event.target.value)}
                 required
                 className="w-full rounded-xl border border-border bg-input px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                placeholder="••••••••"
+                placeholder={t("auth.placeholder.password")}
               />
             </div>
 
@@ -802,7 +940,7 @@ export function AuthPage() {
             ) : null}
 
             <Button type="submit" size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
-              {loading ? "Connexion..." : "Se connecter"}
+              {loading ? t("auth.submit.loading") : t("common.signIn")}
             </Button>
           </form>
         </div>
@@ -828,15 +966,16 @@ function AdminSidebar({
   onLogout: () => void;
   session: any;
 }) {
+  const { t } = useI18n();
   const name = session.user?.user_metadata?.full_name || session.user?.user_metadata?.name || "Administrateur";
   const email = session.user?.email || "admin@emploiplus.group";
   const avatar = session.user?.user_metadata?.avatar_url || session.user?.user_metadata?.picture || "";
 
   const navItems: { id: AdminView; label: string; icon: LucideIcon }[] = [
-    { id: "dashboard", label: "Tableau de bord", icon: LayoutDashboard },
-    { id: "jobs", label: "Offres d'emploi", icon: Briefcase },
-    { id: "blog", label: "Articles de blog", icon: FileText },
-    { id: "team", label: "Équipe Admin", icon: Users },
+    { id: "dashboard", label: t("admin.sidebar.dashboard"), icon: LayoutDashboard },
+    { id: "jobs", label: t("admin.sidebar.jobs"), icon: Briefcase },
+    { id: "blog", label: t("admin.sidebar.blog"), icon: FileText },
+    { id: "team", label: t("admin.sidebar.team"), icon: Users },
   ];
 
   return (
@@ -858,7 +997,7 @@ function AdminSidebar({
           type="button"
           onClick={onToggle}
           className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-slate-100 transition hover:bg-white/15"
-          aria-label={open ? "Réduire la barre latérale" : "Étendre la barre latérale"}
+            aria-label={open ? t("admin.sidebar.collapse") : t("admin.sidebar.expand")}
         >
           {open ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
         </button>
@@ -909,7 +1048,7 @@ function AdminSidebar({
           className="group inline-flex w-full items-center gap-3 rounded-3xl px-4 py-3 text-sm font-medium text-slate-100 transition hover:bg-white/10"
         >
           <LogOut className="h-5 w-5 text-red-400" />
-          <span className={cn("transition-all duration-300", open ? "opacity-100" : "opacity-0")}>Se déconnecter</span>
+          <span className={cn("transition-all duration-300", open ? "opacity-100" : "opacity-0")}>{t("common.signOut")}</span>
         </button>
       </div>
     </aside>
@@ -942,10 +1081,11 @@ function AdminTopbar({ session }: { session: any }) {
 }
 
 function AdminDashboardView() {
+  const { t } = useI18n();
   const metrics = [
-    { label: "Offres actives", value: "18" },
-    { label: "Articles publiés", value: "12" },
-    { label: "Requêtes reçues", value: "324" },
+    { label: t("admin.dashboard.metric.activeJobs"), value: "18" },
+    { label: t("admin.dashboard.metric.publishedPosts"), value: "12" },
+    { label: t("admin.dashboard.metric.receivedRequests"), value: "324" },
   ];
 
   return (
@@ -953,13 +1093,13 @@ function AdminDashboardView() {
       <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
           <div className="space-y-3">
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Vue d’ensemble</p>
-            <h1 className="text-3xl font-semibold text-foreground">Tableau de bord entreprise</h1>
-            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">Accédez aux principales données de votre espace admin, aux actions rapides et aux formulaires de publication.</p>
+            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">{t("admin.dashboard.overview")}</p>
+            <h1 className="text-3xl font-semibold text-foreground">{t("admin.dashboard.title")}</h1>
+            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">{t("admin.dashboard.description")}</p>
           </div>
           <div className="inline-flex items-center gap-2 rounded-3xl bg-slate-900 px-5 py-3 text-sm text-slate-200 shadow-sm">
             <Sparkles className="h-4 w-4 text-cyan-300" />
-            <span>Expérience haut de gamme</span>
+            <span>{t("admin.dashboard.premium")}</span>
           </div>
         </div>
       </div>
@@ -977,22 +1117,22 @@ function AdminDashboardView() {
         <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Offres en cours</p>
-              <h3 className="mt-2 text-xl font-semibold text-foreground">Optimisez votre diffusion</h3>
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">{t("admin.dashboard.jobs.title")}</p>
+              <h3 className="mt-2 text-xl font-semibold text-foreground">{t("admin.dashboard.jobs.subtitle")}</h3>
             </div>
             <div className="rounded-3xl bg-emerald-500/10 px-3 py-2 text-emerald-400">Stable</div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">Publiez vos annonces, activez le partage automatique et atteignez plus de candidats qualifiés.</p>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">{t("admin.dashboard.jobs.description")}</p>
         </div>
         <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Blog & contenu</p>
-              <h3 className="mt-2 text-xl font-semibold text-foreground">Renforcez votre marque</h3>
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">{t("admin.dashboard.content.title")}</p>
+              <h3 className="mt-2 text-xl font-semibold text-foreground">{t("admin.dashboard.content.subtitle")}</h3>
             </div>
             <div className="rounded-3xl bg-blue-500/10 px-3 py-2 text-blue-300">Engagé</div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">Publiez des articles instructifs et tirez parti du SEO pour attirer les recruteurs et candidats ciblés.</p>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">{t("admin.dashboard.content.description")}</p>
         </div>
       </div>
     </div>
@@ -1014,6 +1154,7 @@ export function AdminJobsPage() {
     seo_description: "",
   });
   const [success, setSuccess] = React.useState<string | null>(null);
+  const { t } = useI18n();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type, checked } = event.target as HTMLInputElement;
@@ -1022,79 +1163,79 @@ export function AdminJobsPage() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSuccess("Informations enregistrées. Vérifiez votre publication avant validation finale.");
+    setSuccess(t("admin.jobs.successMessage"));
     console.log("Offre d'emploi soumise", form);
   };
 
   return (
     <div className="space-y-6">
       <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-        <h1 className="text-3xl font-semibold text-foreground">Publier une offre</h1>
-        <p className="mt-3 text-sm text-muted-foreground">Créez une annonce structurée pour Brazzaville, Pointe-Noire ou Remote.</p>
+        <h1 className="text-3xl font-semibold text-foreground">{t("admin.jobs.title")}</h1>
+        <p className="mt-3 text-sm text-muted-foreground">{t("admin.jobs.description")}</p>
       </div>
       <form onSubmit={handleSubmit} className="grid gap-6">
         <div className="rounded-[2rem] border border-border bg-background p-8 shadow-soft">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Titre du poste *</label>
-              <Input name="title" value={form.title} onChange={handleChange} required placeholder="Responsable recrutement" />
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.title")}</label>
+              <Input name="title" value={form.title} onChange={handleChange} required placeholder={t("admin.jobs.field.titlePlaceholder")} />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Nom de l'entreprise *</label>
-              <Input name="company" value={form.company} onChange={handleChange} required placeholder="EmploiPlus Group" />
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.company")}</label>
+              <Input name="company" value={form.company} onChange={handleChange} required placeholder={t("admin.jobs.field.companyPlaceholder")} />
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Ville *</label>
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.city")}</label>
               <Select value={form.city} onValueChange={(value) => setForm((prev) => ({ ...prev, city: value }))}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Choisissez une ville" />
+                  <SelectValue placeholder={t("admin.jobs.field.cityPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Brazzaville">Brazzaville</SelectItem>
-                  <SelectItem value="Pointe-Noire">Pointe-Noire</SelectItem>
-                  <SelectItem value="Remote">Remote</SelectItem>
+                  <SelectItem value="Brazzaville">{t("admin.jobs.field.cityOption.brazzaville")}</SelectItem>
+                  <SelectItem value="Pointe-Noire">{t("admin.jobs.field.cityOption.pointenoire")}</SelectItem>
+                  <SelectItem value="Remote">{t("admin.jobs.field.cityOption.remote")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Type de contrat</label>
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.contractType")}</label>
               <Select value={form.contract_type} onValueChange={(value) => setForm((prev) => ({ ...prev, contract_type: value }))}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="CDI, CDD..." />
+                  <SelectValue placeholder={t("admin.jobs.field.contractTypePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="cdi">CDI</SelectItem>
-                  <SelectItem value="cdd">CDD</SelectItem>
-                  <SelectItem value="stage">Stage</SelectItem>
-                  <SelectItem value="freelance">Freelance</SelectItem>
-                  <SelectItem value="temps_partiel">Temps partiel</SelectItem>
-                  <SelectItem value="interim">Intérim</SelectItem>
+                  <SelectItem value="cdi">{t("admin.jobs.field.contractTypeOption.cdi")}</SelectItem>
+                  <SelectItem value="cdd">{t("admin.jobs.field.contractTypeOption.cdd")}</SelectItem>
+                  <SelectItem value="stage">{t("admin.jobs.field.contractTypeOption.stage")}</SelectItem>
+                  <SelectItem value="freelance">{t("admin.jobs.field.contractTypeOption.freelance")}</SelectItem>
+                  <SelectItem value="temps_partiel">{t("admin.jobs.field.contractTypeOption.temps_partiel")}</SelectItem>
+                  <SelectItem value="interim">{t("admin.jobs.field.contractTypeOption.interim")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Salaire</label>
-              <Input name="salary" value={form.salary} onChange={handleChange} placeholder="Ex: 500 000 XAF" />
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.salary")}</label>
+              <Input name="salary" value={form.salary} onChange={handleChange} placeholder={t("admin.jobs.field.salaryPlaceholder")} />
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-foreground">Description du poste *</label>
-              <Textarea name="description" value={form.description} onChange={handleChange} rows={6} required placeholder="Décrivez les missions, responsabilités et équipe." />
+              <label className="block text-sm font-semibold text-foreground">{t("admin.jobs.field.description")}</label>
+              <Textarea name="description" value={form.description} onChange={handleChange} rows={6} required placeholder={t("admin.jobs.field.descriptionPlaceholder")} />
             </div>
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-foreground">Balise SEO Meta-Description</label>
-              <Textarea name="seo_description" value={form.seo_description} onChange={handleChange} rows={6} placeholder="Texte SEO clair pour les moteurs de recherche." />
+              <label className="block text-sm font-semibold text-foreground">{t("admin.jobs.field.seoDescription")}</label>
+              <Textarea name="seo_description" value={form.seo_description} onChange={handleChange} rows={6} placeholder={t("admin.jobs.field.seoDescriptionPlaceholder")} />
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Logo de l'entreprise</label>
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.companyLogo")}</label>
               <Input
                 name="company_logo"
                 type="file"
@@ -1102,33 +1243,33 @@ export function AdminJobsPage() {
               />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Mots-clés / Tags</label>
-              <Input name="keywords" value={form.keywords} onChange={handleChange} placeholder="ex: RH, finance, digital" />
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.keywords")}</label>
+              <Input name="keywords" value={form.keywords} onChange={handleChange} placeholder={t("admin.jobs.field.keywordsPlaceholder")} />
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 items-end">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Date limite</label>
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.deadline")}</label>
               <Input name="deadline" type="date" value={form.deadline} onChange={handleChange} />
             </div>
             <div className="rounded-3xl border border-border bg-secondary/10 p-4">
               <label className="inline-flex items-center gap-3 text-sm font-medium text-foreground">
                 <input type="checkbox" name="auto_share" checked={form.auto_share} onChange={handleChange} className="h-4 w-4 rounded border-input bg-background text-primary focus:ring-primary" />
-                Partage automatique
+                {t("admin.jobs.field.autoShare")}
               </label>
-              <p className="mt-2 text-xs text-muted-foreground">Diffusion automatique vers les partenaires sélectionnés.</p>
+              <p className="mt-2 text-xs text-muted-foreground">{t("admin.jobs.field.autoShareHelp")}</p>
             </div>
           </div>
 
           <div className="mt-4 rounded-3xl border border-border bg-slate-950/95 p-4 text-sm text-slate-300">
-            <p className="font-semibold text-slate-100">Champs obligatoires</p>
-            <p className="mt-2">Titre du poste, Nom de l'entreprise, Ville, Description du poste. Les autres champs restent optionnels.</p>
+            <p className="font-semibold text-slate-100">{t("admin.jobs.field.requiredFieldsTitle")}</p>
+            <p className="mt-2">{t("admin.jobs.field.requiredFieldsDescription")}</p>
           </div>
 
           {success ? <div className="rounded-3xl bg-emerald-500/10 border border-emerald-500 px-4 py-3 text-sm text-emerald-500">{success}</div> : null}
           <Button type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-            Enregistrer l'offre
+            {t("admin.jobs.field.submit")}
           </Button>
         </div>
       </form>
@@ -1137,6 +1278,7 @@ export function AdminJobsPage() {
 }
 
 export function AdminBlogPage() {
+  const { t } = useI18n();
   const [form, setForm] = React.useState({
     title: "",
     category: "",
@@ -1158,48 +1300,48 @@ export function AdminBlogPage() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSuccess("Article enregistré en brouillon. Pensez à le relire avant publication.");
+    setSuccess(t("admin.blog.successDraft"));
     console.log("Article blog soumis", form);
   };
 
   return (
     <div className="space-y-6">
       <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-        <h1 className="text-3xl font-semibold text-foreground">Création d'article</h1>
-        <p className="mt-3 text-sm text-muted-foreground">Un tableau de bord moderne pour préparer votre contenu blog professionnel.</p>
+        <h1 className="text-3xl font-semibold text-foreground">{t("admin.blog.pageTitle")}</h1>
+        <p className="mt-3 text-sm text-muted-foreground">{t("admin.blog.pageDescription")}</p>
       </div>
       <form onSubmit={handleSubmit} className="grid gap-6">
         <div className="rounded-[2rem] border border-border bg-background p-8 shadow-soft">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Titre de l'article *</label>
-              <Input name="title" value={form.title} onChange={handleChange} required placeholder="Titre percutant" />
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.blog.field.title")}</label>
+              <Input name="title" value={form.title} onChange={handleChange} required placeholder={t("admin.blog.field.titlePlaceholder")} />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Catégorie *</label>
-              <Input name="category" value={form.category} onChange={handleChange} required placeholder="Catégorie du contenu" />
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.blog.field.category")}</label>
+              <Input name="category" value={form.category} onChange={handleChange} required placeholder={t("admin.blog.field.categoryPlaceholder")} />
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-foreground">Extrait / Sous-titre</label>
-              <Textarea name="excerpt" value={form.excerpt} onChange={handleChange} rows={4} placeholder="Phrase d'accroche visible sur la page blog." />
+              <label className="block text-sm font-semibold text-foreground">{t("admin.blog.field.excerpt")}</label>
+              <Textarea name="excerpt" value={form.excerpt} onChange={handleChange} rows={4} placeholder={t("admin.blog.field.excerptPlaceholder")} />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Auteur</label>
-              <Input name="author" value={form.author} onChange={handleChange} placeholder="Auteur de l'article" />
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.blog.field.author")}</label>
+              <Input name="author" value={form.author} onChange={handleChange} placeholder={t("admin.blog.field.authorPlaceholder")} />
             </div>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-semibold text-foreground">Corps du texte *</label>
-            <Textarea name="content" value={form.content} onChange={handleChange} required rows={8} placeholder="Rédigez le contenu complet de l'article." />
+            <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.blog.field.content")}</label>
+            <Textarea name="content" value={form.content} onChange={handleChange} required rows={8} placeholder={t("admin.blog.field.contentPlaceholder")} />
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Image à la une</label>
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.blog.field.image")}</label>
               <Input
                 name="image"
                 type="file"
@@ -1207,21 +1349,21 @@ export function AdminBlogPage() {
               />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">URL simplifiée (slug)</label>
-              <Input name="slug" value={form.slug} onChange={handleChange} placeholder="article-recrutement" />
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.blog.field.slug")}</label>
+              <Input name="slug" value={form.slug} onChange={handleChange} placeholder={t("admin.blog.field.slugPlaceholder")} />
             </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">SEO Meta-Title</label>
-              <Input name="seo_title" value={form.seo_title} onChange={handleChange} placeholder="Titre SEO" />
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.blog.field.seoTitle")}</label>
+              <Input name="seo_title" value={form.seo_title} onChange={handleChange} placeholder={t("admin.blog.field.seoTitlePlaceholder")} />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-semibold text-foreground">Statut *</label>
+              <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.blog.field.status")}</label>
               <Select value={form.status} onValueChange={(value) => setForm((prev) => ({ ...prev, status: value }))}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Sélectionnez un statut" />
+                  <SelectValue placeholder={t("admin.blog.field.statusPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="draft">Brouillon</SelectItem>
@@ -1232,13 +1374,13 @@ export function AdminBlogPage() {
           </div>
 
           <div className="mt-4 rounded-3xl border border-border bg-slate-950/95 p-4 text-sm text-slate-300">
-            <p className="font-semibold text-slate-100">Champs obligatoires</p>
-            <p className="mt-2">Titre, Catégorie, Corps du texte et Statut sont requis. Les autres champs restent facultatifs.</p>
+            <p className="font-semibold text-slate-100">{t("admin.blog.field.requiredFieldsTitle")}</p>
+            <p className="mt-2">{t("admin.blog.field.requiredFieldsDescription")}</p>
           </div>
 
           {success ? <div className="rounded-3xl bg-emerald-500/10 border border-emerald-500 px-4 py-3 text-sm text-emerald-500">{success}</div> : null}
           <Button type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-            Enregistrer l'article
+            {t("admin.blog.submit")}
           </Button>
         </div>
       </form>
@@ -1298,6 +1440,7 @@ export function AdminPage() {
   const [loading, setLoading] = React.useState(true);
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
   const [activeView, setActiveView] = React.useState<AdminView>("dashboard");
+  const { t } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -1337,13 +1480,13 @@ export function AdminPage() {
     return (
       <>
         {usePageSEO({
-          title: "Tableau de bord administrateur",
-          description: "Gestion administrative de vos offres d'emploi et contenus blog.",
+          title: t("admin.page.title"),
+          description: t("admin.page.description"),
           canonical: "https://emploiplus.group/#/admin",
         })}
         <div className="container-page py-20 md:py-28">
           <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-            <p className="text-muted-foreground">Chargement du tableau de bord...</p>
+            <p className="text-muted-foreground">{t("admin.page.loading")}</p>
           </div>
         </div>
       </>
@@ -1354,17 +1497,17 @@ export function AdminPage() {
     return (
       <>
         {usePageSEO({
-          title: "Tableau de bord administrateur",
-          description: "Gestion administrative de vos offres d'emploi et contenus blog.",
+          title: t("admin.page.title"),
+          description: t("admin.page.description"),
           canonical: "https://emploiplus.group/#/admin",
         })}
         <div className="container-page py-20 md:py-28">
           <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-            <h1 className="font-display text-3xl font-bold text-foreground">Administration</h1>
-            <p className="mt-4 text-muted-foreground">Vous devez vous connecter pour accéder à cet espace.</p>
+            <h1 className="font-display text-3xl font-bold text-foreground">{t("admin.page.protectedTitle")}</h1>
+            <p className="mt-4 text-muted-foreground">{t("admin.page.protectedDescription")}</p>
             <div className="mt-8">
               <Link to="/auth" className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
-                Retour à la connexion
+                {t("admin.page.loginButton")}
               </Link>
             </div>
           </div>
@@ -1376,8 +1519,8 @@ export function AdminPage() {
   return (
     <>
       {usePageSEO({
-        title: "Espace administrateur",
-        description: "Gestion administrative de vos offres d'emploi et contenus blog.",
+        title: t("admin.page.title"),
+        description: t("admin.page.description"),
         canonical: "https://emploiplus.group/#/admin",
       })}
       <div className="bg-slate-950/5 min-h-screen py-6">
@@ -1404,6 +1547,7 @@ export function AdminPage() {
 
 
 export function AdminJobCreatePage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [form, setForm] = React.useState({
     title: "",
@@ -1465,122 +1609,122 @@ export function AdminJobCreatePage() {
       return;
     }
 
-    setSuccess("Offre créée avec succès.");
+    setSuccess(t("admin.jobs.create.successMessage"));
     navigate("/admin/jobs");
   };
 
   return (
     <div className="space-y-6">
       {usePageSEO({
-        title: "Créer une offre",
-        description: "Publiez une nouvelle offre d'emploi depuis l'administration EmploiPlus.",
+        title: t("admin.jobs.create.title"),
+        description: t("admin.jobs.create.description"),
         canonical: "https://emploiplus.group/#/admin/jobs/new",
       })}
       <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="font-display text-3xl font-bold text-foreground">Nouvelle offre d'emploi</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Saisissez les informations essentielles pour une publication professionnelle.</p>
+            <h1 className="font-display text-3xl font-bold text-foreground">{t("admin.jobs.create.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("admin.jobs.create.description")}</p>
           </div>
-          <Button size="lg" variant="outline" onClick={() => navigate("/admin/jobs")}>Retour aux offres</Button>
+          <Button size="lg" variant="outline" onClick={() => navigate("/admin/jobs")}>{t("admin.jobs.create.button.back")}</Button>
         </div>
       </div>
       <form onSubmit={handleSubmit} className="grid gap-6">
         <div className="rounded-3xl border border-border bg-card p-8 shadow-soft grid gap-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Titre du poste</label>
-              <Input name="title" value={form.title} onChange={handleChange} required placeholder="Consultant commercial" />
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.field.title")}</label>
+              <Input name="title" value={form.title} onChange={handleChange} required placeholder={t("admin.jobs.field.titlePlaceholder")} />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Entreprise</label>
-              <Input name="company" value={form.company} onChange={handleChange} required placeholder="EmploiPlus Group" />
-            </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Ville</label>
-              <Input name="location_city" value={form.location_city} onChange={handleChange} placeholder="Brazzaville" />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Pays</label>
-              <Input name="location_country" value={form.location_country} onChange={handleChange} placeholder="Congo" />
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.field.company")}</label>
+              <Input name="company" value={form.company} onChange={handleChange} required placeholder={t("admin.jobs.field.companyPlaceholder")} />
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Type de contrat</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.city")}</label>
+              <Input name="location_city" value={form.location_city} onChange={handleChange} placeholder={t("admin.jobs.field.cityPlaceholder")} />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.country")}</label>
+              <Input name="location_country" value={form.location_country} onChange={handleChange} placeholder={t("admin.jobs.create.field.countryPlaceholder")} />
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.field.contractType")}</label>
               <Select value={form.contract_type} onValueChange={(value) => setForm((prev) => ({ ...prev, contract_type: value }))}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Choisir" />
+                  <SelectValue placeholder={t("admin.jobs.field.choosePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="cdi">CDI</SelectItem>
-                  <SelectItem value="cdd">CDD</SelectItem>
-                  <SelectItem value="stage">Stage</SelectItem>
-                  <SelectItem value="freelance">Freelance</SelectItem>
-                  <SelectItem value="consultance">Consultance</SelectItem>
-                  <SelectItem value="temps_partiel">Temps partiel</SelectItem>
-                  <SelectItem value="interim">Intérim</SelectItem>
+                  <SelectItem value="cdi">{t("admin.jobs.field.contractTypeOption.cdi")}</SelectItem>
+                  <SelectItem value="cdd">{t("admin.jobs.field.contractTypeOption.cdd")}</SelectItem>
+                  <SelectItem value="stage">{t("admin.jobs.field.contractTypeOption.stage")}</SelectItem>
+                  <SelectItem value="freelance">{t("admin.jobs.field.contractTypeOption.freelance")}</SelectItem>
+                  <SelectItem value="consultance">{t("admin.jobs.field.contractTypeOption.consultance")}</SelectItem>
+                  <SelectItem value="temps_partiel">{t("admin.jobs.field.contractTypeOption.temps_partiel")}</SelectItem>
+                  <SelectItem value="interim">{t("admin.jobs.field.contractTypeOption.interim")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Statut</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.status")}</label>
               <Select value={form.status} onValueChange={(value) => setForm((prev) => ({ ...prev, status: value }))}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Choisir" />
+                  <SelectValue placeholder={t("admin.jobs.field.choosePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="draft">Brouillon</SelectItem>
-                  <SelectItem value="published">Publié</SelectItem>
-                  <SelectItem value="archived">Archivé</SelectItem>
+                  <SelectItem value="draft">{t("admin.jobs.create.field.statusOption.draft")}</SelectItem>
+                  <SelectItem value="published">{t("admin.jobs.create.field.statusOption.published")}</SelectItem>
+                  <SelectItem value="archived">{t("admin.jobs.create.field.statusOption.archived")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Email de candidature</label>
-              <Input name="application_email" value={form.application_email} onChange={handleChange} placeholder="recrutement@entreprise.com" />
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.applicationEmail")}</label>
+              <Input name="application_email" value={form.application_email} onChange={handleChange} placeholder={t("admin.jobs.create.field.applicationEmailPlaceholder")} />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Lien externe / WhatsApp</label>
-              <Input name="external_link" value={form.external_link} onChange={handleChange} placeholder="https://... / +242 ..." />
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.externalLink")}</label>
+              <Input name="external_link" value={form.external_link} onChange={handleChange} placeholder={t("admin.jobs.create.field.externalLinkPlaceholder")} />
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Date de publication</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.publishAt")}</label>
               <Input name="publish_at" type="datetime-local" value={form.publish_at} onChange={handleChange} />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Date d'expiration</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.expiresAt")}</label>
               <Input name="expires_at" type="datetime-local" value={form.expires_at} onChange={handleChange} />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-2">Résumé de l'offre</label>
-            <Textarea name="description" value={form.description} onChange={handleChange} required rows={6} placeholder="Décrivez les missions, les objectifs et la valeur proposée." />
+            <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.description")}</label>
+            <Textarea name="description" value={form.description} onChange={handleChange} required rows={6} placeholder={t("admin.jobs.create.field.requirementsPlaceholder")} />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-foreground mb-2">Compétences & exigences</label>
-            <Textarea name="requirements" value={form.requirements} onChange={handleChange} rows={5} placeholder="Exemples : expérience, formation, compétences techniques." />
+            <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.requirements")}</label>
+            <Textarea name="requirements" value={form.requirements} onChange={handleChange} rows={5} placeholder={t("admin.jobs.create.field.requirementsPlaceholder")} />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Logo entreprise (URL)</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.companyLogo")}</label>
               <Input name="company_logo" value={form.company_logo} onChange={handleChange} placeholder="https://..." />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Image de couverture (URL)</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.coverImage")}</label>
               <Input name="cover_image" value={form.cover_image} onChange={handleChange} placeholder="https://..." />
             </div>
           </div>
           {error ? <div className="rounded-2xl bg-destructive/10 border border-destructive px-4 py-3 text-sm text-destructive">{error}</div> : null}
           {success ? <div className="rounded-2xl bg-success/10 border border-success px-4 py-3 text-sm text-success">{success}</div> : null}
           <Button type="submit" size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90" disabled={saving}>
-            {saving ? "Enregistrement..." : "Publier l'offre"}
+            {saving ? t("admin.jobs.create.saving") : t("admin.jobs.create.submit")}
           </Button>
         </div>
       </form>

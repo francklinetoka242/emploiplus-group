@@ -37,7 +37,7 @@ export function ShareButtons({ url, text }: { url: string; text: string }) {
       </a>
       <Button type="button" variant="outline" size="sm" onClick={copy} className="gap-1.5">
         {copied ? <Check className="size-3.5" /> : <Link2 className="size-3.5" />}
-        {copied ? "Copié" : t("cta.copyLink")}
+        {copied ? t("common.copied") : t("cta.copyLink")}
       </Button>
     </div>
   );

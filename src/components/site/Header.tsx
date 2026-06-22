@@ -1,9 +1,18 @@
 import { Link, NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Menu, X, Globe } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, type Locale } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+
+const AVAILABLE_LOCALES: Locale[] = ["fr", "en", "ln", "es", "sw", "pt", "zh"];
 
 export function SiteHeader() {
   const { t, locale, setLocale } = useI18n();
@@ -63,15 +72,21 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setLocale(locale === "fr" ? "en" : "fr")}
-            className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-md border border-border hover:bg-accent transition-colors"
-            aria-label="Change language"
-          >
-            <Globe className="size-3.5" />
-            {locale}
-          </button>
+          <div className="hidden sm:block">
+            <Select value={locale} onValueChange={(value) => setLocale(value as Locale)}>
+              <SelectTrigger className="w-[10.5rem] text-xs uppercase tracking-wider rounded-md border border-border bg-background px-2.5 py-1.5 text-foreground shadow-sm hover:bg-accent transition-colors">
+                <Globe className="size-3.5" />
+                <SelectValue placeholder={t("lang." + locale)} />
+              </SelectTrigger>
+              <SelectContent>
+                {AVAILABLE_LOCALES.map((code) => (
+                  <SelectItem key={code} value={code}>
+                    {t(`lang.${code}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <Button asChild size="sm" className="hidden md:inline-flex bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand">
             <Link to="/jobs">{t("cta.viewJobs")}</Link>
           </Button>
