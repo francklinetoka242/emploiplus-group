@@ -175,9 +175,9 @@ export function HomePage() {
   const { posts: homePosts, loading: postsLoading } = usePublishedBlogPosts(3);
 
   const stats = [
-    { value: "50+", label: "home.stats.jobs" },
-    { value: "11+", label: "home.stats.companies" },
-    { value: "20+", label: "home.stats.readers" },
+    { value: "1200+", label: "home.stats.jobs" },
+    { value: "1", label: "home.stats.companies" },
+    { value: "440+", label: "home.stats.readers" },
   ];
 
   const services = [
@@ -431,15 +431,15 @@ export function AboutPage() {
             <h2 className="font-display text-2xl font-bold text-foreground mb-4">{t('about.whyChooseUs.title')}</h2>
             <div className="grid gap-6 md:grid-cols-3 mt-8">
               <div>
-                <p className="font-display text-2xl font-bold text-brand mb-2">50+</p>
+                <p className="font-display text-2xl font-bold text-brand mb-2">1200+</p>
                 <p className="text-foreground/80">{t('about.stats.jobs')}</p>
               </div>
               <div>
-                <p className="font-display text-2xl font-bold text-brand mb-2">11+</p>
+                <p className="font-display text-2xl font-bold text-brand mb-2">1</p>
                 <p className="text-foreground/80">{t('about.stats.companies')}</p>
               </div>
               <div>
-                <p className="font-display text-2xl font-bold text-brand mb-2">20+</p>
+                <p className="font-display text-2xl font-bold text-brand mb-2">440+</p>
                 <p className="text-foreground/80">{t('about.stats.readers')}</p>
               </div>
             </div>
