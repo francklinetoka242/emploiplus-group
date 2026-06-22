@@ -375,8 +375,8 @@ export function AboutPage() {
         canonical: "https://emploiplus.group/#/about",
       })}
       <section className="container-page py-16 md:py-20">
-        <div className="grid gap-12 lg:grid-cols-2 items-center">
-          <div className="space-y-6">
+        <div className="space-y-14">
+          <div className="space-y-10">
             <div>
               <h2 className="font-display text-3xl font-bold text-foreground mb-4">{t('about.mission.title')}</h2>
               <p className="text-lg text-foreground/90 leading-relaxed">
@@ -396,50 +396,31 @@ export function AboutPage() {
               </p>
             </div>
           </div>
-          <div className="space-y-10">
-            <div>
-              <h3 className="font-display text-2xl font-bold text-foreground mb-6">{t('about.values.title')}</h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {values.map((item) => (
-                  <div key={item.title} className="rounded-3xl border border-border bg-card p-6">
-                    <div className="text-3xl">{item.icon}</div>
-                    <h4 className="mt-4 text-lg font-semibold text-foreground">{item.title}</h4>
-                    <p className="mt-2 text-muted-foreground leading-relaxed">{item.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h3 className="font-display text-2xl font-bold text-foreground mb-6">{t('about.pillars.title')}</h3>
-              <div className="grid gap-4">
-                {pillars.map((pillar) => (
-                  <div key={pillar.title} className="rounded-3xl border border-border bg-card p-6">
-                    <h4 className="text-lg font-semibold text-foreground">{pillar.title}</h4>
-                    <p className="mt-2 text-muted-foreground leading-relaxed">{pillar.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <section className="bg-secondary/10 border-y border-border py-16 md:py-20">
-        <div className="container-page">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="font-display text-3xl font-bold text-foreground">{t('about.pillars.title')}</h2>
-            <p className="mt-3 text-muted-foreground">{t('about.pillars.subtitle')}</p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {pillars.map((pillar, i) => (
-              <article key={i} className="rounded-2xl transform transition-transform hover:-translate-y-1 hover:shadow-xl bg-card border border-border p-6 fade-up" style={{ animationDelay: `${i * 100}ms` }}>
-                <div className="w-12 h-12 rounded-lg bg-brand/10 flex items-center justify-center mb-4">
-                  <div className="text-brand font-bold text-lg">{i + 1}</div>
+          <div>
+            <h3 className="font-display text-2xl font-bold text-foreground mb-6">{t('about.values.title')}</h3>
+            <div className="grid gap-4 md:grid-cols-3">
+              {values.map((item) => (
+                <div key={item.title} className="rounded-3xl border border-border bg-card p-6">
+                  <div className="text-3xl">{item.icon}</div>
+                  <h4 className="mt-4 text-lg font-semibold text-foreground">{item.title}</h4>
+                  <p className="mt-2 text-muted-foreground leading-relaxed">{item.description}</p>
                 </div>
-                <h3 className="font-display text-lg font-semibold text-foreground mb-2">{pillar.title}</h3>
-                <p className="text-foreground/80">{pillar.description}</p>
-              </article>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-display text-2xl font-bold text-foreground mb-3">{t('about.pillars.title')}</h3>
+            <p className="text-muted-foreground mb-8 max-w-2xl">{t('about.pillars.subtitle')}</p>
+            <div className="grid gap-6 md:grid-cols-3">
+              {pillars.map((pillar, i) => (
+                <article key={i} className="rounded-3xl border border-border bg-card p-6">
+                  <h4 className="text-lg font-semibold text-foreground mb-3">{pillar.title}</h4>
+                  <p className="text-muted-foreground leading-relaxed">{pillar.description}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
