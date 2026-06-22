@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import heroBg from "./assets/hero-bg.jpg";
 import logoMonago from "./assets/logo-monago.jpg";
 import { Button } from "@/components/ui/button";
@@ -50,8 +50,52 @@ function PageHeading({ title, description }: { title: string; description: strin
   );
 }
 
+const SERVICES = [
+  {
+    slug: "job-broadcast",
+    titleKey: "services.card1.title",
+    descriptionKey: "services.card1.description",
+    detailKey: "services.card1.detail",
+  },
+  {
+    slug: "web-development",
+    titleKey: "services.card2.title",
+    descriptionKey: "services.card2.description",
+    detailKey: "services.card2.detail",
+  },
+  {
+    slug: "media-strategy",
+    titleKey: "services.card3.title",
+    descriptionKey: "services.card3.description",
+    detailKey: "services.card3.detail",
+  },
+  {
+    slug: "employer-branding",
+    titleKey: "services.card4.title",
+    descriptionKey: "services.card4.description",
+    detailKey: "services.card4.detail",
+  },
+  {
+    slug: "digital-consulting",
+    titleKey: "services.card5.title",
+    descriptionKey: "services.card5.description",
+    detailKey: "services.card5.detail",
+  },
+  {
+    slug: "operational-support",
+    titleKey: "services.card6.title",
+    descriptionKey: "services.card6.description",
+    detailKey: "services.card6.detail",
+  },
+];
+
+type JobOfferPreview = Pick<
+  Database["public"]["Tables"]["job_offers"]["Row"],
+  "id" | "slug" | "title" | "company" | "contract_type" | "location_city" | "location_country" | "description" | "requirements" | "status" | "publish_at"
+>;
+
 function usePublishedJobOffers(limit = 10) {
-  const [offers, setOffers] = React.useState<Database["public"]["Tables"]["job_offers"]["Row"][]>([]);
+  const [offers, setOffers] = React.useState<JobOfferPreview[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -71,7 +115,7 @@ function usePublishedJobOffers(limit = 10) {
         console.error("Failed to load job offers:", error.message);
         setOffers([]);
       } else {
-        setOffers(data ?? []);
+        setOffers((data ?? []) as JobOfferPreview[]);
       }
       setLoading(false);
     }
@@ -85,8 +129,13 @@ function usePublishedJobOffers(limit = 10) {
   return { offers, loading };
 }
 
+type BlogPostPreview = Pick<
+  Database["public"]["Tables"]["blog_posts"]["Row"],
+  "id" | "slug" | "title" | "excerpt" | "status" | "publish_at"
+>;
+
 function usePublishedBlogPosts(limit = 9) {
-  const [posts, setPosts] = React.useState<Database["public"]["Tables"]["blog_posts"]["Row"][]>([]);
+  const [posts, setPosts] = React.useState<BlogPostPreview[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -106,7 +155,7 @@ function usePublishedBlogPosts(limit = 9) {
         console.error("Failed to load blog posts:", error.message);
         setPosts([]);
       } else {
-        setPosts(data ?? []);
+        setPosts((data ?? []) as BlogPostPreview[]);
       }
       setLoading(false);
     }
@@ -259,7 +308,7 @@ export function HomePage() {
             homePosts.map((post, i) => (
               <article key={post.id} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 120}ms` }}>
                 <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
-                <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt || post.subtitle || t('blog.article.placeholder')}</p>
+                <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt || t('blog.article.placeholder')}</p>
               </article>
             ))
           ) : (
@@ -373,25 +422,7 @@ export function AboutPage() {
             </div>
           </div>
         </div>
-      <div className="rounded-2xl p-[1px] gradient-brand">
-        <div className="rounded-2xl bg-card p-8 space-y-8">
-          <div>
-            <h3 className="font-display text-2xl font-bold text-foreground mb-6">{t('about.values.title')}</h3>
-            <div className="space-y-4">
-              {values.map((value, i) => (
-                <div key={i} className="flex gap-4">
-                  <span className="text-3xl flex-shrink-0">{value.icon}</span>
-                  <div>
-                    <p className="font-semibold text-foreground">{value.title}</p>
-                    <p className="text-sm text-foreground/70 mt-1">{value.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+      </section>
 
       <section className="bg-secondary/10 border-y border-border py-16 md:py-20">
         <div className="container-page">
@@ -441,15 +472,6 @@ export function AboutPage() {
 export function ServicesPage() {
   const { t } = useI18n();
 
-  const serviceCards = [
-    { title: 'services.card1.title', description: 'services.card1.description' },
-    { title: 'services.card2.title', description: 'services.card2.description' },
-    { title: 'services.card3.title', description: 'services.card3.description' },
-    { title: 'services.card4.title', description: 'services.card4.description' },
-    { title: 'services.card5.title', description: 'services.card5.description' },
-    { title: 'services.card6.title', description: 'services.card6.description' },
-  ];
-
   return (
     <>
       {usePageSEO({
@@ -458,22 +480,92 @@ export function ServicesPage() {
         keywords: "services, offres emploi, développement web, stratégie média, branding employeur",
         canonical: "https://emploiplus.group/#/services",
       })}
-      <PageHeading
-        title={t('services.title')}
-        description={t('services.subtitle')}
-      />
-      <section className="container-page pb-20 md:pb-28">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {serviceCards.map((item, i) => (
-            <article key={item.title} className="rounded-3xl transform transition-transform hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: `${i * 100}ms` }}>
-              <div className="p-[1px] rounded-3xl gradient-brand">
-                <div className="rounded-3xl bg-card p-6 h-full">
-                  <h2 className="font-display text-lg font-semibold text-foreground">{t(item.title)}</h2>
-                  <p className="mt-3 text-muted-foreground leading-relaxed">{t(item.description)}</p>
+      <SectionHeader title={t('services.title')} subtitle={t('services.subtitle')} />
+      <section className="container-page pb-12 md:pb-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch">
+            {SERVICES.map((item, i) => (
+              <article key={item.slug} className="rounded-3xl transform transition-transform hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: `${i * 100}ms` }}>
+                <div className="p-[1px] rounded-3xl gradient-brand h-full">
+                  <div className="rounded-3xl bg-card p-6 h-full flex flex-col justify-between gap-6">
+                    <div>
+                      <h2 className="font-display text-lg font-semibold text-foreground">{t(item.titleKey)}</h2>
+                      <p className="mt-3 text-muted-foreground leading-relaxed">{t(item.descriptionKey)}</p>
+                    </div>
+                    <div className="grid gap-3">
+                      <Button asChild size="sm" variant="outline" className="w-full">
+                        <Link to={`/services/${item.slug}`}>{t('services.cardAction.details')}</Link>
+                      </Button>
+                      <Button asChild size="sm" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
+                        <Link to={`/contact?subject=${encodeURIComponent(`${t('services.requestQuote.subjectPrefix')} - ${t(item.titleKey)}`)}`}>{t('services.cardAction.quote')}</Link>
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="container-page py-16 md:py-20">
+        <div className="rounded-3xl border border-border bg-card p-8 md:p-10 text-center">
+          <h2 className="font-display text-3xl font-bold text-foreground">{t('services.requestQuote.title')}</h2>
+          <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">{t('services.requestQuote.description')}</p>
+          <Button asChild size="lg" className="mt-8 bg-brand text-brand-foreground hover:bg-brand/90">
+            <Link to={`/contact?subject=${encodeURIComponent(t('services.requestQuote.subjectPrefix'))}`}>{t('services.requestQuote.button')}</Link>
+          </Button>
+        </div>
+      </section>
+    </>
+  );
+}
+
+export function ServiceDetailPage() {
+  const { t } = useI18n();
+  const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+
+  const service = SERVICES.find((item) => item.slug === slug);
+
+  if (!service) {
+    return <NotFoundPage />;
+  }
+
+  return (
+    <>
+      {usePageSEO({
+        title: `${t(service.titleKey)} | ${t('services.title')}`,
+        description: t(service.detailKey),
+        keywords: "services, détail, devis, EmploiPlus",
+        canonical: `https://emploiplus.group/#/services/${service.slug}`,
+      })}
+      <section className="container-page py-16 md:py-20">
+        <div className="grid gap-12 lg:grid-cols-[1.5fr_0.85fr]">
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <p className="text-sm uppercase tracking-[0.3em] text-brand font-semibold">{t('services.title')}</p>
+              <h1 className="font-display text-4xl font-bold text-foreground">{t(service.titleKey)}</h1>
+              <p className="text-lg text-muted-foreground leading-relaxed">{t(service.descriptionKey)}</p>
+            </div>
+            <div className="rounded-3xl border border-border bg-card p-8">
+              <h2 className="font-display text-2xl font-semibold text-foreground">{t('services.detail.overviewTitle')}</h2>
+              <p className="mt-4 text-muted-foreground leading-relaxed">{t(service.detailKey)}</p>
+            </div>
+          </div>
+
+          <aside className="space-y-6">
+            <div className="rounded-3xl border border-border bg-card p-8">
+              <h2 className="text-xl font-semibold text-foreground">{t('services.requestQuote.title')}</h2>
+              <p className="mt-3 text-muted-foreground leading-relaxed">{t('services.requestQuote.description')}</p>
+              <Button asChild size="lg" className="mt-6 w-full bg-brand text-brand-foreground hover:bg-brand/90">
+                <Link to={`/contact?subject=${encodeURIComponent(`${t('services.requestQuote.subjectPrefix')} - ${t(service.titleKey)}`)}`}>{t('services.requestQuote.button')}</Link>
+              </Button>
+            </div>
+            <Button variant="outline" className="w-full" onClick={() => navigate('/services')}>
+              {t('services.detail.back')}
+            </Button>
+          </aside>
         </div>
       </section>
     </>
@@ -637,7 +729,7 @@ export function BlogPage() {
             posts.map((post, i) => (
               <article key={post.id} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 80}ms` }}>
                 <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
-                <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt || post.subtitle || t('blog.article.placeholder')}</p>
+                <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt || t('blog.article.placeholder')}</p>
               </article>
             ))
           ) : (
