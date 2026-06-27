@@ -33,7 +33,7 @@ export function AdminJobCreatePage() {
     company: "",
     company_logo: "",
     location_city: "",
-    location_country: "",
+    location_country: "Congo",
     contract_type: "cdi",
     description: "",
     requirements: "",
@@ -44,14 +44,20 @@ export function AdminJobCreatePage() {
     status: "draft",
     publish_at: "",
     expires_at: "",
+    salary: "",
+    seo_description: "",
+    keywords: "",
+    deadline: "",
+    auto_share: false,
   });
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
+  const [savedOfferId, setSavedOfferId] = React.useState<string | null>(null);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = event.target as HTMLInputElement;
+    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -61,26 +67,49 @@ export function AdminJobCreatePage() {
     setSaving(true);
 
     const slug = createSlug(form.title || `${form.company}-${Date.now()}`);
+    const requirementParts = [
+      form.requirements,
+      form.salary ? `Salaire : ${form.salary}` : "",
+      form.keywords ? `Mots-clés : ${form.keywords}` : "",
+    ].filter(Boolean);
+
+    const nextStatus: Database["public"]["Enums"]["job_status"] = savedOfferId ? "published" : "draft";
     const payload = {
       slug,
-      title: form.title,
-      company: form.company,
+      title: form.title.trim(),
+      company: form.company.trim(),
       company_logo: form.company_logo || null,
       location_city: form.location_city || null,
       location_country: form.location_country || null,
       contract_type: form.contract_type as Database["public"]["Enums"]["contract_type"],
       description: form.description,
-      requirements: form.requirements || null,
+      requirements: requirementParts.length > 0 ? requirementParts.join("\n\n") : null,
       application_email: form.application_email || null,
       application_whatsapp: form.application_whatsapp || null,
       external_link: form.external_link || null,
       cover_image: form.cover_image || null,
-      status: form.status as Database["public"]["Enums"]["job_status"],
-      publish_at: form.publish_at ? new Date(form.publish_at).toISOString() : null,
-      expires_at: form.expires_at ? new Date(form.expires_at).toISOString() : null,
+      status: nextStatus,
+      publish_at: nextStatus === "published"
+        ? (form.publish_at ? new Date(form.publish_at).toISOString() : new Date().toISOString())
+        : null,
+      expires_at: form.deadline
+        ? new Date(form.deadline).toISOString()
+        : form.expires_at
+          ? new Date(form.expires_at).toISOString()
+          : null,
+      meta_description: form.seo_description || null,
+      salary: form.salary || null,
+      auto_share: form.auto_share,
+      deadline: form.deadline ? new Date(form.deadline).toISOString() : null,
+      tags: form.keywords
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean),
     };
 
-    const { error } = await supabase.from("job_offers").insert([payload]);
+    const { data, error } = savedOfferId
+      ? await supabase.from("job_offers").update(payload).eq("id", savedOfferId)
+      : await supabase.from("job_offers").insert([payload]).select("id").single();
 
     setSaving(false);
     if (error) {
@@ -88,7 +117,13 @@ export function AdminJobCreatePage() {
       return;
     }
 
-    setSuccess(t("admin.jobs.create.successMessage"));
+    if (!savedOfferId) {
+      setSavedOfferId(data?.id || null);
+      setSuccess(t("admin.jobs.successMessage"));
+      return;
+    }
+
+    setSuccess(t("admin.jobs.create.publishedMessage"));
     navigate("/admin/jobs");
   };
 
@@ -124,7 +159,16 @@ export function AdminJobCreatePage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.city")}</label>
-              <Input name="location_city" value={form.location_city} onChange={handleChange} placeholder={t("admin.jobs.field.cityPlaceholder")} />
+              <Select value={form.location_city} onValueChange={(value) => setForm((prev) => ({ ...prev, location_city: value }))}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t("admin.jobs.field.cityPlaceholder")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Brazzaville">{t("admin.jobs.field.cityOption.brazzaville")}</SelectItem>
+                  <SelectItem value="Pointe-Noire">{t("admin.jobs.field.cityOption.pointenoire")}</SelectItem>
+                  <SelectItem value="Remote">{t("admin.jobs.field.cityOption.remote")}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.country")}</label>
@@ -165,12 +209,22 @@ export function AdminJobCreatePage() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.field.salary")}</label>
+              <Input name="salary" value={form.salary} onChange={handleChange} placeholder={t("admin.jobs.field.salaryPlaceholder")} />
+            </div>
+            <div>
               <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.applicationEmail")}</label>
               <Input name="application_email" value={form.application_email} onChange={handleChange} placeholder={t("admin.jobs.create.field.applicationEmailPlaceholder")} />
             </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.externalLink")}</label>
               <Input name="external_link" value={form.external_link} onChange={handleChange} placeholder={t("admin.jobs.create.field.externalLinkPlaceholder")} />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.field.keywords")}</label>
+              <Input name="keywords" value={form.keywords} onChange={handleChange} placeholder={t("admin.jobs.field.keywordsPlaceholder")} />
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
@@ -179,8 +233,21 @@ export function AdminJobCreatePage() {
               <Input name="publish_at" type="datetime-local" value={form.publish_at} onChange={handleChange} />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.create.field.expiresAt")}</label>
-              <Input name="expires_at" type="datetime-local" value={form.expires_at} onChange={handleChange} />
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.field.deadline")}</label>
+              <Input name="deadline" type="date" value={form.deadline} onChange={handleChange} />
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("admin.jobs.field.seoDescription")}</label>
+              <Textarea name="seo_description" value={form.seo_description} onChange={handleChange} rows={4} placeholder={t("admin.jobs.field.seoDescriptionPlaceholder")} />
+            </div>
+            <div className="rounded-2xl border border-border bg-secondary/10 p-4">
+              <label className="inline-flex items-center gap-3 text-sm font-medium text-foreground">
+                <input type="checkbox" name="auto_share" checked={form.auto_share} onChange={handleChange} className="h-4 w-4 rounded border-input bg-background text-primary focus:ring-primary" />
+                {t("admin.jobs.field.autoShare")}
+              </label>
+              <p className="mt-2 text-xs text-muted-foreground">{t("admin.jobs.field.autoShareHelp")}</p>
             </div>
           </div>
           <div>
@@ -204,7 +271,7 @@ export function AdminJobCreatePage() {
           {error ? <div className="rounded-2xl bg-destructive/10 border border-destructive px-4 py-3 text-sm text-destructive">{error}</div> : null}
           {success ? <div className="rounded-2xl bg-success/10 border border-success px-4 py-3 text-sm text-success">{success}</div> : null}
           <Button type="submit" size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90" disabled={saving}>
-            {saving ? t("admin.jobs.create.saving") : t("admin.jobs.create.submit")}
+            {saving ? t("admin.jobs.create.saving") : savedOfferId ? t("admin.jobs.create.validate") : t("admin.jobs.field.submit")}
           </Button>
         </div>
       </form>

@@ -34,12 +34,15 @@ export function usePublishedJobOffers(limit = 10) {
         .from("job_offers")
         .select("id, slug, title, company, contract_type, location_city, location_country, description, requirements, status, publish_at")
         .eq("status", "published")
-        .lte("publish_at", now)
         .order("publish_at", { ascending: false })
         .limit(limit);
 
       if (!mounted) return;
-      setOffers(data || []);
+      const visibleOffers = (data || []).filter((offer) => {
+        if (!offer.publish_at) return true;
+        return new Date(offer.publish_at) <= new Date(now);
+      });
+      setOffers(visibleOffers);
       setLoading(false);
     }
 

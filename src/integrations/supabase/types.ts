@@ -150,11 +150,13 @@ export type Database = {
         Row: {
           application_email: string | null
           application_whatsapp: string | null
+          auto_share: boolean
           company: string
           company_logo: string | null
           contract_type: Database["public"]["Enums"]["contract_type"] | null
           cover_image: string | null
           created_at: string
+          deadline: string | null
           description: string
           expires_at: string | null
           external_link: string | null
@@ -168,8 +170,10 @@ export type Database = {
           publish_at: string | null
           published_at: string | null
           requirements: string | null
+          salary: string | null
           slug: string
           status: Database["public"]["Enums"]["job_status"]
+          tags: string[]
           title: string
           updated_at: string
           views_count: number
@@ -177,11 +181,13 @@ export type Database = {
         Insert: {
           application_email?: string | null
           application_whatsapp?: string | null
+          auto_share?: boolean
           company: string
           company_logo?: string | null
           contract_type?: Database["public"]["Enums"]["contract_type"] | null
           cover_image?: string | null
           created_at?: string
+          deadline?: string | null
           description: string
           expires_at?: string | null
           external_link?: string | null
@@ -195,8 +201,10 @@ export type Database = {
           publish_at?: string | null
           published_at?: string | null
           requirements?: string | null
+          salary?: string | null
           slug: string
           status?: Database["public"]["Enums"]["job_status"]
+          tags?: string[]
           title: string
           updated_at?: string
           views_count?: number
@@ -204,11 +212,13 @@ export type Database = {
         Update: {
           application_email?: string | null
           application_whatsapp?: string | null
+          auto_share?: boolean
           company?: string
           company_logo?: string | null
           contract_type?: Database["public"]["Enums"]["contract_type"] | null
           cover_image?: string | null
           created_at?: string
+          deadline?: string | null
           description?: string
           expires_at?: string | null
           external_link?: string | null
@@ -222,8 +232,10 @@ export type Database = {
           publish_at?: string | null
           published_at?: string | null
           requirements?: string | null
+          salary?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["job_status"]
+          tags?: string[]
           title?: string
           updated_at?: string
           views_count?: number
