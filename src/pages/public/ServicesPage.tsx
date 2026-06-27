@@ -5,6 +5,17 @@ import { usePageSEO, BASE_URL } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/page/SectionHeader";
 import { SERVICES } from "@/lib/constants";
+import hubImage from "@/assets/services/hub-emploi.svg";
+import rhImage from "@/assets/services/rh-gestion.svg";
+import conseilImage from "@/assets/services/conseil-training.svg";
+import serviceImage from "@/assets/services/service-opérationnel.svg";
+
+const SERVICE_IMAGES = {
+  "hub-emploi-recrutement": hubImage,
+  "mise-disposition-rh": rhImage,
+  "conseil-formation-transformation": conseilImage,
+  "prestations-operationnelles": serviceImage,
+};
 
 export function ServicesPage() {
   const { t } = useI18n();
@@ -23,24 +34,36 @@ export function ServicesPage() {
       })}
       <SectionHeader title={t('services.title')} subtitle={t('services.subtitle')} />
       <section className="container-page pb-12 md:pb-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-6 md:grid-cols-2 items-stretch">
             {SERVICES.map((item, i) => (
-              <article key={item.slug} className="rounded-3xl transform transition-transform hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: `${i * 100}ms` }}>
-                <div className="p-[1px] rounded-3xl gradient-brand h-full">
-                  <div className="rounded-3xl bg-card p-6 h-full flex flex-col justify-between gap-6">
-                    <div>
-                      <h2 className="font-display text-lg font-semibold text-foreground">{t(item.titleKey)}</h2>
-                      <p className="mt-3 text-muted-foreground leading-relaxed">{t(item.descriptionKey)}</p>
+              <article
+                key={item.slug}
+                className="group overflow-hidden rounded-[28px] border border-border/70 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up"
+                style={{ animationDelay: `${i * 100}ms` }}
+              >
+                <div className="relative overflow-hidden bg-gradient-to-br from-brand/10 via-background to-brand/5 p-4">
+                  <img
+                    src={SERVICE_IMAGES[item.slug as keyof typeof SERVICE_IMAGES]}
+                    alt={`Illustration ${t(item.titleKey)}`}
+                    className="h-44 w-full rounded-[20px] object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                  />
+                </div>
+                <div className="flex h-full flex-col justify-between gap-6 p-6">
+                  <div>
+                    <div className="inline-flex rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-brand">
+                      Pôle de services
                     </div>
-                    <div className="grid gap-3">
-                      <Button asChild size="sm" variant="outline" className="w-full">
-                        <Link to={`/services/${item.slug}`}>{t('services.cardAction.details')}</Link>
-                      </Button>
-                      <Button asChild size="sm" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
-                        <Link to={`/contact?subject=${encodeURIComponent(`${t('services.requestQuote.subjectPrefix')} - ${t(item.titleKey)}`)}`}>{t('services.cardAction.quote')}</Link>
-                      </Button>
-                    </div>
+                    <h2 className="mt-4 font-display text-xl font-semibold text-foreground">{t(item.titleKey)}</h2>
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t(item.descriptionKey)}</p>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Button asChild size="default" className="w-full border border-brand/30 bg-white text-brand shadow-sm hover:bg-brand hover:text-brand-foreground">
+                      <Link to={`/services/${item.slug}`}>{t('services.cardAction.details')}</Link>
+                    </Button>
+                    <Button asChild size="default" className="w-full bg-brand text-brand-foreground shadow-sm hover:bg-brand/90">
+                      <Link to={`/contact?subject=${encodeURIComponent(`${t('services.requestQuote.subjectPrefix')} - ${t(item.titleKey)}`)}`}>{t('services.cardAction.quote')}</Link>
+                    </Button>
                   </div>
                 </div>
               </article>

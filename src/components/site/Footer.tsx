@@ -31,12 +31,12 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <div className="font-semibold mb-3 text-sm">{t('footer.contact.title')}</div>
+          <div className="font-semibold mb-3 text-sm">Contact</div>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>{t('footer.contact.phoneLabel')}: <a href="tel:+242067311033" className="font-semibold hover:underline">{t('footer.contact.phoneValue')}</a></li>
+            <li><a href="tel:+242067311033" className="font-semibold hover:underline">Contact</a></li>
             <li className="flex flex-col gap-2">
-              <a href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43" target="_blank" rel="noopener noreferrer" className="hover:text-foreground inline-flex items-center gap-2"><MessageSquare className="size-4" />{t('footer.contact.whatsapp1')}</a>
-              <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631" target="_blank" rel="noopener noreferrer" className="hover:text-foreground inline-flex items-center gap-2"><MessageSquare className="size-4" />{t('footer.contact.whatsapp2')}</a>
+              <a href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43" target="_blank" rel="noopener noreferrer" className="hover:text-foreground inline-flex items-center gap-2"><MessageSquare className="size-4" />WhatsApp</a>
+              <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631" target="_blank" rel="noopener noreferrer" className="hover:text-foreground inline-flex items-center gap-2"><MessageSquare className="size-4" />WhatsApp</a>
             </li>
             <li className="flex items-center gap-3 mt-2">
               <a href="https://www.facebook.com/EmploiplusConsulting" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-muted-foreground hover:text-foreground"><Facebook className="size-4" /></a>
