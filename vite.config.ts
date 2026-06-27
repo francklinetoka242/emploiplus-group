@@ -18,17 +18,69 @@ function sitemapGeneratorPlugin() {
         outputDir = resolve(rootDir, outputDir);
       }
     },
-    closeBundle() {
+    async closeBundle() {
       const hostname = "https://emploiplus-group.com".replace(/\/$/, "");
-      const routes = ["/", "/auth", "/about", "/services", "/jobs", "/blog", "/contact"];
-      const lastmod = new Date().toISOString().split("T")[0];
-      const sitemapItems = routes
-        .map((route) => {
-          const url = `${hostname}${route}`;
-          return `  <url>\n    <loc>${url}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>`;
-        })
-        .join("\n");
-      const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapItems}\n</urlset>`;
+      const staticRoutes = ["/", "/about", "/services", "/jobs", "/blog", "/contact"];
+      const now = new Date().toISOString().split("T")[0];
+      const publishRoute = (route: string, lastmod = now, changefreq = "weekly", priority = "0.7") => `  <url>\n    <loc>${hostname}${route}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
+
+      const pageItems = staticRoutes.map((route) => publishRoute(route, now, "daily", "0.9")).join("\n");
+
+      const sitemapItems = [pageItems];
+
+      try {
+        const { createClient } = await import("@supabase/supabase-js");
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+
+        if (!supabaseUrl || !supabaseKey) {
+          throw new Error("Supabase configuration missing for sitemap generation.");
+        }
+
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        const { data: jobs, error: jobError } = await supabase
+          .from("job_offers")
+          .select("slug, publish_at, updated_at, status")
+          .eq("status", "published")
+          .is("publish_at", "not", null)
+          .order("publish_at", { ascending: false });
+
+        if (jobError) throw jobError;
+
+        const { data: posts, error: postError } = await supabase
+          .from("blog_posts")
+          .select("slug, publish_at, updated_at, status")
+          .eq("status", "published")
+          .is("publish_at", "not", null)
+          .order("publish_at", { ascending: false });
+
+        if (postError) throw postError;
+
+        if (Array.isArray(jobs)) {
+          sitemapItems.push(
+            ...jobs.map((job) => {
+              const route = `/jobs/${job.slug}`;
+              const lastmod = job.updated_at || job.publish_at || now;
+              return publishRoute(route, lastmod, "weekly", "0.8");
+            }),
+          );
+        }
+
+        if (Array.isArray(posts)) {
+          sitemapItems.push(
+            ...posts.map((post) => {
+              const route = `/blog/${post.slug}`;
+              const lastmod = post.updated_at || post.publish_at || now;
+              return publishRoute(route, lastmod, "weekly", "0.8");
+            }),
+          );
+        }
+      } catch (error) {
+        console.warn("Sitemap generation warning:", error);
+      }
+
+      const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapItems.join("\n")}\n</urlset>`;
       mkdirSync(outputDir, { recursive: true });
       writeFileSync(join(outputDir, "sitemap.xml"), sitemapXml, "utf8");
     },

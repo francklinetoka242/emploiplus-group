@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">EmploiPlus Group</title>
+  <desc id="desc">EmploiPlus Group default Open Graph image</desc>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1728" />
+      <stop offset="100%" stop-color="#0b4a8f" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)" />
+  <rect x="80" y="80" width="1040" height="470" rx="36" fill="rgba(255,255,255,0.08)" />
+  <text x="600" y="270" text-anchor="middle" font-family="Inter, sans-serif" font-size="72" font-weight="700" fill="#ffffff">EmploiPlus Group</text>
+  <text x="600" y="360" text-anchor="middle" font-family="Inter, sans-serif" font-size="38" fill="#d8e3ff">Recrutement et communication digitale</text>
+  <text x="600" y="450" text-anchor="middle" font-family="Inter, sans-serif" font-size="24" fill="#a9bee4">Trouvez des offres et publiez des articles professionnels</text>
+</svg>
