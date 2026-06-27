@@ -41,7 +41,7 @@ const FR: Dict = {
   "common.send": "Envoyer",
   "common.publishedOn": "Publié le",
   "common.copied": "Copié",
-  "home.hero.eyebrow": "Tech · Job Media · Services numériques",
+  "home.hero.eyebrow": "GRH · Digitalisation · Formation",
   "home.hero.title": "Construisons votre avenir professionnel et numérique.",
   "home.hero.subtitle": "Emploiplus Group est une entreprise spécialisée dans la mise à disposition de main-d'œuvre, l'externalisation des ressources humaines, la transformation digitale et les services d'ingénierie destinés aux entreprises en Afrique centrale.",
   "home.hero.cta.jobs": "Voir les offres",
