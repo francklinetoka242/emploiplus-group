@@ -1,13 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { supabase } from "@/integrations/supabase/client";
 import { Sparkles } from "lucide-react";
 
 function AdminDashboardView() {
   const { t } = useI18n();
+  const [counts, setCounts] = useState({ activeJobs: 0, publishedPosts: 0, receivedRequests: 0 });
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadCounts() {
+      const [jobsRes, postsRes, requestsRes] = await Promise.all([
+        supabase.from("job_offers").select("id", { count: "exact", head: true }).eq("status", "published"),
+        supabase.from("blog_posts").select("id", { count: "exact", head: true }).eq("status", "published"),
+        supabase.from("contacts_messages").select("id", { count: "exact", head: true }),
+      ]);
+
+      if (!mounted) return;
+
+      setCounts({
+        activeJobs: jobsRes.count ?? 0,
+        publishedPosts: postsRes.count ?? 0,
+        receivedRequests: requestsRes.count ?? 0,
+      });
+    }
+
+    loadCounts();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const metrics = [
-    { label: t("admin.dashboard.metric.activeJobs"), value: "18" },
-    { label: t("admin.dashboard.metric.publishedPosts"), value: "12" },
-    { label: t("admin.dashboard.metric.receivedRequests"), value: "324" },
+    { label: t("admin.dashboard.metric.activeJobs"), value: counts.activeJobs.toString() },
+    { label: t("admin.dashboard.metric.publishedPosts"), value: counts.publishedPosts.toString() },
+    { label: t("admin.dashboard.metric.receivedRequests"), value: counts.receivedRequests.toString() },
   ];
 
   return (
