@@ -100,8 +100,8 @@ export function AdminBlogPage() {
                   <SelectValue placeholder={t("admin.blog.field.statusPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="draft">Brouillon</SelectItem>
-                  <SelectItem value="published">Publié</SelectItem>
+                  <SelectItem value="draft">{t("admin.blog.field.statusOption.draft")}</SelectItem>
+                  <SelectItem value="published">{t("admin.blog.field.statusOption.published")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
