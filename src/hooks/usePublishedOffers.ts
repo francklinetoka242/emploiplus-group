@@ -67,12 +67,15 @@ export function usePublishedBlogPosts(limit = 9) {
         .from("blog_posts")
         .select("id, slug, title, excerpt, status, publish_at")
         .eq("status", "published")
-        .lte("publish_at", now)
         .order("publish_at", { ascending: false })
         .limit(limit);
 
       if (!mounted) return;
-      setPosts(data || []);
+      const visiblePosts = (data || []).filter((post) => {
+        if (!post.publish_at) return true;
+        return new Date(post.publish_at) <= new Date(now);
+      });
+      setPosts(visiblePosts);
       setLoading(false);
     }
 

@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { BadgeDollarSign, BriefcaseBusiness, Building2, CalendarDays, MapPin, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { ShareButtons } from "@/components/site/ShareButtons";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
 import { usePublishedJobOffers } from "@/hooks/usePublishedOffers";
@@ -132,22 +134,71 @@ export function JobsPage() {
                     .replace(/\s+/g, " ")
                     .trim();
                   const contractLabel = getContractLabel(job.contract_type);
+                  const tags = (job.tags || []).filter(Boolean).slice(0, 3);
+                  const deadlineValue = job.deadline || job.expires_at || null;
+                  const isExpired = Boolean(deadlineValue && new Date(deadlineValue).getTime() < Date.now());
+                  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/jobs/${job.slug}` : `${BASE_URL}/jobs/${job.slug}`;
+                  const shareText = `Offre d'emploi : ${job.title} chez ${job.company}\n\n${previewText.slice(0, 220)}\n\nOffre partagée depuis https://emploiplus-group.com`;
                   return (
-                    <Link key={job.id} to={`/jobs/${job.slug}`} className="group">
-                      <article className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up group-hover:border-brand" style={{ animationDelay: `${i * 80}ms` }}>
-                        <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{job.company}</div>
-                        <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
-                        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                          <span>{location}</span>
-                          {contractLabel ? <span className="rounded-full border border-border px-2 py-1 text-xs">{contractLabel}</span> : null}
+                    <article key={job.id} className={`relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/[0.03] p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elev group-hover:border-brand/60 ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`} style={{ animationDelay: `${i * 80}ms` }}>
+                      <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-brand via-brand/70 to-transparent" />
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand/80">
+                            <Building2 className="size-3.5" />
+                            <span>{job.company}</span>
+                          </div>
+                          <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
                         </div>
-                        {previewText ? <p className="mt-4 text-sm text-foreground/80 leading-relaxed line-clamp-3">{previewText.length > 180 ? `${previewText.slice(0, 177)}...` : previewText}</p> : null}
-                        <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                          {job.salary ? <span className="rounded-full border border-border px-2 py-1">{t("admin.jobs.field.salary")}: {job.salary}</span> : null}
-                          {job.deadline ? <span className="rounded-full border border-border px-2 py-1">{t("admin.jobs.field.deadline")}: {formatDate(job.deadline)}</span> : null}
+                        <div className="flex items-center gap-2">
+                          {contractLabel ? (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
+                              <BriefcaseBusiness className="size-3.5" />
+                              {contractLabel}
+                            </span>
+                          ) : null}
+                          <ShareButtons url={shareUrl} text={shareText} variant="compact" className="shrink-0" />
                         </div>
-                      </article>
-                    </Link>
+                      </div>
+
+                      <Link to={`/jobs/${job.slug}`} className="block">
+                        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                          <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
+                            <MapPin className="size-4 shrink-0 text-brand" />
+                            <span>{location}</span>
+                          </div>
+                          {job.salary ? (
+                            <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
+                              <BadgeDollarSign className="size-4 shrink-0 text-brand" />
+                              <span>{job.salary}</span>
+                            </div>
+                          ) : null}
+                          {deadlineValue ? (
+                            <div className={`flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80 ${isExpired ? "text-muted-foreground" : ""} sm:col-span-2`}>
+                              <CalendarDays className="size-4 shrink-0 text-brand" />
+                              <span>{t("admin.jobs.field.deadline")}: {formatDate(deadlineValue)}{isExpired ? " • Expirée" : ""}</span>
+                            </div>
+                          ) : null}
+                        </div>
+
+                        {previewText ? (
+                          <p className="mt-4 rounded-2xl border border-border/60 bg-background/60 p-3 text-sm text-foreground/80 leading-relaxed">
+                            {previewText.length > 180 ? `${previewText.slice(0, 177)}...` : previewText}
+                          </p>
+                        ) : null}
+
+                        {tags.length > 0 ? (
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {tags.map((tag) => (
+                              <span key={tag} className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/70 px-2.5 py-1 text-xs text-muted-foreground">
+                                <Sparkles className="size-3" />
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
+                      </Link>
+                    </article>
                   );
                 })
               ) : (

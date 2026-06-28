@@ -27,6 +27,7 @@ ALTER TABLE public.blog_posts
   ADD COLUMN IF NOT EXISTS og_image text,
   ADD COLUMN IF NOT EXISTS reading_time integer,
   ADD COLUMN IF NOT EXISTS views_count integer NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS author text,
   ADD COLUMN IF NOT EXISTS category text;
 
 CREATE INDEX IF NOT EXISTS idx_blog_posts_views ON public.blog_posts (views_count DESC);

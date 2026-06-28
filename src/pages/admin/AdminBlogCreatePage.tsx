@@ -31,6 +31,7 @@ export function AdminBlogCreatePage() {
     title: "",
     subtitle: "",
     excerpt: "",
+    author: "",
     content: "",
     category: "",
     tags: "",
@@ -60,6 +61,7 @@ export function AdminBlogCreatePage() {
       slug,
       title: form.title,
       subtitle: form.subtitle || null,
+      author: form.author || null,
       content: form.content,
       excerpt: form.excerpt || null,
       image: form.image || null,
@@ -67,8 +69,8 @@ export function AdminBlogCreatePage() {
       external_link: form.external_link || null,
       category: form.category || null,
       tags: form.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
-      status: "published" as Database["public"]["Enums"]["post_status"],
-      publish_at: form.publish_at ? new Date(form.publish_at).toISOString() : null,
+      status: form.status as Database["public"]["Enums"]["post_status"],
+      publish_at: form.publish_at ? new Date(form.publish_at).toISOString() : (form.status === "published" ? new Date().toISOString() : null),
     };
 
     const { error } = await supabase.from("blog_posts").insert([payload]);
@@ -126,8 +128,8 @@ export function AdminBlogCreatePage() {
               <Input name="category" value={form.category} onChange={handleChange} placeholder="Recrutement, SaaS, RH..." />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Mots-clés</label>
-              <Input name="tags" value={form.tags} onChange={handleChange} placeholder="talent, recrutement, marque employeur" />
+              <label className="block text-sm font-semibold text-foreground mb-2">Auteur</label>
+              <Input name="author" value={form.author} onChange={handleChange} placeholder="Nom de l'auteur" />
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">

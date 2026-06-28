@@ -106,6 +106,7 @@ CREATE TABLE public.blog_posts (
   subtitle TEXT,
   content TEXT NOT NULL,
   excerpt TEXT,
+  author TEXT,
   image TEXT,
   video_url TEXT,
   external_link TEXT,

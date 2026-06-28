@@ -29,9 +29,11 @@ export function AdminBlogPage() {
     seo_description: "",
   });
   const [success, setSuccess] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
+    setError(null);
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -58,13 +60,13 @@ export function AdminBlogPage() {
       excerpt: form.excerpt || null,
       image: form.image || null,
       author: form.author || null,
-      status: "published",
-      publish_at: new Date().toISOString(),
+      status: form.status as "draft" | "published",
+      publish_at: form.status === "published" ? new Date().toISOString() : null,
     };
 
     const { data, error } = await supabase.from("blog_posts").insert([payload]).select("id").single();
     if (error) {
-      setSuccess(error.message);
+      setError(error.message);
       console.error("Blog insert error", error);
       return;
     }
@@ -154,6 +156,7 @@ export function AdminBlogPage() {
             <p className="mt-2">{t("admin.blog.field.requiredFieldsDescription")}</p>
           </div>
 
+          {error ? <div className="rounded-3xl bg-destructive/10 border border-destructive px-4 py-3 text-sm text-destructive">{error}</div> : null}
           {success ? <div className="rounded-3xl bg-emerald-500/10 border border-emerald-500 px-4 py-3 text-sm text-emerald-500">{success}</div> : null}
           <Button type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
             {t("admin.blog.submit")}

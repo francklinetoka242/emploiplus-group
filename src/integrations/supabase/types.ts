@@ -37,6 +37,7 @@ export type Database = {
           updated_at: string
           video_url: string | null
           views_count: number
+          author: string | null
         }
         Insert: {
           category?: string | null
@@ -60,6 +61,7 @@ export type Database = {
           updated_at?: string
           video_url?: string | null
           views_count?: number
+          author?: string | null
         }
         Update: {
           category?: string | null
@@ -83,6 +85,7 @@ export type Database = {
           updated_at?: string
           video_url?: string | null
           views_count?: number
+          author?: string | null
         }
         Relationships: []
       }
