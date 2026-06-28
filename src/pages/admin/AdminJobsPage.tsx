@@ -171,22 +171,28 @@ export function AdminJobsPage() {
       updated_at: new Date().toISOString(),
     };
 
-    const query = editingId
-      ? supabaseAdmin.from("job_offers").update(payload).eq("id", editingId)
-      : supabaseAdmin.from("job_offers").insert([payload]).select("id").single();
+    try {
+      const query = editingId
+        ? supabaseAdmin.from("job_offers").update(payload).eq("id", editingId)
+        : supabaseAdmin.from("job_offers").insert([payload]).select("id").single();
 
-    const { error } = await query;
-    setSubmitting(false);
+      const { error } = await query;
 
-    if (error) {
-      setMessage({ type: "error", text: error.message });
-      console.error("Job save error", error);
-      return;
+      if (error) {
+        setMessage({ type: "error", text: error.message });
+        console.error("Job save error", error);
+        return;
+      }
+
+      setMessage({ type: "success", text: editingId ? "Offre mise à jour avec succès." : t("admin.jobs.create.publishedMessage") });
+      resetForm();
+      await loadJobs();
+    } catch (err) {
+      console.error("Job save error", err);
+      setMessage({ type: "error", text: err instanceof Error ? err.message : "Une erreur inattendue est survenue." });
+    } finally {
+      setSubmitting(false);
     }
-
-    setMessage({ type: "success", text: editingId ? "Offre mise à jour avec succès." : t("admin.jobs.create.publishedMessage") });
-    resetForm();
-    await loadJobs();
   };
 
   const updateStatus = async (job: JobOffer, nextStatus: Database["public"]["Enums"]["job_status"]) => {

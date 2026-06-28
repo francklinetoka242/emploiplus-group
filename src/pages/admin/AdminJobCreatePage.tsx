@@ -112,26 +112,32 @@ export function AdminJobCreatePage() {
         .filter(Boolean),
     };
 
-    const { data, error } = savedOfferId
-      ? await supabase.from("job_offers").update(payload).eq("id", savedOfferId)
-      : await supabase.from("job_offers").insert([payload]).select("id").single();
+    try {
+      const { data, error } = savedOfferId
+        ? await supabase.from("job_offers").update(payload).eq("id", savedOfferId)
+        : await supabase.from("job_offers").insert([payload]).select("id").single();
 
-    setSaving(false);
-    if (error) {
-      setError(error.message);
-      return;
-    }
+      if (error) {
+        setError(error.message);
+        return;
+      }
 
-    // Publish immediately on creation
-    if (!savedOfferId) {
-      setSavedOfferId(data?.id || null);
+      // Publish immediately on creation
+      if (!savedOfferId) {
+        setSavedOfferId(data?.id || null);
+        setSuccess(t("admin.jobs.create.publishedMessage"));
+        navigate("/admin/jobs");
+        return;
+      }
+
       setSuccess(t("admin.jobs.create.publishedMessage"));
       navigate("/admin/jobs");
-      return;
+    } catch (err) {
+      console.error("Job create error", err);
+      setError(err instanceof Error ? err.message : "Une erreur inattendue est survenue.");
+    } finally {
+      setSaving(false);
     }
-
-    setSuccess(t("admin.jobs.create.publishedMessage"));
-    navigate("/admin/jobs");
   };
 
   return (
