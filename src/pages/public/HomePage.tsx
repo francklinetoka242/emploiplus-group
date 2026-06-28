@@ -8,6 +8,7 @@ import SEO from "@/components/SEO";
 import { DEFAULT_SEO, BASE_URL } from "@/lib/seo";
 import { SectionHeader } from "@/components/page/SectionHeader";
 import { usePublishedJobOffers, usePublishedBlogPosts } from "@/hooks/usePublishedOffers";
+import { BadgeDollarSign, BriefcaseBusiness, Building2, CalendarDays, MapPin, Sparkles } from "lucide-react";
 
 export function HomePage() {
   const { t } = useI18n();
@@ -130,11 +131,68 @@ export function HomePage() {
             ) : homeJobs.length > 0 ? (
               homeJobs.map((job, i) => {
                 const location = [job.location_city, job.location_country].filter(Boolean).join(", ") || t("jobs.location.remote");
+                const previewText = (job.description || job.requirements || "")
+                  .replace(/\s+/g, " ")
+                  .trim();
+                const contractLabel = job.contract_type ? t(`jobs.contract.${job.contract_type}`) : null;
+                const tags = (job.tags || []).filter(Boolean).slice(0, 3);
+                const deadlineValue = job.deadline || null;
+                const isExpired = Boolean(deadlineValue && new Date(deadlineValue).getTime() < Date.now());
+
                 return (
-                  <article key={job.id} className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up" style={{ animationDelay: `${i * 120}ms` }}>
-                    <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{job.company}</div>
-                    <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
-                    <div className="mt-3 text-sm text-muted-foreground">{location}</div>
+                  <article key={job.id} className={`relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/[0.03] p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elev fade-up ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`} style={{ animationDelay: `${i * 120}ms` }}>
+                    <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-brand via-brand/70 to-transparent" />
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand/80">
+                          <Building2 className="size-3.5" />
+                          <span>{job.company}</span>
+                        </div>
+                        <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
+                      </div>
+                      {contractLabel ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
+                          <BriefcaseBusiness className="size-3.5" />
+                          {contractLabel}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                      <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
+                        <MapPin className="size-4 shrink-0 text-brand" />
+                        <span>{location}</span>
+                      </div>
+                      {job.salary ? (
+                        <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
+                          <BadgeDollarSign className="size-4 shrink-0 text-brand" />
+                          <span>{job.salary}</span>
+                        </div>
+                      ) : null}
+                      {deadlineValue ? (
+                        <div className={`flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80 ${isExpired ? "text-muted-foreground" : ""} sm:col-span-2`}>
+                          <CalendarDays className="size-4 shrink-0 text-brand" />
+                          <span>{t("admin.jobs.field.deadline")}: {new Date(deadlineValue).toLocaleDateString("fr-FR")}{isExpired ? " • Expirée" : ""}</span>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    {previewText ? (
+                      <p className="mt-4 rounded-2xl border border-border/60 bg-background/60 p-3 text-sm text-foreground/80 leading-relaxed">
+                        {previewText.length > 180 ? `${previewText.slice(0, 177)}...` : previewText}
+                      </p>
+                    ) : null}
+
+                    {tags.length > 0 ? (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {tags.map((tag) => (
+                          <span key={tag} className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/70 px-2.5 py-1 text-xs text-muted-foreground">
+                            <Sparkles className="size-3" />
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
                   </article>
                 );
               })
