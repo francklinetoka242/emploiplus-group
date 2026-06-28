@@ -1,3 +1,4 @@
+import logoMonago from "@/assets/logo-monago.jpg";
 import { useI18n } from "@/lib/i18n";
 import { Sparkles } from "lucide-react";
 
@@ -20,8 +21,8 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
         <p className="text-sm text-slate-300">Gérez vos offres, contenus et équipe depuis un espace premium.</p>
       </div>
       <div className="flex items-center gap-3 rounded-3xl bg-white/5 px-4 py-3 shadow-sm">
-        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-3xl bg-slate-800 text-slate-200">
-          {avatar ? <img src={avatar} alt={name} className="h-full w-full object-cover" /> : <Sparkles className="h-6 w-6" />}
+        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-3xl bg-slate-800 p-1 text-slate-200">
+          {avatar ? <img src={avatar} alt={name} className="h-full w-full object-cover" /> : <img src={logoMonago} alt="Emploi+" className="h-full w-full object-contain" />}
         </div>
         <div className="min-w-0">
           <p className="text-sm font-semibold text-white">{name}</p>

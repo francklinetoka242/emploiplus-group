@@ -4,11 +4,59 @@ import { Button } from "@/components/ui/button";
 import { buildShareUrls } from "@/lib/utils-ext";
 import { useI18n } from "@/lib/i18n";
 
-export function ShareButtons({ url, text, variant = "full", className = "" }: { url: string; text: string; variant?: "full" | "compact"; className?: string }) {
+type ShareJobData = {
+  company?: string | null;
+  title?: string | null;
+  contractType?: string | null;
+  location?: string | null;
+  salary?: string | null;
+  description?: string | null;
+  deadline?: string | null;
+  email?: string | null;
+};
+
+export function ShareButtons({
+  url,
+  text,
+  variant = "full",
+  className = "",
+  shareData,
+}: {
+  url: string;
+  text: string;
+  variant?: "full" | "compact";
+  className?: string;
+  shareData?: ShareJobData;
+}) {
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
-  const shareText = [text, "Offre partagée depuis https://emploiplus-group.com"].filter(Boolean).join("\n\n");
+
+  const buildShareText = (data?: ShareJobData) => {
+    const lines: string[] = [];
+    const titleLine = [data?.title ? `Titre du poste : ${data.title}` : null, data?.company ? `Entreprise : ${data.company}` : null]
+      .filter(Boolean)
+      .join("\n");
+
+    if (titleLine) {
+      lines.push(titleLine);
+    }
+
+    if (data?.contractType) lines.push(`Type de contrat : ${data.contractType}`);
+    if (data?.location) lines.push(`Ville : ${data.location}`);
+    if (data?.salary) lines.push(`Salaire : ${data.salary}`);
+    if (data?.description) {
+      const description = data.description.replace(/\s+/g, " ").trim();
+      lines.push(`Description du poste : ${description}`);
+    }
+    if (data?.deadline) lines.push(`Date limite : ${data.deadline}`);
+    if (data?.email) lines.push(`Email de l'entreprise : ${data.email}`);
+
+    const baseText = [text, ...lines].filter(Boolean).join("\n\n");
+    return [baseText, "Offre partagée depuis https://emploiplus-group.com"].filter(Boolean).join("\n\n");
+  };
+
+  const shareText = buildShareText(shareData);
   const links = buildShareUrls({ url, text: shareText });
 
   const copy = async () => {

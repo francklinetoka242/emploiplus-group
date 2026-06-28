@@ -27,35 +27,33 @@ export function AdminTeamPage() {
       setError(null);
       setLoading(true);
 
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select(`
-          id,
-          role,
-          user:user_id (
-            email,
-            user_metadata
-          )
-        `)
-        .order("role", { ascending: true });
+      const [{ data: rolesData, error: rolesError }, { data: sessionData }] = await Promise.all([
+        supabase.from("user_roles").select("id, role, user_id").order("role", { ascending: true }),
+        supabase.auth.getSession(),
+      ]);
 
       if (!mounted) return;
       setLoading(false);
 
-      if (error) {
-        setError(error.message);
+      if (rolesError) {
+        setError(rolesError.message);
         return;
       }
 
-      const members = (data ?? []).map((row) => {
-        const user = (row as any).user;
-        const email = user?.email ?? row.user_id ?? "";
-        const name = user?.user_metadata?.full_name ?? user?.email ?? email;
-        const specialty = user?.user_metadata?.specialty ?? "";
+      const sessionUser = sessionData.session?.user;
+      const members = (rolesData ?? []).map((row) => {
+        const isCurrentUser = row.user_id === sessionUser?.id;
+        const email = isCurrentUser ? sessionUser?.email ?? "" : "";
+        const name = isCurrentUser
+          ? (sessionUser?.user_metadata?.full_name || sessionUser?.user_metadata?.name || sessionUser?.email || "Administrateur")
+          : `Utilisateur ${row.user_id.slice(0, 8)}`;
+        const specialty = isCurrentUser
+          ? (sessionUser?.user_metadata?.specialty || "Administration")
+          : "Rôle enregistré";
 
         return {
           id: row.id,
-          email,
+          email: email || `user-${row.user_id.slice(0, 8)}@local`,
           name,
           role: row.role ?? t("admin.team.roleLabel"),
           specialty,

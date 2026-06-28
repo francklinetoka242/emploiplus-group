@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
+import logoMonago from "@/assets/logo-monago.jpg";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import { Briefcase, ChevronLeft, ChevronRight, FileText, LayoutDashboard, LogOut, Sparkles, Users, type LucideIcon } from "lucide-react";
+import { Briefcase, ChevronLeft, ChevronRight, FileText, LayoutDashboard, LogOut, PanelLeftOpen, Sparkles, Users, type LucideIcon } from "lucide-react";
 
 type AdminView = "dashboard" | "jobs" | "blog" | "team" | "seo";
 
@@ -35,8 +36,18 @@ export function AdminSidebar({ open, activeView, onSelect, onToggle, onLogout, s
     )}>
       <div className="flex items-center justify-between gap-3 px-2">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-white shadow-sm">
-            <Sparkles className="h-5 w-5" />
+          {!open && (
+            <button
+              type="button"
+              onClick={onToggle}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-slate-100 transition hover:bg-white/15"
+              aria-label={t("admin.sidebar.expand")}
+            >
+              <PanelLeftOpen className="h-5 w-5" />
+            </button>
+          )}
+          <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-white/10 p-1 shadow-sm">
+            <img src={logoMonago} alt="Emploi+" className="h-full w-full object-contain" />
           </div>
           <div className={cn("space-y-1 overflow-hidden transition-all duration-300", open ? "max-w-full opacity-100" : "max-w-0 opacity-0")}>
             <p className="text-sm font-semibold">Emploi+</p>
@@ -79,7 +90,8 @@ export function AdminSidebar({ open, activeView, onSelect, onToggle, onLogout, s
               type="button"
               onClick={() => onSelect(item.id)}
               className={cn(
-                "group flex items-center gap-3 rounded-3xl px-4 py-3 text-left transition-all duration-300 hover:bg-white/10",
+                "group flex items-center rounded-3xl px-4 py-3 text-left transition-all duration-300 hover:bg-white/10",
+                open ? "gap-3" : "justify-center",
                 active ? "bg-white/10 ring-1 ring-white/20" : "",
               )}
               title={item.label}
@@ -95,7 +107,7 @@ export function AdminSidebar({ open, activeView, onSelect, onToggle, onLogout, s
         <button
           type="button"
           onClick={onLogout}
-          className="group inline-flex w-full items-center gap-3 rounded-3xl px-4 py-3 text-sm font-medium text-slate-100 transition hover:bg-white/10"
+          className={cn("group inline-flex w-full items-center rounded-3xl px-4 py-3 text-sm font-medium text-slate-100 transition hover:bg-white/10", open ? "gap-3" : "justify-center")}
         >
           <LogOut className="h-5 w-5 text-red-400" />
           <span className={cn("transition-all duration-300", open ? "opacity-100" : "opacity-0")}>{t("common.signOut")}</span>
