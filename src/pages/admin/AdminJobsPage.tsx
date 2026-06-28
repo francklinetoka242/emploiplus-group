@@ -1,5 +1,6 @@
 import React from "react";
 import { Eye, EyeOff, ExternalLink, PencilLine, Plus, RefreshCw, Trash2, UploadCloud } from "lucide-react";
+import { uploadFileToStorage } from "@/lib/supabase-storage";
 import { useI18n } from "@/lib/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
@@ -87,30 +88,6 @@ export function AdminJobsPage() {
       .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
   }
 
-  const uploadImageToSupabase = async (file: File, folder: string) => {
-    const ext = file.name.split(".").pop() || "jpg";
-    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const buckets = ["images", "media", "uploads", "public"];
-    let lastError: Error | null = null;
-
-    for (const bucket of buckets) {
-      const { error } = await supabase.storage.from(bucket).upload(fileName, file, {
-        cacheControl: "3600",
-        upsert: false,
-        contentType: file.type || "application/octet-stream",
-      });
-
-      if (!error) {
-        const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(fileName);
-        return publicData.publicUrl;
-      }
-
-      lastError = error;
-    }
-
-    throw lastError ?? new Error("Impossible d’uploader l’image dans Supabase Storage.");
-  };
-
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -119,7 +96,7 @@ export function AdminJobsPage() {
     setMessage(null);
 
     try {
-      const publicUrl = await uploadImageToSupabase(file, "job-offers");
+      const publicUrl = await uploadFileToStorage(file, "job-offers", import.meta.env.VITE_SUPABASE_OFFRES_BUCKET || undefined);
       setForm((prev) => ({ ...prev, cover_image: publicUrl }));
       setMessage({ type: "success", text: "Image téléchargée dans Supabase Storage." });
     } catch (error) {

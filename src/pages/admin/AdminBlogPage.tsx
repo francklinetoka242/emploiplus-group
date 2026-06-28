@@ -5,6 +5,7 @@ import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadFileToStorage } from "@/lib/supabase-storage";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -76,30 +77,6 @@ export function AdminBlogPage() {
       .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
   }
 
-  const uploadImageToSupabase = async (file: File, folder: string) => {
-    const ext = file.name.split(".").pop() || "jpg";
-    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const buckets = ["images", "media", "uploads", "public"];
-    let lastError: Error | null = null;
-
-    for (const bucket of buckets) {
-      const { error } = await supabase.storage.from(bucket).upload(fileName, file, {
-        cacheControl: "3600",
-        upsert: false,
-        contentType: file.type || "application/octet-stream",
-      });
-
-      if (!error) {
-        const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(fileName);
-        return publicData.publicUrl;
-      }
-
-      lastError = error;
-    }
-
-    throw lastError ?? new Error("Impossible d’uploader l’image dans Supabase Storage.");
-  };
-
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -108,7 +85,7 @@ export function AdminBlogPage() {
     setMessage(null);
 
     try {
-      const publicUrl = await uploadImageToSupabase(file, "blog");
+      const publicUrl = await uploadFileToStorage(file, "blog", import.meta.env.VITE_SUPABASE_BLOG_BUCKET || undefined);
       setForm((prev) => ({ ...prev, image: publicUrl }));
       setMessage({ type: "success", text: "Image téléchargée dans Supabase Storage." });
     } catch (error) {
