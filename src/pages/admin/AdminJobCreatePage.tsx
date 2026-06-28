@@ -10,10 +10,14 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { centralAfricaCityGroups } from "@/lib/centralAfricaCities";
 import type { Database } from "@/integrations/supabase/types";
 
 function createSlug(value: string) {
@@ -162,10 +166,18 @@ export function AdminJobCreatePage() {
                   <SelectValue placeholder={t("admin.jobs.field.cityPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Brazzaville">{t("admin.jobs.field.cityOption.brazzaville")}</SelectItem>
-                  <SelectItem value="Pointe-Noire">{t("admin.jobs.field.cityOption.pointenoire")}</SelectItem>
-                  <SelectItem value="Remote">{t("admin.jobs.field.cityOption.remote")}</SelectItem>
-                </SelectContent>
+                {centralAfricaCityGroups.map((group) => (
+                  <SelectGroup key={group.country}>
+                    <SelectLabel>{group.country}</SelectLabel>
+                    {group.cities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                    <SelectSeparator />
+                  </SelectGroup>
+                ))}
+              </SelectContent>
               </Select>
             </div>
             <div>

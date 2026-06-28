@@ -13,10 +13,14 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { centralAfricaCityGroups } from "@/lib/centralAfricaCities";
 import type { Database } from "@/integrations/supabase/types";
 
 type JobOffer = Database["public"]["Tables"]["job_offers"]["Row"];
@@ -284,9 +288,17 @@ export function AdminJobsPage() {
                     <SelectValue placeholder={t("admin.jobs.field.cityPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Brazzaville">{t("admin.jobs.field.cityOption.brazzaville")}</SelectItem>
-                    <SelectItem value="Pointe-Noire">{t("admin.jobs.field.cityOption.pointenoire")}</SelectItem>
-                    <SelectItem value="Remote">{t("admin.jobs.field.cityOption.remote")}</SelectItem>
+                    {centralAfricaCityGroups.map((group) => (
+                      <SelectGroup key={group.country}>
+                        <SelectLabel>{group.country}</SelectLabel>
+                        {group.cities.map((city) => (
+                          <SelectItem key={city} value={city}>
+                            {city}
+                          </SelectItem>
+                        ))}
+                        <SelectSeparator />
+                      </SelectGroup>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

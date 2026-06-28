@@ -15,6 +15,22 @@ export function HomePage() {
   const { offers: homeJobs, loading: jobsLoading } = usePublishedJobOffers(4);
   const { posts: homePosts, loading: postsLoading } = usePublishedBlogPosts(3);
 
+  const getContractLabel = (contractType?: string | null) => {
+    if (!contractType) return null;
+    const translated = t(`jobs.contract.${contractType}`);
+    if (translated && translated !== `jobs.contract.${contractType}`) return translated;
+    const fallbackMap: Record<string, string> = {
+      cdi: "CDI",
+      cdd: "CDD",
+      stage: "Stage",
+      freelance: "Freelance",
+      consultance: "Consultance",
+      temps_partiel: "Temps partiel",
+      interim: "Intérim",
+    };
+    return fallbackMap[contractType] || contractType;
+  };
+
   const stats = [
     { value: "1200+", label: "home.stats.jobs" },
     { value: "1", label: "home.stats.companies" },
@@ -134,7 +150,7 @@ export function HomePage() {
                 const previewText = (job.description || job.requirements || "")
                   .replace(/\s+/g, " ")
                   .trim();
-                const contractLabel = job.contract_type ? t(`jobs.contract.${job.contract_type}`) : null;
+                const contractLabel = getContractLabel(job.contract_type);
                 const tags = (job.tags || []).filter(Boolean).slice(0, 3);
                 const deadlineValue = job.deadline || null;
                 const isExpired = Boolean(deadlineValue && new Date(deadlineValue).getTime() < Date.now());
