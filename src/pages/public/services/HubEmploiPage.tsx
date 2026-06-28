@@ -37,22 +37,72 @@ export default function HubEmploiPage() {
 
           {/* B2B Section with distinct visual style */}
           <section className="mt-12">
-            <div className="rounded-2xl bg-gradient-to-r from-white to-slate-50 p-8 shadow-sm">
-              <div className="grid gap-8 lg:grid-cols-2 items-start">
-                <div>
-                  <h2 className="text-2xl font-semibold text-foreground">Pour les entreprises</h2>
-                  <p className="mt-3 text-muted-foreground">Solutions dédiées pour recruter mieux et plus vite — services sur-mesure pour vos besoins RH.</p>
+            <div className="rounded-3xl border border-border/70 bg-card p-8 shadow-soft">
+              <div className="grid gap-10 lg:grid-cols-[minmax(360px,1fr)_420px] items-center">
+                <div className="space-y-8">
+                  <div className="inline-flex items-center gap-3 rounded-full border border-brand/20 bg-brand/5 px-4 py-2 text-sm font-semibold text-brand shadow-sm">
+                    <span>Recrutement stratégique</span>
+                  </div>
+                  <div className="space-y-4">
+                    <h2 className="text-3xl font-semibold tracking-tight text-foreground">Pour les entreprises</h2>
+                    <p className="max-w-2xl text-base leading-7 text-muted-foreground">
+                      Solutions dédiées pour recruter mieux et plus vite — services sur-mesure et opérationnels pour répondre à vos besoins RH.
+                    </p>
+                  </div>
 
-                  <div className="mt-8 grid gap-6 sm:grid-cols-2">
-                    <Card icon={<Megaphone className="h-6 w-6" />} title="Publication & diffusion">Maximisez la visibilité de vos annonces sur nos canaux stratégiques pour attirer des profils cibles.</Card>
-                    <Card icon={<Search className="h-6 w-6" />} title="Recherche & sélection">Un sourcing sur-mesure et une pré-sélection rigoureuse pour vous faire gagner un temps précieux.</Card>
-                    <Card icon={<Users className="h-6 w-6" />} title="Recrutement complet">Un accompagnement de A à Z par nos experts pour intégrer le collaborateur idéal.</Card>
-                    <Card icon={<Database className="h-6 w-6" />} title="Bases de talents">Accédez à notre vivier exclusif de profils qualifiés et disponibles immédiatement.</Card>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <article className="rounded-3xl border border-border/70 bg-background p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '100ms' }}>
+                      <div className="flex items-start gap-3">
+                        <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand/10 text-brand">
+                          <Megaphone className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground">Publication & diffusion</h3>
+                          <p className="mt-2 text-sm text-muted-foreground">Maximisez la visibilité de vos annonces sur nos canaux stratégiques pour attirer des profils cibles.</p>
+                        </div>
+                      </div>
+                    </article>
+
+                    <article className="rounded-3xl border border-border/70 bg-background p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '150ms' }}>
+                      <div className="flex items-start gap-3">
+                        <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand/10 text-brand">
+                          <Search className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground">Recherche & sélection</h3>
+                          <p className="mt-2 text-sm text-muted-foreground">Un sourcing sur-mesure et une pré-sélection rigoureuse pour vous faire gagner un temps précieux.</p>
+                        </div>
+                      </div>
+                    </article>
+
+                    <article className="rounded-3xl border border-border/70 bg-background p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '200ms' }}>
+                      <div className="flex items-start gap-3">
+                        <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand/10 text-brand">
+                          <Users className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground">Recrutement complet</h3>
+                          <p className="mt-2 text-sm text-muted-foreground">Un accompagnement de A à Z par nos experts pour intégrer le collaborateur idéal.</p>
+                        </div>
+                      </div>
+                    </article>
+
+                    <article className="rounded-3xl border border-border/70 bg-background p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '250ms' }}>
+                      <div className="flex items-start gap-3">
+                        <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand/10 text-brand">
+                          <Database className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground">Bases de talents</h3>
+                          <p className="mt-2 text-sm text-muted-foreground">Accédez à notre vivier exclusif de profils qualifiés et disponibles immédiatement.</p>
+                        </div>
+                      </div>
+                    </article>
                   </div>
                 </div>
 
-                <div className="hidden lg:flex items-center justify-center">
-                  <img src={hubImage} alt="Hub Emploi illustration" className="w-full max-w-md rounded-2xl shadow-lg object-cover transform transition-transform duration-500 hover:scale-105" />
+                <div className="rounded-3xl overflow-hidden border border-border/70 bg-background shadow-sm fade-up" style={{ animationDelay: '200ms' }}>
+                  <img src={hubImage} alt="Hub Emploi illustration" className="h-full w-full object-cover" />
                 </div>
               </div>
             </div>
@@ -60,20 +110,77 @@ export default function HubEmploiPage() {
 
           {/* B2C Section with alternating blocks and different background */}
           <section className="mt-16">
-            <div className="rounded-2xl bg-brand/5 p-8">
-              <h2 className="text-2xl font-semibold text-foreground">Pour les candidats</h2>
-              <p className="mt-3 text-muted-foreground">Des services pensés pour valoriser vos compétences et accélérer votre insertion professionnelle.</p>
-
-              <div className="mt-8 space-y-12">
-                <AlternateBlock title="Évaluation des compétences" detail="Tests techniques et comportementaux pour certifier votre expertise." img={hubImage} reverse={false} />
-                <AlternateBlock title="Optimisation de CV & lettres" detail="Refonte complète de vos outils pour capter l'attention des recruteurs." img={hubImage} reverse={true} />
-                <AlternateBlock title="Accompagnement personnalisé" detail="Un coaching pour piloter votre carrière avec assurance." img={hubImage} reverse={false} />
-                <AlternateBlock title="Préparation aux entretiens" detail="Simulations réelles et feedbacks constructifs pour faire la différence le jour J." img={hubImage} reverse={true} />
+            <div className="rounded-3xl border border-brand/10 bg-gradient-to-br from-brand/5 via-background to-white p-8 shadow-soft">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-3 rounded-full border border-brand/15 bg-white/80 px-4 py-2 text-sm font-semibold text-brand shadow-sm">
+                    <span>Accompagnement carrière</span>
+                  </div>
+                  <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground">Pour les candidats</h2>
+                  <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+                    Des services pensés pour valoriser vos compétences, renforcer votre visibilité et accélérer votre insertion professionnelle.
+                  </p>
+                </div>
               </div>
 
-              <div className="mt-12 text-center">
-                <p className="text-muted-foreground">Prêt à franchir la prochaine étape ?</p>
-                <div className="mt-4 flex items-center justify-center gap-3">
+              <div className="mt-10 space-y-6">
+                <section className="rounded-3xl border border-border/70 bg-background/90 p-6 shadow-sm">
+                  <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="max-w-2xl">
+                      <div className="inline-flex items-center rounded-full bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">Accompagnement carrière</div>
+                      <h3 className="mt-4 text-2xl font-semibold text-foreground">Évaluation des compétences</h3>
+                      <p className="mt-3 text-base leading-7 text-muted-foreground">Des tests concrets et des feedbacks utiles pour valider votre profil et révéler votre potentiel.</p>
+                    </div>
+                    <div className="w-full max-w-[280px] overflow-hidden rounded-2xl border border-border/70 shadow-sm">
+                      <img src={hubImage} alt="Évaluation des compétences" className="h-44 w-full object-cover" />
+                    </div>
+                  </div>
+                </section>
+
+                <section className="rounded-3xl border border-border/70 bg-background/90 p-6 shadow-sm">
+                  <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="w-full max-w-[280px] overflow-hidden rounded-2xl border border-border/70 shadow-sm lg:order-2">
+                      <img src={hubImage} alt="Optimisation de CV & lettres" className="h-44 w-full object-cover" />
+                    </div>
+                    <div className="max-w-2xl lg:order-1">
+                      <div className="inline-flex items-center rounded-full bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">Positionnement professionnel</div>
+                      <h3 className="mt-4 text-2xl font-semibold text-foreground">Optimisation de CV & lettres</h3>
+                      <p className="mt-3 text-base leading-7 text-muted-foreground">Des documents clairs, impactants et adaptés aux attentes des recruteurs.</p>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="rounded-3xl border border-border/70 bg-background/90 p-6 shadow-sm">
+                  <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="max-w-2xl">
+                      <div className="inline-flex items-center rounded-full bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">Conseil personnalisé</div>
+                      <h3 className="mt-4 text-2xl font-semibold text-foreground">Accompagnement personnalisé</h3>
+                      <p className="mt-3 text-base leading-7 text-muted-foreground">Un suivi humain et structuré pour vous aider à faire les bons choix à chaque étape.</p>
+                    </div>
+                    <div className="w-full max-w-[280px] overflow-hidden rounded-2xl border border-border/70 shadow-sm">
+                      <img src={hubImage} alt="Accompagnement personnalisé" className="h-44 w-full object-cover" />
+                    </div>
+                  </div>
+                </section>
+
+                <section className="rounded-3xl border border-border/70 bg-background/90 p-6 shadow-sm">
+                  <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="w-full max-w-[280px] overflow-hidden rounded-2xl border border-border/70 shadow-sm lg:order-2">
+                      <img src={hubImage} alt="Préparation aux entretiens" className="h-44 w-full object-cover" />
+                    </div>
+                    <div className="max-w-2xl lg:order-1">
+                      <div className="inline-flex items-center rounded-full bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">Préparation à l'embauche</div>
+                      <h3 className="mt-4 text-2xl font-semibold text-foreground">Préparation aux entretiens</h3>
+                      <p className="mt-3 text-base leading-7 text-muted-foreground">Des simulations réalistes pour gagner en confiance et faire la différence le jour J.</p>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <div className="mt-12 rounded-3xl border border-border/70 bg-white/80 p-8 text-center shadow-sm">
+                <p className="text-lg font-medium text-foreground">Prêt à franchir la prochaine étape ?</p>
+                <p className="mt-2 text-muted-foreground">Nous vous aidons à transformer votre parcours en opportunités concrètes.</p>
+                <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
                   <a href="/contact?subject=Demande%20de%20coaching%20-%20Candidat" className="inline-block"><Button size="lg" className="bg-brand text-brand-foreground">Je m'inscris</Button></a>
                   <Link to="/jobs"><Button variant="outline" size="lg">Consulter les offres</Button></Link>
                 </div>
