@@ -1,11 +1,11 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import { writeFileSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
 import { resolve, join } from "node:path";
 
-function sitemapGeneratorPlugin() {
+function sitemapGeneratorPlugin(env: Record<string, string>) {
   let outputDir = "dist";
   let rootDir = process.cwd();
 
@@ -38,13 +38,23 @@ function sitemapGeneratorPlugin() {
       try {
         const { createClient } = await import("@supabase/supabase-js");
         const supabaseUrl =
-          process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+          env.VITE_SUPABASE_URL || env.SUPABASE_URL || "";
         const supabaseKey =
-          process.env.SUPABASE_PUBLISHABLE_KEY ||
-          process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-          process.env.SUPABASE_ANON_KEY ||
-          process.env.VITE_SUPABASE_ANON_KEY ||
-          process.env.SUPABASE_SERVICE_ROLE_KEY;
+          env.VITE_SUPABASE_ANON_KEY ||
+          env.SUPABASE_ANON_KEY ||
+          env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+          env.SUPABASE_PUBLISHABLE_KEY ||
+          env.SUPABASE_SERVICE_ROLE_KEY ||
+          "";
+
+        console.log(
+          "[sitemap] VITE_SUPABASE_URL detected:",
+          Boolean(env.VITE_SUPABASE_URL),
+        );
+        console.log(
+          "[sitemap] VITE_SUPABASE_ANON_KEY detected:",
+          Boolean(env.VITE_SUPABASE_ANON_KEY),
+        );
 
         if (!supabaseUrl || !supabaseKey) {
           console.warn(
@@ -56,20 +66,22 @@ function sitemapGeneratorPlugin() {
           const { data: jobs, error: jobError } = await supabase
             .from("job_offers")
             .select("slug, publish_at, updated_at, status")
-            .eq("status", "published")
-            .is("publish_at", "not", null)
-            .lte("publish_at", now)
-            .or(`expires_at.is.null,expires_at.gte.${now}`)
             .order("publish_at", { ascending: false });
 
-          if (jobError) throw jobError;
+          if (jobError) {
+            console.error(
+              "[sitemap] Failed to fetch job offers from Supabase:",
+              jobError,
+            );
+          } else {
+            console.log(
+              `[sitemap] Retrieved ${jobs?.length ?? 0} job offers from Supabase.`,
+            );
+          }
 
           const { data: posts, error: postError } = await supabase
             .from("blog_posts")
             .select("slug, publish_at, updated_at, status")
-            .eq("status", "published")
-            .is("publish_at", "not", null)
-            .lte("publish_at", now)
             .order("publish_at", { ascending: false });
 
           if (postError) throw postError;
@@ -117,6 +129,10 @@ function sitemapGeneratorPlugin() {
   };
 }
 
-export default defineConfig({
-  plugins: [react(), tsconfigPaths(), tailwindcss(), sitemapGeneratorPlugin()],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+
+  return {
+    plugins: [react(), tsconfigPaths(), tailwindcss(), sitemapGeneratorPlugin(env)],
+  };
 });
