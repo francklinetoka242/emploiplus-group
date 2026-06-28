@@ -52,6 +52,25 @@ export function JobOfferDetailPage() {
   const ogImage = job.og_image || job.cover_image || `${BASE_URL}/og-default.svg`;
   const canonical = `${BASE_URL}/jobs/${job.slug}`;
   const location = [job.location_city, job.location_country].filter(Boolean).join(', ') || t('jobs.location.remote');
+  const getContractLabel = (contractType?: string | null) => {
+    if (!contractType) return null;
+    const translated = t(`jobs.contract.${contractType}`);
+    if (translated && translated !== `jobs.contract.${contractType}`) return translated;
+    const fallbackMap: Record<string, string> = {
+      cdi: "CDI",
+      cdd: "CDD",
+      stage: "Stage",
+      freelance: "Freelance",
+      consultance: "Consultance",
+      temps_partiel: "Temps partiel",
+      interim: "Intérim",
+    };
+    return fallbackMap[contractType] || contractType;
+  };
+  const getLabel = (key: string, fallback: string) => {
+    const translated = t(key);
+    return translated && translated !== key ? translated : fallback;
+  };
   const formatDate = (value?: string | null) => {
     if (!value) return null;
     const date = new Date(value);
@@ -102,21 +121,21 @@ export function JobOfferDetailPage() {
           <div className="space-y-8">
             <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
               <div className="flex flex-col gap-3">
-                <Link to="/jobs" className="text-sm text-brand hover:underline">← {t('jobs.backToList')}</Link>
+                <Link to="/jobs" className="text-sm text-brand hover:underline">← {getLabel('jobs.backToList', 'Retour à la liste')}</Link>
                 <h1 className="font-display text-4xl font-bold text-foreground">{job.title}</h1>
-                <p className="text-sm text-muted-foreground">{job.company} · {location} · {t(`jobs.contract.${job.contract_type}`)}</p>
+                <p className="text-sm text-muted-foreground">{job.company} · {location} · {getContractLabel(job.contract_type)}</p>
                 <p className="mt-4 text-foreground/90 leading-relaxed">{description}</p>
               </div>
             </div>
 
             <div className="rounded-3xl border border-border bg-card p-8 shadow-soft space-y-6">
               <div>
-                <h2 className="font-display text-2xl font-semibold text-foreground">{t('jobs.detail.descriptionTitle')}</h2>
+                <h2 className="font-display text-2xl font-semibold text-foreground">{getLabel('jobs.detail.descriptionTitle', 'Description du poste')}</h2>
                 <p className="mt-4 text-foreground/90 leading-relaxed whitespace-pre-line">{job.description}</p>
               </div>
               {job.requirements ? (
                 <div>
-                  <h3 className="font-display text-xl font-semibold text-foreground">{t('jobs.detail.requirementsTitle')}</h3>
+                  <h3 className="font-display text-xl font-semibold text-foreground">{getLabel('jobs.detail.requirementsTitle', 'Profil recherché')}</h3>
                   <p className="mt-4 text-foreground/90 leading-relaxed whitespace-pre-line">{job.requirements}</p>
                 </div>
               ) : null}
@@ -125,21 +144,21 @@ export function JobOfferDetailPage() {
 
           <aside className="space-y-6">
             <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-              <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{t('jobs.detail.overview')}</p>
+              <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{getLabel('jobs.detail.overview', 'Aperçu')}</p>
               <div className="mt-6 space-y-3 text-sm text-foreground/90">
-                <div><span className="font-semibold">{t('jobs.detail.company')} :</span> {job.company}</div>
-                <div><span className="font-semibold">{t('jobs.detail.location')} :</span> {location}</div>
-                <div><span className="font-semibold">{t('jobs.detail.contractType')} :</span> {t(`jobs.contract.${job.contract_type}`)}</div>
+                <div><span className="font-semibold">{getLabel('jobs.detail.company', 'Entreprise')} :</span> {job.company}</div>
+                <div><span className="font-semibold">{getLabel('jobs.detail.location', 'Localisation')} :</span> {location}</div>
+                <div><span className="font-semibold">{getLabel('jobs.detail.contractType', 'Type de contrat')} :</span> {getContractLabel(job.contract_type)}</div>
                 {job.salary ? <div><span className="font-semibold">{t('admin.jobs.field.salary')} :</span> {job.salary}</div> : null}
                 {job.deadline ? <div><span className="font-semibold">{t('admin.jobs.field.deadline')} :</span> {formatDate(job.deadline)}</div> : null}
-                {job.publish_at ? <div><span className="font-semibold">{t('jobs.detail.publishedAt')} :</span> {formatDate(job.publish_at)}</div> : null}
-                {job.expires_at ? <div><span className="font-semibold">{t('jobs.detail.expiresAt')} :</span> {formatDate(job.expires_at)}</div> : null}
+                {job.publish_at ? <div><span className="font-semibold">{getLabel('jobs.detail.publishedAt', 'Publié le')} :</span> {formatDate(job.publish_at)}</div> : null}
+                {job.expires_at ? <div><span className="font-semibold">{getLabel('jobs.detail.expiresAt', 'Expire le')} :</span> {formatDate(job.expires_at)}</div> : null}
                 {tags.length > 0 ? <div><span className="font-semibold">{t('admin.jobs.field.keywords')} :</span> {tags.join(', ')}</div> : null}
               </div>
             </div>
 
             <div className="rounded-3xl border border-border bg-card p-8 shadow-soft space-y-4">
-              <h3 className="font-display text-xl font-semibold text-foreground">{t('jobs.detail.applyTitle')}</h3>
+              <h3 className="font-display text-xl font-semibold text-foreground">{getLabel('jobs.detail.applyTitle', 'Postuler')}</h3>
               {job.application_email ? (
                 <a href={`mailto:${job.application_email}`} className="inline-flex w-full items-center justify-center rounded-full bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">{t('jobs.detail.applyByEmail')}</a>
               ) : null}

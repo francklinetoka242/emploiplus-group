@@ -16,6 +16,21 @@ export function JobsPage() {
   const q = query.trim().toLowerCase();
   const companyFilter = companyQuery.trim().toLowerCase();
   const lq = locationQuery.trim().toLowerCase();
+  const getContractLabel = (contractType?: string | null) => {
+    if (!contractType) return null;
+    const translated = t(`jobs.contract.${contractType}`);
+    if (translated && translated !== `jobs.contract.${contractType}`) return translated;
+    const fallbackMap: Record<string, string> = {
+      cdi: "CDI",
+      cdd: "CDD",
+      stage: "Stage",
+      freelance: "Freelance",
+      consultance: "Consultance",
+      temps_partiel: "Temps partiel",
+      interim: "Intérim",
+    };
+    return fallbackMap[contractType] || contractType;
+  };
   const formatDate = (value?: string | null) => {
     if (!value) return null;
     const date = new Date(value);
@@ -116,7 +131,7 @@ export function JobsPage() {
                   const previewText = (job.description || job.requirements || "")
                     .replace(/\s+/g, " ")
                     .trim();
-                  const contractLabel = job.contract_type ? (t(`jobs.contract.${job.contract_type}`) || job.contract_type) : null;
+                  const contractLabel = getContractLabel(job.contract_type);
                   return (
                     <Link key={job.id} to={`/jobs/${job.slug}`} className="group">
                       <article className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up group-hover:border-brand" style={{ animationDelay: `${i * 80}ms` }}>
