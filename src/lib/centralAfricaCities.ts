@@ -70,8 +70,12 @@ export const centralAfricaCityGroups: CityGroup[] = [
       "Pointe-Noire",
       "Dolisie",
       "Ouesso",
+      "Oyo",
+      "Pokola",
       "Nkayi",
       "Impfondo",
+      "Owando",
+      "Sibiti",
     ],
   },
   {
