@@ -73,7 +73,7 @@ export function AdminJobCreatePage() {
       form.keywords ? `Mots-clés : ${form.keywords}` : "",
     ].filter(Boolean);
 
-    const nextStatus: Database["public"]["Enums"]["job_status"] = savedOfferId ? "published" : "draft";
+    const nextStatus: Database["public"]["Enums"]["job_status"] = "published";
     const payload = {
       slug,
       title: form.title.trim(),
@@ -117,9 +117,11 @@ export function AdminJobCreatePage() {
       return;
     }
 
+    // Publish immediately on creation
     if (!savedOfferId) {
       setSavedOfferId(data?.id || null);
-      setSuccess(t("admin.jobs.successMessage"));
+      setSuccess(t("admin.jobs.create.publishedMessage"));
+      navigate("/admin/jobs");
       return;
     }
 

@@ -67,7 +67,7 @@ export function AdminBlogCreatePage() {
       external_link: form.external_link || null,
       category: form.category || null,
       tags: form.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
-      status: form.status as Database["public"]["Enums"]["post_status"],
+      status: "published" as Database["public"]["Enums"]["post_status"],
       publish_at: form.publish_at ? new Date(form.publish_at).toISOString() : null,
     };
 
