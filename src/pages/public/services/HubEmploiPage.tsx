@@ -15,29 +15,25 @@ export default function HubEmploiPage() {
 
       <main className="container-page py-8 md:py-16">
         <div className="mx-auto max-w-4xl">
-          {/* Hero Mini */}
-          <div className="text-center">
-            <span className="inline-block rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-brand">Pôle 1 — Hub Emploi & Recrutement</span>
-            <h1 className="mt-6 text-3xl sm:text-4xl md:text-5xl font-display font-bold text-foreground">Hub Emploi & Recrutement</h1>
-            <p className="mt-4 text-lg text-muted-foreground">Connecter les entreprises aux meilleurs talents et accompagner les chercheurs d’emploi vers la réussite.</p>
-
-            <div className="mt-6 flex flex-col sm:flex-row sm:justify-center gap-3">
-              <a href="/contact?subject=Demande%20de%20devis%20-%20P%C3%94LE%201%20%3A%20HUB%20EMPLOI%20%26%20RECRUTEMENT" className="inline-block">
-                <Button size="lg" className="bg-brand text-brand-foreground">Demander un devis</Button>
-              </a>
-              <Link to="/jobs" className="inline-block">
-                <Button variant="outline" size="lg">Voir les offres</Button>
-              </Link>
-            </div>
-
-            <div className="mt-6 max-w-3xl mx-auto rounded-lg border border-border bg-yellow-50 p-4 text-sm">
-              <strong>NB :</strong>&nbsp;Faciliter l’accès à l’emploi et constituer un vivier de talents qualifiés.
-            </div>
-          </div>
-
           {/* B2B Section with distinct visual style */}
-          <section className="mt-12">
+          <section className="mt-4 md:mt-6">
             <div className="rounded-3xl border border-border/70 bg-card p-8 shadow-soft">
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/70 px-4 py-3 text-sm">
+                <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
+                  <Link to="/services" className="font-medium text-foreground transition-colors hover:text-brand">Services</Link>
+                  <span>/</span>
+                  <span className="font-medium text-brand">Hub Emploi & Recrutement</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => window.history.back()}
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-brand hover:text-brand"
+                >
+                  <span aria-hidden="true">←</span>
+                  <span>Retour</span>
+                </button>
+              </div>
+
               <div className="grid gap-10 lg:grid-cols-[minmax(360px,1fr)_420px] items-center">
                 <div className="space-y-8">
                   <div className="inline-flex items-center gap-3 rounded-full border border-brand/20 bg-brand/5 px-4 py-2 text-sm font-semibold text-brand shadow-sm">
@@ -50,8 +46,8 @@ export default function HubEmploiPage() {
                     </p>
                   </div>
 
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <article className="rounded-3xl border border-border/70 bg-background p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '100ms' }}>
+                  <div className="space-y-4">
+                    <section className="rounded-3xl border border-border/70 bg-background/90 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '100ms' }}>
                       <div className="flex items-start gap-3">
                         <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand/10 text-brand">
                           <Megaphone className="h-5 w-5" />
@@ -61,9 +57,9 @@ export default function HubEmploiPage() {
                           <p className="mt-2 text-sm text-muted-foreground">Maximisez la visibilité de vos annonces sur nos canaux stratégiques pour attirer des profils cibles.</p>
                         </div>
                       </div>
-                    </article>
+                    </section>
 
-                    <article className="rounded-3xl border border-border/70 bg-background p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '150ms' }}>
+                    <section className="rounded-3xl border border-border/70 bg-background/90 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '150ms' }}>
                       <div className="flex items-start gap-3">
                         <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand/10 text-brand">
                           <Search className="h-5 w-5" />
@@ -73,9 +69,9 @@ export default function HubEmploiPage() {
                           <p className="mt-2 text-sm text-muted-foreground">Un sourcing sur-mesure et une pré-sélection rigoureuse pour vous faire gagner un temps précieux.</p>
                         </div>
                       </div>
-                    </article>
+                    </section>
 
-                    <article className="rounded-3xl border border-border/70 bg-background p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '200ms' }}>
+                    <section className="rounded-3xl border border-border/70 bg-background/90 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '200ms' }}>
                       <div className="flex items-start gap-3">
                         <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand/10 text-brand">
                           <Users className="h-5 w-5" />
@@ -85,9 +81,9 @@ export default function HubEmploiPage() {
                           <p className="mt-2 text-sm text-muted-foreground">Un accompagnement de A à Z par nos experts pour intégrer le collaborateur idéal.</p>
                         </div>
                       </div>
-                    </article>
+                    </section>
 
-                    <article className="rounded-3xl border border-border/70 bg-background p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '250ms' }}>
+                    <section className="rounded-3xl border border-border/70 bg-background/90 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up" style={{ animationDelay: '250ms' }}>
                       <div className="flex items-start gap-3">
                         <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-brand/10 text-brand">
                           <Database className="h-5 w-5" />
@@ -97,7 +93,7 @@ export default function HubEmploiPage() {
                           <p className="mt-2 text-sm text-muted-foreground">Accédez à notre vivier exclusif de profils qualifiés et disponibles immédiatement.</p>
                         </div>
                       </div>
-                    </article>
+                    </section>
                   </div>
                 </div>
 
