@@ -6,10 +6,10 @@ import { BASE_URL } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/page/SectionHeader";
 import { SERVICES } from "@/lib/constants";
-import hubImage from "@/assets/services/hub-emploi.svg";
-import rhImage from "@/assets/services/rh-gestion.svg";
-import conseilImage from "@/assets/services/conseil-training.svg";
-import serviceImage from "@/assets/services/service-opérationnel.svg";
+import hubImage from "@/assets/IMG_Page-Services/2147626421.jpg";
+import rhImage from "@/assets/IMG_Page-Services/groupe-hommes-affaires-afro-americains_926199-3049393.jpg";
+import conseilImage from "@/assets/IMG_Page-Services/ingenieurs-equipe-discutant-dans-salle-serveurs-train-faire-du-brainstorming_482257-118150(1).jpg";
+import serviceImage from "@/assets/IMG_Page-Services/employee-energie-solaire-fournissant-soutien-distance-dans-usine-panneaux-solaires_482257-125116(1).jpg";
 
 const SERVICE_IMAGES = {
   "hub-emploi-recrutement": hubImage,
@@ -38,18 +38,27 @@ export function ServicesPage() {
       <section className="container-page pb-12 md:pb-16">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-6 md:grid-cols-2 items-stretch">
-            {SERVICES.map((item, i) => (
+            {SERVICES.map((item, i) => {
+              const detailPath = item.slug === 'hub-emploi-recrutement' ? `/services/${item.slug}/landing` : `/services/${item.slug}`;
+              return (
               <article
                 key={item.slug}
                 className="group overflow-hidden rounded-[28px] border border-border/70 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl fade-up"
                 style={{ animationDelay: `${i * 100}ms` }}
               >
-                <div className="relative overflow-hidden bg-gradient-to-br from-brand/10 via-background to-brand/5 p-4">
+                <div className="relative overflow-hidden bg-gradient-to-br from-brand/10 via-background to-brand/5">
                   <img
                     src={SERVICE_IMAGES[item.slug as keyof typeof SERVICE_IMAGES]}
                     alt={`Illustration ${t(item.titleKey)}`}
-                    className="h-44 w-full rounded-[20px] object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                    className="h-52 w-full rounded-t-[28px] object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                   />
+                  {item.slug === 'hub-emploi-recrutement' && (
+                    <div className="absolute inset-0 flex items-end justify-end p-4">
+                      <Button asChild size="sm" className="bg-white/90 text-brand shadow-sm hover:bg-white">
+                        <Link to={detailPath} className="text-sm font-medium">En savoir plus</Link>
+                      </Button>
+                    </div>
+                  )}
                 </div>
                 <div className="flex h-full flex-col justify-between gap-6 p-6">
                   <div>
@@ -61,7 +70,7 @@ export function ServicesPage() {
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <Button asChild size="default" className="w-full border border-brand/30 bg-white text-brand shadow-sm hover:bg-brand hover:text-brand-foreground">
-                      <Link to={`/services/${item.slug}`}>{t('services.cardAction.details')}</Link>
+                      <Link to={detailPath}>{t('services.cardAction.details')}</Link>
                     </Button>
                     <Button asChild size="default" className="w-full bg-brand text-brand-foreground shadow-sm hover:bg-brand/90">
                       <Link to={`/contact?subject=${encodeURIComponent(`${t('services.requestQuote.subjectPrefix')} - ${t(item.titleKey)}`)}`}>{t('services.cardAction.quote')}</Link>
@@ -69,7 +78,8 @@ export function ServicesPage() {
                   </div>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

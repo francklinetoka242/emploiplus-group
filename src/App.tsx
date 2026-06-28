@@ -21,6 +21,7 @@ const JobOfferDetailPage = lazy(() => import("./pages/public/JobOfferDetailPage"
 const JobsPage = lazy(() => import("./pages/public/JobsPage").then(m => ({ default: m.JobsPage })));
 const ServiceDetailPage = lazy(() => import("./pages/public/UtilityPages").then(m => ({ default: m.ServiceDetailPage })));
 const ServicesPage = lazy(() => import("./pages/public/ServicesPage").then(m => ({ default: m.ServicesPage })));
+const HubEmploiPage = lazy(() => import("./pages/public/services/HubEmploiPage"));
 
 // Lazy load admin pages (heavy feature area)
 const AdminPage = lazy(() => import("./pages/admin").then(m => ({ default: m.AdminPage })));
@@ -59,6 +60,7 @@ export default function App() {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/services/:slug" element={<ServiceDetailPage />} />
+              <Route path="/services/hub-emploi-recrutement/landing" element={<HubEmploiPage />} />
               <Route path="/jobs" element={<JobsPage />} />
               <Route path="/jobs/:slug" element={<JobOfferDetailPage />} />
               <Route path="/blog" element={<BlogPage />} />
