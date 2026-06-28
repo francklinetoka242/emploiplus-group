@@ -55,6 +55,19 @@ export function AboutPage() {
           </div>
 
           <div className="w-full">
+            <h3 className="font-display text-2xl font-bold text-foreground mb-6">{t('about.values.title')}</h3>
+            <div className="grid gap-4 md:grid-cols-3">
+              {values.map((item) => (
+                <div key={item.title} className="rounded-3xl border border-border bg-card p-6 text-left md:text-center">
+                  <div className="text-3xl">{item.icon}</div>
+                  <h4 className="mt-4 text-lg font-semibold text-foreground">{item.title}</h4>
+                  <p className="mt-2 text-muted-foreground leading-relaxed">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="w-full">
             <h3 className="font-display text-2xl font-bold text-foreground">{t('about.team.title')}</h3>
             <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">{t('about.team.subtitle')}</p>
             <div className="mt-8 grid gap-8 md:grid-cols-3 md:items-start">
@@ -85,19 +98,6 @@ export function AboutPage() {
                   <p className="mt-2 text-sm font-medium uppercase tracking-[0.2em] text-brand">{teamMembers[2].role}</p>
                 </div>
               </article>
-            </div>
-          </div>
-
-          <div className="w-full">
-            <h3 className="font-display text-2xl font-bold text-foreground mb-6">{t('about.values.title')}</h3>
-            <div className="grid gap-4 md:grid-cols-3">
-              {values.map((item) => (
-                <div key={item.title} className="rounded-3xl border border-border bg-card p-6 text-left md:text-center">
-                  <div className="text-3xl">{item.icon}</div>
-                  <h4 className="mt-4 text-lg font-semibold text-foreground">{item.title}</h4>
-                  <p className="mt-2 text-muted-foreground leading-relaxed">{item.description}</p>
-                </div>
-              ))}
             </div>
           </div>
         </div>
