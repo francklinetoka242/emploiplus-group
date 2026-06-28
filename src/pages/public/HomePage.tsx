@@ -12,7 +12,7 @@ import { BadgeDollarSign, BriefcaseBusiness, Building2, CalendarDays, MapPin, Sp
 
 export function HomePage() {
   const { t } = useI18n();
-  const { offers: homeJobs, loading: jobsLoading } = usePublishedJobOffers(4);
+  const { offers: homeJobs, loading: jobsLoading } = usePublishedJobOffers(2);
   const { posts: homePosts, loading: postsLoading } = usePublishedBlogPosts(3);
 
   const getContractLabel = (contractType?: string | null) => {
