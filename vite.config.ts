@@ -21,24 +21,35 @@ function sitemapGeneratorPlugin() {
     async closeBundle() {
       const hostname = "https://emploiplus-group.com".replace(/\/$/, "");
       const staticRoutes = ["/", "/about", "/services", "/jobs", "/blog", "/contact"];
-      const now = new Date().toISOString().split("T")[0];
-      const publishRoute = (route: string, lastmod = now, changefreq = "weekly", priority = "0.7") => `  <url>\n    <loc>${hostname}${route}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
+      const now = new Date().toISOString();
+      const publishRoute = (
+        route: string,
+        lastmod = now,
+        changefreq = "weekly",
+        priority = "0.7",
+      ) => `  <url>\n    <loc>${hostname}${route}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
 
-      const pageItems = staticRoutes.map((route) => publishRoute(route, now, "daily", "0.9")).join("\n");
+      const pageItems = staticRoutes
+        .map((route) => publishRoute(route, now, "daily", "0.9"))
+        .join("\n");
 
       const sitemapItems = [pageItems];
 
       try {
         const { createClient } = await import("@supabase/supabase-js");
-        const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+        const supabaseUrl =
+          process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
         const supabaseKey =
           process.env.SUPABASE_PUBLISHABLE_KEY ||
           process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
           process.env.SUPABASE_ANON_KEY ||
-          process.env.VITE_SUPABASE_ANON_KEY;
+          process.env.VITE_SUPABASE_ANON_KEY ||
+          process.env.SUPABASE_SERVICE_ROLE_KEY;
 
         if (!supabaseUrl || !supabaseKey) {
-          console.warn("Sitemap generation skipped: Supabase URL or publishable key missing.");
+          console.warn(
+            "Sitemap generation skipped: Supabase URL or key missing.",
+          );
         } else {
           const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -47,6 +58,8 @@ function sitemapGeneratorPlugin() {
             .select("slug, publish_at, updated_at, status")
             .eq("status", "published")
             .is("publish_at", "not", null)
+            .lte("publish_at", now)
+            .or(`expires_at.is.null,expires_at.gte.${now}`)
             .order("publish_at", { ascending: false });
 
           if (jobError) throw jobError;
@@ -56,6 +69,7 @@ function sitemapGeneratorPlugin() {
             .select("slug, publish_at, updated_at, status")
             .eq("status", "published")
             .is("publish_at", "not", null)
+            .lte("publish_at", now)
             .order("publish_at", { ascending: false });
 
           if (postError) throw postError;
@@ -84,7 +98,9 @@ function sitemapGeneratorPlugin() {
         console.warn("Sitemap generation warning:", error);
       }
 
-      const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapItems.join("\n")}\n</urlset>`;
+      const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapItems.join(
+        "\n",
+      )}\n</urlset>`;
       mkdirSync(outputDir, { recursive: true });
       writeFileSync(join(outputDir, "sitemap.xml"), sitemapXml, "utf8");
 
