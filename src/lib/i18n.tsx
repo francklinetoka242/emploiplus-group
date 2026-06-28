@@ -228,6 +228,7 @@ const FR: Dict = {
   "admin.blog.field.requiredFieldsDescription": "Titre, catégorie, contenu et statut sont nécessaires pour publier un article.",
   "admin.blog.submit": "Publier l'article",
   "admin.blog.successDraft": "L'article a été enregistré comme brouillon.",
+  "admin.blog.publishedMessage": "L'article a été publié sur le site.",
   "admin.jobs.title": "Publier une offre",
   "admin.jobs.description": "Créez une annonce structurée pour Brazzaville, Pointe-Noire ou Remote.",
   "admin.jobs.successMessage": "Informations enregistrées. Vérifiez votre publication avant validation finale.",

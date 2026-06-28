@@ -1,6 +1,7 @@
 import React from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -32,10 +33,42 @@ export function AdminBlogPage() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  function createSlug(value: string) {
+    return value
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/--+/g, "-")
+      .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
+  }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSuccess(t("admin.blog.successDraft"));
-    console.log("Article blog soumis", form);
+    setSuccess(null);
+
+    const slug = form.slug || createSlug(form.title || `post-${Date.now()}`);
+    const payload = {
+      slug,
+      title: form.title,
+      category: form.category || null,
+      content: form.content,
+      excerpt: form.excerpt || null,
+      image: form.image || null,
+      author: form.author || null,
+      status: "published",
+      publish_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase.from("blog_posts").insert([payload]).select("id").single();
+    if (error) {
+      setSuccess(error.message);
+      console.error("Blog insert error", error);
+      return;
+    }
+
+    setSuccess(t("admin.blog.publishedMessage"));
+    console.log("Article publié", data);
   };
 
   return (

@@ -1,6 +1,7 @@
 import React from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -33,10 +34,44 @@ export function AdminJobsPage() {
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  function createSlug(value: string) {
+    return value
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/--+/g, "-")
+      .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
+  }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSuccess(t("admin.jobs.successMessage"));
-    console.log("Offre d'emploi soumise", form);
+    setSuccess(null);
+
+    const slug = createSlug(`${form.title}-${form.company}`);
+    const payload = {
+      slug,
+      title: form.title,
+      company: form.company,
+      location_city: form.city || null,
+      contract_type: form.contract_type || null,
+      description: form.description,
+      salary: form.salary || null,
+      company_logo: form.company_logo || null,
+      tags: form.keywords ? form.keywords.split(",").map((s) => s.trim()).filter(Boolean) : [],
+      status: "published",
+      publish_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await supabase.from("job_offers").insert([payload]).select("id").single();
+    if (error) {
+      setSuccess(error.message);
+      console.error("Job insert error", error);
+      return;
+    }
+
+    setSuccess(t("admin.jobs.create.publishedMessage"));
+    console.log("Offre publiée", data);
   };
 
   return (
