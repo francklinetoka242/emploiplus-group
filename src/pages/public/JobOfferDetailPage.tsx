@@ -1,5 +1,20 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
+import {
+  ArrowLeft,
+  BadgeCheck,
+  BriefcaseBusiness,
+  Building2,
+  CalendarDays,
+  Clock3,
+  DollarSign,
+  ExternalLink,
+  FileText,
+  MapPin,
+  MessageSquare,
+  Send,
+  Sparkles,
+} from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
@@ -77,6 +92,42 @@ export function JobOfferDetailPage() {
     return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("fr-FR");
   };
   const tags = (job.tags || []).filter(Boolean);
+  const requirementItems = (job.requirements || "")
+    .split(/\n+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const overviewItems = [
+    {
+      icon: Building2,
+      label: getLabel('jobs.detail.company', 'Entreprise'),
+      value: job.company,
+    },
+    {
+      icon: MapPin,
+      label: getLabel('jobs.detail.location', 'Localisation'),
+      value: location,
+    },
+    {
+      icon: BriefcaseBusiness,
+      label: getLabel('jobs.detail.contractType', 'Type de contrat'),
+      value: getContractLabel(job.contract_type),
+    },
+    {
+      icon: DollarSign,
+      label: t('admin.jobs.field.salary'),
+      value: job.salary || getLabel('jobs.detail.notSpecified', 'À préciser'),
+    },
+    {
+      icon: CalendarDays,
+      label: getLabel('jobs.detail.publishedAt', 'Publié le'),
+      value: formatDate(job.publish_at) || getLabel('jobs.detail.notSpecified', 'À préciser'),
+    },
+    {
+      icon: Clock3,
+      label: getLabel('jobs.detail.deadline', 'Date limite'),
+      value: formatDate(job.deadline) || getLabel('jobs.detail.notSpecified', 'À préciser'),
+    },
+  ];
 
   return (
     <>
@@ -117,57 +168,149 @@ export function JobOfferDetailPage() {
         }}
       />
       <section className="container-page pb-20 md:pb-28">
-        <div className="grid gap-10 lg:grid-cols-[1fr_340px]">
-          <div className="space-y-8">
-            <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-              <div className="flex flex-col gap-3">
-                <Link to="/jobs" className="text-sm text-brand hover:underline">← {getLabel('jobs.backToList', 'Retour à la liste')}</Link>
-                <h1 className="font-display text-4xl font-bold text-foreground">{job.title}</h1>
-                <p className="text-sm text-muted-foreground">{job.company} · {location} · {getContractLabel(job.contract_type)}</p>
-                <p className="mt-4 text-foreground/90 leading-relaxed">{description}</p>
+        <div className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr]">
+          <div className="space-y-6">
+            <div className="overflow-hidden rounded-[32px] border border-border/70 bg-gradient-to-br from-background via-card to-primary/5 p-8 shadow-soft">
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <Link to="/jobs" className="inline-flex items-center gap-2 text-sm font-medium text-brand transition hover:underline">
+                    <ArrowLeft className="size-4" />
+                    {getLabel('jobs.backToList', 'Retour à la liste')}
+                  </Link>
+                  <ShareButtons
+                    url={canonical}
+                    text={job.title}
+                    variant="compact"
+                    shareData={{
+                      title: job.title,
+                      company: job.company,
+                      contractType: getContractLabel(job.contract_type),
+                      location,
+                      salary: job.salary,
+                      description: job.description,
+                      deadline: formatDate(job.deadline),
+                      email: job.application_email,
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-sm font-medium text-brand">
+                    <Sparkles className="size-4" />
+                    {getContractLabel(job.contract_type) || getLabel('jobs.detail.opportunity', 'Opportunité')}
+                  </div>
+                  <div className="space-y-3">
+                    <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{job.title}</h1>
+                    <p className="text-base text-muted-foreground">{job.company} · {location}</p>
+                  </div>
+                  <p className="max-w-3xl text-base leading-8 text-foreground/90">{description}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <span key={tag} className="rounded-full border border-border/70 bg-background/70 px-3 py-1 text-sm text-muted-foreground">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="rounded-3xl border border-border bg-card p-8 shadow-soft space-y-6">
-              <div>
-                <h2 className="font-display text-2xl font-semibold text-foreground">{getLabel('jobs.detail.descriptionTitle', 'Description du poste')}</h2>
-                <p className="mt-4 text-foreground/90 leading-relaxed whitespace-pre-line">{job.description}</p>
-              </div>
-              {job.requirements ? (
-                <div>
-                  <h3 className="font-display text-xl font-semibold text-foreground">{getLabel('jobs.detail.requirementsTitle', 'Profil recherché')}</h3>
-                  <p className="mt-4 text-foreground/90 leading-relaxed whitespace-pre-line">{job.requirements}</p>
+            <div className="grid gap-4 md:grid-cols-2">
+              {overviewItems.map(({ icon: Icon, label, value }) => (
+                <div key={label} className="rounded-2xl border border-border/70 bg-card/80 p-4 shadow-sm">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Icon className="size-4 text-brand" />
+                    {label}
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{value}</p>
                 </div>
-              ) : null}
+              ))}
             </div>
+
+            <div className="rounded-[28px] border border-border/70 bg-card p-8 shadow-soft">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
+                  <FileText className="size-5" />
+                </div>
+                <div>
+                  <h2 className="font-display text-2xl font-semibold text-foreground">{getLabel('jobs.detail.descriptionTitle', 'Description du poste')}</h2>
+                  <p className="text-sm text-muted-foreground">Ce que vous découvrirez en rejoignant l’équipe.</p>
+                </div>
+              </div>
+              <p className="mt-6 whitespace-pre-line text-base leading-8 text-foreground/90">{job.description}</p>
+            </div>
+
+            {job.requirements ? (
+              <div className="rounded-[28px] border border-border/70 bg-card p-8 shadow-soft">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
+                    <BadgeCheck className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-2xl font-semibold text-foreground">{getLabel('jobs.detail.requirementsTitle', 'Profil recherché')}</h3>
+                    <p className="text-sm text-muted-foreground">Les compétences et qualités attendues.</p>
+                  </div>
+                </div>
+                <ul className="mt-6 space-y-3">
+                  {requirementItems.map((item) => (
+                    <li key={item} className="flex gap-3 rounded-2xl border border-border/60 bg-background/70 p-3 text-sm leading-7 text-foreground/90">
+                      <span className="mt-2 size-2 rounded-full bg-brand" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
 
           <aside className="space-y-6">
-            <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-              <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{getLabel('jobs.detail.overview', 'Aperçu')}</p>
-              <div className="mt-6 space-y-3 text-sm text-foreground/90">
-                <div><span className="font-semibold">{getLabel('jobs.detail.company', 'Entreprise')} :</span> {job.company}</div>
-                <div><span className="font-semibold">{getLabel('jobs.detail.location', 'Localisation')} :</span> {location}</div>
-                <div><span className="font-semibold">{getLabel('jobs.detail.contractType', 'Type de contrat')} :</span> {getContractLabel(job.contract_type)}</div>
-                {job.salary ? <div><span className="font-semibold">{t('admin.jobs.field.salary')} :</span> {job.salary}</div> : null}
-                {job.deadline ? <div><span className="font-semibold">{t('admin.jobs.field.deadline')} :</span> {formatDate(job.deadline)}</div> : null}
-                {job.publish_at ? <div><span className="font-semibold">{getLabel('jobs.detail.publishedAt', 'Publié le')} :</span> {formatDate(job.publish_at)}</div> : null}
-                {job.expires_at ? <div><span className="font-semibold">{getLabel('jobs.detail.expiresAt', 'Expire le')} :</span> {formatDate(job.expires_at)}</div> : null}
-                {tags.length > 0 ? <div><span className="font-semibold">{t('admin.jobs.field.keywords')} :</span> {tags.join(', ')}</div> : null}
+            <div className="rounded-[28px] border border-border/70 bg-card p-7 shadow-soft">
+              <h3 className="font-display text-xl font-semibold text-foreground">{getLabel('jobs.detail.applyTitle', 'Postuler')}</h3>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">Choisissez le canal qui vous convient pour transmettre votre candidature.</p>
+              <div className="mt-6 space-y-3">
+                {job.application_email ? (
+                  <a href={`mailto:${job.application_email}`} className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90">
+                    <Send className="size-4" />
+                    {t('jobs.detail.applyByEmail')}
+                  </a>
+                ) : null}
+                {job.application_whatsapp ? (
+                  <a href={`https://wa.me/${job.application_whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-background/80 px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-primary/5">
+                    <MessageSquare className="size-4" />
+                    {t('jobs.detail.applyByWhatsapp')}
+                  </a>
+                ) : null}
+                {job.external_link ? (
+                  <a href={job.external_link} target="_blank" rel="noreferrer" className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-background/80 px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-primary/5">
+                    <ExternalLink className="size-4" />
+                    {t('jobs.detail.applyExternal')}
+                  </a>
+                ) : null}
+                {!job.application_email && !job.application_whatsapp && !job.external_link ? (
+                  <div className="rounded-2xl border border-dashed border-border/70 bg-background/60 p-4 text-sm text-muted-foreground">
+                    Les modalités de candidature ne sont pas encore renseignées pour cette offre.
+                  </div>
+                ) : null}
               </div>
             </div>
 
-            <div className="rounded-3xl border border-border bg-card p-8 shadow-soft space-y-4">
-              <h3 className="font-display text-xl font-semibold text-foreground">{getLabel('jobs.detail.applyTitle', 'Postuler')}</h3>
-              {job.application_email ? (
-                <a href={`mailto:${job.application_email}`} className="inline-flex w-full items-center justify-center rounded-full bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">{t('jobs.detail.applyByEmail')}</a>
-              ) : null}
-              {job.application_whatsapp ? (
-                <a href={`https://wa.me/${job.application_whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="inline-flex w-full items-center justify-center rounded-full border border-border bg-transparent px-4 py-3 text-sm font-semibold text-foreground hover:bg-primary/5">{t('jobs.detail.applyByWhatsapp')}</a>
-              ) : null}
-              {job.external_link ? (
-                <a href={job.external_link} target="_blank" rel="noreferrer" className="inline-flex w-full items-center justify-center rounded-full border border-border bg-transparent px-4 py-3 text-sm font-semibold text-foreground hover:bg-primary/5">{t('jobs.detail.applyExternal')}</a>
-              ) : null}
+            <div className="rounded-[28px] border border-border/70 bg-card p-7 shadow-soft">
+              <h3 className="font-display text-xl font-semibold text-foreground">Informations utiles</h3>
+              <div className="mt-5 space-y-3 text-sm text-muted-foreground">
+                <div className="flex items-start gap-3 rounded-2xl bg-background/70 p-3">
+                  <Building2 className="mt-0.5 size-4 text-brand" />
+                  <span>Une description claire pour aider les candidats à se projeter rapidement dans le poste.</span>
+                </div>
+                <div className="flex items-start gap-3 rounded-2xl bg-background/70 p-3">
+                  <MapPin className="mt-0.5 size-4 text-brand" />
+                  <span>Les informations de localisation et de type de contrat sont regroupées pour un repérage rapide.</span>
+                </div>
+                <div className="flex items-start gap-3 rounded-2xl bg-background/70 p-3">
+                  <Send className="mt-0.5 size-4 text-brand" />
+                  <span>Les boutons de candidature vous mènent directement vers le bon canal.</span>
+                </div>
+              </div>
             </div>
           </aside>
         </div>

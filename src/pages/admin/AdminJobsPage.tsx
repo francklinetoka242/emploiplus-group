@@ -6,6 +6,7 @@ import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -167,8 +168,8 @@ export function AdminJobsPage() {
     };
 
     const query = editingId
-      ? supabase.from("job_offers").update(payload).eq("id", editingId)
-      : supabase.from("job_offers").insert([payload]).select("id").single();
+      ? supabaseAdmin.from("job_offers").update(payload).eq("id", editingId)
+      : supabaseAdmin.from("job_offers").insert([payload]).select("id").single();
 
     const { error } = await query;
     setSubmitting(false);
@@ -186,7 +187,7 @@ export function AdminJobsPage() {
 
   const updateStatus = async (job: JobOffer, nextStatus: Database["public"]["Enums"]["job_status"]) => {
     setActionLoadingId(job.id);
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from("job_offers")
       .update({
         status: nextStatus,
@@ -206,7 +207,7 @@ export function AdminJobsPage() {
   const deleteJob = async (job: JobOffer) => {
     if (!window.confirm(`Supprimer définitivement l'offre « ${job.title} » ?`)) return;
     setActionLoadingId(job.id);
-    const { error } = await supabase.from("job_offers").delete().eq("id", job.id);
+    const { error } = await supabaseAdmin.from("job_offers").delete().eq("id", job.id);
     setActionLoadingId(null);
     if (error) {
       setMessage({ type: "error", text: error.message });

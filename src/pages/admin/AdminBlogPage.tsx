@@ -5,6 +5,7 @@ import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { uploadFileToStorage } from "@/lib/supabase-storage";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -142,8 +143,8 @@ export function AdminBlogPage() {
     };
 
     const query = editingId
-      ? supabase.from("blog_posts").update(payload).eq("id", editingId)
-      : supabase.from("blog_posts").insert([payload]).select("id").single();
+      ? supabaseAdmin.from("blog_posts").update(payload).eq("id", editingId)
+      : supabaseAdmin.from("blog_posts").insert([payload]).select("id").single();
 
     const { error } = await query;
     setSubmitting(false);
@@ -161,7 +162,7 @@ export function AdminBlogPage() {
 
   const updateStatus = async (post: BlogPost, nextStatus: Database["public"]["Enums"]["post_status"]) => {
     setActionLoadingId(post.id);
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from("blog_posts")
       .update({
         status: nextStatus,
@@ -181,7 +182,7 @@ export function AdminBlogPage() {
   const deletePost = async (post: BlogPost) => {
     if (!window.confirm(`Supprimer définitivement l'article « ${post.title} » ?`)) return;
     setActionLoadingId(post.id);
-    const { error } = await supabase.from("blog_posts").delete().eq("id", post.id);
+    const { error } = await supabaseAdmin.from("blog_posts").delete().eq("id", post.id);
     setActionLoadingId(null);
     if (error) {
       setMessage({ type: "error", text: error.message });
