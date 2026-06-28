@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logoMonago from "@/assets/logo-monago.jpg";
+import favicon from "@/assets/favicon.ico";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Briefcase, ChevronLeft, ChevronRight, FileText, LayoutDashboard, LogOut, PanelLeftOpen, Sparkles, Users, type LucideIcon } from "lucide-react";
@@ -47,7 +47,7 @@ export function AdminSidebar({ open, activeView, onSelect, onToggle, onLogout, s
             </button>
           )}
           <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-white/10 p-1 shadow-sm">
-            <img src={logoMonago} alt="Emploi+" className="h-full w-full object-contain" />
+            <img src={favicon} alt="Emploi+" className="h-full w-full object-contain" />
           </div>
           <div className={cn("space-y-1 overflow-hidden transition-all duration-300", open ? "max-w-full opacity-100" : "max-w-0 opacity-0")}>
             <p className="text-sm font-semibold">Emploi+</p>
