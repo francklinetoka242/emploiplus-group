@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
-import { usePageSEO, BASE_URL } from "@/lib/seo";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -131,12 +132,7 @@ export function AdminJobCreatePage() {
 
   return (
     <div className="space-y-6">
-      {usePageSEO({
-        title: t("admin.jobs.create.title"),
-        description: t("admin.jobs.create.description"),
-        canonical: `${BASE_URL}/admin/jobs/new`,
-        robots: "noindex,nofollow",
-      })}
+      <SEO title={t("admin.jobs.create.title")} description={t("admin.jobs.create.description")} canonical={`${BASE_URL}/admin/jobs/new`} robots="noindex,nofollow" />
       <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>

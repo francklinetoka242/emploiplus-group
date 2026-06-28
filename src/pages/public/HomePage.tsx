@@ -4,7 +4,8 @@ import heroBg from "@/assets/hero-bg.jpg";
 import logoMonago from "@/assets/logo-monago.jpg";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
-import { usePageSEO, DEFAULT_SEO, BASE_URL } from "@/lib/seo";
+import SEO from "@/components/SEO";
+import { DEFAULT_SEO, BASE_URL } from "@/lib/seo";
 import { SectionHeader } from "@/components/page/SectionHeader";
 import { usePublishedJobOffers, usePublishedBlogPosts } from "@/hooks/usePublishedOffers";
 
@@ -44,7 +45,7 @@ export function HomePage() {
 
   return (
     <div className="bg-background">
-      {usePageSEO(DEFAULT_SEO)}
+      <SEO {...DEFAULT_SEO} />
       <section
         className="relative overflow-hidden min-h-[600px] md:min-h-[700px] bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroBg})` }}

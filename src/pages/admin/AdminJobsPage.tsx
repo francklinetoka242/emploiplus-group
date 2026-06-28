@@ -1,5 +1,7 @@
 import React from "react";
 import { useI18n } from "@/lib/i18n";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -75,8 +77,15 @@ export function AdminJobsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
+    <>
+      <SEO
+        title="Administration - Offres d'emploi"
+        description="Créez et gérez les offres d'emploi depuis l'administration EmploiPlus Group."
+        canonical={`${BASE_URL}/admin/jobs`}
+        robots="noindex,nofollow"
+      />
+      <div className="space-y-6">
+        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
         <h1 className="text-3xl font-semibold text-foreground">{t("admin.jobs.title")}</h1>
         <p className="mt-3 text-sm text-muted-foreground">{t("admin.jobs.description")}</p>
       </div>
@@ -180,6 +189,7 @@ export function AdminJobsPage() {
           </Button>
         </div>
       </form>
-    </div>
+      </div>
+    </>
   );
 }

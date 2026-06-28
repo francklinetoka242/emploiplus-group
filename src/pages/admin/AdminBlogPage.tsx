@@ -1,5 +1,7 @@
 import React from "react";
 import { useI18n } from "@/lib/i18n";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -72,8 +74,15 @@ export function AdminBlogPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
+    <>
+      <SEO
+        title="Administration - Blog"
+        description="Gérez les articles de blog depuis l'administration EmploiPlus Group."
+        canonical={`${BASE_URL}/admin/blog`}
+        robots="noindex,nofollow"
+      />
+      <div className="space-y-6">
+        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
         <h1 className="text-3xl font-semibold text-foreground">{t("admin.blog.pageTitle")}</h1>
         <p className="mt-3 text-sm text-muted-foreground">{t("admin.blog.pageDescription")}</p>
       </div>
@@ -151,6 +160,7 @@ export function AdminBlogPage() {
           </Button>
         </div>
       </form>
-    </div>
+      </div>
+    </>
   );
 }

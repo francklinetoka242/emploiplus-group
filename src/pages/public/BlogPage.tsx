@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
-import { usePageSEO, BASE_URL } from "@/lib/seo";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { PageHeading } from "@/components/page/PageHeading";
 import { usePublishedBlogPosts } from "@/hooks/usePublishedOffers";
 
@@ -11,17 +12,18 @@ export function BlogPage() {
 
   return (
     <>
-      {usePageSEO({
-        title: t('blog.title'),
-        description: t('blog.subtitle'),
-        keywords: "blog, articles, conseils carrière, actualités emploi, recrutement",
-        canonical: `${BASE_URL}/blog`,
-        ogType: "website",
-        breadcrumbs: [
+      <SEO
+        title={t('blog.title')}
+        description={t('blog.subtitle')}
+        keywords="blog, articles, conseils carrière, actualités emploi, recrutement"
+        canonical={`${BASE_URL}/blog`}
+        robots="index,follow"
+        ogType="website"
+        breadcrumbs={[
           { name: t('home.hero.title'), url: `${BASE_URL}/` },
           { name: t('blog.title'), url: `${BASE_URL}/blog` },
-        ],
-      })}
+        ]}
+      />
       <PageHeading
         title={t('blog.title')}
         description={t('blog.subtitle')}

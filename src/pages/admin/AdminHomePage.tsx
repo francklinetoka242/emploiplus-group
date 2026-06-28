@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { Sparkles } from "lucide-react";
 
 function AdminDashboardView() {
@@ -90,5 +92,15 @@ function AdminDashboardView() {
 }
 
 export function AdminHomePage() {
-  return <AdminDashboardView />;
+  return (
+    <>
+      <SEO
+        title="Administration - Tableau de bord"
+        description="Tableau de bord d'administration d'EmploiPlus Group."
+        canonical={`${BASE_URL}/admin`}
+        robots="noindex,nofollow"
+      />
+      <AdminDashboardView />
+    </>
+  );
 }

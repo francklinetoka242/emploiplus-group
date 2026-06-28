@@ -1,6 +1,7 @@
 import React from "react";
 import { useI18n } from "@/lib/i18n";
-import { usePageSEO, BASE_URL } from "@/lib/seo";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import francklinImage from "@/assets/Equipe_Experte/Ing_Francklin_ETOKA.jpeg";
 import destineeImage from "@/assets/Equipe_Experte/Ing_Destinée_MOUISSOU.jpeg";
 import claudeImage from "@/assets/Equipe_Experte/Claude_OMVOULET.jpeg";
@@ -34,16 +35,16 @@ export function AboutPage() {
 
   return (
     <>
-      {usePageSEO({
-        title: t('about.title'),
-        description: t('about.subtitle'),
-        keywords: "à propos, mission, valeurs, services numériques, emploi, Congo",
-        canonical: `${BASE_URL}/about`,
-        breadcrumbs: [
+      <SEO
+        title={t('about.title')}
+        description={t('about.subtitle')}
+        canonical={`${BASE_URL}/about`}
+        robots="index,follow"
+        breadcrumbs={[
           { name: t('home.hero.title'), url: `${BASE_URL}/` },
           { name: t('about.title'), url: `${BASE_URL}/about` },
-        ],
-      })}
+        ]}
+      />
       <section className="container-page py-16 md:py-20">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-14 text-center">
           <div className="max-w-3xl space-y-4">

@@ -108,4 +108,6 @@ export const DEFAULT_SEO: SEOMetadata = {
   title: "EmploiPlus Group",
   description: "Solutions numériques, diffusion d'offres d'emploi et services médias pour les talents et les entreprises.",
   keywords: "emploi, offres d'emploi, recrutement, diffusion d'annonces, Congo",
+  canonical: BASE_URL,
+  robots: "index,follow",
 };

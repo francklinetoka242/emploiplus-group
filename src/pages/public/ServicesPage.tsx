@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
-import { usePageSEO, BASE_URL } from "@/lib/seo";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/page/SectionHeader";
 import { SERVICES } from "@/lib/constants";
@@ -22,16 +23,17 @@ export function ServicesPage() {
 
   return (
     <>
-      {usePageSEO({
-        title: t('services.title'),
-        description: t('services.subtitle'),
-        keywords: "services, offres emploi, développement web, stratégie média, branding employeur",
-        canonical: `${BASE_URL}/services`,
-        breadcrumbs: [
+      <SEO
+        title={t('services.title')}
+        description={t('services.subtitle')}
+        keywords="services, offres emploi, développement web, stratégie média, branding employeur"
+        canonical={`${BASE_URL}/services`}
+        robots="index,follow"
+        breadcrumbs={[
           { name: t('home.hero.title'), url: `${BASE_URL}/` },
           { name: t('services.title'), url: `${BASE_URL}/services` },
-        ],
-      })}
+        ]}
+      />
       <SectionHeader title={t('services.title')} subtitle={t('services.subtitle')} />
       <section className="container-page pb-12 md:pb-16">
         <div className="mx-auto max-w-6xl">

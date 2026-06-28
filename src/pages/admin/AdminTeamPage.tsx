@@ -1,5 +1,7 @@
 import React from "react";
 import { useI18n } from "@/lib/i18n";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
@@ -70,8 +72,15 @@ export function AdminTeamPage() {
   }, [t]);
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
+    <>
+      <SEO
+        title="Administration - Équipe"
+        description="Gérez les membres de l'équipe depuis l'administration EmploiPlus Group."
+        canonical={`${BASE_URL}/admin/team`}
+        robots="noindex,nofollow"
+      />
+      <div className="space-y-6">
+        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
         <h1 className="text-3xl font-semibold text-foreground">{t("admin.team.title")}</h1>
         <p className="mt-3 text-sm text-muted-foreground">{t("admin.team.description")}</p>
       </div>
@@ -119,6 +128,7 @@ export function AdminTeamPage() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

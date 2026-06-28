@@ -1,18 +1,19 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
-import { usePageSEO, BASE_URL } from "@/lib/seo";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { useBlogPostBySlug } from "@/hooks/usePublishedOffers";
 
 function NotFoundPage() {
   return (
     <>
-      {usePageSEO({
-        title: "Page non trouvée - 404",
-        description: "La page que vous recherchez n'existe pas ou a été supprimée.",
-        canonical: `${BASE_URL}/404`,
-        robots: "noindex,nofollow",
-      })}
+      <SEO
+        title={"Page non trouvée - 404"}
+        description={"La page que vous recherchez n'existe pas ou a été supprimée."}
+        canonical={`${BASE_URL}/404`}
+        robots="noindex,nofollow"
+      />
       <div className="container-page py-20 md:py-28">
         <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
           <h1 className="font-display text-4xl font-bold text-foreground">404</h1>
@@ -52,19 +53,20 @@ export function BlogPostDetailPage() {
 
   return (
     <>
-      {usePageSEO({
-        title,
-        description,
-        canonical,
-        ogImage,
-        ogType: 'article',
-        publishedTime: post.publish_at || undefined,
-        breadcrumbs: [
+      <SEO
+        title={title}
+        description={description}
+        canonical={canonical}
+        robots="index,follow"
+        ogImage={ogImage}
+        ogType={'article'}
+        publishedTime={post.publish_at || undefined}
+        breadcrumbs={[
           { name: t('home.hero.title'), url: `${BASE_URL}/` },
           { name: t('blog.title'), url: `${BASE_URL}/blog` },
           { name: post.title, url: canonical },
-        ],
-      })}
+        ]}
+      />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-10 lg:grid-cols-[1fr_340px]">
           <div className="space-y-8">

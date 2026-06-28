@@ -1,19 +1,20 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
-import { usePageSEO, BASE_URL } from "@/lib/seo";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { useJobOfferBySlug } from "@/hooks/usePublishedOffers";
 import { ShareButtons } from "@/components/site/ShareButtons";
 
 function NotFoundPage() {
   return (
     <>
-      {usePageSEO({
-        title: "Page non trouvée - 404",
-        description: "La page que vous recherchez n'existe pas ou a été supprimée.",
-        canonical: `${BASE_URL}/404`,
-        robots: "noindex,nofollow",
-      })}
+      <SEO
+        title={"Page non trouvée - 404"}
+        description={"La page que vous recherchez n'existe pas ou a été supprimée."}
+        canonical={`${BASE_URL}/404`}
+        robots="noindex,nofollow"
+      />
       <div className="container-page py-20 md:py-28">
         <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
           <h1 className="font-display text-4xl font-bold text-foreground">404</h1>
@@ -51,23 +52,30 @@ export function JobOfferDetailPage() {
   const ogImage = job.og_image || job.cover_image || `${BASE_URL}/og-default.svg`;
   const canonical = `${BASE_URL}/jobs/${job.slug}`;
   const location = [job.location_city, job.location_country].filter(Boolean).join(', ') || t('jobs.location.remote');
+  const formatDate = (value?: string | null) => {
+    if (!value) return null;
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("fr-FR");
+  };
+  const tags = (job.tags || []).filter(Boolean);
 
   return (
     <>
-      {usePageSEO({
-        title,
-        description,
-        canonical,
-        ogImage,
-        ogType: 'article',
-        publishedTime: job.publish_at || undefined,
-        modifiedTime: job.updated_at || undefined,
-        breadcrumbs: [
+      <SEO
+        title={title}
+        description={description}
+        canonical={canonical}
+        robots="index,follow"
+        ogImage={ogImage}
+        ogType={'article'}
+        publishedTime={job.publish_at || undefined}
+        modifiedTime={job.updated_at || undefined}
+        breadcrumbs={[
           { name: t('home.hero.title'), url: `${BASE_URL}/` },
           { name: t('jobs.page.title'), url: `${BASE_URL}/jobs` },
           { name: job.title, url: canonical },
-        ],
-        structuredData: {
+        ]}
+        structuredData={{
           '@type': 'JobPosting',
           title: job.title,
           description: job.description,
@@ -87,8 +95,8 @@ export function JobOfferDetailPage() {
               addressCountry: job.location_country || undefined,
             },
           },
-        },
-      })}
+        }}
+      />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-10 lg:grid-cols-[1fr_340px]">
           <div className="space-y-8">
@@ -122,8 +130,11 @@ export function JobOfferDetailPage() {
                 <div><span className="font-semibold">{t('jobs.detail.company')} :</span> {job.company}</div>
                 <div><span className="font-semibold">{t('jobs.detail.location')} :</span> {location}</div>
                 <div><span className="font-semibold">{t('jobs.detail.contractType')} :</span> {t(`jobs.contract.${job.contract_type}`)}</div>
-                {job.publish_at ? <div><span className="font-semibold">{t('jobs.detail.publishedAt')} :</span> {new Date(job.publish_at).toLocaleDateString()}</div> : null}
-                {job.expires_at ? <div><span className="font-semibold">{t('jobs.detail.expiresAt')} :</span> {new Date(job.expires_at).toLocaleDateString()}</div> : null}
+                {job.salary ? <div><span className="font-semibold">{t('admin.jobs.field.salary')} :</span> {job.salary}</div> : null}
+                {job.deadline ? <div><span className="font-semibold">{t('admin.jobs.field.deadline')} :</span> {formatDate(job.deadline)}</div> : null}
+                {job.publish_at ? <div><span className="font-semibold">{t('jobs.detail.publishedAt')} :</span> {formatDate(job.publish_at)}</div> : null}
+                {job.expires_at ? <div><span className="font-semibold">{t('jobs.detail.expiresAt')} :</span> {formatDate(job.expires_at)}</div> : null}
+                {tags.length > 0 ? <div><span className="font-semibold">{t('admin.jobs.field.keywords')} :</span> {tags.join(', ')}</div> : null}
               </div>
             </div>
 

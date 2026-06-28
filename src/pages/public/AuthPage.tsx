@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
-import { usePageSEO, BASE_URL } from "@/lib/seo";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
@@ -39,12 +40,7 @@ export function AuthPage() {
 
   return (
     <>
-      {usePageSEO({
-        title: t("auth.page.title"),
-        description: t("auth.page.description"),
-        canonical: `${BASE_URL}/auth`,
-        robots: "noindex,nofollow",
-      })}
+      <SEO title={t("auth.page.title")} description={t("auth.page.description")} canonical={`${BASE_URL}/auth`} robots="noindex,nofollow" />
       <div className="container-page py-20 md:py-28">
         <div className="mx-auto max-w-xl rounded-3xl border border-border bg-card p-10 shadow-soft">
           <h1 className="font-display text-3xl font-bold text-foreground text-center">{t("auth.heading")}</h1>

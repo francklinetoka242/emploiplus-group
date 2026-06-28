@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
-import { usePageSEO, BASE_URL } from "@/lib/seo";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { usePublishedJobOffers } from "@/hooks/usePublishedOffers";
 
 export function JobsPage() {
@@ -15,6 +16,11 @@ export function JobsPage() {
   const q = query.trim().toLowerCase();
   const companyFilter = companyQuery.trim().toLowerCase();
   const lq = locationQuery.trim().toLowerCase();
+  const formatDate = (value?: string | null) => {
+    if (!value) return null;
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("fr-FR");
+  };
   const filteredOffers = offers.filter((job) => {
     const hay = `${job.title || ""} ${job.company || ""} ${job.description || ""} ${job.requirements || ""}`.toLowerCase();
     if (q && !hay.includes(q)) return false;
@@ -29,16 +35,17 @@ export function JobsPage() {
 
   return (
     <>
-      {usePageSEO({
-        title: t('jobs.page.title'),
-        description: t('jobs.page.description'),
-        keywords: "offres d'emploi, opportunités, recrutement, emploi Congo",
-        canonical: `${BASE_URL}/jobs`,
-        breadcrumbs: [
+      <SEO
+        title={t('jobs.page.title')}
+        description={t('jobs.page.description')}
+        keywords="offres d'emploi, opportunités, recrutement, emploi Congo"
+        canonical={`${BASE_URL}/jobs`}
+        robots="index,follow"
+        breadcrumbs={[
           { name: t('home.hero.title'), url: `${BASE_URL}/` },
           { name: t('jobs.page.title'), url: `${BASE_URL}/jobs` },
-        ],
-      })}
+        ]}
+      />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6 text-foreground/90 leading-relaxed">
@@ -106,12 +113,24 @@ export function JobsPage() {
               ) : filteredOffers.length > 0 ? (
                 filteredOffers.map((job, i) => {
                   const location = [job.location_city, job.location_country].filter(Boolean).join(", ") || t('jobs.location.remote');
+                  const previewText = (job.description || job.requirements || "")
+                    .replace(/\s+/g, " ")
+                    .trim();
+                  const contractLabel = job.contract_type ? (t(`jobs.contract.${job.contract_type}`) || job.contract_type) : null;
                   return (
                     <Link key={job.id} to={`/jobs/${job.slug}`} className="group">
                       <article className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up group-hover:border-brand" style={{ animationDelay: `${i * 80}ms` }}>
                         <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{job.company}</div>
                         <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
-                        <div className="mt-3 text-sm text-muted-foreground">{location}</div>
+                        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                          <span>{location}</span>
+                          {contractLabel ? <span className="rounded-full border border-border px-2 py-1 text-xs">{contractLabel}</span> : null}
+                        </div>
+                        {previewText ? <p className="mt-4 text-sm text-foreground/80 leading-relaxed line-clamp-3">{previewText.length > 180 ? `${previewText.slice(0, 177)}...` : previewText}</p> : null}
+                        <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                          {job.salary ? <span className="rounded-full border border-border px-2 py-1">{t("admin.jobs.field.salary")}: {job.salary}</span> : null}
+                          {job.deadline ? <span className="rounded-full border border-border px-2 py-1">{t("admin.jobs.field.deadline")}: {formatDate(job.deadline)}</span> : null}
+                        </div>
                       </article>
                     </Link>
                   );

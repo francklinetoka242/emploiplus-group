@@ -4,7 +4,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 export type JobOfferPreview = Pick<
   Database["public"]["Tables"]["job_offers"]["Row"],
-  "id" | "slug" | "title" | "company" | "contract_type" | "location_city" | "location_country" | "description" | "requirements" | "status" | "publish_at"
+  "id" | "slug" | "title" | "company" | "contract_type" | "location_city" | "location_country" | "description" | "requirements" | "status" | "publish_at" | "salary" | "deadline" | "tags"
 >;
 
 export type BlogPostPreview = Pick<
@@ -14,7 +14,7 @@ export type BlogPostPreview = Pick<
 
 export type JobOfferDetail = Pick<
   Database["public"]["Tables"]["job_offers"]["Row"],
-  "id" | "slug" | "title" | "company" | "company_logo" | "contract_type" | "location_city" | "location_country" | "description" | "requirements" | "status" | "publish_at" | "expires_at" | "application_email" | "application_whatsapp" | "external_link" | "cover_image" | "meta_title" | "meta_description" | "og_image" | "updated_at"
+  "id" | "slug" | "title" | "company" | "company_logo" | "contract_type" | "location_city" | "location_country" | "description" | "requirements" | "status" | "publish_at" | "expires_at" | "application_email" | "application_whatsapp" | "external_link" | "cover_image" | "meta_title" | "meta_description" | "og_image" | "updated_at" | "salary" | "deadline" | "tags"
 >;
 
 export type BlogPostDetail = Pick<
@@ -32,7 +32,7 @@ export function usePublishedJobOffers(limit = 10) {
       const now = new Date().toISOString();
       const { data } = await supabase
         .from("job_offers")
-        .select("id, slug, title, company, contract_type, location_city, location_country, description, requirements, status, publish_at")
+        .select("id, slug, title, company, contract_type, location_city, location_country, description, requirements, status, publish_at, salary, deadline, tags")
         .eq("status", "published")
         .order("publish_at", { ascending: false })
         .limit(limit);

@@ -1,6 +1,7 @@
 import React from "react";
 import { useI18n } from "@/lib/i18n";
-import { usePageSEO, BASE_URL } from "@/lib/seo";
+import SEO from "@/components/SEO";
+import { BASE_URL } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 
 export function ContactPage() {
@@ -20,17 +21,18 @@ export function ContactPage() {
 
   return (
     <>
-      {usePageSEO({
-        title: t('contact.title'),
-        description: t('contact.subtitle'),
-        keywords: "contact, nous contacter, support, recrutement, développement web",
-        canonical: `${BASE_URL}/contact`,
-        ogType: "website",
-        breadcrumbs: [
+      <SEO
+        title={t('contact.title')}
+        description={t('contact.subtitle')}
+        keywords="contact, nous contacter, support, recrutement, développement web"
+        canonical={`${BASE_URL}/contact`}
+        robots="index,follow"
+        ogType="website"
+        breadcrumbs={[
           { name: t('home.hero.title'), url: `${BASE_URL}/` },
           { name: t('contact.title'), url: `${BASE_URL}/contact` },
-        ],
-      })}
+        ]}
+      />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 md:grid-cols-2 items-start">
           {/* Contact Form Card */}
