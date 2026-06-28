@@ -82,9 +82,6 @@ function sitemapGeneratorPlugin(env: Record<string, string>) {
           const { data: posts, error: postError } = await supabase
             .from("blog_posts")
             .select("slug, publish_at, updated_at, status")
-            .eq("status", "published")
-            .is("publish_at", "not", null)
-            .lte("publish_at", now)
             .order("publish_at", { ascending: false });
 
           if (postError) throw postError;
