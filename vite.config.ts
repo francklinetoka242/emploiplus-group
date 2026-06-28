@@ -30,51 +30,55 @@ function sitemapGeneratorPlugin() {
 
       try {
         const { createClient } = await import("@supabase/supabase-js");
-        const supabaseUrl = process.env.SUPABASE_URL;
-        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+        const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+        const supabaseKey =
+          process.env.SUPABASE_PUBLISHABLE_KEY ||
+          process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+          process.env.SUPABASE_ANON_KEY ||
+          process.env.VITE_SUPABASE_ANON_KEY;
 
         if (!supabaseUrl || !supabaseKey) {
-          throw new Error("Supabase configuration missing for sitemap generation.");
-        }
+          console.warn("Sitemap generation skipped: Supabase URL or publishable key missing.");
+        } else {
+          const supabase = createClient(supabaseUrl, supabaseKey);
 
-        const supabase = createClient(supabaseUrl, supabaseKey);
+          const { data: jobs, error: jobError } = await supabase
+            .from("job_offers")
+            .select("slug, publish_at, updated_at, status")
+            .eq("status", "published")
+            .is("publish_at", "not", null)
+            .order("publish_at", { ascending: false });
 
-        const { data: jobs, error: jobError } = await supabase
-          .from("job_offers")
-          .select("slug, publish_at, updated_at, status")
-          .eq("status", "published")
-          .is("publish_at", "not", null)
-          .order("publish_at", { ascending: false });
+          if (jobError) throw jobError;
 
-        if (jobError) throw jobError;
+          const { data: posts, error: postError } = await supabase
+            .from("blog_posts")
+            .select("slug, publish_at, updated_at, status")
+            .eq("status", "published")
+            .is("publish_at", "not", null)
+            .order("publish_at", { ascending: false });
 
-        const { data: posts, error: postError } = await supabase
-          .from("blog_posts")
-          .select("slug, publish_at, updated_at, status")
-          .eq("status", "published")
-          .is("publish_at", "not", null)
-          .order("publish_at", { ascending: false });
+          if (postError) throw postError;
 
-        if (postError) throw postError;
+          if (Array.isArray(jobs)) {
+            sitemapItems.push(
+              ...jobs.map((job) => {
+                const route = `/jobs/${job.slug}`;
+                const lastmod = job.updated_at || job.publish_at || now;
+                return publishRoute(route, lastmod, "weekly", "0.8");
+              }),
+            );
+          }
 
-        if (Array.isArray(jobs)) {
-          sitemapItems.push(
-            ...jobs.map((job) => {
-              const route = `/jobs/${job.slug}`;
-              const lastmod = job.updated_at || job.publish_at || now;
-              return publishRoute(route, lastmod, "weekly", "0.8");
-            }),
-          );
-        }
-
-        if (Array.isArray(posts)) {
-          sitemapItems.push(
-            ...posts.map((post) => {
-              const route = `/blog/${post.slug}`;
-              const lastmod = post.updated_at || post.publish_at || now;
-              return publishRoute(route, lastmod, "weekly", "0.8");
-            }),
-          );
+          if (Array.isArray(posts)) {
+            sitemapItems.push(
+              ...posts.map((post) => {
+                const route = `/blog/${post.slug}`;
+                const lastmod = post.updated_at || post.publish_at || now;
+                return publishRoute(route, lastmod, "weekly", "0.8");
+              }),
+            );
+          }
         }
       } catch (error) {
         console.warn("Sitemap generation warning:", error);
