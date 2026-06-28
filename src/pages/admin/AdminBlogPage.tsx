@@ -1,5 +1,5 @@
 import React from "react";
-import { Eye, EyeOff, ExternalLink, PencilLine, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { Eye, EyeOff, ExternalLink, PencilLine, Plus, RefreshCw, Trash2, UploadCloud } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
@@ -41,6 +41,7 @@ export function AdminBlogPage() {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
+  const [uploadingImage, setUploadingImage] = React.useState(false);
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -74,6 +75,50 @@ export function AdminBlogPage() {
       .replace(/--+/g, "-")
       .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
   }
+
+  const uploadImageToSupabase = async (file: File, folder: string) => {
+    const ext = file.name.split(".").pop() || "jpg";
+    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const buckets = ["images", "media", "uploads", "public"];
+    let lastError: Error | null = null;
+
+    for (const bucket of buckets) {
+      const { error } = await supabase.storage.from(bucket).upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || "application/octet-stream",
+      });
+
+      if (!error) {
+        const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(fileName);
+        return publicData.publicUrl;
+      }
+
+      lastError = error;
+    }
+
+    throw lastError ?? new Error("Impossible d’uploader l’image dans Supabase Storage.");
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    setMessage(null);
+
+    try {
+      const publicUrl = await uploadImageToSupabase(file, "blog");
+      setForm((prev) => ({ ...prev, image: publicUrl }));
+      setMessage({ type: "success", text: "Image téléchargée dans Supabase Storage." });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Échec du téléchargement de l’image.";
+      setMessage({ type: "error", text: message });
+    } finally {
+      setUploadingImage(false);
+      event.target.value = "";
+    }
+  };
 
   const resetForm = () => {
     setForm(createEmptyForm());
@@ -243,7 +288,16 @@ export function AdminBlogPage() {
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.blog.field.image")}</label>
-                <Input name="image" value={form.image} onChange={handleChange} placeholder="https://..." />
+                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-background/70 px-4 py-3 text-sm font-medium text-foreground transition hover:bg-secondary/10">
+                  <UploadCloud className="size-4" />
+                  <span>{uploadingImage ? "Téléchargement..." : "Choisir une image"}</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={(event) => void handleImageUpload(event)} />
+                </label>
+                {form.image ? (
+                  <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-background/70 p-2">
+                    <img src={form.image} alt="Aperçu de l’article" className="h-32 w-full rounded-xl object-cover" />
+                  </div>
+                ) : null}
               </div>
               <div>
                 <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.blog.field.slug")}</label>
