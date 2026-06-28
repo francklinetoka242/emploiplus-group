@@ -9,7 +9,7 @@ export type JobOfferPreview = Pick<
 
 export type BlogPostPreview = Pick<
   Database["public"]["Tables"]["blog_posts"]["Row"],
-  "id" | "slug" | "title" | "excerpt" | "status" | "publish_at"
+  "id" | "slug" | "title" | "excerpt" | "status" | "publish_at" | "image" | "category"
 >;
 
 export type JobOfferDetail = Pick<
@@ -65,7 +65,7 @@ export function usePublishedBlogPosts(limit = 9) {
       const now = new Date().toISOString();
       const { data } = await supabase
         .from("blog_posts")
-        .select("id, slug, title, excerpt, status, publish_at")
+        .select("id, slug, title, excerpt, status, publish_at, image, category")
         .eq("status", "published")
         .order("publish_at", { ascending: false })
         .limit(limit);

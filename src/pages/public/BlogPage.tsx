@@ -37,9 +37,25 @@ export function BlogPage() {
           ) : posts.length > 0 ? (
             posts.map((post, i) => (
               <Link key={post.id} to={`/blog/${post.slug}`} className="group">
-                <article className="rounded-3xl border border-border bg-card p-6 shadow-soft hover:shadow-elev transition-all fade-up group-hover:border-brand" style={{ animationDelay: `${i * 80}ms` }}>
-                  <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
-                  <p className="mt-3 text-muted-foreground leading-relaxed">{post.excerpt || t('blog.article.placeholder')}</p>
+                <article className="overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elev group-hover:border-brand" style={{ animationDelay: `${i * 80}ms` }}>
+                  {post.image ? (
+                    <div className="h-48 w-full overflow-hidden bg-slate-100">
+                      <img src={post.image} alt={post.title} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                    </div>
+                  ) : (
+                    <div className="h-48 w-full bg-slate-100" />
+                  )}
+                  <div className="p-6">
+                    <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      {post.category && <span>{post.category}</span>}
+                      {post.publish_at && (
+                        <span>{new Date(post.publish_at).toLocaleDateString()}</span>
+                      )}
+                    </div>
+                    <h3 className="mt-4 font-display text-xl font-bold text-foreground">{post.title}</h3>
+                    <p className="mt-3 text-muted-foreground leading-relaxed min-h-[4.5rem]">{post.excerpt || t('blog.article.placeholder')}</p>
+                    <span className="mt-4 inline-flex text-sm font-semibold text-brand">{t('blog.readMore') || 'Lire la suite'} →</span>
+                  </div>
                 </article>
               </Link>
             ))

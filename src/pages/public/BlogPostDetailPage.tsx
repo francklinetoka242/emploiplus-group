@@ -68,40 +68,77 @@ export function BlogPostDetailPage() {
         ]}
       />
       <section className="container-page pb-20 md:pb-28">
-        <div className="grid gap-10 lg:grid-cols-[1fr_340px]">
-          <div className="space-y-8">
-            <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-              <div className="flex flex-col gap-3">
-                <Link to="/blog" className="text-sm text-brand hover:underline">← {t('blog.backToList')}</Link>
-                <h1 className="font-display text-4xl font-bold text-foreground">{post.title}</h1>
-                {post.category ? <p className="text-sm text-muted-foreground">{post.category}</p> : null}
-                {post.publish_at ? <p className="text-sm text-muted-foreground">{new Date(post.publish_at).toLocaleDateString()}</p> : null}
+        <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
+          <main className="space-y-8">
+            <article className="overflow-hidden rounded-3xl border border-border bg-card shadow-soft">
+              {post.image ? (
+                <div className="h-72 w-full overflow-hidden bg-slate-100 md:h-[420px]">
+                  <img src={post.image} alt={post.title} className="h-full w-full object-cover" />
+                </div>
+              ) : null}
+              <div className="p-8">
+                <div className="flex flex-col gap-3">
+                  <Link to="/blog" className="text-sm text-brand hover:underline">← {t('blog.backToList')}</Link>
+                  <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                    {post.category && <span>{post.category}</span>}
+                    {post.publish_at && <span>{new Date(post.publish_at).toLocaleDateString()}</span>}
+                  </div>
+                  <h1 className="font-display text-4xl font-bold text-foreground">{post.title}</h1>
+                  {post.excerpt ? <p className="mt-4 max-w-3xl text-lg text-foreground/80 leading-relaxed">{post.excerpt}</p> : null}
+                </div>
               </div>
-            </div>
+            </article>
 
-            <div className="rounded-3xl border border-border bg-card p-8 shadow-soft space-y-6">
-              <div>
-                <h2 className="font-display text-2xl font-semibold text-foreground">{t('blog.article.content')}</h2>
-                <p className="mt-4 text-foreground/90 leading-relaxed whitespace-pre-line">{post.content}</p>
+            <article className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+              <h2 className="font-display text-2xl font-semibold text-foreground">{t('blog.article.content')}</h2>
+              <div className="mt-6 space-y-6 text-foreground/90 leading-relaxed whitespace-pre-line max-w-none">
+                <p>{post.content}</p>
               </div>
-            </div>
-          </div>
+            </article>
+          </main>
 
           <aside className="space-y-6">
-            {post.image ? (
-              <div className="rounded-3xl border border-border bg-card overflow-hidden shadow-soft">
-                <img src={post.image} alt={post.title} className="w-full h-auto object-cover" />
-              </div>
-            ) : null}
-
             <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
               <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{t('blog.article.information')}</p>
-              <div className="mt-6 space-y-3 text-sm text-foreground/90">
-                {post.category ? <div><span className="font-semibold">{t('blog.article.category')} :</span> {post.category}</div> : null}
-                {post.publish_at ? <div><span className="font-semibold">{t('blog.article.publishedAt')} :</span> {new Date(post.publish_at).toLocaleDateString()}</div> : null}
-                {post.tags && post.tags.length > 0 ? <div><span className="font-semibold">{t('blog.article.tags')} :</span> {(post.tags as string[]).join(', ')}</div> : null}
+              <div className="mt-6 space-y-4 text-sm text-foreground/90">
+                {post.category ? (
+                  <div className="flex items-start gap-2">
+                    <span className="font-semibold text-foreground">{t('blog.article.category')} :</span>
+                    <span>{post.category}</span>
+                  </div>
+                ) : null}
+                {post.publish_at ? (
+                  <div className="flex items-start gap-2">
+                    <span className="font-semibold text-foreground">{t('blog.article.publishedAt')} :</span>
+                    <span>{new Date(post.publish_at).toLocaleDateString()}</span>
+                  </div>
+                ) : null}
+                {post.tags && post.tags.length > 0 ? (
+                  <div className="flex flex-col gap-2">
+                    <span className="font-semibold text-foreground">{t('blog.article.tags')} :</span>
+                    <div className="flex flex-wrap gap-2">
+                      {(post.tags as string[]).map((tag) => (
+                        <span key={tag} className="rounded-full border border-border bg-background px-3 py-1 text-xs text-foreground/80">{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
+
+            {(post.external_link || post.video_url) ? (
+              <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+                <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{t('blog.article.resources')}</p>
+                <div className="mt-6 space-y-4 text-sm text-foreground/90">
+                  {post.external_link ? (
+                    <a href={post.external_link} target="_blank" rel="noreferrer" className="block rounded-2xl border border-border/80 bg-background px-4 py-3 text-brand transition hover:bg-brand/5">{t('blog.article.externalLink')}</a>
+                  ) : null}
+                  {post.video_url ? (
+                    <a href={post.video_url} target="_blank" rel="noreferrer" className="block rounded-2xl border border-border/80 bg-background px-4 py-3 text-brand transition hover:bg-brand/5">{t('blog.article.watchVideo')}</a>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
           </aside>
         </div>
       </section>

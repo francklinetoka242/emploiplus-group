@@ -289,7 +289,7 @@ export function JobOfferDetailPage() {
                 ) : null}
                 {!job.application_email && !job.application_whatsapp && !job.external_link ? (
                   <div className="rounded-2xl border border-dashed border-border/70 bg-background/60 p-4 text-sm text-muted-foreground">
-                    Les modalités de candidature ne sont pas encore renseignées pour cette offre.
+                    Veuillez retrouver l'adresse mail de cette entreprise en bas dans la description
                   </div>
                 ) : null}
               </div>
