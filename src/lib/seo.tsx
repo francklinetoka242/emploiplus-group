@@ -139,6 +139,18 @@ export function useSiteSeoSettings() {
   return settings;
 }
 
+function resolveAbsoluteUrl(value: string) {
+  if (!value) {
+    return "";
+  }
+
+  if (value.startsWith("http://") || value.startsWith("https://")) {
+    return value;
+  }
+
+  return `${BASE_URL}${value.startsWith("/") ? "" : "/"}${value}`;
+}
+
 export function usePageSEO(metadata: SEOMetadata) {
   const siteSeo = useSiteSeoSettings();
   const resolvedTitle = metadata.title === DEFAULT_SEO.title ? siteSeo.title : metadata.title || siteSeo.title;
@@ -146,7 +158,7 @@ export function usePageSEO(metadata: SEOMetadata) {
   const resolvedKeywords = metadata.keywords === DEFAULT_SEO.keywords ? siteSeo.keywords : metadata.keywords || siteSeo.keywords;
   const resolvedCanonical = metadata.canonical === DEFAULT_SEO.canonical ? siteSeo.canonical : metadata.canonical || siteSeo.canonical;
   const resolvedRobots = metadata.robots === DEFAULT_SEO.robots ? siteSeo.robots : metadata.robots || siteSeo.robots;
-  const resolvedOgImage = metadata.ogImage || siteSeo.ogImage || `${BASE_URL}/og-default.svg`;
+  const resolvedOgImage = resolveAbsoluteUrl(metadata.ogImage || siteSeo.ogImage || `${BASE_URL}/og-default.svg`);
   const ogUrl = metadata.ogUrl || resolvedCanonical;
   const schema = buildJsonLd(metadata);
 
@@ -162,6 +174,9 @@ export function usePageSEO(metadata: SEOMetadata) {
       <meta property="og:title" content={`${resolvedTitle} | EmploiPlus Group`} />
       <meta property="og:description" content={resolvedDescription} />
       <meta property="og:image" content={resolvedOgImage} />
+      <meta property="og:image:secure_url" content={resolvedOgImage} />
+      <meta property="og:image:alt" content={resolvedTitle} />
+      <meta property="og:image:type" content="image/jpeg" />
       <meta property="og:url" content={ogUrl} />
       <meta property="og:type" content={metadata.ogType || "website"} />
       {metadata.publishedTime && <meta property="article:published_time" content={metadata.publishedTime} />}
@@ -172,6 +187,7 @@ export function usePageSEO(metadata: SEOMetadata) {
       <meta name="twitter:title" content={`${resolvedTitle} | EmploiPlus Group`} />
       <meta name="twitter:description" content={resolvedDescription} />
       <meta name="twitter:image" content={resolvedOgImage} />
+      <meta name="twitter:image:alt" content={resolvedTitle} />
 
       <script type="application/ld+json">{JSON.stringify(schema)}</script>
     </Helmet>
