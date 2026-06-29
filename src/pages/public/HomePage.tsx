@@ -10,6 +10,7 @@ import { SectionHeader } from "@/components/page/SectionHeader";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 import { usePublishedJobOffers, usePublishedBlogPosts } from "@/hooks/usePublishedOffers";
 import { BadgeDollarSign, BriefcaseBusiness, Building2, CalendarDays, ExternalLink, Mail, MapPin, Sparkles } from "lucide-react";
+import { ShareButtons } from "@/components/site/ShareButtons";
 
 function AnimatedStat({ value, label, t }: { value: string; label: string; t: (key: string) => string }) {
   return (
@@ -317,23 +318,50 @@ export function HomePage() {
               <div key={index} className="rounded-3xl border border-border bg-card p-6 shadow-soft animate-pulse" />
             ))
           ) : homePosts.length > 0 ? (
-            homePosts.map((post, i) => (
-              <Link key={post.id} to={`/blog/${post.slug}`} className="group">
-                <article className="overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elev group-hover:border-brand fade-up" style={{ animationDelay: `${i * 120}ms` }}>
-                  {post.image ? (
-                    <div className="h-48 w-full overflow-hidden bg-slate-100">
-                      <img src={post.image} alt={post.title} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+            homePosts.map((post, i) => {
+              const canonical = `${BASE_URL}/blog/${post.slug}`;
+              const previewText = (post.excerpt || t('blog.article.placeholder')).replace(/\s+/g, ' ').trim();
+              const displayText = previewText.length > 140 ? `${previewText.slice(0, 137)}...` : previewText;
+              return (
+                <article key={post.id} className="flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elev group-hover:border-brand fade-up" style={{ animationDelay: `${i * 120}ms` }}>
+                  <Link to={`/blog/${post.slug}`} className="group flex flex-1 flex-col">
+                    {post.image ? (
+                      <div className="h-48 w-full overflow-hidden bg-slate-100">
+                        <img src={post.image} alt={post.title} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                      </div>
+                    ) : (
+                      <div className="h-48 w-full bg-slate-100" />
+                    )}
+                    <div className="flex flex-1 flex-col p-6">
+                      {post.is_featured ? (
+                        <span className="mb-3 inline-flex w-fit items-center gap-2 rounded-full bg-orange-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-orange-600">
+                          <span className="size-2 rounded-full bg-orange-500" />
+                          À la une
+                        </span>
+                      ) : null}
+                      <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
+                      <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{displayText}</p>
                     </div>
-                  ) : (
-                    <div className="h-48 w-full bg-slate-100" />
-                  )}
-                  <div className="p-6">
-                    <h3 className="font-display text-xl font-bold text-foreground">{post.title}</h3>
-                    <p className="mt-3 text-muted-foreground leading-relaxed min-h-[4.5rem]">{post.excerpt || t('blog.article.placeholder')}</p>
+                  </Link>
+                  <div className="flex items-center justify-between gap-3 border-t border-border/70 px-6 py-4">
+                    <Link to={`/blog/${post.slug}`} className="inline-flex items-center gap-2 text-sm font-semibold text-brand transition hover:underline">
+                      {t('blog.readMore') || 'Voir plus'}
+                      <ExternalLink className="size-4" />
+                    </Link>
+                    <ShareButtons
+                      url={canonical}
+                      text={post.title}
+                      variant="compact"
+                      shareData={{
+                        title: post.title,
+                        description: previewText,
+                        image: post.image,
+                      }}
+                    />
                   </div>
                 </article>
-              </Link>
-            ))
+              );
+            })
           ) : (
             <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">{t('blog.empty')}</div>
           )}

@@ -9,12 +9,14 @@ import { usePublishedJobOffers } from "@/hooks/usePublishedOffers";
 
 export function JobsPage() {
   const { t } = useI18n();
-  const { offers, loading } = usePublishedJobOffers(12);
+  const { offers, loading } = usePublishedJobOffers(100);
   const [query, setQuery] = React.useState("");
   const [companyQuery, setCompanyQuery] = React.useState("");
   const [locationQuery, setLocationQuery] = React.useState("");
   const [contractType, setContractType] = React.useState("");
   const [filtersOpen, setFiltersOpen] = React.useState(false);
+  const [page, setPage] = React.useState(1);
+  const pageSize = 8;
 
   const q = query.trim().toLowerCase();
   const companyFilter = companyQuery.trim().toLowerCase();
@@ -50,6 +52,14 @@ export function JobsPage() {
     if (contractType && job.contract_type !== contractType) return false;
     return true;
   });
+
+  React.useEffect(() => {
+    setPage(1);
+  }, [q, companyFilter, lq, contractType]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredOffers.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const paginatedOffers = filteredOffers.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   return (
     <>
@@ -139,7 +149,8 @@ export function JobsPage() {
                   <article key={index} className="rounded-3xl border border-border bg-card p-6 shadow-soft animate-pulse" />
                 ))
               ) : filteredOffers.length > 0 ? (
-                filteredOffers.map((job, i) => {
+                <>
+                  {paginatedOffers.map((job, i) => {
                   const location = [job.location_city, job.location_country].filter(Boolean).join(", ") || t("jobs.location.remote");
                   const previewText = (job.description || job.requirements || "")
                     .replace(/\s+/g, " ")
@@ -226,7 +237,33 @@ export function JobsPage() {
                       </Link>
                     </article>
                   );
-                })
+                  })}
+                  {totalPages > 1 ? (
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card/80 px-4 py-3">
+                      <p className="text-sm text-muted-foreground">
+                        Page {safePage} sur {totalPages}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setPage((value) => Math.max(1, value - 1))}
+                          disabled={safePage === 1}
+                          className="rounded-full border border-border px-3 py-2 text-sm font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          Précédent
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
+                          disabled={safePage === totalPages}
+                          className="rounded-full border border-border px-3 py-2 text-sm font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          Suivant
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+                </>
               ) : (
                 <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">{t("jobs.none")}</div>
               )}
