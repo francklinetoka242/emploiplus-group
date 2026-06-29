@@ -50,7 +50,7 @@ export function BlogPostDetailPage() {
   const title = post.meta_title || post.title;
   const description = post.meta_description || post.excerpt || t('blog.subtitle');
   const ogImage = post.og_image || post.image || `${BASE_URL}/og-default.svg`;
-  const canonical = `${typeof window !== "undefined" ? window.location.origin : BASE_URL}/blog/${post.slug}`;
+  const canonical = `${BASE_URL}/blog/${post.slug}`;
 
   return (
     <>

@@ -30,7 +30,7 @@ export interface SiteSEOSettings {
   ogImage: string;
 }
 
-export const BASE_URL = "https://emploiplus.group";
+export const BASE_URL = "https://emploiplus-group.com";
 const SEO_SETTINGS_STORAGE_KEY = "emploiplus.site-seo";
 
 export const DEFAULT_SITE_SEO_SETTINGS: SiteSEOSettings = {
