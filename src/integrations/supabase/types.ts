@@ -348,20 +348,32 @@ export type Database = {
       user_roles: {
         Row: {
           created_at: string
+          email: string | null
+          full_name: string | null
           id: string
+          is_active: boolean
           role: Database["public"]["Enums"]["app_role"]
+          specialty: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
+          email?: string | null
+          full_name?: string | null
           id?: string
+          is_active?: boolean
           role: Database["public"]["Enums"]["app_role"]
+          specialty?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
+          email?: string | null
+          full_name?: string | null
           id?: string
+          is_active?: boolean
           role?: Database["public"]["Enums"]["app_role"]
+          specialty?: string | null
           user_id?: string
         }
         Relationships: []
