@@ -8,24 +8,47 @@ import { BadgeCheck, BriefcaseBusiness, FileText, MessagesSquare, Sparkles, User
 
 function AdminDashboardView() {
   const { t } = useI18n();
-  const [counts, setCounts] = useState({ activeJobs: 0, publishedPosts: 0, receivedRequests: 0 });
+  const [counts, setCounts] = useState({ activeJobs: 0, publishedPosts: 0, featuredPosts: 0, receivedRequests: 0 });
+  const [adminStats, setAdminStats] = useState({ total: 0, active: 0, blocked: 0, roles: { super_admin: 0, admin: 0, editor: 0 } });
 
   useEffect(() => {
     let mounted = true;
 
     async function loadCounts() {
-      const [jobsRes, postsRes, requestsRes] = await Promise.all([
+      const [jobsRes, postsRes, featuredRes, requestsRes, adminsRes] = await Promise.all([
         supabase.from("job_offers").select("id", { count: "exact", head: true }).eq("status", "published"),
         supabase.from("blog_posts").select("id", { count: "exact", head: true }).eq("status", "published"),
+        supabase.from("blog_posts").select("id", { count: "exact", head: true }).eq("status", "published").eq("is_featured", true),
         supabase.from("contacts_messages").select("id", { count: "exact", head: true }),
+        supabase.from("user_roles").select("id, role, is_active"),
       ]);
 
       if (!mounted) return;
 
+      const adminData = adminsRes.data ?? [];
+      const roleCounts = { super_admin: 0, admin: 0, editor: 0 };
+      let activeCount = 0;
+      let blockedCount = 0;
+
+      for (const row of adminData) {
+        if (row.role && roleCounts[row.role as keyof typeof roleCounts] !== undefined) {
+          roleCounts[row.role as keyof typeof roleCounts] += 1;
+        }
+        if (row.is_active) activeCount += 1;
+        else blockedCount += 1;
+      }
+
       setCounts({
         activeJobs: jobsRes.count ?? 0,
         publishedPosts: postsRes.count ?? 0,
+        featuredPosts: featuredRes.count ?? 0,
         receivedRequests: requestsRes.count ?? 0,
+      });
+      setAdminStats({
+        total: adminData.length,
+        active: activeCount,
+        blocked: blockedCount,
+        roles: roleCounts,
       });
     }
 
@@ -49,6 +72,12 @@ function AdminDashboardView() {
       tone: "from-sky-500/15 to-sky-500/5 text-sky-600",
     },
     {
+      label: t("admin.dashboard.metric.featuredPosts"),
+      value: counts.featuredPosts.toString(),
+      icon: Sparkles,
+      tone: "from-cyan-500/15 to-cyan-500/5 text-cyan-600",
+    },
+    {
       label: t("admin.dashboard.metric.receivedRequests"),
       value: counts.receivedRequests.toString(),
       icon: MessagesSquare,
@@ -57,9 +86,9 @@ function AdminDashboardView() {
   ];
 
   const quickActions = [
-    { label: "Créer une offre", href: "/admin/jobs", icon: BriefcaseBusiness },
-    { label: "Rédiger un article", href: "/admin/blog", icon: FileText },
-    { label: "Gérer l’équipe", href: "/admin/team", icon: Users2 },
+    { label: t("admin.dashboard.action.createJob"), href: "/admin/jobs", icon: BriefcaseBusiness },
+    { label: t("admin.dashboard.action.writeArticle"), href: "/admin/blog", icon: FileText },
+    { label: t("admin.dashboard.action.manageTeam"), href: "/admin/team", icon: Users2 },
   ];
 
   return (
@@ -78,7 +107,7 @@ function AdminDashboardView() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {metrics.map((metric) => {
           const Icon = metric.icon;
           return (
@@ -93,7 +122,7 @@ function AdminDashboardView() {
         })}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+      <div className="grid gap-6 xl:grid-cols-3">
         <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -114,26 +143,62 @@ function AdminDashboardView() {
         <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">{t("admin.dashboard.content.title")}</p>
-              <h3 className="mt-2 text-xl font-semibold text-foreground">{t("admin.dashboard.content.subtitle")}</h3>
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">{t("admin.dashboard.blog.title")}</p>
+              <h3 className="mt-2 text-xl font-semibold text-foreground">{t("admin.dashboard.blog.subtitle")}</h3>
             </div>
-            <div className="rounded-3xl bg-blue-500/10 px-3 py-2 text-blue-500">Engagé</div>
+            <div className="rounded-3xl bg-cyan-500/10 px-3 py-2 text-cyan-500">À la une</div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">{t("admin.dashboard.content.description")}</p>
-          <div className="mt-6 space-y-3">
-            {quickActions.map((action) => {
-              const Icon = action.icon;
-              return (
-                <Link key={action.label} to={action.href} className="flex items-center justify-between rounded-2xl border border-border bg-background/70 px-4 py-3 text-sm font-medium text-foreground transition hover:border-slate-300 hover:bg-background">
-                  <span className="flex items-center gap-2">
-                    <Icon className="h-4 w-4 text-slate-500" />
-                    {action.label}
-                  </span>
-                  <span className="text-slate-400">→</span>
-                </Link>
-              );
-            })}
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">{t("admin.dashboard.blog.description")}</p>
+          <div className="mt-6 rounded-2xl border border-border bg-background/70 p-4">
+            <div className="flex items-center justify-between text-sm font-medium text-foreground">
+              <span>{t("admin.dashboard.blog.featuredCount")}</span>
+              <span className="font-semibold">{counts.featuredPosts}</span>
+            </div>
+            <Link to="/admin/blog" className="mt-4 inline-flex items-center rounded-2xl border border-border bg-background/80 px-4 py-2 text-sm text-foreground transition hover:border-slate-300 hover:bg-background">
+              {t("admin.dashboard.action.viewBlog")}
+            </Link>
           </div>
+        </div>
+
+        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">{t("admin.dashboard.admin.title")}</p>
+              <h3 className="mt-2 text-xl font-semibold text-foreground">{t("admin.dashboard.admin.subtitle")}</h3>
+            </div>
+            <div className="rounded-3xl bg-slate-900/80 px-3 py-2 text-slate-100">{adminStats.total} comptes</div>
+          </div>
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">{t("admin.dashboard.admin.description")}</p>
+          <div className="mt-6 space-y-3 rounded-2xl border border-border bg-background/70 p-4 text-sm text-foreground">
+            <div className="flex items-center justify-between">
+              <span>{t("admin.dashboard.admin.active")}</span>
+              <span>{adminStats.active}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>{t("admin.dashboard.admin.blocked")}</span>
+              <span>{adminStats.blocked}</span>
+            </div>
+            <div className="border-t border-border pt-3">
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{t("admin.dashboard.admin.roles")}</p>
+              <div className="mt-3 space-y-2 text-sm">
+                <div className="flex items-center justify-between text-foreground">
+                  <span>{t("admin.team.role.superAdmin")}</span>
+                  <span>{adminStats.roles.super_admin}</span>
+                </div>
+                <div className="flex items-center justify-between text-foreground">
+                  <span>{t("admin.team.role.admin")}</span>
+                  <span>{adminStats.roles.admin}</span>
+                </div>
+                <div className="flex items-center justify-between text-foreground">
+                  <span>{t("admin.team.role.editor")}</span>
+                  <span>{adminStats.roles.editor}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <Link to="/admin/team" className="mt-5 inline-flex items-center rounded-2xl border border-border bg-background/80 px-4 py-2 text-sm text-foreground transition hover:border-slate-300 hover:bg-background">
+            {t("admin.dashboard.action.viewTeam")}
+          </Link>
         </div>
       </div>
     </div>
