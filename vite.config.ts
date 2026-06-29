@@ -1,6 +1,5 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
-import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import { writeFileSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
 import { resolve, join } from "node:path";
@@ -133,6 +132,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
-    plugins: [react(), tsconfigPaths(), tailwindcss(), sitemapGeneratorPlugin(env)],
+    plugins: [react(), tailwindcss(), sitemapGeneratorPlugin(env)],
   };
 });
+
