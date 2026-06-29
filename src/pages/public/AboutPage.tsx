@@ -5,6 +5,7 @@ import { BASE_URL } from "@/lib/seo";
 import francklinImage from "@/assets/Equipe_Experte/Ing_Francklin_ETOKA.jpeg";
 import destineeImage from "@/assets/Equipe_Experte/Ing_Destinée_MOUISSOU.jpeg";
 import claudeImage from "@/assets/Equipe_Experte/Claude_OMVOULET.jpeg";
+import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 
 export function AboutPage() {
   const { t } = useI18n();
@@ -109,15 +110,15 @@ export function AboutPage() {
             <h2 className="font-display text-2xl font-bold text-foreground mb-4">{t('about.whyChooseUs.title')}</h2>
             <div className="mt-8 grid gap-6 md:grid-cols-3">
               <div>
-                <p className="font-display text-2xl font-bold text-brand mb-2">1200+</p>
+                <p className="font-display text-2xl font-bold text-brand mb-2"><AnimatedCounter value="1200+" /></p>
                 <p className="text-foreground/80">{t('about.stats.jobs')}</p>
               </div>
               <div>
-                <p className="font-display text-2xl font-bold text-brand mb-2">1</p>
+                <p className="font-display text-2xl font-bold text-brand mb-2"><AnimatedCounter value="1" /></p>
                 <p className="text-foreground/80">{t('about.stats.companies')}</p>
               </div>
               <div>
-                <p className="font-display text-2xl font-bold text-brand mb-2">440+</p>
+                <p className="font-display text-2xl font-bold text-brand mb-2"><AnimatedCounter value="440+" /></p>
                 <p className="text-foreground/80">{t('about.stats.readers')}</p>
               </div>
             </div>

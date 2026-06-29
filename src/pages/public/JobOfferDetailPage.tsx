@@ -86,6 +86,11 @@ export function JobOfferDetailPage() {
     const translated = t(key);
     return translated && translated !== key ? translated : fallback;
   };
+  const applyTitle = getLabel('jobs.detail.applyTitle', 'Postuler');
+  const applyDescription = getLabel('jobs.detail.applyDescription', 'Choisissez le canal qui vous convient pour transmettre votre candidature.');
+  const applyByEmailLabel = getLabel('jobs.detail.applyByEmail', 'Envoyer par email');
+  const applyByWhatsappLabel = getLabel('jobs.detail.applyByWhatsapp', 'Contacter via WhatsApp');
+  const applyExternalLabel = getLabel('jobs.detail.applyExternal', 'Postuler sur le site');
   const formatDate = (value?: string | null) => {
     if (!value) return null;
     const date = new Date(value);
@@ -266,25 +271,25 @@ export function JobOfferDetailPage() {
 
           <aside className="space-y-6">
             <div className="rounded-[28px] border border-border/70 bg-card p-7 shadow-soft">
-              <h3 className="font-display text-xl font-semibold text-foreground">{getLabel('jobs.detail.applyTitle', 'Postuler')}</h3>
-              <p className="mt-2 text-sm leading-7 text-muted-foreground">Choisissez le canal qui vous convient pour transmettre votre candidature.</p>
+              <h3 className="font-display text-xl font-semibold text-foreground">{applyTitle}</h3>
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">{applyDescription}</p>
               <div className="mt-6 space-y-3">
                 {job.application_email ? (
                   <a href={`mailto:${job.application_email}`} className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90">
                     <Send className="size-4" />
-                    {t('jobs.detail.applyByEmail')}
+                    {applyByEmailLabel}
                   </a>
                 ) : null}
                 {job.application_whatsapp ? (
                   <a href={`https://wa.me/${job.application_whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-background/80 px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-primary/5">
                     <MessageSquare className="size-4" />
-                    {t('jobs.detail.applyByWhatsapp')}
+                    {applyByWhatsappLabel}
                   </a>
                 ) : null}
                 {job.external_link ? (
                   <a href={job.external_link} target="_blank" rel="noreferrer" className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-background/80 px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-primary/5">
                     <ExternalLink className="size-4" />
-                    {t('jobs.detail.applyExternal')}
+                    {applyExternalLabel}
                   </a>
                 ) : null}
                 {!job.application_email && !job.application_whatsapp && !job.external_link ? (

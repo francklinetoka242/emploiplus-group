@@ -238,10 +238,10 @@ export function JobsPage() {
               {t("jobs.quickAccess.description")}
             </p>
             <div className="mt-6 flex flex-col gap-3">
-              <a href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
+              <a href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1ea952]">
                 {t("jobs.quickAccess.channel1")}
               </a>
-              <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full bg-brand/50 text-sm font-semibold text-brand hover:bg-brand/60">
+              <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1ea952]">
                 {t("jobs.quickAccess.channel2")}
               </a>
             </div>

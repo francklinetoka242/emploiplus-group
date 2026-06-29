@@ -7,8 +7,24 @@ import { useI18n } from "@/lib/i18n";
 import SEO from "@/components/SEO";
 import { DEFAULT_SEO, BASE_URL } from "@/lib/seo";
 import { SectionHeader } from "@/components/page/SectionHeader";
+import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 import { usePublishedJobOffers, usePublishedBlogPosts } from "@/hooks/usePublishedOffers";
 import { BadgeDollarSign, BriefcaseBusiness, Building2, CalendarDays, MapPin, Sparkles } from "lucide-react";
+
+function AnimatedStat({ value, label, t }: { value: string; label: string; t: (key: string) => string }) {
+  return (
+    <div className="rounded-3xl overflow-hidden transform transition-transform hover:-translate-y-1 hover:scale-[1.02] fade-up">
+      <div className="p-[1px] rounded-3xl gradient-brand">
+        <article className="rounded-3xl bg-card p-8 text-center shadow-lg">
+          <div className="text-4xl font-display font-extrabold text-foreground">
+            <AnimatedCounter value={value} />
+          </div>
+          <div className="mt-3 text-sm text-muted-foreground">{t(label)}</div>
+        </article>
+      </div>
+    </div>
+  );
+}
 
 export function HomePage() {
   const { t } = useI18n();
@@ -98,13 +114,8 @@ export function HomePage() {
       <section className="container-page py-16 md:py-20">
         <div className="grid gap-6 md:grid-cols-3">
           {stats.map((item, i) => (
-            <div key={item.label} className="rounded-3xl overflow-hidden transform transition-transform hover:-translate-y-1 hover:scale-[1.02] fade-up" style={{ animationDelay: `${i * 120}ms` }}>
-              <div className="p-[1px] rounded-3xl gradient-brand">
-                <article className="rounded-3xl bg-card p-8 text-center shadow-lg">
-                  <div className="text-4xl font-display font-extrabold text-foreground">{item.value}</div>
-                  <div className="mt-3 text-sm text-muted-foreground">{t(item.label)}</div>
-                </article>
-              </div>
+            <div key={item.label} className="fade-up" style={{ animationDelay: `${i * 120}ms` }}>
+              <AnimatedStat value={item.value} label={item.label} t={t} />
             </div>
           ))}
         </div>
@@ -156,7 +167,7 @@ export function HomePage() {
                 const isExpired = Boolean(deadlineValue && new Date(deadlineValue).getTime() < Date.now());
 
                 return (
-                  <article key={job.id} className={`relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/[0.03] p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elev fade-up ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`} style={{ animationDelay: `${i * 120}ms` }}>
+                  <article key={job.id} className={`relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/[0.03] p-5 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elev fade-up ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`} style={{ animationDelay: `${i * 120}ms` }}>
                     <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-brand via-brand/70 to-transparent" />
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -164,7 +175,7 @@ export function HomePage() {
                           <Building2 className="size-3.5" />
                           <span>{job.company}</span>
                         </div>
-                        <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
+                        <h3 className="mt-2 font-display text-lg font-bold text-foreground">{job.title}</h3>
                       </div>
                       {contractLabel ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
@@ -174,33 +185,33 @@ export function HomePage() {
                       ) : null}
                     </div>
 
-                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
                       <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
                         <MapPin className="size-4 shrink-0 text-brand" />
                         <span>{location}</span>
                       </div>
-                      {job.salary ? (
-                        <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
-                          <BadgeDollarSign className="size-4 shrink-0 text-brand" />
-                          <span>{job.salary}</span>
-                        </div>
-                      ) : null}
                       {deadlineValue ? (
-                        <div className={`flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80 ${isExpired ? "text-muted-foreground" : ""} sm:col-span-2`}>
+                        <div className={`flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80 ${isExpired ? "text-muted-foreground" : ""}`}>
                           <CalendarDays className="size-4 shrink-0 text-brand" />
                           <span>{t("admin.jobs.field.deadline")}: {new Date(deadlineValue).toLocaleDateString("fr-FR")}{isExpired ? " • Expirée" : ""}</span>
+                        </div>
+                      ) : null}
+                      {job.salary ? (
+                        <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80 sm:col-span-2">
+                          <BadgeDollarSign className="size-4 shrink-0 text-brand" />
+                          <span>{job.salary}</span>
                         </div>
                       ) : null}
                     </div>
 
                     {previewText ? (
-                      <p className="mt-4 rounded-2xl border border-border/60 bg-background/60 p-3 text-sm text-foreground/80 leading-relaxed">
+                      <p className="mt-3 rounded-2xl border border-border/60 bg-background/60 p-3 text-sm text-foreground/80 leading-relaxed">
                         {previewText.length > 180 ? `${previewText.slice(0, 177)}...` : previewText}
                       </p>
                     ) : null}
 
                     {tags.length > 0 ? (
-                      <div className="mt-4 flex flex-wrap gap-2">
+                      <div className="mt-3 flex flex-wrap gap-2">
                         {tags.map((tag) => (
                           <span key={tag} className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/70 px-2.5 py-1 text-xs text-muted-foreground">
                             <Sparkles className="size-3" />
