@@ -114,19 +114,21 @@ export function AdminPage() {
         canonical: `${BASE_URL}/admin`,
         robots: "noindex,nofollow",
       })}
-      <div className="bg-slate-950/5 min-h-screen py-6">
+      <div className="min-h-screen bg-slate-950/5 py-6">
         <div className="mx-auto flex min-h-[calc(100vh-72px)] max-w-[1600px] gap-6 px-4 sm:px-6 lg:px-8">
-          <AdminSidebar
-            open={sidebarOpen}
-            activeView={activeView}
-            onSelect={handleSelect}
-            onToggle={() => setSidebarOpen((prev) => !prev)}
-            onLogout={handleLogout}
-            session={session}
-          />
+          <div className="sticky top-6 self-start shrink-0">
+            <AdminSidebar
+              open={sidebarOpen}
+              activeView={activeView}
+              onSelect={handleSelect}
+              onToggle={() => setSidebarOpen((prev) => !prev)}
+              onLogout={handleLogout}
+              session={session}
+            />
+          </div>
           <div className="flex min-w-0 flex-1 flex-col gap-6">
             <AdminTopbar session={session} />
-            <main className="flex-1 rounded-[2rem] border border-border bg-background p-6 shadow-soft transition-all duration-300">
+            <main className="flex-1 min-h-0 overflow-y-auto rounded-[2rem] border border-border bg-background p-6 shadow-soft transition-all duration-300">
               <Outlet />
             </main>
           </div>

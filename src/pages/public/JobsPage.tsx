@@ -200,20 +200,22 @@ export function JobsPage() {
 
                       <Link to={`/jobs/${job.slug}`} className="block">
                         <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                          <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
-                            <MapPin className="size-4 shrink-0 text-brand" />
-                            <span>{location}</span>
+                          <div className="flex items-center justify-between gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
+                            <div className="flex min-w-0 items-center gap-2">
+                              <MapPin className="size-4 shrink-0 text-brand" />
+                              <span className="truncate">{location}</span>
+                            </div>
+                            {deadlineValue ? (
+                              <div className={`flex min-w-0 items-center gap-2 ${isExpired ? "text-muted-foreground" : ""}`}>
+                                <CalendarDays className="size-4 shrink-0 text-brand" />
+                                <span className="truncate">{formatDate(deadlineValue)}</span>
+                              </div>
+                            ) : null}
                           </div>
                           {job.salary ? (
                             <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
                               <BadgeDollarSign className="size-4 shrink-0 text-brand" />
                               <span>{job.salary}</span>
-                            </div>
-                          ) : null}
-                          {deadlineValue ? (
-                            <div className={`flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80 ${isExpired ? "text-muted-foreground" : ""} sm:col-span-2`}>
-                              <CalendarDays className="size-4 shrink-0 text-brand" />
-                              <span>{t("admin.jobs.field.deadline")}: {formatDate(deadlineValue)}{isExpired ? " • Expirée" : ""}</span>
                             </div>
                           ) : null}
                         </div>
@@ -234,6 +236,11 @@ export function JobsPage() {
                             ))}
                           </div>
                         ) : null}
+                        <div className="mt-4 flex justify-end">
+                          <span className="inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90">
+                            Voir plus
+                          </span>
+                        </div>
                       </Link>
                     </article>
                   );

@@ -56,6 +56,7 @@ export function AdminJobsPage() {
   const [form, setForm] = React.useState(createEmptyForm());
   const [jobs, setJobs] = React.useState<JobOffer[]>([]);
   const [editingId, setEditingId] = React.useState<string | null>(null);
+  const [showForm, setShowForm] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
   const [uploadingImage, setUploadingImage] = React.useState(false);
@@ -116,6 +117,15 @@ export function AdminJobsPage() {
     setForm(createEmptyForm());
     setEditingId(null);
     setMessage(null);
+    setShowForm(false);
+  };
+
+  const toggleForm = () => {
+    if (editingId) {
+      resetForm();
+      return;
+    }
+    setShowForm((prev) => !prev);
   };
 
   const startEdit = (job: JobOffer) => {
@@ -138,6 +148,7 @@ export function AdminJobsPage() {
       external_link: job.external_link ?? "",
       status: job.status ?? "draft",
     });
+    setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -250,7 +261,7 @@ export function AdminJobsPage() {
               <p className="mt-3 text-sm text-muted-foreground">{t("admin.jobs.description")}</p>
             </div>
             <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={resetForm}>
+              <Button type="button" variant="outline" onClick={toggleForm}>
                 <Plus className="mr-2 size-4" />{editingId ? "Annuler l'édition" : "Nouvelle offre"}
               </Button>
               <Button type="button" variant="secondary" onClick={() => void loadJobs()}>
@@ -266,15 +277,16 @@ export function AdminJobsPage() {
           </div>
         ) : null}
 
-        <form onSubmit={handleSubmit} className="grid gap-6">
-          <div className="rounded-[2rem] border border-border bg-background p-8 shadow-soft">
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-foreground">{editingId ? "Modifier l'offre" : "Créer une offre"}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Renseignez les informations essentielles pour la publication.</p>
+        {showForm ? (
+          <form onSubmit={handleSubmit} className="grid gap-6">
+            <div className="rounded-[2rem] border border-border bg-background p-8 shadow-soft">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">{editingId ? "Modifier l'offre" : "Créer une offre"}</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">Renseignez les informations essentielles pour la publication.</p>
+                </div>
               </div>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.title")}</label>
                 <Input name="title" value={form.title} onChange={handleChange} required placeholder={t("admin.jobs.field.titlePlaceholder")} />
@@ -405,11 +417,12 @@ export function AdminJobsPage() {
               </div>
             </div>
 
-            <Button type="submit" size="lg" className="mt-6 w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={submitting}>
-              {submitting ? "Enregistrement..." : editingId ? "Enregistrer les modifications" : t("admin.jobs.field.submit")}
-            </Button>
-          </div>
-        </form>
+              <Button type="submit" size="lg" className="mt-6 w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={submitting}>
+                {submitting ? "Enregistrement..." : editingId ? "Enregistrer les modifications" : t("admin.jobs.field.submit")}
+              </Button>
+            </div>
+          </form>
+        ) : null}
 
         <div className="rounded-[2rem] border border-border bg-card p-6 shadow-soft">
           <div className="flex items-center justify-between">
@@ -425,8 +438,9 @@ export function AdminJobsPage() {
           ) : jobs.length === 0 ? (
             <div className="mt-6 rounded-3xl border border-border bg-background/70 p-6 text-sm text-muted-foreground">Aucune offre pour le moment.</div>
           ) : (
-            <div className="mt-6 overflow-x-auto">
-              <table className="min-w-full text-sm">
+            <div className="mt-6 max-h-[60vh] overflow-y-auto rounded-3xl border border-border/60">
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
                 <thead>
                   <tr className="border-b border-border text-left text-muted-foreground">
                     <th className="px-3 py-3 font-medium">Offre</th>
@@ -473,7 +487,8 @@ export function AdminJobsPage() {
                     );
                   })}
                 </tbody>
-              </table>
+                </table>
+              </div>
             </div>
           )}
         </div>
