@@ -9,7 +9,7 @@ export type JobOfferPreview = Pick<
 
 export type BlogPostPreview = Pick<
   Database["public"]["Tables"]["blog_posts"]["Row"],
-  "id" | "slug" | "title" | "excerpt" | "status" | "publish_at" | "image" | "category"
+  "id" | "slug" | "title" | "excerpt" | "status" | "publish_at" | "image" | "category" | "is_featured" | "sort_order"
 >;
 
 export type JobOfferDetail = Pick<
@@ -19,7 +19,7 @@ export type JobOfferDetail = Pick<
 
 export type BlogPostDetail = Pick<
   Database["public"]["Tables"]["blog_posts"]["Row"],
-  "id" | "slug" | "title" | "content" | "excerpt" | "status" | "publish_at" | "meta_title" | "meta_description" | "og_image" | "image" | "video_url" | "external_link" | "category" | "tags"
+  "id" | "slug" | "title" | "content" | "excerpt" | "status" | "publish_at" | "meta_title" | "meta_description" | "og_image" | "image" | "video_url" | "external_link" | "category" | "tags" | "is_featured" | "sort_order"
 >;
 
 export function usePublishedJobOffers(limit = 10) {
@@ -65,8 +65,10 @@ export function usePublishedBlogPosts(limit = 9) {
       const now = new Date().toISOString();
       const { data } = await supabase
         .from("blog_posts")
-        .select("id, slug, title, excerpt, status, publish_at, image, category")
+        .select("id, slug, title, excerpt, status, publish_at, image, category, is_featured, sort_order")
         .eq("status", "published")
+        .order("is_featured", { ascending: false })
+        .order("sort_order", { ascending: true })
         .order("publish_at", { ascending: false })
         .limit(limit);
 

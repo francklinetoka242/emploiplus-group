@@ -4,6 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
 import { useBlogPostBySlug } from "@/hooks/usePublishedOffers";
+import { ShareButtons } from "@/components/site/ShareButtons";
 
 function NotFoundPage() {
   return (
@@ -79,9 +80,20 @@ export function BlogPostDetailPage() {
               <div className="p-8">
                 <div className="flex flex-col gap-3">
                   <Link to="/blog" className="text-sm text-brand hover:underline">← {t('blog.backToList')}</Link>
-                  <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                    {post.category && <span>{post.category}</span>}
-                    {post.publish_at && <span>{new Date(post.publish_at).toLocaleDateString()}</span>}
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      {post.category && <span>{post.category}</span>}
+                      {post.publish_at && <span>{new Date(post.publish_at).toLocaleDateString()}</span>}
+                    </div>
+                    <ShareButtons
+                      url={canonical}
+                      text={post.title}
+                      variant="compact"
+                      shareData={{
+                        title: post.title,
+                        description: post.excerpt || post.content,
+                      }}
+                    />
                   </div>
                   <h1 className="font-display text-4xl font-bold text-foreground">{post.title}</h1>
                   {post.excerpt ? <p className="mt-4 max-w-3xl text-lg text-foreground/80 leading-relaxed">{post.excerpt}</p> : null}

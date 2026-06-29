@@ -32,6 +32,8 @@ function createEmptyForm() {
     slug: "",
     seo_title: "",
     seo_description: "",
+    is_featured: false,
+    sort_order: 0,
   };
 }
 
@@ -49,12 +51,20 @@ export function AdminBlogPage() {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setMessage(null);
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === "sort_order" ? Number(value) : value,
+    }));
   };
 
   const loadPosts = React.useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase.from("blog_posts").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .order("is_featured", { ascending: false })
+      .order("sort_order", { ascending: true })
+      .order("publish_at", { ascending: false });
     setLoading(false);
     if (!error) {
       setPosts(data ?? []);
@@ -116,6 +126,8 @@ export function AdminBlogPage() {
       slug: post.slug ?? "",
       seo_title: post.meta_title ?? "",
       seo_description: post.meta_description ?? "",
+      is_featured: post.is_featured ?? false,
+      sort_order: post.sort_order ?? 0,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -138,6 +150,8 @@ export function AdminBlogPage() {
       publish_at: form.status === "published" ? new Date().toISOString() : null,
       meta_title: form.seo_title || null,
       meta_description: form.seo_description || null,
+      is_featured: form.is_featured,
+      sort_order: Number(form.sort_order || 0),
       updated_at: new Date().toISOString(),
     };
 
@@ -294,6 +308,19 @@ export function AdminBlogPage() {
             </div>
 
             <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="rounded-2xl border border-border bg-background/70 p-4">
+                <label className="flex items-center gap-3 text-sm font-semibold text-foreground">
+                  <input type="checkbox" checked={form.is_featured} onChange={(event) => setForm((prev) => ({ ...prev, is_featured: event.target.checked }))} className="size-4 rounded border-border" />
+                  Mettre à la une
+                </label>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-foreground">Ordre d’affichage</label>
+                <Input name="sort_order" type="number" min="0" value={form.sort_order} onChange={handleChange} />
+              </div>
+            </div>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.blog.field.status")}</label>
                 <Select value={form.status} onValueChange={(value) => setForm((prev) => ({ ...prev, status: value as Database["public"]["Enums"]["post_status"] }))}>
@@ -348,6 +375,7 @@ export function AdminBlogPage() {
                         <td className="px-3 py-4">
                           <div className="font-semibold text-foreground">{post.title}</div>
                           <div className="mt-1 text-muted-foreground">{post.author || "Équipe"}</div>
+                          {post.is_featured ? <div className="mt-2 inline-flex rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600">À la une</div> : null}
                         </td>
                         <td className="px-3 py-4 text-muted-foreground">
                           {post.publish_at ? new Date(post.publish_at).toLocaleDateString("fr-FR") : new Date(post.created_at).toLocaleDateString("fr-FR")}

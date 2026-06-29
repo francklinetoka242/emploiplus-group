@@ -23,6 +23,7 @@ export type Database = {
           external_link: string | null
           id: string
           image: string | null
+          is_featured: boolean
           meta_description: string | null
           meta_title: string | null
           og_image: string | null
@@ -30,6 +31,7 @@ export type Database = {
           reading_time: number | null
           scheduled_at: string | null
           slug: string
+          sort_order: number
           status: Database["public"]["Enums"]["post_status"]
           subtitle: string | null
           tags: string[]
@@ -54,6 +56,7 @@ export type Database = {
           reading_time?: number | null
           scheduled_at?: string | null
           slug: string
+          sort_order?: number
           status?: Database["public"]["Enums"]["post_status"]
           subtitle?: string | null
           tags?: string[]
@@ -78,6 +81,7 @@ export type Database = {
           reading_time?: number | null
           scheduled_at?: string | null
           slug?: string
+          sort_order?: number
           status?: Database["public"]["Enums"]["post_status"]
           subtitle?: string | null
           tags?: string[]

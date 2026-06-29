@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useI18n } from "@/lib/i18n";
 import { usePageSEO, BASE_URL } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -40,6 +39,8 @@ export function AdminBlogCreatePage() {
     external_link: "",
     status: "draft",
     publish_at: "",
+    is_featured: false,
+    sort_order: 0,
   });
   const [saving, setSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -47,7 +48,15 @@ export function AdminBlogCreatePage() {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === "sort_order" ? Number(value) : value,
+    }));
+  };
+
+  const handleToggleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    setForm((prev) => ({ ...prev, [name]: checked }));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -71,6 +80,8 @@ export function AdminBlogCreatePage() {
       tags: form.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
       status: form.status as Database["public"]["Enums"]["post_status"],
       publish_at: form.publish_at ? new Date(form.publish_at).toISOString() : (form.status === "published" ? new Date().toISOString() : null),
+      is_featured: form.is_featured,
+      sort_order: Number(form.sort_order || 0),
     };
 
     const { error } = await supabase.from("blog_posts").insert([payload]);
@@ -166,8 +177,18 @@ export function AdminBlogCreatePage() {
               <label className="block text-sm font-semibold text-foreground mb-2">Date de publication</label>
               <Input name="publish_at" type="datetime-local" value={form.publish_at} onChange={handleChange} />
             </div>
-            <div className="pt-8 text-sm text-muted-foreground">Laisser vide pour publier immédiatement selon le statut.</div>
+            <div className="rounded-2xl border border-border bg-background/60 p-4">
+              <label className="flex items-center gap-3 text-sm font-semibold text-foreground">
+                <input type="checkbox" name="is_featured" checked={form.is_featured} onChange={handleToggleChange} className="size-4 rounded border-border" />
+                Mettre à la une
+              </label>
+              <div className="mt-3">
+                <label className="block text-sm font-semibold text-foreground mb-2">Ordre d’affichage</label>
+                <Input name="sort_order" type="number" min="0" value={form.sort_order} onChange={handleChange} />
+              </div>
+            </div>
           </div>
+          <div className="text-sm text-muted-foreground">Laisser vide pour publier immédiatement selon le statut.</div>
           {error ? <div className="rounded-2xl bg-destructive/10 border border-destructive px-4 py-3 text-sm text-destructive">{error}</div> : null}
           {success ? <div className="rounded-2xl bg-success/10 border border-success px-4 py-3 text-sm text-success">{success}</div> : null}
           <Button type="submit" size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90" disabled={saving}>

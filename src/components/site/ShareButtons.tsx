@@ -13,6 +13,7 @@ type ShareJobData = {
   description?: string | null;
   deadline?: string | null;
   email?: string | null;
+  image?: string | null;
 };
 
 export function ShareButtons({
@@ -53,7 +54,7 @@ export function ShareButtons({
     if (data?.email) lines.push(`Email de l'entreprise : ${data.email}`);
 
     const baseText = [text, ...lines].filter(Boolean).join("\n\n");
-    return [baseText, "Offre partagée depuis https://emploiplus-group.com"].filter(Boolean).join("\n\n");
+    return [baseText, "Contenu partagé depuis https://emploiplus.group"].filter(Boolean).join("\n\n");
   };
 
   const shareText = buildShareText(shareData);

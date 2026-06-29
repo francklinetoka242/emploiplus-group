@@ -51,6 +51,7 @@ export function BlogPage() {
                       {post.publish_at && (
                         <span>{new Date(post.publish_at).toLocaleDateString()}</span>
                       )}
+                      {post.is_featured ? <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-600">À la une</span> : null}
                     </div>
                     <h3 className="mt-4 font-display text-xl font-bold text-foreground">{post.title}</h3>
                     <p className="mt-3 text-muted-foreground leading-relaxed min-h-[4.5rem]">{post.excerpt || t('blog.article.placeholder')}</p>
