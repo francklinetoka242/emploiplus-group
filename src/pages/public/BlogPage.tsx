@@ -56,7 +56,7 @@ export function BlogPage() {
                 <div className="overflow-hidden">
                   <div className="flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     {featuredPosts.map((post) => {
-                      const canonical = `${BASE_URL}/blog/${post.slug}`;
+                      const canonical = `${typeof window !== "undefined" ? window.location.origin : BASE_URL}/blog/${post.slug}`;
                       return (
                         <article key={post.id} className="flex h-full min-w-[280px] flex-1 flex-col overflow-hidden rounded-[1.5rem] border border-orange-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-elev md:min-w-[320px]">
                           <Link to={`/blog/${post.slug}`} className="group flex flex-1 flex-col">
@@ -103,7 +103,7 @@ export function BlogPage() {
             <div className="grid gap-6 md:grid-cols-3">
               {regularPosts.length > 0 ? (
                 paginatedPosts.map((post, i) => {
-                  const canonical = `${BASE_URL}/blog/${post.slug}`;
+                  const canonical = `${typeof window !== "undefined" ? window.location.origin : BASE_URL}/blog/${post.slug}`;
                   return (
                     <article key={post.id} className="flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elev group-hover:border-brand" style={{ animationDelay: `${i * 80}ms` }}>
                       <Link to={`/blog/${post.slug}`} className="group flex flex-1 flex-col">
@@ -144,7 +144,7 @@ export function BlogPage() {
                 })
               ) : (
                 posts.map((post, i) => {
-                  const canonical = `${BASE_URL}/blog/${post.slug}`;
+                  const canonical = `${typeof window !== "undefined" ? window.location.origin : BASE_URL}/blog/${post.slug}`;
                   return (
                     <article key={post.id} className="flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elev group-hover:border-brand" style={{ animationDelay: `${i * 80}ms` }}>
                       <Link to={`/blog/${post.slug}`} className="group flex flex-1 flex-col">
