@@ -1,3 +1,4 @@
+import React from "react";
 import { Helmet } from "react-helmet-async";
 
 export interface BreadcrumbItem {
@@ -20,7 +21,26 @@ export interface SEOMetadata {
   structuredData?: object | object[];
 }
 
+export interface SiteSEOSettings {
+  title: string;
+  description: string;
+  keywords: string;
+  canonical: string;
+  robots: string;
+  ogImage: string;
+}
+
 export const BASE_URL = "https://emploiplus.group";
+const SEO_SETTINGS_STORAGE_KEY = "emploiplus.site-seo";
+
+export const DEFAULT_SITE_SEO_SETTINGS: SiteSEOSettings = {
+  title: "EmploiPlus Group",
+  description: "Solutions numériques, diffusion d'offres d'emploi et services médias pour les talents et les entreprises.",
+  keywords: "emploi, offres d'emploi, recrutement, diffusion d'annonces, Congo",
+  canonical: BASE_URL,
+  robots: "index,follow",
+  ogImage: `${BASE_URL}/og-default.svg`,
+};
 
 function buildJsonLd(metadata: SEOMetadata) {
   const organization = {
@@ -69,25 +89,79 @@ function buildJsonLd(metadata: SEOMetadata) {
   };
 }
 
+function getStoredSiteSeoSettings(): SiteSEOSettings {
+  if (typeof window === "undefined") {
+    return DEFAULT_SITE_SEO_SETTINGS;
+  }
+
+  try {
+    const stored = window.localStorage.getItem(SEO_SETTINGS_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as Partial<SiteSEOSettings>;
+      return { ...DEFAULT_SITE_SEO_SETTINGS, ...parsed };
+    }
+  } catch {
+    // Fallback to defaults if localStorage is unavailable.
+  }
+
+  return DEFAULT_SITE_SEO_SETTINGS;
+}
+
+export function getSiteSeoSettings(): SiteSEOSettings {
+  return getStoredSiteSeoSettings();
+}
+
+export function saveSiteSeoSettings(settings: Partial<SiteSEOSettings>): SiteSEOSettings {
+  const merged = { ...DEFAULT_SITE_SEO_SETTINGS, ...getStoredSiteSeoSettings(), ...settings };
+
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(SEO_SETTINGS_STORAGE_KEY, JSON.stringify(merged));
+    window.dispatchEvent(new Event("emploiplus-seo-updated"));
+  }
+
+  return merged;
+}
+
+export function useSiteSeoSettings() {
+  const [settings, setSettings] = React.useState<SiteSEOSettings>(getStoredSiteSeoSettings);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const syncSettings = () => setSettings(getStoredSiteSeoSettings());
+    syncSettings();
+    window.addEventListener("emploiplus-seo-updated", syncSettings);
+    return () => window.removeEventListener("emploiplus-seo-updated", syncSettings);
+  }, []);
+
+  return settings;
+}
+
 export function usePageSEO(metadata: SEOMetadata) {
-  const ogImage = metadata.ogImage || `${BASE_URL}/og-default.svg`;
-  const canonical = metadata.canonical || BASE_URL;
-  const ogUrl = metadata.ogUrl || canonical;
-  const robots = metadata.robots || "index,follow";
+  const siteSeo = useSiteSeoSettings();
+  const resolvedTitle = metadata.title === DEFAULT_SEO.title ? siteSeo.title : metadata.title || siteSeo.title;
+  const resolvedDescription = metadata.description === DEFAULT_SEO.description ? siteSeo.description : metadata.description || siteSeo.description;
+  const resolvedKeywords = metadata.keywords === DEFAULT_SEO.keywords ? siteSeo.keywords : metadata.keywords || siteSeo.keywords;
+  const resolvedCanonical = metadata.canonical === DEFAULT_SEO.canonical ? siteSeo.canonical : metadata.canonical || siteSeo.canonical;
+  const resolvedRobots = metadata.robots === DEFAULT_SEO.robots ? siteSeo.robots : metadata.robots || siteSeo.robots;
+  const resolvedOgImage = metadata.ogImage || siteSeo.ogImage || `${BASE_URL}/og-default.svg`;
+  const ogUrl = metadata.ogUrl || resolvedCanonical;
   const schema = buildJsonLd(metadata);
 
   return (
     <Helmet>
-      <title>{metadata.title} | EmploiPlus Group</title>
-      <meta name="description" content={metadata.description} />
-      {metadata.keywords && <meta name="keywords" content={metadata.keywords} />}
-      <meta name="robots" content={robots} />
-      <link rel="canonical" href={canonical} />
+      <title>{resolvedTitle} | EmploiPlus Group</title>
+      <meta name="description" content={resolvedDescription} />
+      {resolvedKeywords && <meta name="keywords" content={resolvedKeywords} />}
+      <meta name="robots" content={resolvedRobots} />
+      <link rel="canonical" href={resolvedCanonical} />
 
       {/* Open Graph */}
-      <meta property="og:title" content={`${metadata.title} | EmploiPlus Group`} />
-      <meta property="og:description" content={metadata.description} />
-      <meta property="og:image" content={ogImage} />
+      <meta property="og:title" content={`${resolvedTitle} | EmploiPlus Group`} />
+      <meta property="og:description" content={resolvedDescription} />
+      <meta property="og:image" content={resolvedOgImage} />
       <meta property="og:url" content={ogUrl} />
       <meta property="og:type" content={metadata.ogType || "website"} />
       {metadata.publishedTime && <meta property="article:published_time" content={metadata.publishedTime} />}
@@ -95,9 +169,9 @@ export function usePageSEO(metadata: SEOMetadata) {
 
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={`${metadata.title} | EmploiPlus Group`} />
-      <meta name="twitter:description" content={metadata.description} />
-      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:title" content={`${resolvedTitle} | EmploiPlus Group`} />
+      <meta name="twitter:description" content={resolvedDescription} />
+      <meta name="twitter:image" content={resolvedOgImage} />
 
       <script type="application/ld+json">{JSON.stringify(schema)}</script>
     </Helmet>
@@ -105,9 +179,10 @@ export function usePageSEO(metadata: SEOMetadata) {
 }
 
 export const DEFAULT_SEO: SEOMetadata = {
-  title: "EmploiPlus Group",
-  description: "Solutions numériques, diffusion d'offres d'emploi et services médias pour les talents et les entreprises.",
-  keywords: "emploi, offres d'emploi, recrutement, diffusion d'annonces, Congo",
-  canonical: BASE_URL,
-  robots: "index,follow",
+  title: DEFAULT_SITE_SEO_SETTINGS.title,
+  description: DEFAULT_SITE_SEO_SETTINGS.description,
+  keywords: DEFAULT_SITE_SEO_SETTINGS.keywords,
+  canonical: DEFAULT_SITE_SEO_SETTINGS.canonical,
+  robots: DEFAULT_SITE_SEO_SETTINGS.robots,
+  ogImage: DEFAULT_SITE_SEO_SETTINGS.ogImage,
 };
