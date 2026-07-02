@@ -1,0 +1,18 @@
+// Candidate pages barrel export
+export { CandidateLoginPage } from "./CandidateLoginPage";
+export { CandidateSignupPage } from "./CandidateSignupPage";
+export { CandidateForgotPasswordPage } from "./CandidateForgotPasswordPage";
+export { CandidateResetPasswordPage } from "./CandidateResetPasswordPage";
+export { CandidateLayout } from "./CandidateLayout";
+export { CandidateDashboardPage } from "./CandidateDashboardPage";
+export { CandidateProfilePage } from "./CandidateProfilePage";
+export { CandidateCVPage } from "./CandidateCVPage";
+export { CandidateExperiencePage } from "./CandidateExperiencePage";
+export { CandidateEducationPage } from "./CandidateEducationPage";
+export { CandidateSkillsPage } from "./CandidateSkillsPage";
+export { CandidateLanguagesPage } from "./CandidateLanguagesPage";
+export { CandidatePreferencesPage } from "./CandidatePreferencesPage";
+export { CandidateApplicationsPage } from "./CandidateApplicationsPage";
+export { CandidateSavedOffersPage } from "./CandidateSavedOffersPage";
+export { CandidateNotificationsPage } from "./CandidateNotificationsPage";
+export { CandidateSettingsPage } from "./CandidateSettingsPage";

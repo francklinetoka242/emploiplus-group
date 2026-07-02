@@ -1,0 +1,231 @@
+import "dotenv/config";
+import nodemailer from "nodemailer";
+import { Webhook } from "standardwebhooks";
+
+interface SendEmailPayload {
+  recipient?: string;
+  to?: string;
+  email?: string;
+  subject?: string;
+  html?: string;
+  text?: string;
+  params?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+function assertEnv(name: string, value: string | undefined): string {
+  if (!value) {
+    throw new Error(`${name} is required in environment variables`);
+  }
+  return value;
+}
+
+const smtpHost = assertEnv("SMTP_HOST", process.env.SMTP_HOST);
+const smtpPortRaw = assertEnv("SMTP_PORT", process.env.SMTP_PORT);
+const smtpPort = Number(smtpPortRaw);
+if (Number.isNaN(smtpPort) || smtpPort <= 0) {
+  throw new Error("SMTP_PORT must be a valid positive number");
+}
+const smtpUser = assertEnv("SMTP_USER", process.env.SMTP_USER);
+const smtpPass = assertEnv("SMTP_PASS", process.env.SMTP_PASS);
+const rawHookSecret = assertEnv("SEND_EMAIL_HOOK_SECRET", process.env.SEND_EMAIL_HOOK_SECRET);
+const hookSecret = rawHookSecret.replace(/^v1,whsec_/, "");
+if (!hookSecret) {
+  throw new Error("SEND_EMAIL_HOOK_SECRET must contain a valid v1,whsec_ base64 secret");
+}
+
+const fromEmail = process.env.FROM_EMAIL?.trim() || smtpUser;
+const fromName = process.env.FROM_NAME?.trim() || "EmploiPlus Group";
+const siteUrl = process.env.SITE_URL || process.env.VITE_SUPABASE_URL || "https://emploiplus-group.com";
+const logoUrl = process.env.LOGO_URL || `${siteUrl.replace(/\/$/, "")}/assets/favicon.ico`;
+const brandColor = process.env.BRAND_COLOR || "#0ea5a4";
+const supportEmail = process.env.SUPPORT_EMAIL || process.env.SMTP_USER || fromEmail;
+const whatsappUrl = process.env.WHATSAPP_URL || "";
+const companyAddress = process.env.COMPANY_ADDRESS || "EmploiPlus Group";
+
+const transporter = nodemailer.createTransport({
+  host: smtpHost,
+  port: smtpPort,
+  secure: smtpPort === 465,
+  auth: {
+    user: smtpUser,
+    pass: smtpPass,
+  },
+});
+
+function getPayloadValue(body: SendEmailPayload, keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = body[key];
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value.trim();
+    }
+  }
+
+  if (body.params && typeof body.params === "object") {
+    for (const key of keys) {
+      const nestedValue = body.params[key as keyof typeof body.params];
+      if (typeof nestedValue === "string" && nestedValue.trim().length > 0) {
+        return nestedValue.trim();
+      }
+    }
+  }
+
+  return undefined;
+}
+
+async function readRawBody(req: any): Promise<string> {
+  const buffers: Uint8Array[] = [];
+  for await (const chunk of req) {
+    buffers.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  }
+  return Buffer.concat(buffers).toString("utf8");
+}
+
+export default async function handler(req: any, res: any) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const payloadText = await readRawBody(req);
+  const webhook = new Webhook(hookSecret);
+
+  try {
+    webhook.verify(payloadText, req.headers);
+  } catch (error) {
+    console.error("Invalid hook signature", error);
+    return res.status(401).json({ error: "Invalid hook signature" });
+  }
+
+  let body: SendEmailPayload;
+  try {
+    body = JSON.parse(payloadText) as SendEmailPayload;
+  } catch (error) {
+    return res.status(400).json({ error: "Unable to parse JSON payload" });
+  }
+
+  const recipient = getPayloadValue(body, ["recipient", "to", "email"]);
+  const subject = getPayloadValue(body, ["subject"]) || "Message from " + fromName;
+  const originalHtml = getPayloadValue(body, ["html", "body", "message"]);
+  const text = getPayloadValue(body, ["text"]);
+
+  // Try to extract an actionable link (confirmation / reset) from common payload keys
+  const actionLink =
+    getPayloadValue(body, ["action_link", "link", "url", "confirmation_url"]) ||
+    (body.params && (body.params as any).action_link) ||
+    undefined;
+
+  // Helper to build a branded HTML template
+  function buildTemplate(opts: { title: string; intro: string; cta?: string; actionLink?: string; bodyHtml?: string; }) {
+    const ctaHtml = opts.cta && opts.actionLink
+      ? `<p style="text-align:center;margin:24px 0"><a href="${opts.actionLink}" target="_blank" rel="noreferrer" style="background:${brandColor};color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">${opts.cta}</a></p>`
+      : "";
+
+    const bodySection = opts.bodyHtml ? `<div style="margin:12px 0">${opts.bodyHtml}</div>` : "";
+
+    return `
+      <!doctype html>
+      <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+      </head>
+      <body style="font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f7fafc; margin:0; padding:24px">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+          <tr>
+            <td align="center">
+              <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e6e6e6">
+                <tr style="background:${brandColor};color:#fff">
+                  <td style="padding:16px 20px;display:flex;align-items:center;gap:12px">
+                    <img src="${logoUrl}" alt="logo" width="40" style="display:block;border-radius:6px" />
+                    <div style="font-size:18px;font-weight:600">${fromName}</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:24px">
+                    <h1 style="font-size:18px;margin:0 0 8px">${opts.title}</h1>
+                    <p style="color:#475569;margin:0 0 12px">${opts.intro}</p>
+                    ${bodySection}
+                    ${ctaHtml}
+                    <p style="color:#64748b;font-size:13px;margin-top:18px">Si vous n'avez pas demandé cette action, ignorez cet e-mail.</p>
+                    <hr style="border:none;border-top:1px solid #eef2f7;margin:18px 0" />
+                    <p style="font-size:13px;color:#64748b;margin:0">Contact: <a href="mailto:${supportEmail}">${supportEmail}</a> • <a href="${siteUrl}">${siteUrl}</a></p>
+                    ${whatsappUrl ? `<p style="font-size:13px;color:#64748b;margin:6px 0 0">Groupe WhatsApp: <a href="${whatsappUrl}">${whatsappUrl}</a></p>` : ""}
+                    <p style="font-size:12px;color:#9ca3af;margin-top:12px">${companyAddress}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+  }
+
+  // Build branded HTML depending on type
+  let finalHtml = originalHtml || "";
+  let finalText = text || "";
+
+  const lowerSub = (subject || "").toLowerCase();
+
+  if (actionLink || /reset|mot de passe|réinitialis|password/i.test(lowerSub) || /confirm|inscri|confirmation|activer/i.test(lowerSub)) {
+    // Decide template type
+    if (/reset|mot de passe|réinitialis|password/i.test(lowerSub)) {
+      finalHtml = buildTemplate({
+        title: "Réinitialisation du mot de passe",
+        intro: "Vous avez demandé la réinitialisation de votre mot de passe.",
+        cta: "Réinitialiser mon mot de passe",
+        actionLink: actionLink,
+        bodyHtml: originalHtml ? originalHtml : undefined,
+      });
+      finalText = `Réinitialisez votre mot de passe: ${actionLink || ""}`;
+    } else {
+      finalHtml = buildTemplate({
+        title: "Confirmation de votre inscription",
+        intro: "Merci de vous être inscrit(e). Cliquez sur le bouton ci-dessous pour confirmer votre adresse e-mail.",
+        cta: "Confirmer mon e-mail",
+        actionLink: actionLink,
+        bodyHtml: originalHtml ? originalHtml : undefined,
+      });
+      finalText = `Confirmez votre e-mail: ${actionLink || ""}`;
+    }
+  } else if (!originalHtml) {
+    // Generic wrapper when original html missing
+    finalHtml = buildTemplate({
+      title: subject,
+      intro: text || "",
+      bodyHtml: text || undefined,
+    });
+    finalText = text || subject;
+  }
+
+  if (!recipient || !subject || !finalHtml) {
+    return res.status(400).json({
+      error: "Invalid payload",
+      missing: {
+        recipient: !recipient,
+        subject: !subject,
+        html: !finalHtml,
+      },
+    });
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"${fromName}" <${fromEmail}>`,
+      to: recipient,
+      subject,
+      html: finalHtml,
+      text: finalText ?? undefined,
+    });
+
+    return res.status(200).json({ status: "sent", messageId: info.messageId });
+  } catch (error) {
+    console.error("Failed to send email", error);
+    return res.status(500).json({
+      error: "Failed to send email",
+      details: error instanceof Error ? error.message : String(error),
+    });
+  }
+}

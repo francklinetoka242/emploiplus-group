@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/send-email",
+      "destination": "/api/send-email"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

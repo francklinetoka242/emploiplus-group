@@ -5,6 +5,7 @@ import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import favicon from "@/assets/favicon.ico";
 
 export function AuthPage() {
   const { t } = useI18n();
@@ -41,14 +42,19 @@ export function AuthPage() {
   return (
     <>
       <SEO title={t("auth.page.title")} description={t("auth.page.description")} canonical={`${BASE_URL}/auth`} robots="noindex,nofollow" />
-      <div className="container-page py-20 md:py-28">
-        <div className="mx-auto max-w-xl rounded-3xl border border-border bg-card p-10 shadow-soft">
-          <h1 className="font-display text-3xl font-bold text-foreground text-center">{t("auth.heading")}</h1>
-          <p className="mt-4 text-muted-foreground text-center">
-            {t("auth.subtitle")}
-          </p>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center py-20 px-4">
+        <div className="mx-auto max-w-xl rounded-3xl border border-slate-200 bg-white p-10 shadow-xl">
+          <div className="text-center mb-8">
+            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-100 border border-slate-200">
+              <img src={favicon} alt="EmploiPlus" className="h-10 w-10 object-contain" />
+            </div>
+            <h1 className="font-display text-3xl font-bold text-slate-900">{t("auth.heading")}</h1>
+            <p className="mt-4 text-slate-600">
+              {t("auth.subtitle")}
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+          <form onSubmit={handleSubmit} className="mt-4 space-y-6">
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="auth-email">
                 {t("common.email")}

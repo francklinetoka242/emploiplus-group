@@ -14,7 +14,7 @@ export {
   NotFoundPage,
   ServiceDetailPage,
   ServicesPage,
-} from "./public";
+} from "@/pages/public";
 
 // Admin pages
 export {
@@ -26,4 +26,14 @@ export {
   AdminJobCreatePage,
   AdminBlogCreatePage,
   AdminSEOPage,
-} from "./admin";
+} from "@/pages/admin";
+
+// Candidate pages
+export {
+  CandidateLoginPage,
+  CandidateSignupPage,
+  CandidateForgotPasswordPage,
+  CandidateLayout,
+  CandidateDashboardPage,
+  CandidateProfilePage,
+} from "@/pages/candidate";

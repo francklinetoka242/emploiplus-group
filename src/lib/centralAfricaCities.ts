@@ -1,11 +1,13 @@
 export type CityGroup = {
   country: string;
+  countryCode: string;
   cities: string[];
 };
 
 export const centralAfricaCityGroups: CityGroup[] = [
   {
     country: "Angola",
+    countryCode: "+244",
     cities: [
       "Luanda",
       "Huambo",
@@ -19,6 +21,7 @@ export const centralAfricaCityGroups: CityGroup[] = [
   },
   {
     country: "Burundi",
+    countryCode: "+257",
     cities: [
       "Gitega",
       "Bujumbura",
@@ -30,6 +33,7 @@ export const centralAfricaCityGroups: CityGroup[] = [
   },
   {
     country: "Cameroun",
+    countryCode: "+237",
     cities: [
       "Yaoundé",
       "Douala",
@@ -43,6 +47,7 @@ export const centralAfricaCityGroups: CityGroup[] = [
   },
   {
     country: "République centrafricaine",
+    countryCode: "+236",
     cities: [
       "Bangui",
       "Bambari",
@@ -54,6 +59,7 @@ export const centralAfricaCityGroups: CityGroup[] = [
   },
   {
     country: "Tchad",
+    countryCode: "+235",
     cities: [
       "N'Djamena",
       "Moundou",
@@ -65,6 +71,7 @@ export const centralAfricaCityGroups: CityGroup[] = [
   },
   {
     country: "Congo",
+    countryCode: "+242",
     cities: [
       "Brazzaville",
       "Pointe-Noire",
@@ -82,6 +89,7 @@ export const centralAfricaCityGroups: CityGroup[] = [
   },
   {
     country: "République démocratique du Congo",
+    countryCode: "+243",
     cities: [
       "Kinshasa",
       "Lubumbashi",
@@ -95,6 +103,7 @@ export const centralAfricaCityGroups: CityGroup[] = [
   },
   {
     country: "Guinée équatoriale",
+    countryCode: "+240",
     cities: [
       "Malabo",
       "Bata",
@@ -105,6 +114,7 @@ export const centralAfricaCityGroups: CityGroup[] = [
   },
   {
     country: "Gabon",
+    countryCode: "+241",
     cities: [
       "Libreville",
       "Port-Gentil",
@@ -115,6 +125,7 @@ export const centralAfricaCityGroups: CityGroup[] = [
   },
   {
     country: "Rwanda",
+    countryCode: "+250",
     cities: [
       "Kigali",
       "Butare",
@@ -125,6 +136,7 @@ export const centralAfricaCityGroups: CityGroup[] = [
   },
   {
     country: "Sao Tomé-et-Principe",
+    countryCode: "+239",
     cities: [
       "São Tomé",
       "Santo António",

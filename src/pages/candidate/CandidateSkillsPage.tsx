@@ -1,0 +1,190 @@
+import React, { useEffect, useState } from "react";
+import { usePageSEO } from "@/lib/seo";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Plus, X, Trash2 } from "lucide-react";
+import { CandidateAuthService, CandidateSkill } from "@/integrations/supabase/candidate-auth";
+import { useCandidate } from "@/hooks/useCandidate";
+
+export function CandidateSkillsPage() {
+  const { profile } = useCandidate();
+  const [showForm, setShowForm] = useState(false);
+  const [skills, setSkills] = useState<CandidateSkill[]>([]);
+  const [newSkill, setNewSkill] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!profile) {
+      return;
+    }
+
+    const loadSkills = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await CandidateAuthService.getCandidateSkills(profile.id);
+        setSkills(data || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Impossible de charger les compétences.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSkills();
+  }, [profile]);
+
+  usePageSEO({
+    title: "Compétences - EmploiPlus Group",
+    description: "Gérez vos compétences",
+    robots: "noindex,nofollow",
+  });
+
+  const handleAddSkill = async () => {
+    if (!newSkill.trim() || !profile) {
+      return;
+    }
+
+    // Check if skill already exists
+    if (skills.some((s) => s.skill_name.toLowerCase() === newSkill.toLowerCase())) {
+      setError("Cette compétence est déjà ajoutée.");
+      return;
+    }
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      const created = await CandidateAuthService.createCandidateSkill(profile.id, {
+        skill_name: newSkill.trim(),
+      });
+
+      setSkills([created, ...skills]);
+      setNewSkill("");
+      setShowForm(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Impossible d'ajouter la compétence.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRemoveSkill = async (skillId: string) => {
+    try {
+      await CandidateAuthService.deleteCandidateSkill(skillId);
+      setSkills(skills.filter((s) => s.id !== skillId));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Impossible de supprimer la compétence.");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">Compétences</h1>
+          <p className="text-slate-600">Ajoutez et gérez vos compétences professionnelles</p>
+        </div>
+        <Dialog open={showForm} onOpenChange={setShowForm}>
+          <DialogTrigger asChild>
+            <Button className="bg-brand text-brand-foreground hover:bg-brand/90 text-white gap-2">
+              <Plus className="w-4 h-4" />
+              Ajouter une compétence
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Ajouter une compétence</DialogTitle>
+              <DialogDescription>
+                Entrez le nom de la compétence que vous souhaitez ajouter
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="skillName">Compétence</Label>
+                <Input
+                  id="skillName"
+                  placeholder="Ex: Python, Leadership, Design UI, etc."
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
+                />
+              </div>
+              {error && (
+                <div className="rounded-3xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                  {error}
+                </div>
+              )}
+              <div className="flex gap-2 justify-end pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowForm(false);
+                    setNewSkill("");
+                    setError(null);
+                  }}
+                >
+                  Annuler
+                </Button>
+                <Button
+                  onClick={handleAddSkill}
+                  className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
+                  disabled={saving}
+                >
+                  Ajouter
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Mes compétences</CardTitle>
+          <CardDescription>
+            {loading ? "Chargement..." : `${skills.length} compétence${skills.length !== 1 ? "s" : ""} ajoutée${skills.length !== 1 ? "s" : ""}`}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="text-center text-slate-500">Chargement des compétences...</div>
+          ) : skills.length === 0 ? (
+            <div className="text-center text-slate-500">Aucune compétence ajoutée pour le moment.</div>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              {skills.map((skill) => (
+                <div
+                  key={skill.id}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-full hover:shadow-md transition-shadow group"
+                >
+                  <span className="text-sm font-medium text-slate-900">{skill.skill_name}</span>
+                  <button
+                    onClick={() => handleRemoveSkill(skill.id)}
+                    className="ml-1 text-slate-400 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="bg-blue-50 border-blue-200">
+        <CardContent className="pt-6">
+          <p className="text-sm text-blue-900">
+            <span className="font-medium">💡 Conseil:</span> Ajouter des compétences techniques pertinentes augmente votre visibilité auprès des recruteurs.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+

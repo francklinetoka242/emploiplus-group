@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { I18nProvider } from "@/lib/i18n";
 import { SiteFooter } from "@/components/site/Footer";
@@ -10,28 +10,50 @@ import {
   HomePage,
   AuthPage,
   NotFoundPage,
-} from "./pages/index";
+} from "@/pages";
 
 // Lazy load secondary pages
-const AboutPage = lazy(() => import("./pages/public/AboutPage").then(m => ({ default: m.AboutPage })));
-const BlogPage = lazy(() => import("./pages/public/BlogPage").then(m => ({ default: m.BlogPage })));
-const BlogPostDetailPage = lazy(() => import("./pages/public/BlogPostDetailPage").then(m => ({ default: m.BlogPostDetailPage })));
-const ContactPage = lazy(() => import("./pages/public/ContactPage").then(m => ({ default: m.ContactPage })));
-const JobOfferDetailPage = lazy(() => import("./pages/public/JobOfferDetailPage").then(m => ({ default: m.JobOfferDetailPage })));
-const JobsPage = lazy(() => import("./pages/public/JobsPage").then(m => ({ default: m.JobsPage })));
-const ServiceDetailPage = lazy(() => import("./pages/public/UtilityPages").then(m => ({ default: m.ServiceDetailPage })));
-const ServicesPage = lazy(() => import("./pages/public/ServicesPage").then(m => ({ default: m.ServicesPage })));
-const HubEmploiPage = lazy(() => import("./pages/public/services/HubEmploiPage"));
+const AboutPage = lazy(() => import("@/pages/public/AboutPage").then(m => ({ default: m.AboutPage })));
+const BlogPage = lazy(() => import("@/pages/public/BlogPage").then(m => ({ default: m.BlogPage })));
+const BlogPostDetailPage = lazy(() => import("@/pages/public/BlogPostDetailPage").then(m => ({ default: m.BlogPostDetailPage })));
+const ContactPage = lazy(() => import("@/pages/public/ContactPage").then(m => ({ default: m.ContactPage })));
+const JobOfferDetailPage = lazy(() => import("@/pages/public/JobOfferDetailPage").then(m => ({ default: m.JobOfferDetailPage })));
+const JobsPage = lazy(() => import("@/pages/public/JobsPage").then(m => ({ default: m.JobsPage })));
+const ServiceDetailPage = lazy(() => import("@/pages/public/UtilityPages").then(m => ({ default: m.ServiceDetailPage })));
+const ServicesPage = lazy(() => import("@/pages/public/ServicesPage").then(m => ({ default: m.ServicesPage })));
+const HubEmploiPage = lazy(() => import("@/pages/public/services/HubEmploiPage"));
 
 // Lazy load admin pages (heavy feature area)
-const AdminPage = lazy(() => import("./pages/admin").then(m => ({ default: m.AdminPage })));
-const AdminHomePage = lazy(() => import("./pages/admin").then(m => ({ default: m.AdminHomePage })));
-const AdminJobsPage = lazy(() => import("./pages/admin").then(m => ({ default: m.AdminJobsPage })));
-const AdminBlogPage = lazy(() => import("./pages/admin").then(m => ({ default: m.AdminBlogPage })));
-const AdminTeamPage = lazy(() => import("./pages/admin").then(m => ({ default: m.AdminTeamPage })));
-const AdminJobCreatePage = lazy(() => import("./pages/admin").then(m => ({ default: m.AdminJobCreatePage })));
-const AdminBlogCreatePage = lazy(() => import("./pages/admin").then(m => ({ default: m.AdminBlogCreatePage })));
-const AdminSEOPage = lazy(() => import("./pages/admin").then(m => ({ default: m.AdminSEOPage })));
+const AdminPage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminPage })));
+const AdminHomePage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminHomePage })));
+const AdminJobsPage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminJobsPage })));
+const AdminBlogPage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminBlogPage })));
+const AdminTeamPage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminTeamPage })));
+const AdminJobCreatePage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminJobCreatePage })));
+const AdminBlogCreatePage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminBlogCreatePage })));
+const AdminSEOPage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminSEOPage })));
+const AdminNotificationsPage = lazy(() => import("@/pages/admin/AdminNotificationsPage").then(m => ({ default: m.AdminNotificationsPage })));
+
+
+// Lazy load candidate pages
+const CandidateLoginPage = lazy(() => import("@/pages/candidate/CandidateLoginPage").then(m => ({ default: m.CandidateLoginPage })));
+const CandidateSignupPage = lazy(() => import("@/pages/candidate/CandidateSignupPage").then(m => ({ default: m.CandidateSignupPage })));
+const CandidateForgotPasswordPage = lazy(() => import("@/pages/candidate/CandidateForgotPasswordPage").then(m => ({ default: m.CandidateForgotPasswordPage })));
+const CandidateResetPasswordPage = lazy(() => import("@/pages/candidate/CandidateResetPasswordPage").then(m => ({ default: m.CandidateResetPasswordPage })));
+const CandidateLayout = lazy(() => import("@/pages/candidate/CandidateLayout").then(m => ({ default: m.CandidateLayout })));
+const CandidateDashboardPage = lazy(() => import("@/pages/candidate/CandidateDashboardPage").then(m => ({ default: m.CandidateDashboardPage })));
+const ProtectedCandidateRoute = lazy(() => import("@/components/candidate/ProtectedCandidateRoute").then(m => ({ default: m.ProtectedCandidateRoute })));
+const CandidateProfilePage = lazy(() => import("@/pages/candidate/CandidateProfilePage").then(m => ({ default: m.CandidateProfilePage })));
+const CandidateCVPage = lazy(() => import("@/pages/candidate/CandidateCVPage").then(m => ({ default: m.CandidateCVPage })));
+const CandidateExperiencePage = lazy(() => import("@/pages/candidate/CandidateExperiencePage").then(m => ({ default: m.CandidateExperiencePage })));
+const CandidateEducationPage = lazy(() => import("@/pages/candidate/CandidateEducationPage").then(m => ({ default: m.CandidateEducationPage })));
+const CandidateSkillsPage = lazy(() => import("@/pages/candidate/CandidateSkillsPage").then(m => ({ default: m.CandidateSkillsPage })));
+const CandidateLanguagesPage = lazy(() => import("@/pages/candidate/CandidateLanguagesPage").then(m => ({ default: m.CandidateLanguagesPage })));
+const CandidatePreferencesPage = lazy(() => import("@/pages/candidate/CandidatePreferencesPage").then(m => ({ default: m.CandidatePreferencesPage })));
+const CandidateApplicationsPage = lazy(() => import("@/pages/candidate/CandidateApplicationsPage").then(m => ({ default: m.CandidateApplicationsPage })));
+const CandidateSavedOffersPage = lazy(() => import("@/pages/candidate/CandidateSavedOffersPage").then(m => ({ default: m.CandidateSavedOffersPage })));
+const CandidateNotificationsPage = lazy(() => import("@/pages/candidate/CandidateNotificationsPage").then(m => ({ default: m.CandidateNotificationsPage })));
+const CandidateSettingsPage = lazy(() => import("@/pages/candidate/CandidateSettingsPage").then(m => ({ default: m.CandidateSettingsPage })));
 
 // Loading fallback component
 const PageLoadingFallback = () => (
@@ -47,7 +69,7 @@ const PageLoadingFallback = () => (
 
 export default function App() {
   const location = useLocation();
-  const hideShell = location.pathname === "/auth" || location.pathname.startsWith("/admin");
+  const hideShell = location.pathname === "/auth" || location.pathname.startsWith("/admin") || location.pathname.startsWith("/candidate");
 
   return (
     <I18nProvider>
@@ -67,12 +89,42 @@ export default function App() {
               <Route path="/blog/:slug" element={<BlogPostDetailPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/auth" element={<AuthPage />} />
+              
+              {/* Candidate pages */}
+              <Route path="/candidate/login" element={<CandidateLoginPage />} />
+              <Route path="/candidate/signup" element={<CandidateSignupPage />} />
+              <Route path="/candidate/forgot-password" element={<CandidateForgotPasswordPage />} />
+              <Route path="/candidate/reset-password" element={<CandidateResetPasswordPage />} />
+              <Route
+                path="/candidate"
+                element={
+                  <ProtectedCandidateRoute>
+                    <CandidateLayout />
+                  </ProtectedCandidateRoute>
+                }
+              >
+                <Route index element={<Navigate to="/candidate/dashboard" replace />} />
+                <Route path="dashboard" element={<CandidateDashboardPage />} />
+                <Route path="profile" element={<CandidateProfilePage />} />
+                <Route path="cv" element={<CandidateCVPage />} />
+                <Route path="experience" element={<CandidateExperiencePage />} />
+                <Route path="education" element={<CandidateEducationPage />} />
+                <Route path="skills" element={<CandidateSkillsPage />} />
+                <Route path="languages" element={<CandidateLanguagesPage />} />
+                <Route path="preferences" element={<CandidatePreferencesPage />} />
+                <Route path="applications" element={<CandidateApplicationsPage />} />
+                <Route path="saved-offers" element={<CandidateSavedOffersPage />} />
+                <Route path="notifications" element={<CandidateNotificationsPage />} />
+                <Route path="settings" element={<CandidateSettingsPage />} />
+              </Route>
+              
               <Route path="/admin" element={<AdminPage />}>
                 <Route index element={<AdminHomePage />} />
                 <Route path="jobs" element={<AdminJobsPage />} />
                 <Route path="jobs/new" element={<AdminJobCreatePage />} />
                 <Route path="blog" element={<AdminBlogPage />} />
                 <Route path="blog/new" element={<AdminBlogCreatePage />} />
+                <Route path="notifications" element={<AdminNotificationsPage />} />
                 <Route path="seo" element={<AdminSEOPage />} />
                 <Route path="team" element={<AdminTeamPage />} />
               </Route>
