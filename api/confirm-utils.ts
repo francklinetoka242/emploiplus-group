@@ -14,25 +14,46 @@ export async function updateSupabaseUserConfirmation(
     Authorization: `Bearer ${serviceKey}`,
   };
 
+  const requestBody = JSON.stringify({ email_confirmed_at: confirmedAt });
+  console.log('[CONFIRM-DEBUG][confirm-utils] request', { url, method: 'PUT', body: requestBody });
+
   const putResponse = await fetchImpl(url, {
     method: 'PUT',
     headers,
-    body: JSON.stringify({ email_confirmed_at: confirmedAt }),
+    body: requestBody,
   });
 
+  const putBody = await putResponse.text();
+  console.log('[CONFIRM-DEBUG][confirm-utils] response', { status: putResponse.status, body: putBody });
+
   if (putResponse.ok) {
-    return putResponse;
+    return {
+      ok: putResponse.ok,
+      status: putResponse.status,
+      text: async () => putBody,
+    };
   }
 
   if (putResponse.status === 405 || putResponse.status === 404) {
+    console.log('[CONFIRM-DEBUG][confirm-utils] retryingWithPatch', { url, body: requestBody });
     const patchResponse = await fetchImpl(url, {
       method: 'PATCH',
       headers,
-      body: JSON.stringify({ email_confirmed_at: confirmedAt }),
+      body: requestBody,
     });
+    const patchBody = await patchResponse.text();
+    console.log('[CONFIRM-DEBUG][confirm-utils] patchResponse', { status: patchResponse.status, body: patchBody });
 
-    return patchResponse;
+    return {
+      ok: patchResponse.ok,
+      status: patchResponse.status,
+      text: async () => patchBody,
+    };
   }
 
-  return putResponse;
+  return {
+    ok: putResponse.ok,
+    status: putResponse.status,
+    text: async () => putBody,
+  };
 }

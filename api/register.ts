@@ -2,9 +2,27 @@ import 'dotenv/config';
 import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
-import { resolveConfirmationBaseUrl } from './confirm-url';
+import { resolveConfirmationBaseUrl } from './confirm-url.ts';
 
 type UnknownObject = Record<string, unknown>;
+
+export async function readResponseBody(response: Response): Promise<unknown> {
+  const text = await response.text();
+  if (!text || text.trim().length === 0) {
+    return undefined;
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json') || text.trim().startsWith('{') || text.trim().startsWith('[')) {
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
+    }
+  }
+
+  return text;
+}
 
 function normalizeErrorMessage(value: unknown): string {
   if (typeof value === 'string') return value;
@@ -80,7 +98,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }),
     });
 
-    const createUserBody = await createUserResp.json();
+    const createUserBody = await readResponseBody(createUserResp as Response);
     if (!createUserResp.ok) {
       const errorText = normalizeErrorMessage(createUserBody);
       console.error('Supabase admin create user failed', {
@@ -143,6 +161,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const signature = base64url(createHmac('sha256', EMAIL_SIGNING_SECRET).update(payloadEncoded).digest());
     const token = `${payloadEncoded}.${signature}`;
     const confirmLink = `${confirmationBaseUrl}/api/confirm?token=${encodeURIComponent(token)}`;
+
+    console.log('[CONFIRM-DEBUG][register] confirmLink', confirmLink);
+    console.log('[CONFIRM-DEBUG][register] token', token);
+    console.log('[CONFIRM-DEBUG][register] tokenPayload', tokenPayload);
+    console.log('[CONFIRM-DEBUG][register] confirmationBaseUrl', confirmationBaseUrl);
 
     try {
       const logoUrl = `${confirmationBaseUrl}/assets/favicon.ico`;

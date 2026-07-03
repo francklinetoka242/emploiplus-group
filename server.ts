@@ -2,36 +2,92 @@ import "dotenv/config";
 import express, { type NextFunction, type Request, type Response } from "express";
 import nodemailer from "nodemailer";
 import { Webhook } from "standardwebhooks";
-import { updateSupabaseUserConfirmation } from "./api/confirm-utils";
-import { resolveConfirmationBaseUrl } from "./api/confirm-url";
+import { updateSupabaseUserConfirmation } from "./api/confirm-utils.js";
+import { resolveConfirmationBaseUrl } from "./api/confirm-url.js";
 
 const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SEND_EMAIL_HOOK_SECRET, FROM_EMAIL, FROM_NAME, PORT } = process.env;
 
-function assertEnv(name: string, value: string | undefined): string {
-  if (!value) {
-    throw new Error(`${name} is required in environment variables`);
+function normalizeText(value: unknown): string | undefined {
+  if (typeof value === "string") {
+    const text = value.trim();
+    return text.length > 0 ? text : undefined;
   }
-  return value;
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  return undefined;
 }
 
-const smtpHost = assertEnv("SMTP_HOST", SMTP_HOST);
-const smtpPortRaw = assertEnv("SMTP_PORT", SMTP_PORT);
+function getPayloadValue(body: unknown, keys: string[]): string | undefined {
+  const visited = new Set<unknown>();
+
+  const search = (value: unknown): string | undefined => {
+    if (value === null || value === undefined) {
+      return undefined;
+    }
+
+    if (typeof value === "string") {
+      return normalizeText(value);
+    }
+
+    if (typeof value !== "object") {
+      return undefined;
+    }
+
+    if (visited.has(value)) {
+      return undefined;
+    }
+
+    visited.add(value);
+
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const found = search(item);
+        if (found) {
+          return found;
+        }
+      }
+      return undefined;
+    }
+
+    const record = value as Record<string, unknown>;
+    for (const key of keys) {
+      const directValue = normalizeText(record[key]);
+      if (directValue) {
+        return directValue;
+      }
+    }
+
+    for (const [key, nestedValue] of Object.entries(record)) {
+      if (/(recipient|to|email|subject|html|body|message|text|content|record|data|params)/i.test(key)) {
+        const found = search(nestedValue);
+        if (found) {
+          return found;
+        }
+      }
+    }
+
+    return undefined;
+  };
+
+  return search(body);
+}
+
+const smtpHost = (SMTP_HOST || "mail55.lwspanel.com").trim();
+const smtpPortRaw = SMTP_PORT || "465";
 const smtpPort = Number(smtpPortRaw);
 if (Number.isNaN(smtpPort) || smtpPort <= 0) {
   throw new Error("SMTP_PORT must be a valid positive number");
 }
-const smtpUser = assertEnv("SMTP_USER", SMTP_USER);
-const smtpPass = assertEnv("SMTP_PASS", SMTP_PASS);
-const rawHookSecret = assertEnv("SEND_EMAIL_HOOK_SECRET", SEND_EMAIL_HOOK_SECRET);
-const hookSecret = rawHookSecret.replace(/^v1,whsec_/, "");
-if (!hookSecret) {
-  throw new Error("SEND_EMAIL_HOOK_SECRET must contain a valid v1,whsec_ base64 secret");
-}
+const smtpUser = (SMTP_USER || "contact@emploiplus-group.com").trim();
+const smtpPass = (SMTP_PASS || "").trim();
+const hookSecret = (SEND_EMAIL_HOOK_SECRET || "").trim().replace(/^v1,whsec_/, "");
 
-const fromEmailCandidate = FROM_EMAIL?.trim();
-const fromEmail = fromEmailCandidate && fromEmailCandidate.length > 0 ? fromEmailCandidate : smtpUser;
+const fromEmail = (FROM_EMAIL || smtpUser).trim();
 const smtpFromEmail = smtpUser;
-const fromName = FROM_NAME?.trim() || "EmploiPlus Group";
+const fromName = (FROM_NAME || "EmploiPlus Group").trim();
 
 const transporter = nodemailer.createTransport({
   host: smtpHost,
@@ -44,26 +100,25 @@ const transporter = nodemailer.createTransport({
 });
 
 interface SendEmailHookPayload {
-  recipient?: string;
-  to?: string;
-  email?: string;
-  subject?: string;
-  html?: string;
-  body?: string;
-  message?: string;
-  text?: string;
   [key: string]: unknown;
 }
 
-function getPayloadValue(body: SendEmailHookPayload, keys: string[]): string | undefined {
-  for (const key of keys) {
-    const value = body[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
+async function readResponseBody(response: { text(): Promise<string>; headers: { get(name: string): string | null } }): Promise<unknown> {
+  const text = await response.text();
+  if (!text || text.trim().length === 0) {
+    return undefined;
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType.includes("application/json") || text.trim().startsWith("{") || text.trim().startsWith("[")) {
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
     }
   }
 
-  return undefined;
+  return text;
 }
 
 const app = express();
@@ -80,38 +135,44 @@ app.post(
     const payloadText = Buffer.isBuffer(rawBody)
       ? rawBody.toString("utf8")
       : typeof rawBody === "string"
-      ? rawBody
-      : JSON.stringify(rawBody);
+        ? rawBody
+        : JSON.stringify(rawBody);
 
     const headers = Object.fromEntries(
       Object.entries(req.headers).map(([key, value]) => [key, Array.isArray(value) ? value.join(",") : value ?? ""]),
     );
 
-    const webhook = new Webhook(hookSecret);
-    try {
-      webhook.verify(payloadText, headers);
-    } catch (error) {
-      console.error("Invalid Send Email Hook signature", error);
-      return res.status(401).json({ error: "Invalid hook signature" });
+    if (hookSecret) {
+      const webhook = new Webhook(hookSecret);
+      try {
+        webhook.verify(payloadText, headers);
+      } catch (error) {
+        console.error("Invalid Send Email Hook signature", error);
+        return res.status(401).json({ error: "Invalid hook signature" });
+      }
+    } else {
+      console.warn("SEND_EMAIL_HOOK_SECRET is not configured; skipping signature verification");
     }
 
-    let body: SendEmailHookPayload;
-    try {
-      body = JSON.parse(payloadText) as SendEmailHookPayload;
-    } catch (error) {
-      console.error("Unable to parse Send Email Hook payload as JSON", {
-        payloadText,
-        error,
-      });
-      return res.status(400).json({ error: "Unable to parse JSON payload" });
+    let body: SendEmailHookPayload = {};
+    if (payloadText.trim()) {
+      try {
+        body = JSON.parse(payloadText) as SendEmailHookPayload;
+      } catch (error) {
+        console.error("Unable to parse Send Email Hook payload as JSON", {
+          payloadText,
+          error,
+        });
+        return res.status(400).json({ error: "Unable to parse JSON payload", payloadText });
+      }
     }
 
-    console.info("Send Email Hook payload received", { body });
+    console.info("Send Email Hook payload received", { body, headers });
 
-    const recipient = getPayloadValue(body, ["recipient", "to", "email"]);
-    const subject = getPayloadValue(body, ["subject"]);
-    const html = getPayloadValue(body, ["html", "body", "message"]);
-    const text = getPayloadValue(body, ["text"]);
+    const recipient = getPayloadValue(body, ["recipient", "to", "email", "mail"]);
+    const subject = getPayloadValue(body, ["subject", "title"]);
+    const html = getPayloadValue(body, ["html", "body", "message", "content"]);
+    const text = getPayloadValue(body, ["text", "plainText", "plain_text"]);
 
     if (!recipient || !subject || !html) {
       console.error("Send Email Hook invalid payload", {
@@ -232,13 +293,17 @@ app.post(
         }),
       });
 
-      const createUserBody = (await createUserResp.json()) as { message?: string; id?: string } | undefined;
+      const createUserBody = (await readResponseBody(createUserResp as unknown as {
+        text(): Promise<string>;
+        headers: { get(name: string): string | null };
+      })) as { message?: string; id?: string } | undefined;
       if (!createUserResp.ok) {
+        const responseBody = typeof createUserBody === 'string' ? createUserBody : createUserBody?.message || createUserBody;
         console.error('Supabase admin create user failed', createUserResp.status, createUserBody);
-        return res.status(400).json({ error: createUserBody?.message || createUserBody || 'Failed to create user' });
+        return res.status(400).json({ error: responseBody || 'Failed to create user' });
       }
 
-      const userId = createUserBody?.id;
+      const userId = typeof createUserBody === 'object' && createUserBody !== null ? (createUserBody as { id?: string }).id : undefined;
       if (!userId) {
         console.error('No user id returned from Supabase admin create');
         return res.status(500).json({ error: 'Failed to create user' });
