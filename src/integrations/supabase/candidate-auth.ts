@@ -1233,56 +1233,75 @@ export class CandidateAuthService {
    * Parse auth error message in French
    */
   static parseErrorMessage(error: any): string {
-    const normalizedError = (() => {
-      if (!error && error !== 0) return 'Une erreur est survenue';
-      if (typeof error === 'string') return error;
-      if (error instanceof Error) {
-        const errorMessage = error.message?.trim();
-        if (errorMessage) return errorMessage;
-      }
-      if (typeof error === 'object' && error !== null) {
-        if (typeof error.message === 'string' && error.message.trim()) return error.message;
-        if (typeof error.error_description === 'string' && error.error_description.trim()) return error.error_description;
-        if (typeof error.code === 'string' && error.code.trim()) return error.code;
-        if (typeof error.error === 'string' && error.error.trim()) return error.error;
-        if (typeof error.name === 'string' && error.name.trim()) return error.name;
-        if (typeof error.toString === 'function') {
-          const stringified = error.toString();
-          if (stringified && stringified !== '[object Object]' && stringified !== 'Error') {
-            return stringified;
-          }
-        }
-        try {
-          const json = JSON.stringify(error);
-          if (json && json !== '{}' && json !== '[]') return json;
-        } catch {
-          // ignored
-        }
-        return 'Une erreur est survenue';
-      }
-      const stringValue = String(error);
-      if (stringValue && stringValue !== '[object Object]') return stringValue;
+    if (error == null) {
       return 'Une erreur est survenue';
-    })();
+    }
 
-    const normalizedErrorValue = normalizedError.trim ? normalizedError.trim() : normalizedError;
-    const errorMessages: Record<string, string> = {
-      'Invalid login credentials': 'Email ou mot de passe incorrect',
-      'Email not confirmed': 'Veuillez confirmer votre email',
-      'EMAIL_NOT_CONFIRMED': 'Veuillez confirmer votre email avant de vous connecter',
-      'User already registered': 'Cet email est déjà utilisé',
-      'Password should be at least 6 characters': 'Le mot de passe doit contenir au moins 6 caractères',
-      'weak_password': 'Le mot de passe est trop faible',
-      'invalid_credentials': 'Email ou mot de passe incorrect',
-      'user_already_exists': 'Cet email est déjà utilisé',
-      'email rate limit exceeded': 'Trop de tentatives d’envoi d’email. Attendez quelques minutes avant de réessayer.',
-      'Email rate limit exceeded': 'Trop de tentatives d’envoi d’email. Attendez quelques minutes avant de réessayer.',
-      'email_rate_limit_exceeded': 'Trop de tentatives d’envoi d’email. Attendez quelques minutes avant de réessayer.',
-      '{}': 'Une erreur est survenue',
-      '{ }': 'Une erreur est survenue',
-      '[object Object]': 'Une erreur est survenue',
+    if (typeof error === 'string') {
+      const trimmed = error.trim();
+      return trimmed || 'Une erreur est survenue';
+    }
+
+    if (error instanceof Error) {
+      const errorMessage = error.message?.trim();
+      if (errorMessage) {
+        return errorMessage;
+      }
+    }
+
+    const getStringValue = (value: any) => {
+      if (typeof value === 'string' && value.trim()) return value.trim();
+      if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+      return null;
     };
 
-    return errorMessages[normalizedErrorValue] || normalizedErrorValue || 'Une erreur est survenue';
+    const candidates = [
+      error.message,
+      error.error_description,
+      error.code,
+      error.error,
+      error.name,
+      error.details,
+      error.hint,
+      error.status && `Erreur ${error.status}`,
+      error.body?.error,
+      error.body?.message,
+      error.data?.message,
+      error.data?.error,
+      error.response?.data?.message,
+      error.response?.data?.error,
+    ];
+
+    for (const candidate of candidates) {
+      const value = getStringValue(candidate);
+      if (value) {
+        return value;
+      }
+    }
+
+    if (typeof error === 'object') {
+      try {
+        const json = JSON.stringify(error);
+        if (json && json !== '{}' && json !== '[]') {
+          return json;
+        }
+      } catch {
+        // ignored
+      }
+
+      const props = Object.getOwnPropertyNames(error)
+        .map((key) => {
+          const value = (error as any)[key];
+          const stringValue = getStringValue(value);
+          return stringValue ? `${key}: ${stringValue}` : null;
+        })
+        .filter(Boolean);
+
+      if (props.length > 0) {
+        return props.join(', ');
+      }
+    }
+
+    return 'Une erreur est survenue';
   }
 }
