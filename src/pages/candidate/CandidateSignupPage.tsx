@@ -124,6 +124,7 @@ export function CandidateSignupPage() {
           state: {
             notification:
               "Inscription réussie ! Un email de confirmation a été envoyé. Vérifiez votre boîte de réception (le lien expire au bout de 24 heures). Si vous ne le recevez pas, demandez un renvoi sur la page de connexion.",
+            pendingEmail: formData.email,
           },
         });
       }

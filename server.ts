@@ -292,8 +292,43 @@ app.post(
       const confirmLink = `${SITE_URL.replace(/\/$/, '')}/candidate/confirm?token=${encodeURIComponent(token)}`;
 
       const mailSubject = 'Confirmez votre adresse e-mail';
-      const mailText = `Bonjour ${firstName},\n\nMerci pour votre inscription. Cliquez sur le lien ci-dessous pour confirmer votre adresse e-mail :\n${confirmLink}\n\nCe lien est valable 24 heures. Si vous ne recevez pas cet e-mail, retournez sur la page de connexion pour demander un renvoi.\n\nSi vous n'avez pas demandé cette inscription, ignorez cet e-mail.`;
-      const mailHtml = `<p>Bonjour ${firstName},</p><p>Cliquez sur le bouton ci‑dessous pour confirmer votre adresse e‑mail :</p><p><a href=\"${confirmLink}\" target="_blank" rel="noreferrer" style="display:inline-block;padding:12px 18px;background:#0ea5a4;color:#fff;border-radius:8px;text-decoration:none">Confirmer mon e‑mail</a></p><p>Ce lien est valable 24 heures. Si vous ne recevez pas cet e-mail, retournez sur la page de connexion pour demander un renvoi.</p><p>Si vous n'avez pas demandé cette inscription, ignorez cet e-mail.</p>`;
+      const logoUrl = `${SITE_URL.replace(/\/$/, '')}/assets/favicon.ico`;
+      const buttonColor = '#0d6efd';
+      const mailText = `Bonjour ${firstName},\n\nMerci pour votre inscription. Cliquez sur le lien ci-dessous pour confirmer votre adresse e-mail :\n${confirmLink}\n\nCe lien est valable 24 heures. Si vous ne recevez pas cet e-mail, retournez sur la page de connexion pour demander un renvoi.\n\nContact: ${fromEmail}\nTel/WhatsApp: +242 0673 11033\nLocalisation: Pointe-Noire, République du Congo\nOffres WhatsApp : https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631\nEntreprise WhatsApp : https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43\n\nSi vous n'avez pas demandé cette inscription, ignorez cet e-mail.`;
+      const mailHtml = `
+        <div style="font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color:#1f2937; line-height:1.5;">
+          <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;margin:0 auto;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;">
+            <tr style="background:#0d6efd;color:#ffffff;">
+              <td style="padding:20px 24px; display:flex; align-items:center; gap:14px;">
+                <img src="${logoUrl}" alt="EmploiPlus Group" width="40" height="40" style="display:block;border-radius:8px;" />
+                <div>
+                  <h1 style="margin:0;font-size:20px;">EmploiPlus Group</h1>
+                  <p style="margin:4px 0 0;font-size:14px;opacity:.9;">Confirmation d'inscription candidat</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:24px;background:#ffffff;">
+                <p style="margin:0 0 16px;font-size:16px;color:#111827;">Bonjour ${firstName},</p>
+                <p style="margin:0 0 16px;font-size:15px;color:#374151;">Merci pour votre inscription sur EmploiPlus Group. Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous :</p>
+                <p style="text-align:center;margin:24px 0;"><a href="${confirmLink}" target="_blank" rel="noreferrer" style="display:inline-block;padding:14px 24px;background:${buttonColor};color:#ffffff;font-weight:600;border-radius:10px;text-decoration:none;">Confirmer mon e‑mail</a></p>
+                <p style="margin:0 0 16px;font-size:15px;color:#374151;">Ce lien est valable 24 heures. Après ce délai, vous pourrez demander un renvoi de l’email depuis la page de connexion.</p>
+                <p style="margin:0 0 16px;font-size:15px;color:#374151;">Si vous n'avez pas demandé cette inscription, veuillez ignorer ce message.</p>
+              </td>
+            </tr>
+            <tr style="background:#f8fafc;">
+              <td style="padding:20px 24px;">
+                <h2 style="margin:0 0 12px;font-size:16px;color:#0f172a;">Contact</h2>
+                <p style="margin:0 0 6px;font-size:14px;color:#475569;">Téléphone & WhatsApp : <a href="tel:+242067311033" style="color:#0d6efd;text-decoration:none;">+242 0673 11033</a></p>
+                <p style="margin:0 0 6px;font-size:14px;color:#475569;">Email : <a href="mailto:contact@emploiplus-group.com" style="color:#0d6efd;text-decoration:none;">contact@emploiplus-group.com</a></p>
+                <p style="margin:0 0 6px;font-size:14px;color:#475569;">Localisation : Pointe-Noire, République du Congo</p>
+                <p style="margin:0 0 6px;font-size:14px;color:#475569;">Chaîne offres gratuites WhatsApp : <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631" style="color:#0d6efd;text-decoration:none;">whatsapp.com/channel/0029Vb5pc270VycKAb1tc631</a></p>
+                <p style="margin:0;font-size:14px;color:#475569;">Chaîne Emploiplus Group WhatsApp : <a href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43" style="color:#0d6efd;text-decoration:none;">whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43</a></p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      `;
 
       try {
         await transporter.sendMail({

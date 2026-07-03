@@ -24,11 +24,11 @@ export function CandidateLoginPage() {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState(
-    (location.state as { notification?: string } | null)?.notification || ""
-  );
+  const state = location.state as { notification?: string; pendingEmail?: string } | null;
+  const [successMessage, setSuccessMessage] = useState(state?.notification || "");
   const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
-  const [pendingEmail, setPendingEmail] = useState("");
+  const [pendingEmail, setPendingEmail] = useState(state?.pendingEmail || "");
+  const [showPendingResend, setShowPendingResend] = useState(Boolean(state?.pendingEmail));
 
   usePageSEO({
     title: "Connexion Candidat - EmploiPlus Group",
@@ -140,7 +140,7 @@ export function CandidateLoginPage() {
                 <AlertDescription className="text-red-800">
                   <div className="flex flex-col gap-3">
                     <span>{errorMessage}</span>
-                    {emailNotConfirmed && (
+                    {(emailNotConfirmed || showPendingResend) && (
                       <Button
                         type="button"
                         variant="outline"
@@ -162,6 +162,27 @@ export function CandidateLoginPage() {
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-800">
                   {successMessage}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {showPendingResend && pendingEmail && !emailNotConfirmed && (
+              <Alert className="mb-4 border-yellow-200 bg-yellow-50">
+                <AlertCircle className="h-4 w-4 text-yellow-600" />
+                <AlertDescription className="text-yellow-800">
+                  Vous n'avez pas encore confirmé votre email. Si vous n'avez pas reçu le message, renvoyez-le ci-dessous.
+                  <div className="mt-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={resending}
+                      onClick={handleResendEmail}
+                      className="text-yellow-600 border-yellow-300 hover:bg-yellow-50"
+                    >
+                      {resending ? "Envoi en cours..." : "Renvoyer l'email de confirmation"}
+                    </Button>
+                  </div>
                 </AlertDescription>
               </Alert>
             )}
