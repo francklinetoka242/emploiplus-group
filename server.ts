@@ -231,10 +231,10 @@ app.post(
         }),
       });
 
-      const createUserBody = await createUserResp.json();
+      const createUserBody = (await createUserResp.json()) as { message?: string; id?: string } | undefined;
       if (!createUserResp.ok) {
         console.error('Supabase admin create user failed', createUserResp.status, createUserBody);
-        return res.status(400).json({ error: createUserBody?.message || createUserBody });
+        return res.status(400).json({ error: createUserBody?.message || createUserBody || 'Failed to create user' });
       }
 
       const userId = createUserBody?.id;
