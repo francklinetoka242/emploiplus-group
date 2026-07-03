@@ -26,7 +26,9 @@ if (!hookSecret) {
   throw new Error("SEND_EMAIL_HOOK_SECRET must contain a valid v1,whsec_ base64 secret");
 }
 
-const fromEmail = FROM_EMAIL?.trim() || smtpUser;
+const fromEmailCandidate = FROM_EMAIL?.trim();
+const fromEmail = fromEmailCandidate && fromEmailCandidate.length > 0 ? fromEmailCandidate : smtpUser;
+const smtpFromEmail = smtpUser;
 const fromName = FROM_NAME?.trim() || "EmploiPlus Group";
 
 const transporter = nodemailer.createTransport({
@@ -127,30 +129,56 @@ app.post(
       });
     }
 
-    try {
-      const info = await transporter.sendMail({
-        from: `"${fromName}" <${fromEmail}>`,
+    const sendMail = async (senderEmail: string) => {
+      return transporter.sendMail({
+        from: `"${fromName}" <${senderEmail}>`,
         to: recipient,
         subject,
         html,
         text: text ?? undefined,
       });
+    };
 
+    try {
+      const info = await sendMail(fromEmail);
       console.info("Send Email Hook delivered email", {
         recipient,
         subject,
         messageId: info.messageId,
+        from: fromEmail,
       });
-
       return res.status(200).json({ status: "sent", messageId: info.messageId });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (fromEmail !== smtpFromEmail && /553|Sender address rejected|not owned by user/i.test(errorMessage)) {
+        try {
+          const info = await sendMail(smtpFromEmail);
+          console.info("Send Email Hook delivered email with fallback sender", {
+            recipient,
+            subject,
+            messageId: info.messageId,
+            from: smtpFromEmail,
+          });
+          return res.status(200).json({ status: "sent", messageId: info.messageId, fallbackFrom: smtpFromEmail });
+        } catch (fallbackError) {
+          console.error("Failed to send Send Email Hook email via SMTP fallback sender", fallbackError, {
+            recipient,
+            subject,
+          });
+          return res.status(500).json({
+            error: "Failed to send email",
+            details: fallbackError instanceof Error ? fallbackError.message : String(fallbackError),
+          });
+        }
+      }
+
       console.error("Failed to send Send Email Hook email via SMTP", error, {
         recipient,
         subject,
       });
       return res.status(500).json({
         error: "Failed to send email",
-        details: error instanceof Error ? error.message : String(error),
+        details: errorMessage,
       });
     }
   },

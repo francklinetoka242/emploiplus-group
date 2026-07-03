@@ -242,9 +242,7 @@ export class CandidateAuthService {
       }
 
       // Prevent auto-login after signup so the candidate must confirm their email first
-      if (authData.session) {
-        await supabase.auth.signOut();
-      }
+      await supabase.auth.signOut();
 
       return {
         user,
@@ -276,6 +274,8 @@ export class CandidateAuthService {
 
       // Check if email is confirmed
       if (!authData.user.email_confirmed_at) {
+        await supabase.auth.signOut();
+
         const error = new Error('EMAIL_NOT_CONFIRMED');
         (error as any).code = 'EMAIL_NOT_CONFIRMED';
         (error as any).userEmail = authData.user.email;
@@ -341,6 +341,11 @@ export class CandidateAuthService {
     try {
       const session = await this.getSession();
       if (!session) {
+        return null;
+      }
+
+      if (!session.user.email_confirmed_at) {
+        await supabase.auth.signOut();
         return null;
       }
 

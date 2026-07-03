@@ -34,7 +34,10 @@ if (!hookSecret) {
   throw new Error("SEND_EMAIL_HOOK_SECRET must contain a valid v1,whsec_ base64 secret");
 }
 
-const fromEmail = process.env.FROM_EMAIL?.trim() || smtpUser;
+const fromEmailCandidate = process.env.FROM_EMAIL?.trim();
+const fromEmail = smtpUser;
+const replyToEmail = fromEmailCandidate && fromEmailCandidate.length > 0 ? fromEmailCandidate : smtpUser;
+const smtpFromEmail = smtpUser;
 const fromName = process.env.FROM_NAME?.trim() || "EmploiPlus Group";
 const siteUrl = process.env.SITE_URL || process.env.VITE_SUPABASE_URL || "https://emploiplus-group.com";
 const logoUrl = process.env.LOGO_URL || `${siteUrl.replace(/\/$/, "")}/assets/favicon.ico`;
@@ -211,21 +214,26 @@ export default async function handler(req: any, res: any) {
     });
   }
 
-  try {
-    const info = await transporter.sendMail({
-      from: `"${fromName}" <${fromEmail}>`,
+  const sendMail = async (senderEmail: string) => {
+    return transporter.sendMail({
+      from: `"${fromName}" <${senderEmail}>`,
       to: recipient,
+      replyTo: replyToEmail,
       subject,
       html: finalHtml,
       text: finalText ?? undefined,
     });
+  };
 
-    return res.status(200).json({ status: "sent", messageId: info.messageId });
+  try {
+    const info = await sendMail(fromEmail);
+    return res.status(200).json({ status: "sent", messageId: info.messageId, from: fromEmail, replyTo: replyToEmail });
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error("Failed to send email", error);
     return res.status(500).json({
       error: "Failed to send email",
-      details: error instanceof Error ? error.message : String(error),
+      details: message,
     });
   }
 }
