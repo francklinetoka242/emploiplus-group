@@ -274,6 +274,14 @@ export class CandidateAuthService {
         throw new Error('Login failed');
       }
 
+      // Check if email is confirmed
+      if (!authData.user.email_confirmed_at) {
+        const error = new Error('EMAIL_NOT_CONFIRMED');
+        (error as any).code = 'EMAIL_NOT_CONFIRMED';
+        (error as any).userEmail = authData.user.email;
+        throw error;
+      }
+
       // Get candidate profile
       const { data: profile, error: profileError } = await supabase
         .from('candidates')
@@ -1131,6 +1139,30 @@ export class CandidateAuthService {
   }
 
   /**
+   * Resend confirmation email to user
+   */
+  static async resendConfirmationEmail(email: string) {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/candidate/login`,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Resend confirmation email error:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Parse auth error message in French
    */
   static parseErrorMessage(error: any): string {
@@ -1139,6 +1171,7 @@ export class CandidateAuthService {
     const errorMessages: Record<string, string> = {
       'Invalid login credentials': 'Email ou mot de passe incorrect',
       'Email not confirmed': 'Veuillez confirmer votre email',
+      'EMAIL_NOT_CONFIRMED': 'Veuillez confirmer votre email avant de vous connecter',
       'User already registered': 'Cet email est déjà utilisé',
       'Password should be at least 6 characters': 'Le mot de passe doit contenir au moins 6 caractères',
       'weak_password': 'Le mot de passe est trop faible',

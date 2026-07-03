@@ -22,10 +22,13 @@ export function CandidateLoginPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState(
     (location.state as { notification?: string } | null)?.notification || ""
   );
+  const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState("");
 
   usePageSEO({
     title: "Connexion Candidat - EmploiPlus Group",
@@ -68,6 +71,7 @@ export function CandidateLoginPage() {
     e.preventDefault();
     setErrorMessage("");
     setSuccessMessage("");
+    setEmailNotConfirmed(false);
 
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
@@ -85,11 +89,31 @@ export function CandidateLoginPage() {
       setSuccessMessage("Connexion réussie! Redirection en cours...");
       navigate("/candidate/dashboard", { replace: true });
     } catch (error: any) {
-      const errorMsg = CandidateAuthService.parseErrorMessage(error);
-      setErrorMessage(errorMsg);
+      if (error?.code === 'EMAIL_NOT_CONFIRMED') {
+        setEmailNotConfirmed(true);
+        setPendingEmail(error?.userEmail || formData.email);
+        setErrorMessage("Veuillez confirmer votre email avant de vous connecter");
+      } else {
+        const errorMsg = CandidateAuthService.parseErrorMessage(error);
+        setErrorMessage(errorMsg);
+      }
       console.error("Login error:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendEmail = async () => {
+    setResending(true);
+    try {
+      await CandidateAuthService.resendConfirmationEmail(pendingEmail);
+      setSuccessMessage("Email de confirmation renvoyé! Vérifiez votre boîte de réception.");
+      setEmailNotConfirmed(false);
+    } catch (error: any) {
+      const errorMsg = CandidateAuthService.parseErrorMessage(error);
+      setErrorMessage(errorMsg);
+    } finally {
+      setResending(false);
     }
   };
 
@@ -114,7 +138,21 @@ export function CandidateLoginPage() {
               <Alert className="mb-4 border-red-200 bg-red-50">
                 <AlertCircle className="h-4 w-4 text-red-600" />
                 <AlertDescription className="text-red-800">
-                  {errorMessage}
+                  <div className="flex flex-col gap-3">
+                    <span>{errorMessage}</span>
+                    {emailNotConfirmed && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={resending}
+                        onClick={handleResendEmail}
+                        className="text-red-600 border-red-300 hover:bg-red-50"
+                      >
+                        {resending ? "Envoi en cours..." : "Renvoyer l'email de confirmation"}
+                      </Button>
+                    )}
+                  </div>
                 </AlertDescription>
               </Alert>
             )}

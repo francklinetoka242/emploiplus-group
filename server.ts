@@ -39,31 +39,23 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-interface SendEmailPayload {
+interface SendEmailHookPayload {
   recipient?: string;
   to?: string;
   email?: string;
   subject?: string;
   html?: string;
+  body?: string;
+  message?: string;
   text?: string;
-  params?: Record<string, unknown>;
   [key: string]: unknown;
 }
 
-function getPayloadValue(body: SendEmailPayload, keys: string[]): string | undefined {
+function getPayloadValue(body: SendEmailHookPayload, keys: string[]): string | undefined {
   for (const key of keys) {
     const value = body[key];
     if (typeof value === "string" && value.trim().length > 0) {
       return value.trim();
-    }
-  }
-
-  if (body.params && typeof body.params === "object") {
-    for (const key of keys) {
-      const nestedValue = body.params[key as keyof typeof body.params];
-      if (typeof nestedValue === "string" && nestedValue.trim().length > 0) {
-        return nestedValue.trim();
-      }
     }
   }
 
@@ -95,51 +87,74 @@ app.post(
     try {
       webhook.verify(payloadText, headers);
     } catch (error) {
-      console.error("Invalid hook signature", error);
+      console.error("Invalid Send Email Hook signature", error);
       return res.status(401).json({ error: "Invalid hook signature" });
     }
 
-    let body: SendEmailPayload;
+    let body: SendEmailHookPayload;
     try {
-      body = JSON.parse(payloadText) as SendEmailPayload;
+      body = JSON.parse(payloadText) as SendEmailHookPayload;
     } catch (error) {
+      console.error("Unable to parse Send Email Hook payload as JSON", {
+        payloadText,
+        error,
+      });
       return res.status(400).json({ error: "Unable to parse JSON payload" });
     }
+
+    console.info("Send Email Hook payload received", { body });
 
     const recipient = getPayloadValue(body, ["recipient", "to", "email"]);
     const subject = getPayloadValue(body, ["subject"]);
     const html = getPayloadValue(body, ["html", "body", "message"]);
     const text = getPayloadValue(body, ["text"]);
 
-  if (!recipient || !subject || !html) {
-    return res.status(400).json({
-      error: "Invalid payload",
-      missing: {
-        recipient: !recipient,
-        subject: !subject,
-        html: !html,
-      },
-    });
-  }
+    if (!recipient || !subject || !html) {
+      console.error("Send Email Hook invalid payload", {
+        recipient,
+        subject,
+        html,
+        body,
+      });
+      return res.status(400).json({
+        error: "Invalid payload",
+        missing: {
+          recipient: !recipient,
+          subject: !subject,
+          html: !html,
+        },
+        body,
+      });
+    }
 
-  try {
-    const info = await transporter.sendMail({
-      from: `"${fromName}" <${fromEmail}>`,
-      to: recipient,
-      subject,
-      html,
-      text: text ?? undefined,
-    });
+    try {
+      const info = await transporter.sendMail({
+        from: `"${fromName}" <${fromEmail}>`,
+        to: recipient,
+        subject,
+        html,
+        text: text ?? undefined,
+      });
 
-    return res.status(200).json({ status: "sent", messageId: info.messageId });
-  } catch (error) {
-    console.error("Failed to send email", error);
-    return res.status(500).json({
-      error: "Failed to send email",
-      details: error instanceof Error ? error.message : String(error),
-    });
-  }
-});
+      console.info("Send Email Hook delivered email", {
+        recipient,
+        subject,
+        messageId: info.messageId,
+      });
+
+      return res.status(200).json({ status: "sent", messageId: info.messageId });
+    } catch (error) {
+      console.error("Failed to send Send Email Hook email via SMTP", error, {
+        recipient,
+        subject,
+      });
+      return res.status(500).json({
+        error: "Failed to send email",
+        details: error instanceof Error ? error.message : String(error),
+      });
+    }
+  },
+);
 
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   console.error("Unhandled error", err);
