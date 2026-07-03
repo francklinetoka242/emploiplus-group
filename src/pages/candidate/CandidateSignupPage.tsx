@@ -102,7 +102,7 @@ export function CandidateSignupPage() {
 
       const body = await resp.json().catch(() => ({}));
       if (!resp.ok) {
-        const msg =
+        const rawMessage =
           typeof body?.error === 'string'
             ? body.error
             : typeof body?.message === 'string'
@@ -110,14 +110,20 @@ export function CandidateSignupPage() {
             : body?.error
             ? JSON.stringify(body.error)
             : 'Une erreur est survenue';
-        setErrorMessage(msg);
+
+        const duplicateEmailMessage =
+          resp.status === 422
+            ? "Un compte existe déjà pour cette adresse e-mail. Connectez-vous ou utilisez la réinitialisation du mot de passe."
+            : rawMessage;
+
+        setErrorMessage(duplicateEmailMessage);
         console.error('Register API error', resp.status, body);
       } else {
         navigate('/candidate/login', {
           replace: true,
           state: {
             notification:
-              "Inscription réussie ! Un email de confirmation a été envoyé. Vérifiez votre boîte de réception pour activer votre compte.",
+              "Inscription réussie ! Un email de confirmation a été envoyé. Vérifiez votre boîte de réception (le lien expire au bout de 24 heures). Si vous ne le recevez pas, demandez un renvoi sur la page de connexion.",
           },
         });
       }

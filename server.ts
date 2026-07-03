@@ -292,14 +292,21 @@ app.post(
       const confirmLink = `${SITE_URL.replace(/\/$/, '')}/candidate/confirm?token=${encodeURIComponent(token)}`;
 
       const mailSubject = 'Confirmez votre adresse e-mail';
-      const mailHtml = `<p>Bonjour ${firstName},</p><p>Cliquez sur le bouton ci‑dessous pour confirmer votre adresse e‑mail :</p><p><a href=\"${confirmLink}\" target=\"_blank\" rel=\"noreferrer\" style=\"display:inline-block;padding:12px 18px;background:#0ea5a4;color:#fff;border-radius:8px;text-decoration:none\">Confirmer mon e‑mail</a></p><p>Si vous n'avez pas demandé cette inscription, ignorez cet e‑mail.</p>`;
+      const mailText = `Bonjour ${firstName},\n\nMerci pour votre inscription. Cliquez sur le lien ci-dessous pour confirmer votre adresse e-mail :\n${confirmLink}\n\nCe lien est valable 24 heures. Si vous ne recevez pas cet e-mail, retournez sur la page de connexion pour demander un renvoi.\n\nSi vous n'avez pas demandé cette inscription, ignorez cet e-mail.`;
+      const mailHtml = `<p>Bonjour ${firstName},</p><p>Cliquez sur le bouton ci‑dessous pour confirmer votre adresse e‑mail :</p><p><a href=\"${confirmLink}\" target="_blank" rel="noreferrer" style="display:inline-block;padding:12px 18px;background:#0ea5a4;color:#fff;border-radius:8px;text-decoration:none">Confirmer mon e‑mail</a></p><p>Ce lien est valable 24 heures. Si vous ne recevez pas cet e-mail, retournez sur la page de connexion pour demander un renvoi.</p><p>Si vous n'avez pas demandé cette inscription, ignorez cet e-mail.</p>`;
 
-      await transporter.sendMail({
-        from: `"${fromName}" <${fromEmail}>`,
-        to: email,
-        subject: mailSubject,
-        html: mailHtml,
-      });
+      try {
+        await transporter.sendMail({
+          from: `"${fromName}" <${fromEmail}>`,
+          to: email,
+          replyTo: fromEmail,
+          subject: mailSubject,
+          text: mailText,
+          html: mailHtml,
+        });
+      } catch (mailError) {
+        console.error('Confirmation email send failed', mailError);
+      }
 
       return res.status(201).json({ success: true, message: 'User created. Confirmation email sent.' });
     } catch (error) {
