@@ -2,6 +2,7 @@ import "dotenv/config";
 import express, { type NextFunction, type Request, type Response } from "express";
 import nodemailer from "nodemailer";
 import { Webhook } from "standardwebhooks";
+import { updateSupabaseUserConfirmation } from "./api/confirm-utils";
 
 const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SEND_EMAIL_HOOK_SECRET, FROM_EMAIL, FROM_NAME, PORT } = process.env;
 
@@ -382,15 +383,13 @@ app.get('/confirm', async (req: Request, res: Response) => {
 
     // Mark user as confirmed via Supabase Admin API
     const now = new Date().toISOString();
-    const confirmResp = await fetch(`${SUPABASE_URL.replace(/\/$/, '')}/auth/v1/admin/users/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: SERVICE_KEY,
-        Authorization: `Bearer ${SERVICE_KEY}`,
-      },
-      body: JSON.stringify({ email_confirmed_at: now }),
-    });
+    const confirmResp = await updateSupabaseUserConfirmation(
+      fetch,
+      SUPABASE_URL,
+      userId,
+      SERVICE_KEY,
+      now,
+    );
 
     if (!confirmResp.ok) {
       const body = await confirmResp.text();

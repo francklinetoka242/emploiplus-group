@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { updateSupabaseUserConfirmation } from './confirm-utils';
 
 function base64url(input: string | Buffer) {
   const buffer = typeof input === 'string' ? Buffer.from(input, 'utf8') : input;
@@ -74,15 +75,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const confirmResp = await fetch(`${SUPABASE_URL.replace(/\/$/, '')}/auth/v1/admin/users/${payload.sub}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: SERVICE_KEY,
-        Authorization: `Bearer ${SERVICE_KEY}`,
-      },
-      body: JSON.stringify({ email_confirmed_at: new Date().toISOString() }),
-    });
+    const confirmResp = await updateSupabaseUserConfirmation(
+      fetch,
+      SUPABASE_URL,
+      payload.sub,
+      SERVICE_KEY,
+      new Date().toISOString(),
+    );
 
     if (!confirmResp.ok) {
       const body = await confirmResp.text();
