@@ -1,4 +1,5 @@
 import { supabase } from './client';
+import type { User } from '@supabase/supabase-js';
 
 export interface CandidateSignupData {
   email: string;
@@ -195,6 +196,44 @@ export interface CandidateLanguageInsert {
 }
 
 export class CandidateAuthService {
+  private static clearAuthStorage() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    try {
+      Object.keys(localStorage).forEach((key) => {
+        if (typeof key !== 'string') return;
+        if (key.startsWith('sb-') && (key.includes('auth-token') || key.includes('auth-session') || key.includes('auth-token-code-verifier'))) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      Object.keys(sessionStorage).forEach((key) => {
+        if (typeof key !== 'string') return;
+        if (key.startsWith('sb-') || key.includes('auth')) {
+          sessionStorage.removeItem(key);
+        }
+      });
+    } catch (error) {
+      console.warn('[CandidateAuthService] clearAuthStorage failed', error);
+    }
+  }
+
+  private static async assertEmailConfirmed(user: User | null | undefined) {
+    if (user && user.email_confirmed_at) {
+      return;
+    }
+
+    await supabase.auth.signOut();
+    this.clearAuthStorage();
+
+    const error = new Error('EMAIL_NOT_CONFIRMED');
+    (error as any).code = 'EMAIL_NOT_CONFIRMED';
+    (error as any).userEmail = user?.email ?? null;
+    throw error;
+  }
+
   /**
    * Sign up a new candidate
    */
@@ -278,34 +317,19 @@ export class CandidateAuthService {
         throw authError;
       }
 
-      if (!authData.user) {
+      const user = authData.user || authData.session?.user;
+      if (!user) {
         throw new Error('Login failed');
       }
 
-      // Check if email is confirmed
-      if (!authData.user.email_confirmed_at) {
-        await supabase.auth.signOut();
-        
-        // CRITICAL: Clear session storage to prevent any cached session from being used
-        try {
-          localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token');
-          localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token-code-verifier');
-          sessionStorage.clear();
-        } catch (e) {
-          console.warn('Could not clear session storage:', e);
-        }
-
-        const error = new Error('EMAIL_NOT_CONFIRMED');
-        (error as any).code = 'EMAIL_NOT_CONFIRMED';
-        (error as any).userEmail = authData.user.email;
-        throw error;
-      }
+      // TEST: force login failure if email_confirmed_at is null
+      await this.assertEmailConfirmed(user);
 
       // Get candidate profile
       const { data: profile, error: profileError } = await supabase
         .from('candidates')
         .select('*')
-        .eq('user_id', authData.user.id)
+        .eq('user_id', user.id)
         .single();
 
       if (profileError) {
@@ -351,15 +375,17 @@ export class CandidateAuthService {
       if (!session) {
         return null;
       }
-      
-      // CRITICAL: Verify email is confirmed
-      // If session exists but email is not confirmed, invalidate the session
-      if (!session.user.email_confirmed_at) {
-        console.warn('[getSession] Session exists but email not confirmed. Signing out...');
+
+      try {
+        // Enforce session invalidation when email_confirmed_at is null
+        await this.assertEmailConfirmed(session.user);
+      } catch (error) {
+        console.warn('[getSession] Unconfirmed email session invalidated');
         await supabase.auth.signOut();
+        this.clearAuthStorage();
         return null;
       }
-      
+
       return session;
     } catch (error) {
       console.error('Get session error:', error);
@@ -379,19 +405,9 @@ export class CandidateAuthService {
       }
 
       // Double-check email confirmation (defensive programming)
-      if (!session.user.email_confirmed_at) {
-        console.warn('[getCurrentProfile] Session email not confirmed. Signing out...');
-        await supabase.auth.signOut();
-        
-        // Clear session storage
-        try {
-          localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token');
-          localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token-code-verifier');
-          sessionStorage.clear();
-        } catch (e) {
-          console.warn('Could not clear session storage:', e);
-        }
-        
+      try {
+        await this.assertEmailConfirmed(session.user);
+      } catch (error) {
         return null;
       }
 
