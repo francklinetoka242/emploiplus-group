@@ -139,7 +139,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const payloadEncoded = base64url(Buffer.from(JSON.stringify(tokenPayload), 'utf8'));
     const signature = base64url(createHmac('sha256', EMAIL_SIGNING_SECRET || '').update(payloadEncoded).digest());
     const token = `${payloadEncoded}.${signature}`;
-    const confirmLink = `${SITE_URL.replace(/\/$/, '')}/candidate/confirm?token=${encodeURIComponent(token)}`;
+    const confirmLink = `${SITE_URL.replace(/\/$/, '')}/api/confirm?token=${encodeURIComponent(token)}`;
 
     try {
       const logoUrl = `${SITE_URL.replace(/\/$/, '')}/assets/favicon.ico`;

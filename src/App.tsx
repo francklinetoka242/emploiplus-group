@@ -41,6 +41,7 @@ const CandidateLoginPage = lazy(() => import("@/pages/candidate/CandidateLoginPa
 const CandidateSignupPage = lazy(() => import("@/pages/candidate/CandidateSignupPage").then(m => ({ default: m.CandidateSignupPage })));
 const CandidateForgotPasswordPage = lazy(() => import("@/pages/candidate/CandidateForgotPasswordPage").then(m => ({ default: m.CandidateForgotPasswordPage })));
 const CandidateResetPasswordPage = lazy(() => import("@/pages/candidate/CandidateResetPasswordPage").then(m => ({ default: m.CandidateResetPasswordPage })));
+const CandidateConfirmPage = lazy(() => import("@/pages/candidate/CandidateConfirmPage").then(m => ({ default: m.CandidateConfirmPage })));
 const CandidateLayout = lazy(() => import("@/pages/candidate/CandidateLayout").then(m => ({ default: m.CandidateLayout })));
 const CandidateDashboardPage = lazy(() => import("@/pages/candidate/CandidateDashboardPage").then(m => ({ default: m.CandidateDashboardPage })));
 const ProtectedCandidateRoute = lazy(() => import("@/components/candidate/ProtectedCandidateRoute").then(m => ({ default: m.ProtectedCandidateRoute })));
@@ -123,6 +124,7 @@ export default function App() {
               <Route path="/candidate/signup" element={<CandidateSignupPage />} />
               <Route path="/candidate/forgot-password" element={<CandidateForgotPasswordPage />} />
               <Route path="/candidate/reset-password" element={<CandidateResetPasswordPage />} />
+              <Route path="/candidate/confirm" element={<CandidateConfirmPage />} />
               <Route
                 path="/candidate"
                 element={

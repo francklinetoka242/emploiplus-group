@@ -289,7 +289,7 @@ app.post(
       const sigEncoded = base64url(sig);
       const token = `${payloadEncoded}.${sigEncoded}`;
 
-      const confirmLink = `${SITE_URL.replace(/\/$/, '')}/candidate/confirm?token=${encodeURIComponent(token)}`;
+      const confirmLink = `${SITE_URL.replace(/\/$/, '')}/api/confirm?token=${encodeURIComponent(token)}`;
 
       const mailSubject = 'Confirmez votre adresse e-mail';
       const logoUrl = `${SITE_URL.replace(/\/$/, '')}/assets/favicon.ico`;
