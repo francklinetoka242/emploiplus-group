@@ -105,7 +105,7 @@ export function CandidateSignupPage() {
       });
     } catch (error: any) {
       const errorMsg = CandidateAuthService.parseErrorMessage(error);
-      setErrorMessage(errorMsg);
+      setErrorMessage(typeof errorMsg === 'string' ? errorMsg : String(errorMsg));
       console.error("Signup error:", error);
     } finally {
       setLoading(false);

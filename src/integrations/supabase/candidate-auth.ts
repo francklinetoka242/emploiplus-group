@@ -1233,7 +1233,23 @@ export class CandidateAuthService {
    * Parse auth error message in French
    */
   static parseErrorMessage(error: any): string {
-    const message = error?.message || error?.error_description || error?.code || 'Une erreur est survenue';
+    const normalizedError = (() => {
+      if (!error && error !== 0) return 'Une erreur est survenue';
+      if (typeof error === 'string') return error;
+      if (error instanceof Error) return error.message;
+      if (typeof error === 'object') {
+        if (typeof error.message === 'string' && error.message.trim()) return error.message;
+        if (typeof error.error_description === 'string' && error.error_description.trim()) return error.error_description;
+        if (typeof error.code === 'string' && error.code.trim()) return error.code;
+        if (typeof error.error === 'string' && error.error.trim()) return error.error;
+        try {
+          return JSON.stringify(error);
+        } catch {
+          return 'Une erreur est survenue';
+        }
+      }
+      return String(error);
+    })();
 
     const errorMessages: Record<string, string> = {
       'Invalid login credentials': 'Email ou mot de passe incorrect',
@@ -1246,6 +1262,6 @@ export class CandidateAuthService {
       'user_already_exists': 'Cet email est déjà utilisé',
     };
 
-    return errorMessages[message] || message;
+    return errorMessages[normalizedError] || normalizedError;
   }
 }
