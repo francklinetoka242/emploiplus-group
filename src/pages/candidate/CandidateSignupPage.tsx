@@ -89,7 +89,7 @@ export function CandidateSignupPage() {
 
     setLoading(true);
     try {
-      const resp = await fetch('/register', {
+      const resp = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
