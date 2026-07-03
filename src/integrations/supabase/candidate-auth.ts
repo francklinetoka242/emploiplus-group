@@ -1236,21 +1236,36 @@ export class CandidateAuthService {
     const normalizedError = (() => {
       if (!error && error !== 0) return 'Une erreur est survenue';
       if (typeof error === 'string') return error;
-      if (error instanceof Error) return error.message;
-      if (typeof error === 'object') {
+      if (error instanceof Error) {
+        const errorMessage = error.message?.trim();
+        if (errorMessage) return errorMessage;
+      }
+      if (typeof error === 'object' && error !== null) {
         if (typeof error.message === 'string' && error.message.trim()) return error.message;
         if (typeof error.error_description === 'string' && error.error_description.trim()) return error.error_description;
         if (typeof error.code === 'string' && error.code.trim()) return error.code;
         if (typeof error.error === 'string' && error.error.trim()) return error.error;
-        try {
-          return JSON.stringify(error);
-        } catch {
-          return 'Une erreur est survenue';
+        if (typeof error.name === 'string' && error.name.trim()) return error.name;
+        if (typeof error.toString === 'function') {
+          const stringified = error.toString();
+          if (stringified && stringified !== '[object Object]' && stringified !== 'Error') {
+            return stringified;
+          }
         }
+        try {
+          const json = JSON.stringify(error);
+          if (json && json !== '{}' && json !== '[]') return json;
+        } catch {
+          // ignored
+        }
+        return 'Une erreur est survenue';
       }
-      return String(error);
+      const stringValue = String(error);
+      if (stringValue && stringValue !== '[object Object]') return stringValue;
+      return 'Une erreur est survenue';
     })();
 
+    const normalizedErrorValue = normalizedError.trim ? normalizedError.trim() : normalizedError;
     const errorMessages: Record<string, string> = {
       'Invalid login credentials': 'Email ou mot de passe incorrect',
       'Email not confirmed': 'Veuillez confirmer votre email',
@@ -1260,8 +1275,11 @@ export class CandidateAuthService {
       'weak_password': 'Le mot de passe est trop faible',
       'invalid_credentials': 'Email ou mot de passe incorrect',
       'user_already_exists': 'Cet email est déjà utilisé',
+      '{}': 'Une erreur est survenue',
+      '{ }': 'Une erreur est survenue',
+      '[object Object]': 'Une erreur est survenue',
     };
 
-    return errorMessages[normalizedError] || normalizedError;
+    return errorMessages[normalizedErrorValue] || normalizedErrorValue || 'Une erreur est survenue';
   }
 }
