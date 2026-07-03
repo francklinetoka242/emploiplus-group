@@ -102,7 +102,14 @@ export function CandidateSignupPage() {
 
       const body = await resp.json().catch(() => ({}));
       if (!resp.ok) {
-        const msg = body?.error || body?.message || 'Une erreur est survenue';
+        const msg =
+          typeof body?.error === 'string'
+            ? body.error
+            : typeof body?.message === 'string'
+            ? body.message
+            : body?.error
+            ? JSON.stringify(body.error)
+            : 'Une erreur est survenue';
         setErrorMessage(msg);
         console.error('Register API error', resp.status, body);
       } else {

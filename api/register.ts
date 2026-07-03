@@ -3,12 +3,38 @@ import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
 
+type UnknownObject = Record<string, unknown>;
+
+function normalizeErrorMessage(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (value instanceof Error) return value.message;
+  if (typeof value === 'object' && value !== null) {
+    const objectValue = value as UnknownObject;
+    if (typeof objectValue.msg === 'string') return objectValue.msg;
+    if (typeof objectValue.message === 'string') return objectValue.message;
+    if (typeof objectValue.error === 'string') return objectValue.error;
+    if (typeof objectValue.error?.['msg'] === 'string') return objectValue.error['msg'] as string;
+    if (typeof objectValue.error?.['message'] === 'string') return objectValue.error['message'] as string;
+    return JSON.stringify(objectValue);
+  }
+  return String(value);
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { email, password, firstName, lastName } = req.body as {
+  let requestBody: any = req.body;
+  if (typeof requestBody === 'string') {
+    try {
+      requestBody = JSON.parse(requestBody);
+    } catch (parseError) {
+      console.error('Unable to parse request body string', parseError, requestBody);
+    }
+  }
+
+  const { email, password, firstName, lastName } = requestBody as {
     email?: string;
     password?: string;
     firstName?: string;
@@ -16,6 +42,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
 
   if (!email || !password || !firstName || !lastName) {
+    console.error('Register request missing fields', {
+      headers: req.headers,
+      body: requestBody,
+      emailPresent: Boolean(email),
+      passwordPresent: Boolean(password),
+      firstNamePresent: Boolean(firstName),
+      lastNamePresent: Boolean(lastName),
+    });
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -45,7 +79,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const createUserBody = await createUserResp.json();
     if (!createUserResp.ok) {
-      return res.status(400).json({ error: createUserBody?.message || createUserBody });
+      const errorText = normalizeErrorMessage(createUserBody);
+      console.error('Supabase admin create user failed', {
+        status: createUserResp.status,
+        response: createUserBody,
+      });
+      return res.status(createUserResp.status).json({ error: errorText });
     }
 
     const userId = createUserBody?.id;
