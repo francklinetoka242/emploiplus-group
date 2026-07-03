@@ -1,3 +1,5 @@
+import 'dotenv/config';
+import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
 
@@ -96,8 +98,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
     const base64url = (buffer: Buffer) => buffer.toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
     const payloadEncoded = base64url(Buffer.from(JSON.stringify(tokenPayload), 'utf8'));
-    const crypto = require('crypto');
-    const signature = base64url(crypto.createHmac('sha256', EMAIL_SIGNING_SECRET || '').update(payloadEncoded).digest());
+    const signature = base64url(createHmac('sha256', EMAIL_SIGNING_SECRET || '').update(payloadEncoded).digest());
     const token = `${payloadEncoded}.${signature}`;
     const confirmLink = `${SITE_URL.replace(/\/$/, '')}/candidate/confirm?token=${encodeURIComponent(token)}`;
 
