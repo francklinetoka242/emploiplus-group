@@ -14,7 +14,6 @@ test('prefers the app site URL over the Supabase URL', () => {
 test('uses the request host when available', () => {
   const baseUrl = resolveConfirmationBaseUrl(
     {
-      SITE_URL: 'https://emploiplus-group.com',
       VITE_SUPABASE_URL: 'https://zhldgrvmmdhtlsnsxuys.supabase.co',
     },
     {
