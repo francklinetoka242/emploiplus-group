@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
+import { resolveConfirmationBaseUrl } from './confirm-url';
 
 type UnknownObject = Record<string, unknown>;
 
@@ -56,9 +57,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const SITE_URL = process.env.SITE_URL || process.env.VITE_SUPABASE_URL || 'https://emploiplus-group.com';
   const rawSigningSecret = process.env.EMAIL_SIGNING_SECRET || process.env.SEND_EMAIL_HOOK_SECRET;
   const EMAIL_SIGNING_SECRET = rawSigningSecret?.replace(/^v1,whsec_/, '');
+  const confirmationBaseUrl = resolveConfirmationBaseUrl(process.env, req);
 
   if (!SUPABASE_URL || !SERVICE_KEY || !EMAIL_SIGNING_SECRET) {
     return res.status(500).json({ error: 'Server misconfiguration' });
@@ -141,10 +142,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const payloadEncoded = base64url(Buffer.from(JSON.stringify(tokenPayload), 'utf8'));
     const signature = base64url(createHmac('sha256', EMAIL_SIGNING_SECRET).update(payloadEncoded).digest());
     const token = `${payloadEncoded}.${signature}`;
-    const confirmLink = `${SITE_URL.replace(/\/$/, '')}/api/confirm?token=${encodeURIComponent(token)}`;
+    const confirmLink = `${confirmationBaseUrl}/api/confirm?token=${encodeURIComponent(token)}`;
 
     try {
-      const logoUrl = `${SITE_URL.replace(/\/$/, '')}/assets/favicon.ico`;
+      const logoUrl = `${confirmationBaseUrl}/assets/favicon.ico`;
       const buttonColor = '#0d6efd';
       await transporter.sendMail({
         from: `"${fromName}" <${fromEmail}>`,

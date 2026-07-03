@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { updateSupabaseUserConfirmation } from './confirm-utils';
+import { resolveConfirmationBaseUrl } from './confirm-url';
 
 function base64url(input: string | Buffer) {
   const buffer = typeof input === 'string' ? Buffer.from(input, 'utf8') : input;
@@ -18,13 +19,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const rawSigningSecret = process.env.EMAIL_SIGNING_SECRET || process.env.SEND_EMAIL_HOOK_SECRET;
+  const confirmationBaseUrl = resolveConfirmationBaseUrl(process.env, req);
   const signingSecrets = [
     rawSigningSecret,
     rawSigningSecret?.replace(/^v1,whsec_/, ''),
   ]
     .filter(Boolean)
     .map((value) => value as string);
-  const SITE_URL = process.env.SITE_URL || process.env.VITE_SUPABASE_URL || 'https://emploiplus-group.com';
 
   if (!token || !SUPABASE_URL || !SERVICE_KEY || signingSecrets.length === 0) {
     return res.status(400).send('Invalid confirmation request');
@@ -91,7 +92,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .send(`Confirmation failed: ${body || confirmResp.statusText}`);
     }
 
-    return res.redirect(`${SITE_URL.replace(/\/$/, '')}/candidate/login`);
+    return res.redirect(`${confirmationBaseUrl}/candidate/login`);
   } catch (error) {
     console.error('Confirmation error', error);
     return res.status(500).send('Server error');

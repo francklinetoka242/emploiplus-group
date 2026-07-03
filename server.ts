@@ -3,6 +3,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import nodemailer from "nodemailer";
 import { Webhook } from "standardwebhooks";
 import { updateSupabaseUserConfirmation } from "./api/confirm-utils";
+import { resolveConfirmationBaseUrl } from "./api/confirm-url";
 
 const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SEND_EMAIL_HOOK_SECRET, FROM_EMAIL, FROM_NAME, PORT } = process.env;
 
@@ -203,8 +204,8 @@ app.post(
 
     const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
     const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const SITE_URL = process.env.SITE_URL || process.env.VITE_SUPABASE_URL || "https://emploiplus-group.com";
     const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET || process.env.SEND_EMAIL_HOOK_SECRET;
+    const confirmationBaseUrl = resolveConfirmationBaseUrl(process.env, req);
 
     if (!SUPABASE_URL || !SERVICE_KEY) {
       console.error('Supabase credentials missing');
@@ -290,10 +291,10 @@ app.post(
       const sigEncoded = base64url(sig);
       const token = `${payloadEncoded}.${sigEncoded}`;
 
-      const confirmLink = `${SITE_URL.replace(/\/$/, '')}/api/confirm?token=${encodeURIComponent(token)}`;
+      const confirmLink = `${confirmationBaseUrl}/api/confirm?token=${encodeURIComponent(token)}`;
 
       const mailSubject = 'Confirmez votre adresse e-mail';
-      const logoUrl = `${SITE_URL.replace(/\/$/, '')}/assets/favicon.ico`;
+      const logoUrl = `${confirmationBaseUrl}/assets/favicon.ico`;
       const buttonColor = '#0d6efd';
       const mailText = `Bonjour ${firstName},\n\nMerci pour votre inscription. Cliquez sur le lien ci-dessous pour confirmer votre adresse e-mail :\n${confirmLink}\n\nCe lien est valable 24 heures. Si vous ne recevez pas cet e-mail, retournez sur la page de connexion pour demander un renvoi.\n\nContact: ${fromEmail}\nTel/WhatsApp: +242 0673 11033\nLocalisation: Pointe-Noire, République du Congo\nOffres WhatsApp : https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631\nEntreprise WhatsApp : https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43\n\nSi vous n'avez pas demandé cette inscription, ignorez cet e-mail.`;
       const mailHtml = `
@@ -398,8 +399,8 @@ app.get('/confirm', async (req: Request, res: Response) => {
     }
 
     // Redirect to frontend login with success notification
-    const SITE_URL = process.env.SITE_URL || process.env.VITE_SUPABASE_URL || 'https://emploiplus-group.com';
-    return res.redirect(`${SITE_URL.replace(/\/$/, '')}/candidate/login`);
+    const confirmationBaseUrl = resolveConfirmationBaseUrl(process.env, req);
+    return res.redirect(`${confirmationBaseUrl}/candidate/login`);
   } catch (e) {
     console.error('Confirm error', e);
     return res.status(500).send('Server error');
