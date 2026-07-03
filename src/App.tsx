@@ -1,9 +1,10 @@
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { I18nProvider } from "@/lib/i18n";
 import { SiteFooter } from "@/components/site/Footer";
 import { SiteHeader } from "@/components/site/Header";
 import { Toaster } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 // Immediately loaded pages (critical path)
 import {
@@ -70,6 +71,33 @@ const PageLoadingFallback = () => (
 export default function App() {
   const location = useLocation();
   const hideShell = location.pathname === "/auth" || location.pathname.startsWith("/admin") || location.pathname.startsWith("/candidate");
+
+  // CRITICAL: On app startup, verify that any restored candidate session has a confirmed email
+  // This prevents Supabase from silently restoring an unconfirmed session from localStorage
+  useEffect(() => {
+    const validateCandidateSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && !session.user.email_confirmed_at) {
+          console.warn('[App] Restored session has unconfirmed email. Clearing session...');
+          await supabase.auth.signOut();
+          
+          // Clear session storage
+          try {
+            localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token');
+            localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token-code-verifier');
+            sessionStorage.clear();
+          } catch (e) {
+            console.warn('Could not clear session storage:', e);
+          }
+        }
+      } catch (error) {
+        console.error('[App] Error validating session:', error);
+      }
+    };
+
+    validateCandidateSession();
+  }, []);
 
   return (
     <I18nProvider>

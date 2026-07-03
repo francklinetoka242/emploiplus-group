@@ -242,7 +242,17 @@ export class CandidateAuthService {
       }
 
       // Prevent auto-login after signup so the candidate must confirm their email first
+      // CRITICAL: Must force logout and clear session storage to prevent any session from persisting
       await supabase.auth.signOut();
+      
+      // Clear any cached session data to ensure email confirmation is required
+      try {
+        localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token');
+        localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token-code-verifier');
+        sessionStorage.clear();
+      } catch (e) {
+        console.warn('Could not clear session storage:', e);
+      }
 
       return {
         user,
@@ -275,6 +285,15 @@ export class CandidateAuthService {
       // Check if email is confirmed
       if (!authData.user.email_confirmed_at) {
         await supabase.auth.signOut();
+        
+        // CRITICAL: Clear session storage to prevent any cached session from being used
+        try {
+          localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token');
+          localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token-code-verifier');
+          sessionStorage.clear();
+        } catch (e) {
+          console.warn('Could not clear session storage:', e);
+        }
 
         const error = new Error('EMAIL_NOT_CONFIRMED');
         (error as any).code = 'EMAIL_NOT_CONFIRMED';
@@ -327,7 +346,21 @@ export class CandidateAuthService {
       if (error) {
         throw error;
       }
-      return data.session;
+      
+      const session = data.session;
+      if (!session) {
+        return null;
+      }
+      
+      // CRITICAL: Verify email is confirmed
+      // If session exists but email is not confirmed, invalidate the session
+      if (!session.user.email_confirmed_at) {
+        console.warn('[getSession] Session exists but email not confirmed. Signing out...');
+        await supabase.auth.signOut();
+        return null;
+      }
+      
+      return session;
     } catch (error) {
       console.error('Get session error:', error);
       return null;
@@ -336,6 +369,7 @@ export class CandidateAuthService {
 
   /**
    * Get current candidate profile
+   * CRITICAL: Enforces email confirmation before allowing any access
    */
   static async getCurrentProfile() {
     try {
@@ -344,8 +378,20 @@ export class CandidateAuthService {
         return null;
       }
 
+      // Double-check email confirmation (defensive programming)
       if (!session.user.email_confirmed_at) {
+        console.warn('[getCurrentProfile] Session email not confirmed. Signing out...');
         await supabase.auth.signOut();
+        
+        // Clear session storage
+        try {
+          localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token');
+          localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token-code-verifier');
+          sessionStorage.clear();
+        } catch (e) {
+          console.warn('Could not clear session storage:', e);
+        }
+        
         return null;
       }
 
