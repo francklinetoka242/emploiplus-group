@@ -383,7 +383,7 @@ app.get('/confirm', async (req: Request, res: Response) => {
     // Mark user as confirmed via Supabase Admin API
     const now = new Date().toISOString();
     const confirmResp = await fetch(`${SUPABASE_URL.replace(/\/$/, '')}/auth/v1/admin/users/${userId}`, {
-      method: 'PATCH',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         apikey: SERVICE_KEY,
