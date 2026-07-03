@@ -16,10 +16,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const token = String(req.query.token || '');
   const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET || process.env.SEND_EMAIL_HOOK_SECRET;
+  const rawSigningSecret = process.env.EMAIL_SIGNING_SECRET || process.env.SEND_EMAIL_HOOK_SECRET;
+  const signingSecrets = [
+    rawSigningSecret,
+    rawSigningSecret?.replace(/^v1,whsec_/, ''),
+  ]
+    .filter(Boolean)
+    .map((value) => value as string);
   const SITE_URL = process.env.SITE_URL || process.env.VITE_SUPABASE_URL || 'https://emploiplus-group.com';
 
-  if (!token || !SUPABASE_URL || !SERVICE_KEY || !EMAIL_SIGNING_SECRET) {
+  if (!token || !SUPABASE_URL || !SERVICE_KEY || signingSecrets.length === 0) {
     return res.status(400).send('Invalid confirmation request');
   }
 
@@ -28,8 +34,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).send('Invalid confirmation token');
   }
 
-  const expectedSignature = base64url(createHmac('sha256', EMAIL_SIGNING_SECRET).update(payloadEncoded).digest());
-  if (expectedSignature !== signature) {
+  const signatureMatches = signingSecrets.some((secret) => {
+    const expectedSignature = base64url(createHmac('sha256', secret).update(payloadEncoded).digest());
+    if (expectedSignature === signature) {
+      return true;
+    }
+    console.debug('Token signature mismatch for secret variant', {
+      expectedSignature,
+      signature,
+      secretPreview: secret.slice(0, 8),
+    });
+    return false;
+  });
+
+  if (!signatureMatches) {
+    console.error('Token signature mismatch', {
+      signature,
+      secretVariants: signingSecrets.map((secret) => secret.slice(0, 8)),
+    });
     return res.status(400).send('Invalid or expired token');
   }
 
@@ -65,7 +87,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!confirmResp.ok) {
       const body = await confirmResp.text();
       console.error('Supabase confirm failed', confirmResp.status, body);
-      return res.status(500).send('Confirmation failed');
+      return res
+        .status(confirmResp.status)
+        .send(`Confirmation failed: ${body || confirmResp.statusText}`);
     }
 
     return res.redirect(`${SITE_URL.replace(/\/$/, '')}/candidate/login`);
