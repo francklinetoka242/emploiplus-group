@@ -254,28 +254,307 @@ export type Database = {
           body: string | null
           created_at: string
           id: string
+          is_read: boolean
           link: string | null
           read_at: string | null
+          status: Database["public"]["Enums"]["notification_status"]
           title: string
-          type: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string | null
         }
         Insert: {
           body?: string | null
           created_at?: string
           id?: string
+          is_read?: boolean
           link?: string | null
           read_at?: string | null
+          status?: Database["public"]["Enums"]["notification_status"]
           title: string
-          type: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id?: string | null
         }
         Update: {
           body?: string | null
           created_at?: string
           id?: string
+          is_read?: boolean
           link?: string | null
           read_at?: string | null
+          status?: Database["public"]["Enums"]["notification_status"]
           title?: string
-          type?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      candidates: {
+        Row: {
+          id: string
+          user_id: string
+          first_name: string
+          last_name: string
+          email: string
+          phone: string | null
+          avatar_url: string | null
+          bio: string | null
+          headline: string | null
+          location_city: string | null
+          location_country: string | null
+          date_of_birth: string | null
+          status: Database["public"]["Enums"]["candidate_status"]
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          first_name: string
+          last_name: string
+          email: string
+          phone?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          headline?: string | null
+          location_city?: string | null
+          location_country?: string | null
+          date_of_birth?: string | null
+          status?: Database["public"]["Enums"]["candidate_status"]
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          first_name?: string
+          last_name?: string
+          email?: string
+          phone?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          headline?: string | null
+          location_city?: string | null
+          location_country?: string | null
+          date_of_birth?: string | null
+          status?: Database["public"]["Enums"]["candidate_status"]
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      candidate_skills: {
+        Row: {
+          id: string
+          candidate_id: string
+          skill_name: string
+          proficiency_level: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          candidate_id: string
+          skill_name: string
+          proficiency_level?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          candidate_id?: string
+          skill_name?: string
+          proficiency_level?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      candidate_experience: {
+        Row: {
+          id: string
+          candidate_id: string
+          job_title: string
+          company: string
+          description: string | null
+          start_date: string
+          end_date: string | null
+          is_current: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          candidate_id: string
+          job_title: string
+          company: string
+          description?: string | null
+          start_date: string
+          end_date?: string | null
+          is_current?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          candidate_id?: string
+          job_title?: string
+          company?: string
+          description?: string | null
+          start_date?: string
+          end_date?: string | null
+          is_current?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      candidate_education: {
+        Row: {
+          id: string
+          candidate_id: string
+          school: string
+          degree: string
+          field_of_study: string | null
+          start_date: string | null
+          end_date: string | null
+          is_current: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          candidate_id: string
+          school: string
+          degree: string
+          field_of_study?: string | null
+          start_date?: string | null
+          end_date?: string | null
+          is_current?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          candidate_id?: string
+          school?: string
+          degree?: string
+          field_of_study?: string | null
+          start_date?: string | null
+          end_date?: string | null
+          is_current?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      candidate_languages: {
+        Row: {
+          id: string
+          candidate_id: string
+          language_name: string
+          proficiency_level: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          candidate_id: string
+          language_name: string
+          proficiency_level: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          candidate_id?: string
+          language_name?: string
+          proficiency_level?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      candidate_preferences: {
+        Row: {
+          id: string
+          candidate_id: string
+          contract_types: string[]
+          work_types: string[]
+          salary_min: number
+          salary_max: number
+          seniority_level: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          candidate_id: string
+          contract_types?: string[]
+          work_types?: string[]
+          salary_min?: number
+          salary_max?: number
+          seniority_level?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          candidate_id?: string
+          contract_types?: string[]
+          work_types?: string[]
+          salary_min?: number
+          salary_max?: number
+          seniority_level?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      candidate_saved_offers: {
+        Row: {
+          id: string
+          candidate_id: string
+          job_offer_id: string
+          saved_at: string
+        }
+        Insert: {
+          id?: string
+          candidate_id: string
+          job_offer_id: string
+          saved_at?: string
+        }
+        Update: {
+          id?: string
+          candidate_id?: string
+          job_offer_id?: string
+          saved_at?: string
+        }
+        Relationships: []
+      }
+      job_applications: {
+        Row: {
+          id: string
+          candidate_id: string
+          job_offer_id: string
+          status: Database["public"]["Enums"]["application_status"]
+          cover_letter: string | null
+          applied_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          candidate_id: string
+          job_offer_id: string
+          status?: Database["public"]["Enums"]["application_status"]
+          cover_letter?: string | null
+          applied_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          candidate_id?: string
+          job_offer_id?: string
+          status?: Database["public"]["Enums"]["application_status"]
+          cover_letter?: string | null
+          applied_at?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -407,6 +686,10 @@ export type Database = {
         | "interim"
       job_status: "draft" | "scheduled" | "published" | "archived" | "expired"
       message_status: "new" | "read" | "archived"
+      notification_status: "active" | "masked"
+      notification_type: "candidature" | "admin" | "evenement" | "offre" | "contact" | "job" | "blog"
+      candidate_status: "active" | "inactive" | "archived"
+      application_status: "submitted" | "reviewed" | "shortlisted" | "rejected" | "accepted" | "withdrawn"
       post_status: "draft" | "published" | "archived"
     }
     CompositeTypes: {
