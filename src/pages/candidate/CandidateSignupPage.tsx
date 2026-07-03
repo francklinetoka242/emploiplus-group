@@ -89,24 +89,35 @@ export function CandidateSignupPage() {
 
     setLoading(true);
     try {
-      await CandidateAuthService.signup({
-        email: formData.email,
-        password: formData.password,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
+      const resp = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+        }),
       });
 
-      navigate("/candidate/login", {
-        replace: true,
-        state: {
-          notification:
-            "Inscription réussie ! Un email de confirmation a été envoyé. Vérifiez votre boîte de réception pour activer votre compte.",
-        },
-      });
+      const body = await resp.json().catch(() => ({}));
+      if (!resp.ok) {
+        const msg = body?.error || body?.message || 'Une erreur est survenue';
+        setErrorMessage(msg);
+        console.error('Register API error', resp.status, body);
+      } else {
+        navigate('/candidate/login', {
+          replace: true,
+          state: {
+            notification:
+              "Inscription réussie ! Un email de confirmation a été envoyé. Vérifiez votre boîte de réception pour activer votre compte.",
+          },
+        });
+      }
     } catch (error: any) {
       const errorMsg = CandidateAuthService.parseErrorMessage(error);
       setErrorMessage(typeof errorMsg === 'string' ? errorMsg : String(errorMsg));
-      console.error("Signup error:", error);
+      console.error('Signup error:', error);
     } finally {
       setLoading(false);
     }

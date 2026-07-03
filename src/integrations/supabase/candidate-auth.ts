@@ -257,6 +257,7 @@ export class CandidateAuthService {
       }
 
       const user = authData.user || authData.session?.user;
+      const session = authData.session;
       if (!user) {
         throw new Error('User creation failed');
       }
@@ -280,10 +281,15 @@ export class CandidateAuthService {
         throw profileError;
       }
 
-      // Prevent auto-login after signup so the candidate must confirm their email first
-      // CRITICAL: Must force logout and clear session storage to prevent any session from persisting
-      await supabase.auth.signOut();
-      
+      // Prevent auto-login after signup so the candidate must confirm their email first.
+      // Only sign out if a session was created, and do not fail signup cleanup on signOut errors.
+      if (session) {
+        const { error: signOutError } = await supabase.auth.signOut();
+        if (signOutError) {
+          console.warn('Signup cleanup signOut failed', signOutError);
+        }
+      }
+
       // Clear any cached session data to ensure email confirmation is required
       try {
         localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token');
@@ -1237,6 +1243,12 @@ export class CandidateAuthService {
       return 'Une erreur est survenue';
     }
 
+    const getStringValue = (value: any) => {
+      if (typeof value === 'string' && value.trim()) return value.trim();
+      if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+      return null;
+    };
+
     if (typeof error === 'string') {
       const trimmed = error.trim();
       return trimmed || 'Une erreur est survenue';
@@ -1244,16 +1256,10 @@ export class CandidateAuthService {
 
     if (error instanceof Error) {
       const errorMessage = error.message?.trim();
-      if (errorMessage) {
+      if (errorMessage && errorMessage !== '{}' && errorMessage !== '[]') {
         return errorMessage;
       }
     }
-
-    const getStringValue = (value: any) => {
-      if (typeof value === 'string' && value.trim()) return value.trim();
-      if (typeof value === 'number' || typeof value === 'boolean') return String(value);
-      return null;
-    };
 
     const candidates = [
       error.message,
@@ -1279,7 +1285,24 @@ export class CandidateAuthService {
       }
     }
 
-    if (typeof error === 'object') {
+    if (typeof error === 'object' && error !== null) {
+      if (typeof error.toJSON === 'function') {
+        try {
+          const jsonData = error.toJSON();
+          const parsedKeys = Object.entries(jsonData)
+            .map(([key, value]) => {
+              const stringValue = getStringValue(value);
+              return stringValue ? `${key}: ${stringValue}` : null;
+            })
+            .filter(Boolean);
+          if (parsedKeys.length > 0) {
+            return parsedKeys.join(', ');
+          }
+        } catch {
+          // ignored
+        }
+      }
+
       try {
         const json = JSON.stringify(error);
         if (json && json !== '{}' && json !== '[]') {
