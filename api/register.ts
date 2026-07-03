@@ -98,7 +98,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }),
     });
 
-    const createUserBody = await readResponseBody(createUserResp as Response);
+    const createUserBody = await readResponseBody(createUserResp as Response) as unknown;
     if (!createUserResp.ok) {
       const errorText = normalizeErrorMessage(createUserBody);
       console.error('Supabase admin create user failed', {
@@ -108,7 +108,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(createUserResp.status).json({ error: errorText });
     }
 
-    const userId = createUserBody?.id;
+    const userId = (createUserBody as any)?.id;
     if (!userId) {
       return res.status(500).json({ error: 'Failed to create user' });
     }

@@ -112,7 +112,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error('Supabase confirm failed', confirmResp.status, body);
       return res
         .status(confirmResp.status)
-        .send(`Confirmation failed: ${body || confirmResp.statusText}`);
+        .send(`Confirmation failed: ${body || 'Unknown error'}`);
     }
 
     console.log('[CONFIRM-DEBUG][confirm] redirectUrl', `${confirmationBaseUrl}/candidate/login`);

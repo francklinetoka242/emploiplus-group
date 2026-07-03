@@ -1,4 +1,4 @@
-type ConfirmationResponse = Pick<Response, 'ok' | 'status' | 'text'>;
+type ConfirmationResponse = Pick<Response, 'ok' | 'status' | 'statusText' | 'text'>;
 
 export async function updateSupabaseUserConfirmation(
   fetchImpl: typeof fetch,
@@ -30,6 +30,7 @@ export async function updateSupabaseUserConfirmation(
     return {
       ok: putResponse.ok,
       status: putResponse.status,
+      statusText: putResponse.statusText,
       text: async () => putBody,
     };
   }
@@ -47,6 +48,7 @@ export async function updateSupabaseUserConfirmation(
     return {
       ok: patchResponse.ok,
       status: patchResponse.status,
+      statusText: patchResponse.statusText,
       text: async () => patchBody,
     };
   }
@@ -54,6 +56,7 @@ export async function updateSupabaseUserConfirmation(
   return {
     ok: putResponse.ok,
     status: putResponse.status,
+    statusText: putResponse.statusText,
     text: async () => putBody,
   };
 }

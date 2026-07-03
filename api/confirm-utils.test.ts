@@ -16,10 +16,10 @@ test('retries with PATCH when PUT is rejected as unsupported', async () => {
   };
 
   const response = await updateSupabaseUserConfirmation(
-    async (_url, init) => {
+    (async (_url, init) => {
       calls.push({ method: init?.method });
       return calls.length === 1 ? unsupportedResponse : successResponse;
-    },
+    }) as typeof fetch,
     'https://example.supabase.co',
     'user-123',
     'service-key',
