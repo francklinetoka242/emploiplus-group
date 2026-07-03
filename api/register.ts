@@ -13,8 +13,9 @@ function normalizeErrorMessage(value: unknown): string {
     if (typeof objectValue.msg === 'string') return objectValue.msg;
     if (typeof objectValue.message === 'string') return objectValue.message;
     if (typeof objectValue.error === 'string') return objectValue.error;
-    if (typeof objectValue.error?.['msg'] === 'string') return objectValue.error['msg'] as string;
-    if (typeof objectValue.error?.['message'] === 'string') return objectValue.error['message'] as string;
+    const errorObj = objectValue.error as UnknownObject | undefined;
+    if (errorObj && typeof errorObj['msg'] === 'string') return errorObj['msg'] as string;
+    if (errorObj && typeof errorObj['message'] === 'string') return errorObj['message'] as string;
     return JSON.stringify(objectValue);
   }
   return String(value);
