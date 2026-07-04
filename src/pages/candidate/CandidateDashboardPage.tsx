@@ -23,6 +23,7 @@ import {
   MapPin,
   DollarSign,
 } from "lucide-react";
+import JobCard from "@/components/site/JobCard";
 
 type DashboardOffer = {
   id: string;
@@ -94,7 +95,7 @@ export function CandidateDashboardPage() {
       setOffersLoading(true);
       const { data, error } = await supabase
         .from("job_offers")
-        .select("id, title, company, location_city, contract_type, salary, published_at, status")
+        .select("id, slug, title, company, location_city, location_country, contract_type, salary, published_at, status, description, requirements, tags, deadline, expires_at, application_email, external_link")
         .eq("status", "published")
         .order("published_at", { ascending: false })
         .limit(3);
@@ -103,12 +104,19 @@ export function CandidateDashboardPage() {
         setOffers(
           data.map((offer) => ({
             id: offer.id,
+            slug: offer.slug ?? offer.id,
             title: offer.title ?? "Offre à découvrir",
             company: offer.company ?? "Entreprise",
             location: offer.location_city ?? "À distance",
             postedDate: offer.published_at ? new Date(offer.published_at).toLocaleDateString("fr-FR") : "—",
             type: offer.contract_type ?? "CDI",
             salary: offer.salary ?? "Salaire à négocier",
+            description: offer.description ?? null,
+            requirements: offer.requirements ?? null,
+            tags: offer.tags ?? [],
+            deadline: offer.deadline ?? offer.expires_at ?? null,
+            application_email: offer.application_email ?? null,
+            external_link: offer.external_link ?? null,
           }))
         );
       }
@@ -368,29 +376,29 @@ export function CandidateDashboardPage() {
               <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">
                 Chargement des offres…
               </div>
-            ) : offers.length > 0 ? offers.map((offer) => (
-              <div
-                key={offer.id}
-                className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                <div className="flex-1">
-                  <h3 className="font-semibold text-slate-900 mb-1">{offer.title}</h3>
-                  <p className="text-sm text-slate-600 mb-2">{offer.company} • {offer.location}</p>
-                  <div className="flex gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      {offer.type}
-                    </Badge>
-                    <Badge variant="secondary" className="text-xs">
-                      {offer.salary}
-                    </Badge>
-                    <span className="text-xs text-slate-500">Publié le {offer.postedDate}</span>
-                  </div>
-                </div>
-                <Button size="sm" className="ml-4 bg-brand text-brand-foreground hover:bg-brand/90 text-white">
-                  Postuler
-                </Button>
-              </div>
-            )) : (
+            ) : offers.length > 0 ? (
+              offers.map((offer, index) => {
+                const location = [offer.location, offer.company].filter(Boolean).join(" • ");
+                const previewText = (offer.description || offer.requirements || "").replace(/\s+/g, " ").trim();
+                const contractLabel = offer.type ?? null;
+                const tags = (offer.tags || []).filter(Boolean).slice(0, 3);
+                const deadlineValue = offer.deadline ?? null;
+                const isExpired = Boolean(deadlineValue && new Date(deadlineValue).getTime() < Date.now());
+                return (
+                  <JobCard
+                    key={offer.id}
+                    job={offer as any}
+                    location={location}
+                    previewText={previewText}
+                    contractLabel={contractLabel}
+                    tags={tags}
+                    deadlineValue={deadlineValue}
+                    isExpired={isExpired}
+                    index={index}
+                  />
+                );
+              })
+            ) : (
               <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">
                 Aucune offre publiée pour le moment.
               </div>

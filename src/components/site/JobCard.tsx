@@ -82,7 +82,7 @@ export function JobCard({ job, location, previewText, contractLabel, tags, deadl
         </div>
       ) : null}
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4 flex items-center justify-end gap-2">
         <Button asChild size="sm" className="h-9 rounded-full bg-brand px-4 text-brand-foreground hover:bg-brand/90">
           <Link to={detailUrl}>Voir plus</Link>
         </Button>
@@ -107,7 +107,7 @@ export function JobCard({ job, location, previewText, contractLabel, tags, deadl
           </div>
         ) : null}
         {shareUrl ? (
-          <div className="ml-2">
+          <div>
             <ShareButtons url={shareUrl} text={shareText} variant="compact" />
           </div>
         ) : null}
