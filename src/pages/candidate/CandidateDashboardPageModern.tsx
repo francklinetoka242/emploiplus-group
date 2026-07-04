@@ -264,20 +264,42 @@ export function CandidateDashboardPageModern() {
       cvCompleted,
     };
   }, [profile, experienceEntries, candidateDocuments]);
+  // SECTION WEIGHTS (sum must be 100)
+  const SECTION_WEIGHTS: Record<string, number> = {
+    profile: 40,
+    cv: 20,
+    experience: 10,
+    education: 8,
+    skills: 8,
+    languages: 7,
+    preferences: 7,
+  };
+
+  const perSectionPercents = useMemo(() => {
+    return {
+      profile: profileChecks.personalInfoCompleted ? SECTION_WEIGHTS.profile : 0,
+      cv: profileChecks.cvCompleted ? SECTION_WEIGHTS.cv : 0,
+      experience: profileChecks.experienceCompleted ? SECTION_WEIGHTS.experience : 0,
+      education: profileChecks.educationCompleted ? SECTION_WEIGHTS.education : 0,
+      skills: profileChecks.skillsCompleted ? SECTION_WEIGHTS.skills : 0,
+      languages: profileChecks.languagesCompleted ? SECTION_WEIGHTS.languages : 0,
+      preferences: profileChecks.preferencesCompleted ? SECTION_WEIGHTS.preferences : 0,
+    };
+  }, [profileChecks]);
 
   const profileCompletion = useMemo(() => {
-    const checks = [
-      profileChecks.personalInfoCompleted,
-      profileChecks.experienceCompleted,
-      profileChecks.educationCompleted,
-      profileChecks.skillsCompleted,
-      profileChecks.languagesCompleted,
-      profileChecks.preferencesCompleted,
-      profileChecks.cvCompleted,
-    ];
-    const completedCount = checks.filter(Boolean).length;
-    return Math.round((completedCount / checks.length) * 100);
-  }, [profileChecks]);
+    return Math.round(Object.values(perSectionPercents).reduce((s, v) => s + v, 0));
+  }, [perSectionPercents]);
+
+  const completionItems = [
+    { key: 'profile', label: 'Informations personnelles', href: '/candidate/profile', completed: profileChecks.personalInfoCompleted, percent: perSectionPercents.profile },
+    { key: 'cv', label: 'Mon CV', href: '/candidate/cv', completed: profileChecks.cvCompleted, percent: perSectionPercents.cv },
+    { key: 'experience', label: 'Expériences', href: '/candidate/experience', completed: profileChecks.experienceCompleted, percent: perSectionPercents.experience },
+    { key: 'education', label: 'Formations', href: '/candidate/education', completed: profileChecks.educationCompleted, percent: perSectionPercents.education },
+    { key: 'skills', label: 'Compétences', href: '/candidate/skills', completed: profileChecks.skillsCompleted, percent: perSectionPercents.skills },
+    { key: 'languages', label: 'Langues', href: '/candidate/languages', completed: profileChecks.languagesCompleted, percent: perSectionPercents.languages },
+    { key: 'preferences', label: "Préférences d'emploi", href: '/candidate/preferences', completed: profileChecks.preferencesCompleted, percent: perSectionPercents.preferences },
+  ];
 
   const stats = [
     { label: "Candidatures", value: 0, icon: Send, color: "from-blue-500 to-blue-600" },
@@ -345,28 +367,23 @@ export function CandidateDashboardPageModern() {
           </div>
 
           <SaasGrid columns="3" gap="4">
-            {[
-              { label: "Informations personnelles", completed: profileChecks.personalInfoCompleted, href: "/candidate/profile" },
-              { label: "Mon CV", completed: profileChecks.cvCompleted, href: "/candidate/cv" },
-              { label: "Expériences", completed: profileChecks.experienceCompleted, href: "/candidate/experience" },
-              { label: "Formations", completed: profileChecks.educationCompleted, href: "/candidate/education" },
-              { label: "Compétences", completed: profileChecks.skillsCompleted, href: "/candidate/skills" },
-              { label: "Langues", completed: profileChecks.languagesCompleted, href: "/candidate/languages" },
-              { label: "Préférences d'emploi", completed: profileChecks.preferencesCompleted, href: "/candidate/preferences" },
-            ].map((item) => (
+            {completionItems.map((item) => (
               <div
-                key={item.label}
+                key={item.key}
                 className={`p-3 rounded-lg border transition-all ${
                   item.completed
                     ? "bg-emerald-50/60 border-emerald-200/70"
                     : "bg-slate-50/60 border-slate-200/70"
                 }`}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  {item.completed && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
-                  <a href={item.href} className={`text-xs font-medium ${item.completed ? "text-emerald-900" : "text-slate-600"}`}>
-                    {item.completed ? "Complété" : "À compléter"}
-                  </a>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    {item.completed && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
+                    <a href={item.href} className={`text-xs font-medium ${item.completed ? "text-emerald-900" : "text-slate-600"}`}>
+                      {item.completed ? "Complété" : "À compléter"}
+                    </a>
+                  </div>
+                  <div className="text-xs font-semibold text-slate-700">{item.percent}%</div>
                 </div>
                 <p className={`text-xs ${item.completed ? "text-emerald-700" : "text-slate-500"}`}>
                   {item.label}
