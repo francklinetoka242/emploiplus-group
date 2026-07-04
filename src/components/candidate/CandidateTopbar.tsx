@@ -58,8 +58,8 @@ export function CandidateTopbar({
   };
 
   return (
-    <header className="bg-white border-b border-slate-200 px-6 py-4">
-      <div className="flex items-center justify-between max-w-full">
+    <header className="hidden md:flex bg-white border-b border-slate-200 px-6 py-4 w-full">
+      <div className="flex items-center justify-between max-w-full w-full">
         {/* Left: Menu Toggle */}
         <div className="flex items-center">
           {onMenuToggle && (

@@ -2,21 +2,24 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { usePageSEO } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { CandidateAuthService, CandidateExperience } from "@/integrations/supabase/candidate-auth";
 import { useCandidate } from "@/hooks/useCandidate";
+ import { SaasCard, SaasCardHeader, SaasCardContent } from "@/components/candidate/SaasCard";
+ import { SaasGrid } from "@/components/candidate/SaasLayout";
 import {
   ArrowRight,
   Briefcase,
   Heart,
   CheckCircle2,
-  AlertCircle,
   FileText,
   Send,
   Eye,
+  TrendingUp,
+  Calendar,
+  MapPin,
+  DollarSign,
 } from "lucide-react";
 
 type DashboardOffer = {
@@ -36,8 +39,7 @@ const quickActions = [
     description: "Remplissez vos informations personnelles",
     icon: CheckCircle2,
     href: "/candidate/profile",
-    bgGradient: "from-cyan-50 to-blue-50",
-    borderColor: "border-cyan-200",
+    color: "from-blue-600 to-blue-700",
   },
   {
     id: 2,
@@ -45,8 +47,7 @@ const quickActions = [
     description: "Téléchargez votre CV",
     icon: FileText,
     href: "/candidate/cv",
-    bgGradient: "from-green-50 to-emerald-50",
-    borderColor: "border-green-200",
+    color: "from-emerald-600 to-emerald-700",
   },
   {
     id: 3,
@@ -54,17 +55,15 @@ const quickActions = [
     description: "Suivez le statut de vos candidatures",
     icon: Send,
     href: "/candidate/applications",
-    bgGradient: "from-purple-50 to-pink-50",
-    borderColor: "border-purple-200",
+    color: "from-purple-600 to-purple-700",
   },
   {
     id: 4,
     title: "Modifier mon profil",
     description: "Mettez à jour vos informations",
-    icon: AlertCircle,
+    icon: Briefcase,
     href: "/candidate/profile",
-    bgGradient: "from-orange-50 to-red-50",
-    borderColor: "border-orange-200",
+    color: "from-orange-600 to-orange-700",
   },
 ];
 

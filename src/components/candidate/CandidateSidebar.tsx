@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { useCandidate } from "@/hooks/useCandidate";
 import {
   Home,
   User,
@@ -17,7 +18,7 @@ import {
   Bell,
   Settings,
   LogOut,
-  ChevronDown,
+  ChevronLeft,
   Menu,
   X,
 } from "lucide-react";
@@ -26,6 +27,7 @@ interface CandidateSidebarProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onLogout?: () => void;
+  isDrawer?: boolean;
 }
 
 const menuItems = [
@@ -43,102 +45,297 @@ const menuItems = [
   { id: "settings", label: "Paramètres", icon: Settings, href: "/candidate/settings" },
 ];
 
-export function CandidateSidebar({ open = true, onOpenChange, onLogout }: CandidateSidebarProps) {
+export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer = false }: CandidateSidebarProps) {
   const location = useLocation();
+  const { profile } = useCandidate();
+
+  // Fermer le drawer avec Échap
+  useEffect(() => {
+    if (!isDrawer || !open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onOpenChange?.(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isDrawer, open, onOpenChange]);
 
   const isActive = (href: string) => {
     return location.pathname === href;
   };
 
-  return (
-    <aside
-      className={cn(
-        "fixed left-0 top-0 z-40 h-screen bg-slate-950 text-slate-100 shadow-[0_20px_60px_rgba(0,0,0,0.15)] transition-all duration-300",
-        open ? "w-72" : "w-20"
-      )}
-      style={{ minWidth: open ? 288 : 80 }}
-    >
-      <div className="flex h-full flex-col overflow-hidden">
-        <div className="flex items-center justify-between border-b border-white/10 px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/10">
-              <img src="/Logo.png" alt="EmploiPlus Group" className="h-7 w-7 object-contain" />
-            </div>
-            {open && (
-              <div>
-                <p className="text-sm font-semibold tracking-[0.02em] text-white">EmploiPlus Group</p>
-                <p className="text-xs text-slate-300">Espace Candidat</p>
+  const handleMenuClick = () => {
+    if (isDrawer) {
+      onOpenChange?.(false);
+    }
+  };
+
+  // Rendu du Drawer mobile
+  if (isDrawer) {
+    return (
+      <>
+        {/* Overlay */}
+        {open && (
+          <div
+            className="fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 md:hidden"
+            onClick={() => onOpenChange?.(false)}
+            aria-hidden="true"
+          />
+        )}
+
+        {/* Drawer */}
+        <aside
+          className={cn(
+            "fixed left-0 top-0 z-50 h-screen w-4/5 flex flex-col bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100 shadow-2xl transition-transform duration-300 ease-in-out md:hidden",
+            open ? "translate-x-0" : "-translate-x-full"
+          )}
+        >
+          {/* Header avec Logo et Close Button */}
+          <div className="flex items-center justify-between border-b border-white/5 px-4 py-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
+                <img src="/Logo.png" alt="EmploiPlus Group" className="h-6 w-6 object-contain" />
               </div>
-            )}
+              <div>
+                <p className="text-sm font-bold tracking-wide text-white">EmploiPlus</p>
+                <p className="text-xs text-slate-400">Candidat</p>
+              </div>
+            </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onOpenChange?.(false)}
+              className="rounded-lg p-2 text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
+              aria-label="Fermer le menu"
+            >
+              <X className="h-5 w-5" />
+            </Button>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onOpenChange?.(!open)}
-            className="rounded-xl p-2 text-slate-200 hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-secondary"
-            aria-label={open ? "Replier le menu" : "Déplier le menu"}
-          >
-            {open ? <X className="h-4 w-4" /> : <Menu className="h-5 w-5" />}
-          </Button>
-        </div>
+          {/* User Info */}
+          {profile && (
+            <div className="border-b border-white/5 px-4 py-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-white font-semibold">
+                  {profile.first_name?.[0]}{profile.last_name?.[0]}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-white">
+                    {profile.first_name} {profile.last_name}
+                  </p>
+                  <p className="truncate text-xs text-slate-400">{profile.email}</p>
+                </div>
+              </div>
+            </div>
+          )}
 
-        <div className="flex-1 overflow-y-auto px-2 py-4">
-          <TooltipProvider delayDuration={0}>
-            <nav className="space-y-1">
+          {/* Navigation */}
+          <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 scrollbar-hide">
+            <div className="space-y-1">
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
-                const itemContent = (
-                  <div
-                    className={cn(
-                      "group flex items-center rounded-2xl px-3 py-3 transition-all duration-200",
-                      active
-                        ? "bg-secondary text-slate-950 shadow-[0_8px_20px_rgba(232,169,0,0.18)]"
-                        : "text-slate-300 hover:bg-white/10 hover:text-white"
-                    )}
-                  >
-                    <span className={cn("flex h-10 w-10 items-center justify-center rounded-2xl", active ? "bg-white text-secondary" : "bg-slate-900 text-slate-300 group-hover:bg-white/10 group-hover:text-white")}> 
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    {open && (
-                      <span className="ml-3 text-sm font-medium leading-none">{item.label}</span>
-                    )}
-                  </div>
-                );
 
                 return (
-                  <Tooltip key={item.id}>
-                    <TooltipTrigger asChild>
-                      <Link to={item.href} className="block">
-                        {itemContent}
-                      </Link>
-                    </TooltipTrigger>
-                    {!open && (
-                      <TooltipContent side="right" align="center">
-                        {item.label}
-                      </TooltipContent>
+                  <Link
+                    key={item.id}
+                    to={item.href}
+                    onClick={handleMenuClick}
+                    className={cn(
+                      "relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250",
+                      active
+                        ? "bg-gradient-to-r from-primary/20 to-secondary/10 text-white shadow-lg shadow-secondary/20"
+                        : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
                     )}
-                  </Tooltip>
+                  >
+                    {active && (
+                      <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
+                    )}
+
+                    <div
+                      className={cn(
+                        "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250",
+                        active
+                          ? "bg-gradient-to-br from-primary to-secondary text-white shadow-md"
+                          : "bg-slate-800/50 hover:bg-slate-700/50"
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </div>
+
+                    <span className="truncate text-sm font-medium">{item.label}</span>
+                  </Link>
                 );
               })}
-            </nav>
-          </TooltipProvider>
-        </div>
+            </div>
+          </nav>
 
-        <div className="border-t border-white/10 px-4 py-4">
-          {open && (
+          {/* Footer - Logout */}
+          <div className="border-t border-white/5 px-4 py-4">
             <Button
+              onClick={() => {
+                onOpenChange?.(false);
+                onLogout?.();
+              }}
+              className="w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium transition-all duration-250 hover:from-red-600/20 hover:to-red-700/20 hover:text-red-300"
               variant="ghost"
-              onClick={onLogout}
-              className="w-full justify-start rounded-2xl border border-white/10 bg-slate-900/80 px-3 py-3 text-sm text-slate-200 hover:bg-white/10 hover:text-white"
             >
-              <LogOut className="mr-3 h-4 w-4" />
+              <LogOut className="h-4 w-4" />
               Déconnexion
             </Button>
+          </div>
+        </aside>
+      </>
+    );
+  }
+
+  // Rendu du Sidebar desktop (inchangé)
+  return (
+    <aside
+      className={cn(
+        "fixed left-0 top-0 z-40 hidden h-screen flex-col bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100 shadow-2xl transition-all duration-300 ease-in-out md:flex",
+        open ? "w-72 md:w-72" : "w-20 md:w-20"
+      )}
+      style={{ minWidth: open ? 288 : 80 }}
+    >
+      {/* Header avec Logo */}
+      <div className="flex items-center justify-between border-b border-white/5 px-4 py-5">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
+            <img src="/Logo.png" alt="EmploiPlus Group" className="h-6 w-6 object-contain" />
+          </div>
+          {open && (
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold tracking-wide text-white">EmploiPlus</p>
+              <p className="truncate text-xs text-slate-400">Candidat</p>
+            </div>
           )}
         </div>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onOpenChange?.(!open)}
+          className="flex-shrink-0 rounded-lg p-2 text-slate-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-secondary"
+          aria-label={open ? "Replier le menu" : "Déplier le menu"}
+        >
+          {open ? (
+            <ChevronLeft className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
+        </Button>
+      </div>
+
+      {/* Navigation - Scroll interne */}
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 scrollbar-hide">
+        <TooltipProvider delayDuration={200}>
+          <div className="space-y-1">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+
+              return (
+                <Tooltip key={item.id}>
+                  <TooltipTrigger asChild>
+                    <Link
+                      to={item.href}
+                      className={cn(
+                        "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-250 md:px-3 md:py-2",
+                        active
+                          ? "bg-gradient-to-r from-primary/20 to-secondary/10 text-white shadow-lg shadow-secondary/20"
+                          : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                      )}
+                    >
+                      {/* Active indicator bar */}
+                      {active && (
+                        <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
+                      )}
+
+                      {/* Icon container */}
+                      <div
+                        className={cn(
+                          "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250",
+                          active
+                            ? "bg-gradient-to-br from-primary to-secondary text-white shadow-md"
+                            : "bg-slate-800/50 group-hover:bg-slate-700/50"
+                        )}
+                      >
+                        <Icon className="h-5 w-5" />
+                      </div>
+
+                      {/* Text label */}
+                      {open && (
+                        <span
+                          className={cn(
+                            "truncate text-sm font-medium transition-colors duration-250",
+                            active ? "text-white" : "text-slate-300 group-hover:text-slate-100"
+                          )}
+                        >
+                          {item.label}
+                        </span>
+                      )}
+
+                      {/* Hover glow effect when collapsed */}
+                      {!open && (
+                        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/0 to-secondary/0 opacity-0 transition-all duration-250 group-hover:from-primary/10 group-hover:to-secondary/10 group-hover:opacity-100" />
+                      )}
+                    </Link>
+                  </TooltipTrigger>
+
+                  {/* Tooltip when collapsed */}
+                  {!open && (
+                    <TooltipContent
+                      side="right"
+                      align="center"
+                      className="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-xs font-medium text-slate-100 shadow-lg"
+                    >
+                      {item.label}
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              );
+            })}
+          </div>
+        </TooltipProvider>
+      </nav>
+
+      {/* Footer - Logout button */}
+      <div className="border-t border-white/5 px-2 py-4">
+        {open ? (
+          <Button
+            onClick={onLogout}
+            className={cn(
+              "w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium transition-all duration-250 hover:from-red-600/20 hover:to-red-700/20 hover:text-red-300"
+            )}
+            variant="ghost"
+          >
+            <LogOut className="h-4 w-4" />
+            Déconnexion
+          </Button>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={onLogout}
+                size="icon"
+                className="h-10 w-10 rounded-lg bg-slate-800/50 transition-all duration-250 hover:bg-red-600/20 hover:text-red-300"
+                variant="ghost"
+              >
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="rounded-lg border border-white/10 bg-slate-900 text-xs font-medium">
+              Déconnexion
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
     </aside>
   );
 }
+

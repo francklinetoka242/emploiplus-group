@@ -199,3 +199,29 @@
 .fade-delay-3 { animation-delay: 240ms; }
 .fade-delay-4 { animation-delay: 320ms; }
 
+/* Scrollbar utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth transitions for sidebar */
+.transition-all {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom duration classes for sidebar animations */
+.duration-250 {
+  animation-duration: 250ms;
+}
+
+@supports (animation-timeline: view()) {
+  .duration-250 {
+    transition-duration: 250ms;
+  }
+}
+
