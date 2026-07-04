@@ -62,6 +62,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     lastName?: string;
   };
 
+  console.log('register body', {
+    email,
+    firstName,
+    lastName,
+    passwordPresent: !!password,
+  });
+
   if (!email || !password || !firstName || !lastName) {
     console.error('Register request missing fields', {
       headers: req.headers,
@@ -83,6 +90,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('EMAIL_SIGNING_SECRET length', EMAIL_SIGNING_SECRET.length);
   const confirmationBaseUrl = resolveConfirmationBaseUrl(process.env, req);
 
+  console.log({
+    hasSupabaseUrl: !!SUPABASE_URL,
+    hasServiceKey: !!SERVICE_KEY,
+    hasEmailSigningSecret: !!EMAIL_SIGNING_SECRET,
+    hasSmtpHost: !!process.env.SMTP_HOST,
+    hasSmtpPort: !!process.env.SMTP_PORT,
+    hasSmtpUser: !!process.env.SMTP_USER,
+    hasSmtpPass: !!process.env.SMTP_PASS,
+    hasFromEmail: !!process.env.FROM_EMAIL,
+    hasFromName: !!process.env.FROM_NAME,
+  });
+
   if (!SUPABASE_URL || !SERVICE_KEY || !EMAIL_SIGNING_SECRET) {
     return res.status(500).json({ error: 'Server misconfiguration' });
   }
@@ -102,7 +121,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }),
     });
 
+    console.log(
+      'createUserResp',
+      createUserResp.status,
+    );
+
     const createUserBody = await readResponseBody(createUserResp as Response) as unknown;
+    console.log(
+      'createUserBody',
+      createUserBody,
+    );
     if (!createUserResp.ok) {
       const errorText = normalizeErrorMessage(createUserBody);
       console.error('Supabase admin create user failed', {
@@ -113,6 +141,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const userId = (createUserBody as any)?.id;
+    console.log(
+      'userId',
+      userId,
+    );
     if (!userId) {
       return res.status(500).json({ error: 'Failed to create user' });
     }
@@ -220,7 +252,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(201).json({ success: true, message: 'User created. Confirmation email sent.' });
   } catch (error) {
-    console.error('Register error', error);
+    console.error('REGISTER FATAL ERROR');
+    console.error(error);
+    if (error instanceof Error) {
+      console.error(error.stack);
+    }
     return res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
   }
 }
