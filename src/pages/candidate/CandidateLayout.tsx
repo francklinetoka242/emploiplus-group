@@ -4,6 +4,7 @@ import { CandidateSidebar } from "@/components/candidate/CandidateSidebar";
 import { CandidateTopbar } from "@/components/candidate/CandidateTopbar";
 import { useCandidate } from "@/hooks/useCandidate";
 import { usePageSEO } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 
 export function CandidateLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
