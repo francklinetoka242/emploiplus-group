@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
-import { resolveConfirmationBaseUrl } from './confirm-url.ts';
+import { resolveConfirmationBaseUrl } from './confirm-url';
 import { base64url } from '../utils/token';
 
 type UnknownObject = Record<string, unknown>;

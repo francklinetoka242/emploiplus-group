@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { updateSupabaseUserConfirmation } from './confirm-utils';
-import { resolveConfirmationBaseUrl } from './confirm-url.ts';
+import { resolveConfirmationBaseUrl } from './confirm-url';
 import { base64url, base64urlDecode } from '../utils/token';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
