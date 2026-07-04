@@ -23,6 +23,7 @@ export function CandidateResetPasswordPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isValidToken, setIsValidToken] = useState(false);
   const [checkingToken, setCheckingToken] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   usePageSEO({
     title: "Réinitialiser mot de passe - EmploiPlus Group",
@@ -39,6 +40,12 @@ export function CandidateResetPasswordPage() {
     try {
       const session = await CandidateAuthService.getSession();
       if (session) {
+        try {
+          const email = session.user?.email ?? null;
+          setUserEmail(email);
+        } catch (e) {
+          setUserEmail(null);
+        }
         setIsValidToken(true);
       }
     } catch (err) {
@@ -87,6 +94,24 @@ export function CandidateResetPasswordPage() {
       await supabase.auth.updateUser({
         password: formData.password,
       });
+
+      // Send password change confirmation email using existing API template
+      try {
+        const recipient = userEmail || undefined;
+        if (recipient) {
+          await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              recipient,
+              subject: "Votre mot de passe a été modifié",
+              text: "Votre mot de passe a été modifié avec succès. Si vous n'êtes pas à l'origine de ce changement, contactez le support.",
+            }),
+          });
+        }
+      } catch (mailErr) {
+        console.warn('Failed to send password change email', mailErr);
+      }
 
       setSubmitted(true);
       setTimeout(() => {

@@ -107,19 +107,19 @@ export default async function handler(req: any, res: any) {
   // Helper to build a branded HTML template
   function buildTemplate(opts: { title: string; intro: string; cta?: string; actionLink?: string; bodyHtml?: string; }) {
     const ctaHtml = opts.cta && opts.actionLink
-      ? `<p style="text-align:center;margin:24px 0"><a href="${opts.actionLink}" target="_blank" rel="noreferrer" style="background:${brandColor};color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block">${opts.cta}</a></p>`
+      ? `<p style="text-align:center;margin:24px 0"><a href="${opts.actionLink}" target="_blank" rel="noreferrer" style="background:var(--secondary, ${brandColor});color:var(--primary, #ffffff);padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:700">${opts.cta}</a></p>`
       : "";
 
     const bodySection = opts.bodyHtml ? `<div style="margin:12px 0">${opts.bodyHtml}</div>` : "";
 
     return `
-      <!doctype html>
-      <html>
-      <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-      </head>
-      <body style="font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f7fafc; margin:0; padding:24px">
+        <!doctype html>
+        <html>
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
+        </head>
+        <body style="--primary: #00009E; --secondary: #E8A900; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f7fafc; margin:0; padding:24px">
         <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
           <tr>
             <td align="center">
@@ -136,10 +136,16 @@ export default async function handler(req: any, res: any) {
                     <p style="color:#475569;margin:0 0 12px">${opts.intro}</p>
                     ${bodySection}
                     ${ctaHtml}
-                    <p style="color:#64748b;font-size:13px;margin-top:18px">Si vous n'avez pas demandé cette action, ignorez cet e-mail.</p>
+                    <p style="color:#64748b;font-size:13px;margin-top:18px">Si vous n'avez pas demandé cette action, ignorez simplement cet e-mail.</p>
+                    <p style="color:#64748b;font-size:13px;margin-top:8px">Si vous rencontrez un problème, contactez l'assistance :</p>
+                    <p style="color:#475569;margin:6px 0 0;font-size:14px">Email : <a href="mailto:contact@emploiplus-group.com">contact@emploiplus-group.com</a> • WhatsApp : <a href="https://wa.me/242067311033">+242 0673 11033</a></p>
                     <hr style="border:none;border-top:1px solid #eef2f7;margin:18px 0" />
-                    <p style="font-size:13px;color:#64748b;margin:0">Contact: <a href="mailto:${supportEmail}">${supportEmail}</a> • <a href="${siteUrl}">${siteUrl}</a></p>
-                    ${whatsappUrl ? `<p style="font-size:13px;color:#64748b;margin:6px 0 0">Groupe WhatsApp: <a href="${whatsappUrl}">${whatsappUrl}</a></p>` : ""}
+                    <h3 style="margin:0 0 8px;font-size:15px;color:var(--primary)">Contact</h3>
+                    <p style="font-size:14px;color:#475569;margin:0">Téléphone & WhatsApp : <a href="tel:+242067311033">+242 0673 11033</a></p>
+                    <p style="font-size:14px;color:#475569;margin:6px 0 0">Email : <a href="mailto:contact@emploiplus-group.com">contact@emploiplus-group.com</a></p>
+                    <p style="font-size:14px;color:#475569;margin:6px 0 0">Localisation : Pointe-Noire, République du Congo</p>
+                    <p style="font-size:14px;color:#475569;margin:6px 0 0">Chaîne offres gratuites WhatsApp : <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631">whatsapp.com/channel/0029Vb5pc270VycKAb1tc631</a></p>
+                    <p style="font-size:14px;color:#475569;margin:6px 0 0">Chaîne Emploiplus Group WhatsApp : <a href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43">whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43</a></p>
                     <p style="font-size:12px;color:#9ca3af;margin-top:12px">${companyAddress}</p>
                   </td>
                 </tr>
@@ -161,12 +167,18 @@ export default async function handler(req: any, res: any) {
   if (actionLink || /reset|mot de passe|réinitialis|password/i.test(lowerSub) || /confirm|inscri|confirmation|activer/i.test(lowerSub)) {
     // Decide template type
     if (/reset|mot de passe|réinitialis|password/i.test(lowerSub)) {
+      const contactHtml = `
+        ${originalHtml ? originalHtml : ""}
+        <p style=\"margin-top:12px;color:#475569;\">Si vous n'avez pas demandé la réinitialisation de votre mot de passe, ignorez cet e-mail.</p>
+        <p style=\"margin-top:10px;color:#475569;\">Pour toute aide : Email: <a href=\"mailto:contact@emploiplus-group.com\">contact@emploiplus-group.com</a> • WhatsApp: <a href=\"https://wa.me/242067311033\">+242 0673 11033</a></p>
+      `;
+
       finalHtml = buildTemplate({
         title: "Réinitialisation du mot de passe",
         intro: "Vous avez demandé la réinitialisation de votre mot de passe.",
         cta: "Réinitialiser mon mot de passe",
         actionLink: actionLink,
-        bodyHtml: originalHtml ? originalHtml : undefined,
+        bodyHtml: contactHtml,
       });
       finalText = `Réinitialisez votre mot de passe: ${actionLink || ""}`;
     } else {
