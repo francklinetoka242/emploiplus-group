@@ -214,47 +214,84 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('[CONFIRM-DEBUG][register] confirmationBaseUrl', confirmationBaseUrl);
 
     try {
-      const logoUrl = `${confirmationBaseUrl}/assets/favicon.ico`;
-      const buttonColor = '#0d6efd';
+      const logoUrl = `${confirmationBaseUrl}/Logo.png`;
+      const buttonBg = '#E8A900';
+      const buttonText = '#00009E';
       await transporter.sendMail({
         from: `"${fromName}" <${fromEmail}>`,
         to: email,
         replyTo: fromEmail,
         subject: 'Confirmez votre adresse e-mail',
-        text: `Bonjour ${firstName},\n\nMerci pour votre inscription. Cliquez sur le lien ci-dessous pour confirmer votre adresse e-mail :\n${confirmLink}\n\nCe lien est valable 24 heures. Si vous ne recevez pas cet e-mail, retournez sur la page de connexion pour demander un renvoi.\n\nContact: ${fromEmail}\nTel/WhatsApp: +242 0673 11033\nLocalisation: Pointe-Noire, République du Congo\nOffres WhatsApp : https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631\nEntreprise WhatsApp : https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43`,
+        text: `Bonjour ${firstName},\n\nMerci pour votre inscription sur EmploiPlus Group. Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le lien ci-dessous :\n${confirmLink}\n\n✓ Ce lien est valable 24 heures.\n✓ Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.\n✓ Si vous n'êtes pas à l'origine de cette demande, ignorez simplement ce message.`,
         html: `
-          <div style="font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color:#1f2937; line-height:1.5;">
-            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;margin:0 auto;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;">
-              <tr style="background:#0d6efd;color:#ffffff;">
-                <td style="padding:20px 24px; text-align:left; display:flex; align-items:center; gap:14px;">
-                  <img src="${logoUrl}" alt="EmploiPlus Group" width="40" height="40" style="display:block;border-radius:8px;" />
-                  <div>
-                    <h1 style="margin:0;font-size:20px;">EmploiPlus Group</h1>
-                    <p style="margin:4px 0 0;font-size:14px;opacity:.9;">Confirmation d'inscription candidat</p>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:24px;background:#ffffff;">
-                  <p style="margin:0 0 16px;font-size:16px;color:#111827;">Bonjour ${firstName},</p>
-                  <p style="margin:0 0 16px;font-size:15px;color:#374151;">Merci pour votre inscription sur EmploiPlus Group. Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous :</p>
-                  <p style="text-align:center;margin:24px 0;"><a href="${confirmLink}" target="_blank" rel="noreferrer" style="display:inline-block;padding:14px 24px;background:${buttonColor};color:#ffffff;font-weight:600;border-radius:10px;text-decoration:none;">Confirmer mon e‑mail</a></p>
-                  <p style="margin:0 0 16px;font-size:15px;color:#374151;">Ce lien est valable 24 heures. Après ce délai, vous pourrez demander un renvoi de l’email depuis la page de connexion.</p>
-                  <p style="margin:0 0 16px;font-size:15px;color:#374151;">Si vous n'avez pas demandé cette inscription, veuillez ignorer ce message.</p>
-                </td>
-              </tr>
-              <tr style="background:#f8fafc;">
-                <td style="padding:20px 24px;">
-                  <h2 style="margin:0 0 12px;font-size:16px;color:#0f172a;">Contact</h2>
-                  <p style="margin:0 0 6px;font-size:14px;color:#475569;">Téléphone & WhatsApp : <a href="tel:+242067311033" style="color:#0d6efd;text-decoration:none;">+242 0673 11033</a></p>
-                  <p style="margin:0 0 6px;font-size:14px;color:#475569;">Email : <a href="mailto:contact@emploiplus-group.com" style="color:#0d6efd;text-decoration:none;">contact@emploiplus-group.com</a></p>
-                  <p style="margin:0 0 6px;font-size:14px;color:#475569;">Localisation : Pointe-Noire, République du Congo</p>
-                  <p style="margin:0 0 6px;font-size:14px;color:#475569;">Chaîne offres gratuites WhatsApp : <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631" style="color:#0d6efd;text-decoration:none;">whatsapp.com/channel/0029Vb5pc270VycKAb1tc631</a></p>
-                  <p style="margin:0;font-size:14px;color:#475569;">Chaîne Emploiplus Group WhatsApp : <a href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43" style="color:#0d6efd;text-decoration:none;">whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43</a></p>
-                </td>
-              </tr>
-            </table>
-          </div>
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0;padding:0;background-color:#f4f7fb;font-family:Inter, Segoe UI, Arial, sans-serif;">
+            <tr>
+              <td align="center" style="padding:24px 12px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;background-color:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #e5e7eb;box-shadow:0 8px 24px rgba(0,0,0,0.06);">
+                  <tr>
+                    <td style="background-color:#00009E;padding:28px 32px;text-align:center;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <tr>
+                          <td align="center" style="padding-bottom:10px;">
+                            <img src="${logoUrl}" alt="EmploiPlus Group" width="56" height="56" style="display:block;margin:0 auto;max-width:56px;height:auto;border-radius:12px;background-color:#ffffff;padding:4px;" />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center" style="font-size:24px;line-height:1.3;font-weight:700;color:#ffffff;font-family:Inter, Segoe UI, Arial, sans-serif;">
+                            EmploiPlus Group
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center" style="font-size:14px;line-height:1.5;color:#e9ecff;padding-top:6px;font-family:Inter, Segoe UI, Arial, sans-serif;">
+                            Confirmation d'inscription candidat
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:32px 32px 20px 32px;background-color:#ffffff;">
+                      <p style="margin:0 0 14px;font-size:18px;line-height:1.5;color:#0f172a;font-family:Inter, Segoe UI, Arial, sans-serif;">Bonjour ${firstName},</p>
+                      <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">
+                        Merci pour votre inscription sur <strong style="color:#00009E;">EmploiPlus Group</strong>.
+                      </p>
+                      <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">
+                        Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous.
+                      </p>
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0 24px 0;">
+                        <tr>
+                          <td align="center" bgcolor="${buttonBg}" style="border-radius:10px;">
+                            <a href="${confirmLink}" target="_blank" rel="noreferrer" style="display:inline-block;padding:14px 30px;font-size:15px;line-height:1.2;font-weight:700;color:${buttonText};text-decoration:none;font-family:Inter, Segoe UI, Arial, sans-serif;">Confirmer mon adresse email</a>
+                          </td>
+                        </tr>
+                      </table>
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 18px 0;border-top:1px solid #e5e7eb;padding-top:16px;">
+                        <tr>
+                          <td style="font-size:14px;line-height:1.7;color:#334155;font-family:Inter, Segoe UI, Arial, sans-serif;">
+                            <div style="margin-bottom:8px;">✓ Lien valable 24 heures</div>
+                            <div style="margin-bottom:8px;">✓ Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.</div>
+                            <div>✓ Si vous n'êtes pas à l'origine de cette demande, ignorez simplement ce message.</div>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#f8fafc;padding:24px 32px;border-top:3px solid #E8A900;">
+                      <p style="margin:0 0 10px;font-size:15px;line-height:1.4;font-weight:700;color:#0f172a;font-family:Inter, Segoe UI, Arial, sans-serif;">Nous contacter</p>
+                      <p style="margin:0 0 6px;font-size:13px;line-height:1.6;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Téléphone : <a href="tel:+242067311033" style="color:#00009E;text-decoration:none;">+242 0673 11033</a></p>
+                      <p style="margin:0 0 6px;font-size:13px;line-height:1.6;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Email : <a href="mailto:contact@emploiplus-group.com" style="color:#00009E;text-decoration:none;">contact@emploiplus-group.com</a></p>
+                      <p style="margin:0 0 6px;font-size:13px;line-height:1.6;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Ville : Pointe-Noire, République du Congo</p>
+                      <p style="margin:0 0 6px;font-size:13px;line-height:1.6;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Offres WhatsApp : <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631" style="color:#00009E;text-decoration:none;">whatsapp.com/channel/0029Vb5pc270VycKAb1tc631</a></p>
+                      <p style="margin:0 0 12px;font-size:13px;line-height:1.6;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">EmploiPlus Group WhatsApp : <a href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43" style="color:#00009E;text-decoration:none;">whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43</a></p>
+                      <p style="margin:0 0 4px;font-size:12px;line-height:1.6;color:#64748b;font-family:Inter, Segoe UI, Arial, sans-serif;">© EmploiPlus Group</p>
+                      <p style="margin:0;font-size:12px;line-height:1.6;color:#64748b;font-family:Inter, Segoe UI, Arial, sans-serif;">Recrutement • Opportunités • Accompagnement professionnel</p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
         `,
       });
     } catch (mailError) {
