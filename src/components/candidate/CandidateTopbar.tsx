@@ -34,7 +34,7 @@ export function CandidateTopbar({
 
   const userName = useMemo(() => {
     if (!profile) return "Candidat";
-    return `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "Candidat";
+    return (profile.first_name || "").trim() || "Candidat";
   }, [profile]);
 
   const userEmail = useMemo(() => {
@@ -46,13 +46,9 @@ export function CandidateTopbar({
   }, [profile]);
 
   const initials = useMemo(() => {
-    return userName
-      .split(" ")
-      .map((name) => name[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  }, [userName]);
+    const first = profile?.first_name?.trim() || userName || "C";
+    return first.slice(0, 2).toUpperCase();
+  }, [profile, userName]);
 
   const publicLinks = [
     { to: "/candidate/public", label: "Accueil" },
