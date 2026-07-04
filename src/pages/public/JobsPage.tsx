@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { BadgeDollarSign, BriefcaseBusiness, Building2, CalendarDays, MapPin, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { ShareButtons } from "@/components/site/ShareButtons";
+import JobCard from "@/components/site/JobCard";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
 import { usePublishedJobOffers } from "@/hooks/usePublishedOffers";
@@ -162,87 +163,7 @@ export function JobsPage() {
                   const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/jobs/${job.slug}` : `${BASE_URL}/jobs/${job.slug}`;
                   const shareText = `Offre d'emploi : ${job.title} chez ${job.company}\n\n${previewText.slice(0, 220)}\n\nOffre partagée depuis https://emploiplus-group.com`;
                   return (
-                    <article key={job.id} className={`relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/[0.03] p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elev group-hover:border-brand/60 ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`} style={{ animationDelay: `${i * 80}ms` }}>
-                      <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-brand via-brand/70 to-transparent" />
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand/80">
-                            <Building2 className="size-3.5" />
-                            <span>{job.company}</span>
-                          </div>
-                          <h3 className="mt-3 font-display text-xl font-bold text-foreground">{job.title}</h3>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {contractLabel ? (
-                            <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
-                              <BriefcaseBusiness className="size-3.5" />
-                              {contractLabel}
-                            </span>
-                          ) : null}
-                          <ShareButtons
-                            url={shareUrl}
-                            text={shareText}
-                            shareData={{
-                              company: job.company,
-                              title: job.title,
-                              contractType: contractLabel,
-                              location,
-                              salary: job.salary,
-                              description: previewText,
-                              deadline: deadlineValue ? formatDate(deadlineValue) || undefined : undefined,
-                              email: job.application_email || undefined,
-                            }}
-                            variant="compact"
-                            className="shrink-0"
-                          />
-                        </div>
-                      </div>
-
-                      <Link to={`/jobs/${job.slug}`} className="block">
-                        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                          <div className="flex items-center justify-between gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
-                            <div className="flex min-w-0 items-center gap-2">
-                              <MapPin className="size-4 shrink-0 text-brand" />
-                              <span className="truncate">{location}</span>
-                            </div>
-                            {deadlineValue ? (
-                              <div className={`flex min-w-0 items-center gap-2 ${isExpired ? "text-muted-foreground" : ""}`}>
-                                <CalendarDays className="size-4 shrink-0 text-brand" />
-                                <span className="truncate">{formatDate(deadlineValue)}</span>
-                              </div>
-                            ) : null}
-                          </div>
-                          {job.salary ? (
-                            <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
-                              <BadgeDollarSign className="size-4 shrink-0 text-brand" />
-                              <span>{job.salary}</span>
-                            </div>
-                          ) : null}
-                        </div>
-
-                        {previewText ? (
-                          <p className="mt-4 rounded-2xl border border-border/60 bg-background/60 p-3 text-sm text-foreground/80 leading-relaxed">
-                            {previewText.length > 180 ? `${previewText.slice(0, 177)}...` : previewText}
-                          </p>
-                        ) : null}
-
-                        {tags.length > 0 ? (
-                          <div className="mt-4 flex flex-wrap gap-2">
-                            {tags.map((tag) => (
-                              <span key={tag} className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/70 px-2.5 py-1 text-xs text-muted-foreground">
-                                <Sparkles className="size-3" />
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        ) : null}
-                        <div className="mt-4 flex justify-end">
-                          <span className="inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90">
-                            Voir plus
-                          </span>
-                        </div>
-                      </Link>
-                    </article>
+                    <JobCard key={job.id} job={job} location={location} previewText={previewText} contractLabel={contractLabel} tags={tags} deadlineValue={deadlineValue} isExpired={isExpired} t={t} index={i} />
                   );
                   })}
                   {totalPages > 1 ? (

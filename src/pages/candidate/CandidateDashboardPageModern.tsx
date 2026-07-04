@@ -28,6 +28,7 @@ import {
   MapPin,
   DollarSign,
 } from "lucide-react";
+import JobCard from "@/components/site/JobCard";
 
 type DashboardOffer = {
   id: string;
@@ -99,7 +100,9 @@ export function CandidateDashboardPageModern() {
       setOffersLoading(true);
       const { data, error } = await supabase
         .from("job_offers")
-        .select("id, title, company, location_city, contract_type, salary, published_at, status")
+        .select(
+          "id, slug, title, company, location_city, location_country, contract_type, salary, published_at, status, description, requirements, tags, deadline, expires_at, application_email, external_link"
+        )
         .eq("status", "published")
         .order("published_at", { ascending: false })
         .limit(3);
@@ -108,12 +111,19 @@ export function CandidateDashboardPageModern() {
         setOffers(
           data.map((offer) => ({
             id: offer.id,
+            slug: offer.slug ?? offer.id,
             title: offer.title ?? "Offre à découvrir",
             company: offer.company ?? "Entreprise",
             location: offer.location_city ?? "À distance",
             postedDate: offer.published_at ? new Date(offer.published_at).toLocaleDateString("fr-FR") : "—",
             type: offer.contract_type ?? "CDI",
             salary: offer.salary ?? "Salaire à négocier",
+            description: offer.description ?? null,
+            requirements: offer.requirements ?? null,
+            tags: offer.tags ?? [],
+            deadline: offer.deadline ?? offer.expires_at ?? null,
+            application_email: offer.application_email ?? null,
+            external_link: offer.external_link ?? null,
           }))
         );
       }
@@ -430,49 +440,17 @@ export function CandidateDashboardPageModern() {
         <div>
           <h2 className="text-xl font-bold text-slate-900 mb-4">Offres récentes</h2>
           <SaasGrid columns="1" gap="4">
-            {offers.map((offer) => (
-              <SaasCard key={offer.id} hoverable>
-                <div className="px-6 py-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="p-2.5 rounded-lg bg-primary/10 flex-shrink-0">
-                          <Briefcase className="w-5 h-5 text-primary" />
-                        </div>
-                        <div className="min-w-0">
-                          <h3 className="font-semibold text-slate-900 truncate">{offer.title}</h3>
-                          <p className="text-sm text-slate-600 truncate">{offer.company}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-3 mt-3 text-sm text-slate-600">
-                        <div className="flex items-center gap-1.5">
-                          <MapPin className="w-4 h-4 text-slate-400" />
-                          <span>{offer.location}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Calendar className="w-4 h-4 text-slate-400" />
-                          <span>{offer.postedDate}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-end gap-3 flex-shrink-0">
-                      <div className="flex gap-2">
-                        <Badge variant="outline" className="text-xs">{offer.type}</Badge>
-                        <Badge className="bg-secondary/10 text-secondary hover:bg-secondary/20 text-xs">
-                          <DollarSign className="w-3 h-3 mr-1" />
-                          {offer.salary}
-                        </Badge>
-                      </div>
-                      <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-                        Voir <ArrowRight className="w-4 h-4 ml-1.5" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </SaasCard>
-            ))}
+            {offers.map((offer, i) => {
+              const location = offer.location ?? "À distance";
+              const previewText = (offer.description || offer.requirements || "").replace(/\s+/g, " ").trim();
+              const contractLabel = offer.type ?? null;
+              const tags = (offer.tags || []).filter(Boolean).slice(0, 3);
+              const deadlineValue = offer.deadline ?? null;
+              const isExpired = Boolean(deadlineValue && new Date(deadlineValue).getTime() < Date.now());
+              return (
+                <JobCard key={offer.id} job={offer as any} location={location} previewText={previewText} contractLabel={contractLabel} tags={tags} deadlineValue={deadlineValue} isExpired={isExpired} index={i} />
+              );
+            })}
           </SaasGrid>
         </div>
       )}
