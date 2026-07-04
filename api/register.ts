@@ -2,9 +2,21 @@ import 'dotenv/config';
 import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
-import { base64url } from '../utils/token';
 
 type UnknownObject = Record<string, unknown>;
+
+function base64url(input: string | Buffer) {
+  const buffer =
+    typeof input === 'string'
+      ? Buffer.from(input, 'utf8')
+      : input;
+
+  return buffer
+    .toString('base64')
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+}
 
 export async function readResponseBody(response: Response): Promise<unknown> {
   const text = await response.text();
