@@ -23,8 +23,8 @@ export function AdminSidebar({ open, activeView, onSelect, onToggle, onLogout, s
   const navItems: { id: AdminView; label: string; icon: LucideIcon }[] = [
     { id: "dashboard", label: t("admin.sidebar.dashboard") || "Tableau de bord", icon: LayoutDashboard },
     { id: "jobs", label: t("admin.sidebar.jobs") || "Offres", icon: Briefcase },
-    { id: "blog", label: t("admin.sidebar.blog") || "Blog", icon: FileText },
     { id: "candidates", label: t("admin.sidebar.candidates") || "Utilisateur", icon: Users },
+    { id: "blog", label: t("admin.sidebar.blog") || "Blog", icon: FileText },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "seo", label: t("admin.sidebar.seo") || "SEO", icon: Sparkles },
     { id: "team", label: t("admin.sidebar.team") || "Équipe", icon: Users },
@@ -92,7 +92,7 @@ export function AdminSidebar({ open, activeView, onSelect, onToggle, onLogout, s
               onClick={() => onSelect(item.id)}
               className={cn(
                 "group flex items-center rounded-3xl px-4 py-3 text-left transition-all duration-300 hover:bg-white/10",
-                open ? "gap-3" : "justify-center",
+                open ? "gap-3 justify-start whitespace-nowrap" : "justify-center",
                 active ? "bg-white/10 ring-1 ring-white/20" : "",
               )}
               title={item.label}
