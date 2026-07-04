@@ -164,18 +164,14 @@ export function CandidateProfilePageModern() {
 
     try {
       await updateProfile({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
         phone: formData.phone,
-        dateOfBirth: formData.dateOfBirth,
-        gender: formData.gender,
-        nationality: formData.nationality,
-        address: formData.address,
-        city: formData.city,
-        zipCode: formData.zipCode,
+        date_of_birth: formData.dateOfBirth,
+        location_country: formData.nationality,
+        location_city: formData.city,
         bio: formData.about,
-        professionalStatus: formData.professionalStatus,
-        avatarUrl: formData.avatar,
+        avatar_url: formData.avatar,
       });
       setSaveSuccess(true);
     } catch (error) {
