@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Settings, LogOut, ChevronDown, Menu, Loader2 } from "lucide-react";
+import { Settings, LogOut, ChevronDown, Menu, Loader2, User } from "lucide-react";
 import { NotificationsDropdown } from "./NotificationsDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useCandidate } from "@/hooks/useCandidate";
@@ -103,8 +103,8 @@ export function CandidateTopbar({
               <Button variant="ghost" className="flex items-center gap-3 pl-2 pr-1">
                 <Avatar className="w-8 h-8">
                   <AvatarImage src={avatarUrl} alt={userName} />
-                  <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-blue-600 text-white text-xs font-semibold">
-                    {initials}
+                  <AvatarFallback className="bg-slate-200 text-slate-500 text-xs font-semibold flex items-center justify-center">
+                    <User className="w-5 h-5" />
                   </AvatarFallback>
                 </Avatar>
                 <div className="hidden sm:flex flex-col items-start">

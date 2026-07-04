@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const STORAGE_BUCKET = import.meta.env.VITE_SUPABASE_STORAGE_BUCKET || "public";
 export const OFFER_IMAGES_BUCKET = import.meta.env.VITE_SUPABASE_OFFRES_BUCKET || STORAGE_BUCKET;
 export const BLOG_IMAGES_BUCKET = import.meta.env.VITE_SUPABASE_BLOG_BUCKET || STORAGE_BUCKET;
+export const CANDIDATE_DOCUMENTS_BUCKET = import.meta.env.VITE_SUPABASE_CANDIDATE_BUCKET || "candidat-doc";
 export const MAX_DOCUMENT_SIZE_BYTES = 2 * 1024 * 1024;
 export const ALLOWED_DOCUMENT_MIME_TYPES = ["application/pdf"];
 

@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AlertCircle, Camera, Save, X } from "lucide-react";
+import { AlertCircle, Camera, Save, X, User } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCandidate } from "@/hooks/useCandidate";
 import { CandidateProfile } from "@/integrations/supabase/candidate-auth";
@@ -240,8 +240,8 @@ export function CandidateProfilePage() {
             <div className="relative">
               <Avatar className="w-32 h-32">
                 <AvatarImage src={formData.avatar ?? undefined} alt={formData.firstName || "Candidat"} />
-                <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-blue-600 text-white text-2xl font-semibold">
-                  {getInitials()}
+                <AvatarFallback className="bg-slate-200 text-slate-500 text-2xl font-semibold flex items-center justify-center">
+                  <User className="w-12 h-12" />
                 </AvatarFallback>
               </Avatar>
               {editMode && (

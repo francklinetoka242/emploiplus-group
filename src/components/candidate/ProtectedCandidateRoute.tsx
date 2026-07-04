@@ -1,4 +1,5 @@
 import { useCandidate } from '@/hooks/useCandidate';
+import { CandidateSidebarProvider } from '@/contexts/CandidateSidebarContext';
 import { Navigate } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -25,5 +26,9 @@ export function ProtectedCandidateRoute({ children }: ProtectedCandidateRoutePro
     return <Navigate to="/candidate/login" replace />;
   }
 
-  return <>{children}</>;
+  return (
+    <CandidateSidebarProvider>
+      {children}
+    </CandidateSidebarProvider>
+  );
 }

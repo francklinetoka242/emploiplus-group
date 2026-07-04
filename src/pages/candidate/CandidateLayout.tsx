@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { Outlet } from "react-router-dom";
 import { CandidateSidebar } from "@/components/candidate/CandidateSidebar";
 import { CandidateTopbar } from "@/components/candidate/CandidateTopbar";
 import { useCandidate } from "@/hooks/useCandidate";
+import { useCandidateSidebar } from "@/contexts/CandidateSidebarContext";
 import { usePageSEO } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 export function CandidateLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { open, setOpen } = useCandidateSidebar();
   const { logout } = useCandidate();
 
   usePageSEO({
@@ -19,13 +20,13 @@ export function CandidateLayout() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="relative">
-        <CandidateSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} onLogout={logout} />
+        <CandidateSidebar open={open} onOpenChange={setOpen} onLogout={logout} />
 
         <div className={cn(
           "ml-0 transition-all duration-300",
-          sidebarOpen ? "md:ml-72" : "md:ml-20"
+          open ? "md:ml-72" : "md:ml-20"
         )}>
-          <CandidateTopbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} onLogout={logout} />
+          <CandidateTopbar onMenuToggle={() => setOpen(!open)} onLogout={logout} />
 
           <main className="min-h-screen overflow-auto bg-slate-50 py-6">
             <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8">

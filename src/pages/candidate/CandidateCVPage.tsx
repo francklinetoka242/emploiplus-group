@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCandidate } from "@/hooks/useCandidate";
-import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES, uploadFileToStorage } from "@/lib/supabase-storage";
+import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES, uploadFileToStorage, CANDIDATE_DOCUMENTS_BUCKET } from "@/lib/supabase-storage";
 
 interface CandidateDocument {
   id: string;
@@ -127,7 +127,7 @@ export function CandidateCVPage() {
     setFeedbackMessage("");
 
     try {
-      const url = await uploadFileToStorage(file, `candidates/${profile.id}/cv`, import.meta.env.VITE_SUPABASE_STORAGE_BUCKET || "candidat-doc");
+      const url = await uploadFileToStorage(file, `candidates/${profile.id}/cv`, CANDIDATE_DOCUMENTS_BUCKET);
       setCv({
         id: `cv-${Date.now()}`,
         name: file.name,
@@ -163,7 +163,7 @@ export function CandidateCVPage() {
     setFeedbackMessage("");
 
     try {
-      const url = await uploadFileToStorage(selectedDocumentFile, `candidates/${profile.id}/documents`, import.meta.env.VITE_SUPABASE_STORAGE_BUCKET || "candidat-doc");
+      const url = await uploadFileToStorage(selectedDocumentFile, `candidates/${profile.id}/documents`, CANDIDATE_DOCUMENTS_BUCKET);
       const newDocument: CandidateDocument = {
         id: `doc-${Date.now()}`,
         type: selectedType as CandidateDocument["type"],
