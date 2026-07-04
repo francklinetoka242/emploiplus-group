@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import handler from './register.ts';
+import handler from '../../api/register.ts';
 
 test('returns a 500 response when email signing secret is missing', async () => {
   const previousSecret = process.env.EMAIL_SIGNING_SECRET;

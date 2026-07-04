@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readResponseBody } from './register.ts';
+import { readResponseBody } from '../../api/register.ts';
 
 test('parses JSON bodies from upstream responses', async () => {
   const response = new Response(JSON.stringify({ message: 'ok' }), {

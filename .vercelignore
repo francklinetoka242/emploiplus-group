@@ -1,0 +1,7 @@
+# Ignore test files in api/ so only real Vercel function entrypoints are deployed
+api/*.test.ts
+
+# Ignore any stale compiled API outputs and old server artifacts
+dist/api/
+server.ts
+tsconfig.server.json

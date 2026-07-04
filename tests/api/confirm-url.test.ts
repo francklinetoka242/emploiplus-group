@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveConfirmationBaseUrl } from './confirm-url.ts';
+import { resolveConfirmationBaseUrl } from '../../src/lib/confirm-url.ts';
 
 test('prefers the app site URL over the Supabase URL', () => {
   const baseUrl = resolveConfirmationBaseUrl({
