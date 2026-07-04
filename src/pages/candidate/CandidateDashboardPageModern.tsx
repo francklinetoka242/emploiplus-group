@@ -4,7 +4,14 @@ import { usePageSEO } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { CandidateAuthService, CandidateExperience } from "@/integrations/supabase/candidate-auth";
+import {
+  CandidateAuthService,
+  CandidateExperience,
+  CandidateEducation,
+  CandidateSkill,
+  CandidateLanguage,
+  CandidatePreferences,
+} from "@/integrations/supabase/candidate-auth";
 import { useCandidate } from "@/hooks/useCandidate";
 import { SaasCard, SaasCardHeader, SaasCardContent, SaasCardFooter } from "@/components/candidate/SaasCard";
 import { SaasGrid } from "@/components/candidate/SaasLayout";
@@ -72,6 +79,10 @@ export function CandidateDashboardPageModern() {
   const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [offersLoading, setOffersLoading] = useState(true);
   const [experienceEntries, setExperienceEntries] = useState<CandidateExperience[]>([]);
+  const [educationEntries, setEducationEntries] = useState<CandidateEducation[]>([]);
+  const [skillEntries, setSkillEntries] = useState<CandidateSkill[]>([]);
+  const [languageEntries, setLanguageEntries] = useState<CandidateLanguage[]>([]);
+  const [preferencesEntry, setPreferencesEntry] = useState<CandidatePreferences | null>(null);
   const [candidateDocuments, setCandidateDocuments] = useState<{
     cv: { url?: string | null } | null;
     documents: Array<{ url?: string | null }>;
@@ -133,6 +144,62 @@ export function CandidateDashboardPageModern() {
 
   useEffect(() => {
     if (!profile?.id) {
+      setEducationEntries([]);
+      return;
+    }
+
+    const loadEducations = async () => {
+      try {
+        const data = await CandidateAuthService.getCandidateEducations(profile.id);
+        setEducationEntries(data || []);
+      } catch (error) {
+        console.error("Unable to load candidate educations", error);
+        setEducationEntries([]);
+      }
+    };
+
+    void loadEducations();
+  }, [profile?.id]);
+
+  useEffect(() => {
+    if (!profile?.id) {
+      setSkillEntries([]);
+      setLanguageEntries([]);
+      setPreferencesEntry(null);
+      return;
+    }
+
+    const loadExtras = async () => {
+      try {
+        const skills = await CandidateAuthService.getCandidateSkills(profile.id);
+        setSkillEntries(skills || []);
+      } catch (error) {
+        console.error("Unable to load candidate skills", error);
+        setSkillEntries([]);
+      }
+
+      try {
+        const langs = await CandidateAuthService.getCandidateLanguages(profile.id);
+        setLanguageEntries(langs || []);
+      } catch (error) {
+        console.error("Unable to load candidate languages", error);
+        setLanguageEntries([]);
+      }
+
+      try {
+        const prefs = await CandidateAuthService.getCandidatePreferences(profile.id);
+        setPreferencesEntry(prefs ?? null);
+      } catch (error) {
+        console.error("Unable to load candidate preferences", error);
+        setPreferencesEntry(null);
+      }
+    };
+
+    void loadExtras();
+  }, [profile?.id]);
+
+  useEffect(() => {
+    if (!profile?.id) {
       setCandidateDocuments({ cv: null, documents: [] });
       return;
     }
@@ -177,6 +244,16 @@ export function CandidateDashboardPageModern() {
       profile.location_country
     );
     const experienceCompleted = experienceEntries.length > 0;
+    const educationCompleted = educationEntries.length > 0;
+    const skillsCompleted = skillEntries.length > 0;
+    const languagesCompleted = languageEntries.length > 0;
+    const preferencesCompleted = Boolean(
+      preferencesEntry && (
+        (preferencesEntry.contract_types && preferencesEntry.contract_types.length > 0) ||
+        (preferencesEntry.work_types && preferencesEntry.work_types.length > 0) ||
+        preferencesEntry.seniority_level
+      )
+    );
     const cvCompleted = Boolean(
       candidateDocuments.cv?.url || candidateDocuments.documents.some((document) => Boolean(document.url))
     );
@@ -189,7 +266,15 @@ export function CandidateDashboardPageModern() {
   }, [profile, experienceEntries, candidateDocuments]);
 
   const profileCompletion = useMemo(() => {
-    const checks = [profileChecks.personalInfoCompleted, profileChecks.experienceCompleted, profileChecks.cvCompleted];
+    const checks = [
+      profileChecks.personalInfoCompleted,
+      profileChecks.experienceCompleted,
+      profileChecks.educationCompleted,
+      profileChecks.skillsCompleted,
+      profileChecks.languagesCompleted,
+      profileChecks.preferencesCompleted,
+      profileChecks.cvCompleted,
+    ];
     const completedCount = checks.filter(Boolean).length;
     return Math.round((completedCount / checks.length) * 100);
   }, [profileChecks]);
@@ -261,9 +346,13 @@ export function CandidateDashboardPageModern() {
 
           <SaasGrid columns="3" gap="4">
             {[
-              { label: "Informations personnelles", completed: profileChecks.personalInfoCompleted },
-              { label: "Expériences", completed: profileChecks.experienceCompleted },
-              { label: "CV et documents", completed: profileChecks.cvCompleted },
+              { label: "Informations personnelles", completed: profileChecks.personalInfoCompleted, href: "/candidate/profile" },
+              { label: "Mon CV", completed: profileChecks.cvCompleted, href: "/candidate/cv" },
+              { label: "Expériences", completed: profileChecks.experienceCompleted, href: "/candidate/experience" },
+              { label: "Formations", completed: profileChecks.educationCompleted, href: "/candidate/education" },
+              { label: "Compétences", completed: profileChecks.skillsCompleted, href: "/candidate/skills" },
+              { label: "Langues", completed: profileChecks.languagesCompleted, href: "/candidate/languages" },
+              { label: "Préférences d'emploi", completed: profileChecks.preferencesCompleted, href: "/candidate/preferences" },
             ].map((item) => (
               <div
                 key={item.label}
@@ -275,9 +364,9 @@ export function CandidateDashboardPageModern() {
               >
                 <div className="flex items-center gap-2 mb-1">
                   {item.completed && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
-                  <span className={`text-xs font-medium ${item.completed ? "text-emerald-900" : "text-slate-600"}`}>
+                  <a href={item.href} className={`text-xs font-medium ${item.completed ? "text-emerald-900" : "text-slate-600"}`}>
                     {item.completed ? "Complété" : "À compléter"}
-                  </span>
+                  </a>
                 </div>
                 <p className={`text-xs ${item.completed ? "text-emerald-700" : "text-slate-500"}`}>
                   {item.label}
