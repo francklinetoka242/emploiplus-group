@@ -29,17 +29,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES } from "@/lib/supabase-storage";
-
-interface CandidateDocument {
-  id: string;
-  type: "motivation" | "diploma" | "certificate" | "attestation" | "portfolio" | "other" | "recepisse";
-  name: string;
-  displayName: string;
-  date: string;
-  size?: string;
-  url: string;
-  customType?: string;
-}
+import { loadCandidateDocuments, type CandidateDocument } from "@/lib/candidate-documents";
 
 interface TemporaryDocument {
   id: string;
@@ -80,37 +70,19 @@ function Breadcrumb({ jobTitle }: { jobTitle: string }) {
   const navigate = useNavigate();
   
   return (
-    <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
-      <button 
-        onClick={() => navigate("/")}
-        className="flex items-center gap-1 hover:text-foreground transition-colors"
-      >
+    <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6 flex-wrap">
+      <span className="flex items-center gap-1 text-foreground/80">
         <Home className="h-4 w-4" />
         <span>Accueil</span>
-      </button>
+      </span>
       <span className="text-border/60">/</span>
-      <button 
-        onClick={() => navigate("/candidate/dashboard")}
-        className="hover:text-foreground transition-colors"
-      >
-        Dashboard
-      </button>
+      <span className="text-foreground/80">Dashboard</span>
       <span className="text-border/60">/</span>
-      <button 
-        onClick={() => navigate("/candidate/dashboard")}
-        className="hover:text-foreground transition-colors"
-      >
-        Offres
-      </button>
+      <span className="text-foreground/80">Offres</span>
       <span className="text-border/60">/</span>
-      <button 
-        onClick={() => navigate("/candidate/dashboard")}
-        className="hover:text-foreground transition-colors"
-      >
-        {jobTitle}
-      </button>
+      <span className="text-foreground font-medium">{jobTitle}</span>
       <span className="text-border/60">/</span>
-      <span className="text-foreground font-medium">Postuler</span>
+      <span className="text-foreground font-semibold">Postuler</span>
     </nav>
   );
 }
@@ -192,12 +164,12 @@ function HeroSection({ job, profile }: { job: any; profile: any }) {
   const jobDeadline = formatJobDate(job.deadline);
 
   return (
-    <div className="mb-12 rounded-3xl border border-border/80 bg-gradient-to-br from-brand/5 via-card to-secondary/5 p-8 shadow-soft">
-      <div className="flex flex-col md:flex-row gap-6 items-start">
+    <div className="mb-8 sm:mb-12 rounded-3xl border border-border/80 bg-gradient-to-br from-brand/5 via-card to-secondary/5 p-4 sm:p-8 shadow-soft">
+      <div className="flex flex-col md:flex-row gap-4 sm:gap-6 items-start">
         {/* Logo & Main Info */}
-        <div className="flex gap-6 flex-1">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 flex-1 w-full">
           {job.company_logo && (
-            <div className="h-24 w-24 shrink-0 rounded-2xl border border-border/60 bg-background/80 flex items-center justify-center p-2">
+            <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-2xl border border-border/60 bg-background/80 flex items-center justify-center p-2 self-start">
               <img
                 src={job.company_logo}
                 alt={job.company}
@@ -209,7 +181,7 @@ function HeroSection({ job, profile }: { job: any; profile: any }) {
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
               Entreprise
             </p>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
               {job.title}
             </h1>
             <p className="text-base font-medium text-foreground/80 mb-4">
@@ -226,7 +198,7 @@ function HeroSection({ job, profile }: { job: any; profile: any }) {
       </div>
 
       {/* Info Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-border/60">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-border/60">
         <div className="space-y-1">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Localisation
@@ -391,15 +363,9 @@ export function CandidateJobApplyPage() {
   // Load saved documents
   useEffect(() => {
     if (!profile?.id) return;
-    try {
-      const raw = localStorage.getItem(`emploiplus-candidate-documents-${profile.id}`);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        setSavedDocuments(parsed.documents || []);
-      }
-    } catch (error) {
-      console.error("Error loading saved documents:", error);
-    }
+
+    const { documents } = loadCandidateDocuments(profile.id);
+    setSavedDocuments(documents || []);
   }, [profile?.id]);
 
   const handleDocumentSelect = (docId: string, isSelected: boolean) => {
@@ -540,11 +506,12 @@ export function CandidateJobApplyPage() {
   const hasDocuments = savedDocuments.length > 0;
   const submissionChannelAvailable = Boolean(job.application_email?.trim());
   const isFormValid = submissionChannelAvailable && totalDocuments > 0 && consent;
+  const displayedDocuments = savedDocuments;
 
   return (
-    <div className="container-page py-8 md:py-12 min-h-screen">
+    <div className="container-page pt-2 pb-8 md:pt-4 md:pb-12 min-h-screen">
       {/* Back Button */}
-      <div className="mb-6">
+      <div className="mb-4">
         <Button
           variant="ghost"
           size="sm"
@@ -566,11 +533,11 @@ export function CandidateJobApplyPage() {
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Left column - Job Description */}
         <div className="lg:col-span-1">
-          <Card className="border border-border/80 shadow-soft rounded-3xl sticky top-8">
-            <CardHeader className="pb-3 px-6 pt-6 border-b border-border/60">
+          <Card className="border border-border/80 shadow-soft rounded-3xl lg:sticky lg:top-8">
+            <CardHeader className="pb-3 px-4 pt-4 sm:px-6 sm:pt-6 border-b border-border/60">
               <CardTitle className="text-lg">Aperçu du poste</CardTitle>
             </CardHeader>
-            <CardContent className="px-6 pb-6 pt-6 space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <CardContent className="px-4 pb-4 pt-4 sm:px-6 sm:pb-6 sm:pt-6 space-y-4 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto">
               {job.description && (
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
@@ -934,18 +901,18 @@ export function CandidateJobApplyPage() {
                 </AlertDescription>
               </Alert>
             )}
-            <div className="flex gap-3 sticky bottom-0 bg-background/80 backdrop-blur-sm p-4 rounded-2xl border border-border/60 shadow-lg z-10">
+            <div className="flex flex-col gap-3 sm:flex-row sm:sticky sm:bottom-0 bg-background/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-border/60 shadow-lg z-10">
               <Button
                 variant="outline"
                 onClick={handleCancel}
-                className="flex-1"
+                className="w-full sm:flex-1"
               >
                 Annuler
               </Button>
               <Button
                 onClick={handleSubmit}
                 disabled={!isFormValid}
-                className="flex-1 gap-2 bg-brand hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:flex-1 gap-2 bg-brand hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send className="h-4 w-4" />
                 Envoyer ma candidature
