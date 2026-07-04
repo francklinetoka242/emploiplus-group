@@ -264,26 +264,25 @@ export function CandidateDashboardPageModern() {
       cvCompleted,
     };
   }, [profile, experienceEntries, candidateDocuments]);
-  // SECTION WEIGHTS (sum must be 100)
-  const SECTION_WEIGHTS: Record<string, number> = {
-    profile: 40,
-    cv: 20,
-    experience: 10,
-    education: 8,
-    skills: 8,
-    languages: 7,
-    preferences: 7,
-  };
-
+  // Distribute 100 equally across all sections, distributing remainder to first items
   const perSectionPercents = useMemo(() => {
+    const keys = ['profile', 'cv', 'experience', 'education', 'skills', 'languages', 'preferences'];
+    const n = keys.length;
+    const base = Math.floor(100 / n);
+    const remainder = 100 - base * n;
+    const weights: Record<string, number> = {};
+    keys.forEach((k, i) => {
+      weights[k] = base + (i < remainder ? 1 : 0);
+    });
+
     return {
-      profile: profileChecks.personalInfoCompleted ? SECTION_WEIGHTS.profile : 0,
-      cv: profileChecks.cvCompleted ? SECTION_WEIGHTS.cv : 0,
-      experience: profileChecks.experienceCompleted ? SECTION_WEIGHTS.experience : 0,
-      education: profileChecks.educationCompleted ? SECTION_WEIGHTS.education : 0,
-      skills: profileChecks.skillsCompleted ? SECTION_WEIGHTS.skills : 0,
-      languages: profileChecks.languagesCompleted ? SECTION_WEIGHTS.languages : 0,
-      preferences: profileChecks.preferencesCompleted ? SECTION_WEIGHTS.preferences : 0,
+      profile: profileChecks.personalInfoCompleted ? weights.profile : 0,
+      cv: profileChecks.cvCompleted ? weights.cv : 0,
+      experience: profileChecks.experienceCompleted ? weights.experience : 0,
+      education: profileChecks.educationCompleted ? weights.education : 0,
+      skills: profileChecks.skillsCompleted ? weights.skills : 0,
+      languages: profileChecks.languagesCompleted ? weights.languages : 0,
+      preferences: profileChecks.preferencesCompleted ? weights.preferences : 0,
     };
   }, [profileChecks]);
 
