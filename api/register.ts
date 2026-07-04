@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
-import { resolveConfirmationBaseUrl } from './confirm-url';
 import { base64url } from '../utils/token';
 
 type UnknownObject = Record<string, unknown>;
@@ -88,7 +87,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     throw new Error('EMAIL_SIGNING_SECRET missing');
   }
   console.log('EMAIL_SIGNING_SECRET length', EMAIL_SIGNING_SECRET.length);
-  const confirmationBaseUrl = resolveConfirmationBaseUrl(process.env, req);
+  const confirmationBaseUrl = process.env.SITE_URL || 'https://www.emploiplus-group.com';
 
   console.log({
     hasSupabaseUrl: !!SUPABASE_URL,
