@@ -113,7 +113,7 @@ export function CandidateProfilePageModern() {
     const nextCode = getCountryPhoneCode(value);
     setFormData((prev) => ({
       ...prev,
-      phone: nextCode ? `${nextCode}${prev.phone.replace(/^\+?\d+/, "")}` : prev.phone,
+      phone: nextCode ? `${nextCode}${prev.phone ? prev.phone.replace(new RegExp(`^\\+?${nextCode}`), "") : ""}` : prev.phone,
     }));
   };
 
@@ -283,7 +283,11 @@ export function CandidateProfilePageModern() {
                 <Input
                   type="tel"
                   placeholder="numero"
-                  value={formData.phone.replace(/^\+?\d+/, "")}
+                  value={
+                    formData.phone
+                      ? formData.phone.replace(new RegExp(`^\\+?${getCountryPhoneCode(formData.nationality)}`), "")
+                      : ""
+                  }
                   onChange={(e) => handlePhoneNumberChange(e.target.value)}
                   className="w-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
                 />
