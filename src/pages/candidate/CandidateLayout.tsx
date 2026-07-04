@@ -16,21 +16,24 @@ export function CandidateLayout() {
   });
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
-      {/* Sidebar */}
-      <CandidateSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} onLogout={logout} />
+    <div className="min-h-screen bg-slate-50">
+      <div className="relative">
+        <CandidateSidebar open={sidebarOpen} onOpenChange={setSidebarOpen} onLogout={logout} />
 
-      {/* Main Content */}
-      <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Topbar */}
-        <CandidateTopbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} onLogout={logout} />
+        <div className={cn(
+          "ml-0 transition-all duration-300",
+          sidebarOpen ? "md:ml-72" : "md:ml-20"
+        )}>
+          <CandidateTopbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} onLogout={logout} />
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-auto">
-          <div className="container mx-auto px-4 py-6 md:px-6 md:py-8">
-            <Outlet />
-          </div>
-        </main>
+          <main className="min-h-screen overflow-auto bg-slate-50 py-6">
+            <div className="mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8">
+              <div className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-sm backdrop-blur-sm">
+                <Outlet />
+              </div>
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );
