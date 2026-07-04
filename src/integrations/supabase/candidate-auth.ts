@@ -437,9 +437,35 @@ export class CandidateAuthService {
    */
   static async updateProfile(candidateId: string, updates: Partial<CandidateProfile>) {
     try {
+      // Defensive: only send allowed columns to the DB to avoid sending
+      // stale/invalid keys that don't exist in the candidates table
+      const allowed = new Set<keyof CandidateProfile>([
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'avatar_url',
+        'bio',
+        'headline',
+        'location_city',
+        'location_country',
+        'date_of_birth',
+        'status',
+      ]);
+
+      const safeUpdates: Record<string, any> = {};
+      Object.keys(updates || {}).forEach((k) => {
+        if (allowed.has(k as keyof CandidateProfile)) {
+          // @ts-ignore
+          safeUpdates[k] = (updates as any)[k];
+        } else {
+          console.warn(`[CandidateAuthService] Ignoring unknown profile field: ${k}`);
+        }
+      });
+
       const { data, error } = await supabase
         .from('candidates')
-        .update(updates)
+        .update(safeUpdates)
         .eq('id', candidateId)
         .select()
         .single();
