@@ -1,6 +1,5 @@
 import "dotenv/config";
 import nodemailer from "nodemailer";
-import { Webhook } from "standardwebhooks";
 
 interface SendEmailPayload {
   recipient?: string;
@@ -28,11 +27,6 @@ if (Number.isNaN(smtpPort) || smtpPort <= 0) {
 }
 const smtpUser = assertEnv("SMTP_USER", process.env.SMTP_USER);
 const smtpPass = assertEnv("SMTP_PASS", process.env.SMTP_PASS);
-const rawHookSecret = assertEnv("SEND_EMAIL_HOOK_SECRET", process.env.SEND_EMAIL_HOOK_SECRET);
-const hookSecret = rawHookSecret.replace(/^v1,whsec_/, "");
-if (!hookSecret) {
-  throw new Error("SEND_EMAIL_HOOK_SECRET must contain a valid v1,whsec_ base64 secret");
-}
 
 const fromEmailCandidate = process.env.FROM_EMAIL?.trim();
 const fromEmail = smtpUser;
@@ -91,14 +85,6 @@ export default async function handler(req: any, res: any) {
   }
 
   const payloadText = await readRawBody(req);
-  const webhook = new Webhook(hookSecret);
-
-  try {
-    webhook.verify(payloadText, req.headers);
-  } catch (error) {
-    console.error("Invalid hook signature", error);
-    return res.status(401).json({ error: "Invalid hook signature" });
-  }
 
   let body: SendEmailPayload;
   try {

@@ -3,6 +3,7 @@ import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
 import { resolveConfirmationBaseUrl } from './confirm-url.ts';
+import { base64url } from '../utils/token';
 
 type UnknownObject = Record<string, unknown>;
 
@@ -75,8 +76,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const rawSigningSecret = process.env.EMAIL_SIGNING_SECRET || process.env.SEND_EMAIL_HOOK_SECRET;
-  const EMAIL_SIGNING_SECRET = rawSigningSecret?.replace(/^v1,whsec_/, '');
+  const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET as string | undefined;
+  if (!EMAIL_SIGNING_SECRET) {
+    throw new Error('EMAIL_SIGNING_SECRET missing');
+  }
+  console.log('EMAIL_SIGNING_SECRET length', EMAIL_SIGNING_SECRET.length);
   const confirmationBaseUrl = resolveConfirmationBaseUrl(process.env, req);
 
   if (!SUPABASE_URL || !SERVICE_KEY || !EMAIL_SIGNING_SECRET) {
@@ -156,14 +160,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
     };
-    const base64url = (buffer: Buffer) => buffer.toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
     const payloadEncoded = base64url(Buffer.from(JSON.stringify(tokenPayload), 'utf8'));
     const signature = base64url(createHmac('sha256', EMAIL_SIGNING_SECRET).update(payloadEncoded).digest());
     const token = `${payloadEncoded}.${signature}`;
     const confirmLink = `${confirmationBaseUrl}/api/confirm?token=${encodeURIComponent(token)}`;
-
+    console.log('TOKEN GENERATED', token);
+    console.log('EMAIL_SIGNING_SECRET length', EMAIL_SIGNING_SECRET.length);
     console.log('[CONFIRM-DEBUG][register] confirmLink', confirmLink);
-    console.log('[CONFIRM-DEBUG][register] token', token);
     console.log('[CONFIRM-DEBUG][register] tokenPayload', tokenPayload);
     console.log('[CONFIRM-DEBUG][register] confirmationBaseUrl', confirmationBaseUrl);
 

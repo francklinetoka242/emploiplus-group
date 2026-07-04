@@ -5,7 +5,11 @@ import { Webhook } from "standardwebhooks";
 import { updateSupabaseUserConfirmation } from "./api/confirm-utils.js";
 import { resolveConfirmationBaseUrl } from "./api/confirm-url.js";
 
-const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SEND_EMAIL_HOOK_SECRET, FROM_EMAIL, FROM_NAME, PORT } = process.env;
+const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, FROM_EMAIL, FROM_NAME, PORT } = process.env;
+
+if (!process.env.EMAIL_SIGNING_SECRET) {
+  throw new Error('EMAIL_SIGNING_SECRET missing');
+}
 
 function normalizeText(value: unknown): string | undefined {
   if (typeof value === "string") {
@@ -83,7 +87,7 @@ if (Number.isNaN(smtpPort) || smtpPort <= 0) {
 }
 const smtpUser = (SMTP_USER || "contact@emploiplus-group.com").trim();
 const smtpPass = (SMTP_PASS || "").trim();
-const hookSecret = (SEND_EMAIL_HOOK_SECRET || "").trim().replace(/^v1,whsec_/, "");
+// No longer using SEND_EMAIL_HOOK_SECRET; webhook verification removed
 
 const fromEmail = (FROM_EMAIL || smtpUser).trim();
 const smtpFromEmail = smtpUser;
@@ -142,17 +146,7 @@ app.post(
       Object.entries(req.headers).map(([key, value]) => [key, Array.isArray(value) ? value.join(",") : value ?? ""]),
     );
 
-    if (hookSecret) {
-      const webhook = new Webhook(hookSecret);
-      try {
-        webhook.verify(payloadText, headers);
-      } catch (error) {
-        console.error("Invalid Send Email Hook signature", error);
-        return res.status(401).json({ error: "Invalid hook signature" });
-      }
-    } else {
-      console.warn("SEND_EMAIL_HOOK_SECRET is not configured; skipping signature verification");
-    }
+    // Previously verified Send Email Hook signatures. That integration is removed; accept payloads directly.
 
     let body: SendEmailHookPayload = {};
     if (payloadText.trim()) {
@@ -265,7 +259,7 @@ app.post(
 
     const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
     const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET || process.env.SEND_EMAIL_HOOK_SECRET;
+    const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET as string;
     const confirmationBaseUrl = resolveConfirmationBaseUrl(process.env, req);
 
     if (!SUPABASE_URL || !SERVICE_KEY) {
@@ -274,7 +268,8 @@ app.post(
     }
 
     if (!EMAIL_SIGNING_SECRET) {
-      console.warn('EMAIL_SIGNING_SECRET not set; confirmation tokens will be insecure');
+      console.error('EMAIL_SIGNING_SECRET missing');
+      return res.status(500).json({ error: 'EMAIL_SIGNING_SECRET missing' });
     }
 
     try {
@@ -293,17 +288,17 @@ app.post(
         }),
       });
 
-      const createUserBody = (await readResponseBody(createUserResp as unknown as {
+      const createUserBody = await readResponseBody(createUserResp as unknown as {
         text(): Promise<string>;
         headers: { get(name: string): string | null };
-      })) as { message?: string; id?: string } | undefined;
+      }) as any;
       if (!createUserResp.ok) {
         const responseBody = typeof createUserBody === 'string' ? createUserBody : createUserBody?.message || createUserBody;
         console.error('Supabase admin create user failed', createUserResp.status, createUserBody);
         return res.status(400).json({ error: responseBody || 'Failed to create user' });
       }
 
-      const userId = typeof createUserBody === 'object' && createUserBody !== null ? (createUserBody as { id?: string }).id : undefined;
+      const userId = (createUserBody as any)?.id;
       if (!userId) {
         console.error('No user id returned from Supabase admin create');
         return res.status(500).json({ error: 'Failed to create user' });
@@ -423,7 +418,10 @@ app.get('/confirm', async (req: Request, res: Response) => {
   const token = String(req.query.token || '');
   const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET || process.env.SEND_EMAIL_HOOK_SECRET;
+  const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET as string;
+  if (!EMAIL_SIGNING_SECRET) {
+    return res.status(500).send('EMAIL_SIGNING_SECRET missing');
+  }
 
   if (!token || !SUPABASE_URL || !SERVICE_KEY) {
     return res.status(400).send('Invalid request');
@@ -432,14 +430,17 @@ app.get('/confirm', async (req: Request, res: Response) => {
   try {
     const [payloadEncoded, sigEncoded] = token.split('.');
     const crypto = require('crypto');
-    const base64url = (s: string | Buffer) => (typeof s === 'string' ? s : s.toString('base64')).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-    const expectedSig = base64url(crypto.createHmac('sha256', EMAIL_SIGNING_SECRET || '').update(String(payloadEncoded)).digest());
+    const base64url = (s: string | Buffer) => (typeof s === 'string' ? Buffer.from(s, 'utf8') : s).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    const expectedSig = base64url(crypto.createHmac('sha256', EMAIL_SIGNING_SECRET).update(String(payloadEncoded)).digest());
+    console.log('TOKEN RECEIVED', token);
+    console.log('[CONFIRM-DEBUG][server] expectedSig', expectedSig);
     if (expectedSig !== sigEncoded) {
       return res.status(400).send('Invalid or expired token');
     }
 
     const payloadJson = Buffer.from(payloadEncoded.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
     const payload = JSON.parse(payloadJson) as any;
+    console.log('PAYLOAD DECODED', payload);
     if (payload.exp && Math.floor(Date.now() / 1000) > payload.exp) {
       return res.status(400).send('Token expired');
     }

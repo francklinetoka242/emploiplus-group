@@ -1,4 +1,9 @@
-type ConfirmationResponse = Pick<Response, 'ok' | 'status' | 'statusText' | 'text'>;
+type ConfirmationResponse = {
+  ok: boolean;
+  status: number;
+  statusText?: string;
+  text: () => Promise<string>;
+};
 
 export async function updateSupabaseUserConfirmation(
   fetchImpl: typeof fetch,
