@@ -5,11 +5,6 @@ import { updateSupabaseUserConfirmation } from './confirm-utils';
 import { resolveConfirmationBaseUrl } from './confirm-url.ts';
 import { base64url, base64urlDecode } from '../utils/token';
 
-function base64url(input: string | Buffer) {
-  const buffer = typeof input === 'string' ? Buffer.from(input, 'utf8') : input;
-  return buffer.toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-}
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
