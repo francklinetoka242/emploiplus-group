@@ -157,6 +157,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
 
     const body = await confirmResp.text();
+    const parsedBody = JSON.parse(body);
+
+    console.log(
+      '[CONFIRM-DEBUG] email_confirmed_at',
+      parsedBody.email_confirmed_at
+    );
+
+    console.log(
+      '[CONFIRM-DEBUG] confirmed_at',
+      parsedBody.confirmed_at
+    );
+
+    console.log(
+      '[CONFIRM-DEBUG] email_verified',
+      parsedBody.identities?.[0]?.identity_data?.email_verified
+    );
+
+    console.log(
+      '[CONFIRM-DEBUG] fullResponse',
+      parsedBody
+    );
+
     console.log('[CONFIRM-DEBUG][confirm] supabaseUpdateResponse', {
       status: confirmResp.status,
       body,
