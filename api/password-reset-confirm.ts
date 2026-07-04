@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { verifyPasswordResetToken } from '../src/lib/password-reset-utils';
+import { verifyPasswordResetToken } from './lib/password-reset-utils';
 
 function assertEnv(name: string, value: string | undefined): string {
   if (!value) {

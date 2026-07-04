@@ -1,5 +1,5 @@
 import "dotenv/config";
-import nodemailer from "nodemailer";
+import * as nodemailer from "nodemailer";
 
 interface SendEmailPayload {
   recipient?: string;
