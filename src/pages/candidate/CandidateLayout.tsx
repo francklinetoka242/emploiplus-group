@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const pageToTitle: Record<string, string> = {
   "/candidate/dashboard": "Tableau de bord",
   "/candidate/profile": "Mon profil",
-  "/candidate/cv": "Mon CV",
+  "/candidate/Mes-Documents": "Mes Documents",
   "/candidate/experience": "Expériences professionnelles",
   "/candidate/education": "Formations",
   "/candidate/skills": "Compétences",

@@ -54,7 +54,7 @@ const quickActions = [
     title: "Mon CV",
     description: "Déposez votre CV",
     icon: FileText,
-    href: "/candidate/cv",
+    href: "/candidate/Mes-Documents",
     color: "from-emerald-600 to-emerald-700",
   },
   {
@@ -302,7 +302,7 @@ export function CandidateDashboardPageModern() {
 
   const completionItems = [
     { key: 'profile', label: 'Informations personnelles', href: '/candidate/profile', completed: profileChecks.personalInfoCompleted, percent: perSectionPercents.profile },
-    { key: 'cv', label: 'Mon CV', href: '/candidate/cv', completed: profileChecks.cvCompleted, percent: perSectionPercents.cv },
+    { key: 'cv', label: 'Mes Documents', href: '/candidate/Mes-Documents', completed: profileChecks.cvCompleted, percent: perSectionPercents.cv },
     { key: 'experience', label: 'Expériences', href: '/candidate/experience', completed: profileChecks.experienceCompleted, percent: perSectionPercents.experience },
     { key: 'education', label: 'Formations', href: '/candidate/education', completed: profileChecks.educationCompleted, percent: perSectionPercents.education },
     { key: 'skills', label: 'Compétences', href: '/candidate/skills', completed: profileChecks.skillsCompleted, percent: perSectionPercents.skills },

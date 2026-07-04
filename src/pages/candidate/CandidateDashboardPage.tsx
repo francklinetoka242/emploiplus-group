@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { usePageSEO } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,7 +50,7 @@ const quickActions = [
     title: "Déposer mon CV",
     description: "Téléchargez votre CV",
     icon: FileText,
-    href: "/candidate/cv",
+    href: "/candidate/Mes-Documents",
     borderColor: "border-emerald-500",
     bgGradient: "from-emerald-50 to-emerald-100",
   },
@@ -75,6 +75,7 @@ const quickActions = [
 ];
 
 export function CandidateDashboardPage() {
+  const navigate = useNavigate();
   const { profile, loading: profileLoading } = useCandidate();
   const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [offersLoading, setOffersLoading] = useState(true);
@@ -395,6 +396,7 @@ export function CandidateDashboardPage() {
                     deadlineValue={deadlineValue}
                     isExpired={isExpired}
                     index={index}
+                    onApplyClick={() => navigate(`/candidate/jobs/${offer.slug}/apply`)}
                   />
                 );
               })

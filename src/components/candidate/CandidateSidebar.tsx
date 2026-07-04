@@ -33,7 +33,7 @@ interface CandidateSidebarProps {
 const menuItems = [
   { id: "dashboard", label: "Tableau de bord", icon: Home, href: "/candidate/dashboard" },
   { id: "profile", label: "Mon profil", icon: User, href: "/candidate/profile" },
-  { id: "cv", label: "Mes Documents", icon: FileText, href: "/candidate/cv" },
+  { id: "cv", label: "Mes Documents", icon: FileText, href: "/candidate/Mes-Documents" },
   { id: "experience", label: "Expériences professionnelles", icon: Briefcase, href: "/candidate/experience" },
   { id: "education", label: "Formations", icon: GraduationCap, href: "/candidate/education" },
   { id: "skills", label: "Compétences", icon: Star, href: "/candidate/skills" },

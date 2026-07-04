@@ -56,6 +56,7 @@ const CandidateApplicationsPage = lazy(() => import("@/pages/candidate/Candidate
 const CandidateSavedOffersPage = lazy(() => import("@/pages/candidate/CandidateSavedOffersPage").then(m => ({ default: m.CandidateSavedOffersPage })));
 const CandidateNotificationsPage = lazy(() => import("@/pages/candidate/CandidateNotificationsPage").then(m => ({ default: m.CandidateNotificationsPage })));
 const CandidateSettingsPage = lazy(() => import("@/pages/candidate/CandidateSettingsPage").then(m => ({ default: m.CandidateSettingsPage })));
+const CandidateJobApplyPage = lazy(() => import("@/pages/candidate/CandidateJobApplyPage").then(m => ({ default: m.CandidateJobApplyPage })));
 
 // Loading fallback component
 const PageLoadingFallback = () => (
@@ -142,7 +143,7 @@ export default function App() {
                 <Route path="public/about" element={<AboutPage />} />
                 <Route path="public/contact" element={<ContactPage />} />
                 <Route path="profile" element={<CandidateProfilePage />} />
-                <Route path="cv" element={<CandidateCVPage />} />
+                <Route path="Mes-Documents" element={<CandidateCVPage />} />
                 <Route path="experience" element={<CandidateExperiencePage />} />
                 <Route path="education" element={<CandidateEducationPage />} />
                 <Route path="skills" element={<CandidateSkillsPage />} />
@@ -152,6 +153,7 @@ export default function App() {
                 <Route path="saved-offers" element={<CandidateSavedOffersPage />} />
                 <Route path="notifications" element={<CandidateNotificationsPage />} />
                 <Route path="settings" element={<CandidateSettingsPage />} />
+                <Route path="jobs/:slug/apply" element={<CandidateJobApplyPage />} />
               </Route>
               
               <Route path="/admin" element={<AdminPage />}>
