@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
-import { CandidateAuthService } from "@/integrations/supabase/candidate-auth";
 import favicon from "@/assets/favicon.ico";
 
 export function CandidateForgotPasswordPage() {
@@ -43,12 +42,23 @@ export function CandidateForgotPasswordPage() {
 
     setLoading(true);
     try {
-      await CandidateAuthService.requestPasswordReset(email);
+      const response = await fetch('/api/password-reset-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        const message = (body && body.error) ? body.error : 'Impossible d envoyer le lien de réinitialisation.';
+        throw new Error(message);
+      }
+
       setSubmitted(true);
     } catch (error: any) {
-      const errorMsg = CandidateAuthService.parseErrorMessage(error);
+      const errorMsg = error?.message || 'Une erreur est survenue';
       setErrors(errorMsg);
-      console.error("Password reset request error:", error);
+      console.error('Password reset request error:', error);
     } finally {
       setLoading(false);
     }

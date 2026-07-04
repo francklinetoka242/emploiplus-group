@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePageSEO } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,8 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle } from "lucide-react";
-import { CandidateAuthService } from "@/integrations/supabase/candidate-auth";
-import { supabase } from "@/integrations/supabase/client";
 import favicon from "@/assets/favicon.ico";
 
 export function CandidateResetPasswordPage() {
@@ -24,6 +22,7 @@ export function CandidateResetPasswordPage() {
   const [isValidToken, setIsValidToken] = useState(false);
   const [checkingToken, setCheckingToken] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
 
   usePageSEO({
     title: "Réinitialiser mot de passe - EmploiPlus Group",
@@ -32,24 +31,29 @@ export function CandidateResetPasswordPage() {
   });
 
   useEffect(() => {
-    // Check if there's a valid session (user clicked the link from email)
-    checkSession();
+    validateToken();
   }, []);
 
-  const checkSession = async () => {
+  const validateToken = async () => {
+    const token = searchParams.get('token');
+    if (!token) {
+      setErrorMessage('Lien de réinitialisation manquant');
+      setCheckingToken(false);
+      return;
+    }
+
     try {
-      const session = await CandidateAuthService.getSession();
-      if (session) {
-        try {
-          const email = session.user?.email ?? null;
-          setUserEmail(email);
-        } catch (e) {
-          setUserEmail(null);
-        }
-        setIsValidToken(true);
+      const response = await fetch(`/api/password-reset-validate?token=${encodeURIComponent(token)}`);
+      const body = await response.json();
+      if (!response.ok) {
+        throw new Error(body?.error || 'Lien invalide ou expiré');
       }
-    } catch (err) {
-      console.error("Error checking session:", err);
+      setUserEmail(body.email || null);
+      setIsValidToken(true);
+    } catch (err: any) {
+      console.error('Token validation error:', err);
+      setErrorMessage(err?.message || 'Lien invalide ou expiré');
+      setIsValidToken(false);
     } finally {
       setCheckingToken(false);
     }
@@ -89,38 +93,33 @@ export function CandidateResetPasswordPage() {
       return;
     }
 
+    const token = searchParams.get('token');
+    if (!token) {
+      setErrorMessage('Lien de réinitialisation manquant');
+      return;
+    }
+
     setLoading(true);
     try {
-      await supabase.auth.updateUser({
-        password: formData.password,
+      const response = await fetch('/api/password-reset-confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, password: formData.password }),
       });
 
-      // Send password change confirmation email using existing API template
-      try {
-        const recipient = userEmail || undefined;
-        if (recipient) {
-          await fetch('/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              recipient,
-              subject: "Votre mot de passe a été modifié",
-              text: "Votre mot de passe a été modifié avec succès. Si vous n'êtes pas à l'origine de ce changement, contactez le support.",
-            }),
-          });
-        }
-      } catch (mailErr) {
-        console.warn('Failed to send password change email', mailErr);
+      const body = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(body?.error || 'Impossible de réinitialiser le mot de passe.');
       }
 
       setSubmitted(true);
       setTimeout(() => {
-        navigate("/candidate/login");
+        navigate('/candidate/login');
       }, 3000);
     } catch (error: any) {
-      const errorMsg = CandidateAuthService.parseErrorMessage(error);
+      const errorMsg = error?.message || 'Une erreur est survenue';
       setErrorMessage(errorMsg);
-      console.error("Password reset error:", error);
+      console.error('Password reset error:', error);
     } finally {
       setLoading(false);
     }
@@ -158,7 +157,7 @@ export function CandidateResetPasswordPage() {
                     Lien invalide
                   </h3>
                   <p className="text-sm text-slate-600">
-                    Le lien de réinitialisation est expiré ou invalide.
+                    {errorMessage || 'Le lien de réinitialisation est expiré ou invalide.'}
                   </p>
                 </div>
                 <Button
