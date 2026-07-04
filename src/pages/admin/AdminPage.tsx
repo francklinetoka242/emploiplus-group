@@ -20,7 +20,7 @@ import {
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminTopbar from "@/components/admin/AdminTopbar";
 
-type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo";
+type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "candidates";
 
 export function AdminPage() {
   const [session, setSession] = React.useState<any>(null);
@@ -49,6 +49,7 @@ export function AdminPage() {
     const path = location.pathname.replace("/admin", "").replace(/^\//, "");
     if (path === "jobs") setActiveView("jobs");
     else if (path === "blog") setActiveView("blog");
+    else if (path === "candidates") setActiveView("candidates");
     else if (path === "notifications") setActiveView("notifications");
     else if (path === "team") setActiveView("team");
     else if (path === "seo") setActiveView("seo");

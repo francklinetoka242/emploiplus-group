@@ -3,7 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { Bell, Briefcase, ChevronLeft, ChevronRight, FileText, LayoutDashboard, LogOut, PanelLeftOpen, Sparkles, Users, type LucideIcon } from "lucide-react";
 
-type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo";
+type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "candidates";
 
 interface AdminSidebarProps {
   open: boolean;
@@ -24,6 +24,7 @@ export function AdminSidebar({ open, activeView, onSelect, onToggle, onLogout, s
     { id: "dashboard", label: t("admin.sidebar.dashboard") || "Tableau de bord", icon: LayoutDashboard },
     { id: "jobs", label: t("admin.sidebar.jobs") || "Offres", icon: Briefcase },
     { id: "blog", label: t("admin.sidebar.blog") || "Blog", icon: FileText },
+    { id: "candidates", label: t("admin.sidebar.candidates") || "Utilisateur", icon: Users },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "seo", label: t("admin.sidebar.seo") || "SEO", icon: Sparkles },
     { id: "team", label: t("admin.sidebar.team") || "Équipe", icon: Users },

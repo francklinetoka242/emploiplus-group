@@ -9,4 +9,5 @@ export { AdminTeamPage } from "@/pages/admin/AdminTeamPage";
 export { AdminJobCreatePage } from "@/pages/admin/AdminJobCreatePage";
 export { AdminBlogCreatePage } from "@/pages/admin/AdminBlogCreatePage";
 export { AdminSEOPage } from "@/pages/admin/AdminSEOPage";
+export { AdminCandidatesPage } from "@/pages/admin/AdminCandidatesPage";
 export { AdminNotificationsPage } from "@/pages/admin/AdminNotificationsPage";

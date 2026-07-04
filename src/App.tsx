@@ -33,7 +33,8 @@ const AdminTeamPage = lazy(() => import("@/pages/admin").then(m => ({ default: m
 const AdminJobCreatePage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminJobCreatePage })));
 const AdminBlogCreatePage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminBlogCreatePage })));
 const AdminSEOPage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminSEOPage })));
-const AdminNotificationsPage = lazy(() => import("@/pages/admin/AdminNotificationsPage").then(m => ({ default: m.AdminNotificationsPage })));
+const AdminNotificationsPage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminNotificationsPage })));
+const AdminCandidatesPage = lazy(() => import("@/pages/admin").then(m => ({ default: m.AdminCandidatesPage })));
 
 
 // Lazy load candidate pages
@@ -162,6 +163,7 @@ export default function App() {
                 <Route path="jobs/new" element={<AdminJobCreatePage />} />
                 <Route path="blog" element={<AdminBlogPage />} />
                 <Route path="blog/new" element={<AdminBlogCreatePage />} />
+                <Route path="candidates" element={<AdminCandidatesPage />} />
                 <Route path="notifications" element={<AdminNotificationsPage />} />
                 <Route path="seo" element={<AdminSEOPage />} />
                 <Route path="team" element={<AdminTeamPage />} />
