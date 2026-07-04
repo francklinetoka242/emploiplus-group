@@ -363,7 +363,27 @@ export function CandidateProfilePageModern() {
         </SaasCardContent>
       </SaasCard>
 
-      {/* About Section removed per request */}
+      {/* About Section - Professional Summary */}
+      <SaasCard>
+        <SaasCardHeader
+          title="À propos"
+          subtitle="Présentez-vous et décrivez votre expérience professionnelle"
+          icon={<User className="w-5 h-5" />}
+        />
+        <SaasCardContent>
+          <div>
+            <Label className="text-sm font-medium text-slate-700 mb-2 block">Votre profil</Label>
+            <Textarea
+              placeholder="Décrivez votre parcours professionnel, vos compétences clés et vos objectifs..."
+              value={formData.about}
+              onChange={(e) => handleInputChange("about", e.target.value)}
+              rows={5}
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors resize-none"
+            />
+            <p className="text-xs text-slate-500 mt-2">Partagez une brève description de votre profil professionnel.</p>
+          </div>
+        </SaasCardContent>
+      </SaasCard>
 
       {/* Save Button */}
       <div className="flex gap-3 justify-end sticky bottom-4 z-10">
