@@ -134,11 +134,6 @@ export function CandidatePreferencesPage() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Préférences d'emploi</h1>
-        <p className="text-slate-600">Configurez vos préférences de recherche d'emploi.</p>
-      </div>
-
       {showSuccess && (
         <Alert className="bg-emerald-50 border-emerald-200">
           <AlertDescription className="text-emerald-900">

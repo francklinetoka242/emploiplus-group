@@ -135,6 +135,12 @@ export default function App() {
               >
                 <Route index element={<Navigate to="/candidate/dashboard" replace />} />
                 <Route path="dashboard" element={<CandidateDashboardPage />} />
+                <Route path="public" element={<HomePage />} />
+                <Route path="public/services" element={<ServicesPage />} />
+                <Route path="public/jobs" element={<JobsPage />} />
+                <Route path="public/blog" element={<BlogPage />} />
+                <Route path="public/about" element={<AboutPage />} />
+                <Route path="public/contact" element={<ContactPage />} />
                 <Route path="profile" element={<CandidateProfilePage />} />
                 <Route path="cv" element={<CandidateCVPage />} />
                 <Route path="experience" element={<CandidateExperiencePage />} />

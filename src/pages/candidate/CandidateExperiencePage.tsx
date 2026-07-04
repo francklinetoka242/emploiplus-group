@@ -105,7 +105,7 @@ export function CandidateExperiencePage() {
       company: currentExperience.company.trim(),
       city: currentExperience.city?.trim() || null,
       description: currentExperience.description?.trim() || null,
-      start_date: currentExperience.start_date,
+      start_date: currentExperience.start_date || "",
       end_date: currentExperience.is_current ? null : currentExperience.end_date || null,
       is_current: currentExperience.is_current ?? false,
     };
@@ -132,12 +132,7 @@ export function CandidateExperiencePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Expériences Professionnelles</h1>
-          <p className="text-slate-600">Ajoutez et gérez vos expériences</p>
-        </div>
+      <div className="flex items-center justify-end">
         <Dialog open={showForm} onOpenChange={(open) => { if (!open) resetForm(); setShowForm(open); }}>
           <DialogTrigger asChild>
             <Button onClick={handleOpenForm} className="bg-brand text-brand-foreground hover:bg-brand/90 text-white gap-2">

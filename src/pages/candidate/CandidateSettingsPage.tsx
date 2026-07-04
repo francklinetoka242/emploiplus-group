@@ -91,11 +91,6 @@ export function CandidateSettingsPage() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Paramètres</h1>
-        <p className="text-slate-600">Gérez vos paramètres de compte et de sécurité</p>
-      </div>
-
       {statusMessage && (
         <div className={`rounded-md border px-4 py-3 text-sm ${statusType === "success" ? "border-secondary/30 bg-secondary/10 text-brand" : "border-red-200 bg-red-50 text-red-700"}`}>
           {statusMessage}

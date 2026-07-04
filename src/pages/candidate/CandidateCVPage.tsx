@@ -199,11 +199,6 @@ export function CandidateCVPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Mon CV</h1>
-        <p className="text-slate-600">Gérez votre CV et documents complémentaires</p>
-      </div>
-
       {feedbackMessage && (
         <Alert className="border-green-200 bg-green-50">
           <AlertCircle className="h-4 w-4 text-green-600" />

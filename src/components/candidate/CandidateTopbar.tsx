@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +13,7 @@ import { Settings, LogOut, ChevronDown, Menu, Loader2, User } from "lucide-react
 import { NotificationsDropdown } from "./NotificationsDropdown";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useCandidate } from "@/hooks/useCandidate";
+import { cn } from "@/lib/utils";
 
 interface CandidateTopbarProps {
   onMenuToggle?: () => void;
@@ -53,6 +54,15 @@ export function CandidateTopbar({
       .slice(0, 2);
   }, [userName]);
 
+  const publicLinks = [
+    { to: "/candidate/public", label: "Accueil" },
+    { to: "/candidate/public/services", label: "Services" },
+    { to: "/candidate/public/jobs", label: "Emplois" },
+    { to: "/candidate/public/blog", label: "Blog" },
+    { to: "/candidate/public/about", label: "À propos" },
+    { to: "/candidate/public/contact", label: "Contact" },
+  ];
+
   const handleLogout = async () => {
     await logout();
   };
@@ -60,8 +70,8 @@ export function CandidateTopbar({
   return (
     <header className="hidden md:flex bg-white border-b border-slate-200 px-6 py-4 w-full">
       <div className="flex items-center justify-between max-w-full w-full">
-        {/* Left: Menu Toggle */}
-        <div className="flex items-center">
+        {/* Left: Menu Toggle and public links */}
+        <div className="flex items-center gap-2 overflow-x-auto">
           {onMenuToggle && (
             <Button
               variant="ghost"
@@ -72,6 +82,26 @@ export function CandidateTopbar({
               <Menu className="w-5 h-5" />
             </Button>
           )}
+
+          <nav className="flex items-center gap-1.5">
+            {publicLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.to === "/candidate/public"}
+                className={({ isActive }) =>
+                  cn(
+                    "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-accent text-foreground"
+                      : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                  )
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
         </div>
 
         {/* Right: Notifications and User Menu */}

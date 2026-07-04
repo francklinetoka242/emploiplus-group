@@ -248,7 +248,6 @@ export function CandidateDashboardPage() {
               <p className="text-slate-300">
                 Bienvenue dans votre espace de candidat. Trouvez le poste idéal et suivez vos candidatures.
               </p>
-              <p className="mt-2 text-sm text-slate-400">{fullName} • {email}</p>
             </div>
             <div className="hidden md:flex items-center justify-center w-24 h-24 bg-slate-700 rounded-full opacity-50">
               <Briefcase className="w-12 h-12" />

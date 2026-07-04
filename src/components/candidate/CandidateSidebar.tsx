@@ -93,18 +93,8 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
             open ? "translate-x-0" : "-translate-x-full"
           )}
         >
-          {/* Header avec Logo et Close Button */}
-          <div className="flex items-center justify-between border-b border-white/5 px-4 py-5">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
-                <img src="/Logo.png" alt="EmploiPlus Group" className="h-6 w-6 object-contain" />
-              </div>
-              <div>
-                <p className="text-sm font-bold tracking-wide text-white">EmploiPlus</p>
-                <p className="text-xs text-slate-400">Candidat</p>
-              </div>
-            </div>
-
+          {/* Close Button */}
+          <div className="flex items-center justify-end border-b border-white/5 px-4 py-5">
             <Button
               variant="ghost"
               size="icon"
@@ -202,19 +192,8 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
       )}
       style={{ minWidth: open ? 288 : 80 }}
     >
-      {/* Header avec Logo */}
-      <div className="flex items-center justify-between border-b border-white/5 px-4 py-5">
-        <div className="flex items-center gap-3 overflow-hidden">
-            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
-          </div>
-          {open && (
-            <div className="min-w-0">
-              <p className="truncate text-sm font-bold tracking-wide text-white">EmploiPlus</p>
-              <p className="truncate text-xs text-slate-400">Candidat</p>
-            </div>
-          )}
-        </div>
-
+      {/* Toggle Button */}
+      <div className="flex items-center justify-end border-b border-white/5 px-4 py-5">
         <Button
           variant="ghost"
           size="icon"

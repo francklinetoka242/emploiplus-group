@@ -59,12 +59,7 @@ export function CandidateNotificationsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Notifications</h1>
-          <p className="text-slate-600">
-            Vous avez <strong>{unreadCount}</strong> notification{unreadCount > 1 ? "s" : ""} non lue{unreadCount > 1 ? "s" : ""}.
-          </p>
-        </div>
+        <div className="hidden" />
 
         <div className="flex flex-wrap items-center gap-3">
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">

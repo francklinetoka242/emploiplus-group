@@ -62,6 +62,11 @@ const getCitiesForCountry = (country: string) => {
   return group?.cities ?? [];
 };
 
+const getCountryPhoneCode = (country: string) => {
+  const group = centralAfricaCityGroups.find((g) => g.country === country);
+  return group?.countryCode?.replace("+", "") ?? "";
+};
+
 export function CandidateProfilePageModern() {
   const { profile, updateProfile, avatarUrl } = useCandidate();
   const { translate } = useI18n();
@@ -97,12 +102,13 @@ export function CandidateProfilePageModern() {
     const nationality = normalizeCountryValue(profile.location_country);
     const cities = getCitiesForCountry(nationality);
     const city = cities.includes(profile.location_city ?? "") ? profile.location_city ?? "" : "";
+    const phoneCode = getCountryPhoneCode(nationality);
 
     setFormData({
       firstName: profile.first_name ?? "",
       lastName: profile.last_name ?? "",
       email: profile.email ?? "",
-      phone: profile.phone ?? "",
+      phone: profile.phone?.trim() ? profile.phone : phoneCode,
       dateOfBirth: profile.date_of_birth ?? "",
       gender: profile.gender ?? "",
       nationality,
@@ -119,9 +125,19 @@ export function CandidateProfilePageModern() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handlePhoneNumberChange = (value: string) => {
+    const normalized = value.replace(/\D/g, "");
+    setFormData((prev) => ({ ...prev, phone: `${getCountryPhoneCode(prev.nationality)}${normalized}` }));
+  };
+
   const handleNationalityChange = (value: string) => {
     handleInputChange("nationality", value);
     handleInputChange("city", "");
+    const nextCode = getCountryPhoneCode(value);
+    setFormData((prev) => ({
+      ...prev,
+      phone: nextCode ? `${nextCode}${prev.phone.replace(/^\+?\d+/, "")}` : prev.phone,
+    }));
   };
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,10 +194,7 @@ export function CandidateProfilePageModern() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Mon Profil</h1>
-        <p className="text-slate-600">Complétez vos informations personnelles pour optimiser votre visibilité</p>
-      </div>
+    
 
       {/* Alerts */}
       {saveSuccess && (
@@ -210,17 +223,17 @@ export function CandidateProfilePageModern() {
         <SaasCardContent>
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="relative">
-              <Avatar className="w-24 h-24 border-4 border-slate-100">
+              <Avatar className="w-8 h-8 border border-slate-200">
                 {avatarUrl && <AvatarImage src={avatarUrl} alt={formData.firstName} />}
-                <AvatarFallback className="bg-gradient-to-br from-blue-600 to-blue-700 text-white text-lg font-bold">
+                <AvatarFallback className="bg-slate-200 text-slate-500 text-xs font-semibold flex items-center justify-center">
                   {initials || "C"}
                 </AvatarFallback>
               </Avatar>
               <button
                 onClick={() => setIsEditingAvatar(!isEditingAvatar)}
-                className="absolute bottom-0 right-0 p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-md"
+                className="absolute bottom-0 right-0 p-1.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-md"
               >
-                <Camera className="w-4 h-4" />
+                <Camera className="w-3.5 h-3.5" />
               </button>
             </div>
 
@@ -292,13 +305,19 @@ export function CandidateProfilePageModern() {
             {/* Phone */}
             <div>
               <Label className="text-sm font-medium text-slate-700 mb-2 block">Téléphone</Label>
-              <Input
-                type="tel"
-                placeholder="+243..."
-                value={formData.phone}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
-              />
+              <div className="flex items-center rounded-lg border border-slate-200 bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
+                <span className="px-3 py-2.5 text-sm font-medium text-slate-600 border-r border-slate-200">
+                  +{getCountryPhoneCode(formData.nationality) || ""}
+                </span>
+                <Input
+                  type="tel"
+                  placeholder="numero"
+                  value={formData.phone.replace(/^\+?\d+/, "")}
+                  onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                  className="w-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
+                />
+              </div>
+              <p className="text-xs text-slate-500 mt-1">Le code du pays est défini automatiquement selon votre pays.</p>
             </div>
           </SaasGrid>
         </SaasCardContent>

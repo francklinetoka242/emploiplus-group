@@ -75,11 +75,6 @@ export function CandidateSavedOffersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Offres Enregistrées</h1>
-        <p className="text-slate-600">Consultez les offres que vous avez enregistrées</p>
-      </div>
-
       {error && (
         <Alert className="bg-red-50 border-red-200">
           <AlertCircle className="h-4 w-4 text-red-600" />

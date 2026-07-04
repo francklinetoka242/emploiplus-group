@@ -20,8 +20,8 @@ const pageToTitle: Record<string, string> = {
   "/candidate/preferences": "Préférences d'emploi",
   "/candidate/applications": "Mes candidatures",
   "/candidate/saved-offers": "Offres enregistrées",
-  "/candidate/notifications": "Notifications",
-  "/candidate/settings": "Paramètres",
+  "/candidate/notifications": "",
+  "/candidate/settings": "",
 };
 
 export function CandidateLayout() {
