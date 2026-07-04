@@ -39,7 +39,9 @@ async function updateSupabaseUserConfirmation(
     Authorization: `Bearer ${serviceKey}`,
   };
 
-  const requestBody = JSON.stringify({ email_confirmed_at: confirmedAt });
+  const requestBody = JSON.stringify({
+    email_confirm: true
+  });
   console.log('[CONFIRM-DEBUG][confirm-utils] request', { url, method: 'PUT', body: requestBody });
 
   const putResponse = await fetchImpl(url, {
