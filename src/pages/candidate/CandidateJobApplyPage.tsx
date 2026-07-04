@@ -25,11 +25,12 @@ import { useCandidate } from "@/hooks/useCandidate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES } from "@/lib/supabase-storage";
-import { loadCandidateDocuments, type CandidateDocument } from "@/lib/candidate-documents";
+import { getCandidateDocumentsList, loadCandidateDocuments, type CandidateDocument } from "@/lib/candidate-documents";
 
 interface TemporaryDocument {
   id: string;
@@ -167,7 +168,7 @@ function HeroSection({ job, profile }: { job: any; profile: any }) {
     <div className="mb-8 sm:mb-12 rounded-3xl border border-border/80 bg-gradient-to-br from-brand/5 via-card to-secondary/5 p-4 sm:p-8 shadow-soft">
       <div className="flex flex-col md:flex-row gap-4 sm:gap-6 items-start">
         {/* Logo & Main Info */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 flex-1 w-full">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 flex-1 w-full min-w-0">
           {job.company_logo && (
             <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-2xl border border-border/60 bg-background/80 flex items-center justify-center p-2 self-start">
               <img
@@ -177,18 +178,18 @@ function HeroSection({ job, profile }: { job: any; profile: any }) {
               />
             </div>
           )}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
               Entreprise
             </p>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight break-words whitespace-normal">
               {job.title}
             </h1>
-            <p className="text-base font-medium text-foreground/80 mb-4">
+            <p className="text-base font-medium text-foreground/80 mb-4 break-words whitespace-normal">
               {job.company}
             </p>
             {contractLabel && (
-              <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand">
+              <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand">
                 <BriefcaseBusiness className="h-3.5 w-3.5" />
                 {contractLabel}
               </div>
@@ -199,45 +200,45 @@ function HeroSection({ job, profile }: { job: any; profile: any }) {
 
       {/* Info Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-border/60">
-        <div className="space-y-1">
+        <div className="space-y-1 min-w-0">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             Localisation
           </p>
-          <div className="flex items-start gap-2">
+          <div className="flex items-start gap-2 min-w-0">
             <MapPin className="h-4 w-4 text-brand shrink-0 mt-0.5" />
-            <p className="text-sm font-medium text-foreground">{jobLocation}</p>
+            <p className="text-sm font-medium text-foreground break-words">{jobLocation}</p>
           </div>
         </div>
         {job.salary && (
-          <div className="space-y-1">
+          <div className="space-y-1 min-w-0">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Salaire
             </p>
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2 min-w-0">
               <BadgeDollarSign className="h-4 w-4 text-brand shrink-0 mt-0.5" />
-              <p className="text-sm font-medium text-foreground">{job.salary}</p>
+              <p className="text-sm font-medium text-foreground break-words">{job.salary}</p>
             </div>
           </div>
         )}
         {jobPublished && (
-          <div className="space-y-1">
+          <div className="space-y-1 min-w-0">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Publié le
             </p>
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2 min-w-0">
               <CalendarDays className="h-4 w-4 text-brand shrink-0 mt-0.5" />
-              <p className="text-sm font-medium text-foreground">{jobPublished}</p>
+              <p className="text-sm font-medium text-foreground break-words">{jobPublished}</p>
             </div>
           </div>
         )}
         {jobDeadline && (
-          <div className="space-y-1">
+          <div className="space-y-1 min-w-0">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Date limite
             </p>
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2 min-w-0">
               <CalendarDays className="h-4 w-4 text-brand shrink-0 mt-0.5" />
-              <p className="text-sm font-medium text-foreground">{jobDeadline}</p>
+              <p className="text-sm font-medium text-foreground break-words">{jobDeadline}</p>
             </div>
           </div>
         )}
@@ -253,7 +254,7 @@ function HeroSection({ job, profile }: { job: any; profile: any }) {
             {jobTags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/70 px-3 py-1.5 text-xs font-medium text-foreground"
+                className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border/60 bg-background/70 px-3 py-1.5 text-xs font-medium text-foreground break-words"
               >
                 <Sparkles className="h-3 w-3 text-brand" />
                 {tag}
@@ -286,7 +287,7 @@ function DocumentCard({
   return (
     <button
       onClick={() => onSelect(!selected)}
-      className={`text-left w-full p-4 rounded-2xl border-2 transition-all duration-200 flex items-start gap-4 hover:shadow-md ${
+      className={`text-left w-full min-w-0 p-4 rounded-2xl border-2 transition-all duration-200 flex flex-col sm:flex-row items-start gap-4 hover:shadow-md ${
         selected
           ? "border-brand bg-brand/5 shadow-md"
           : "border-border/60 bg-background/70 hover:border-brand/30 hover:bg-background"
@@ -307,13 +308,13 @@ function DocumentCard({
 
       {/* Icon & Info */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-start gap-3">
+        <div className="flex flex-col sm:flex-row items-start gap-3 w-full">
           <FileText className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold text-foreground truncate">
+            <h4 className="text-sm font-semibold text-foreground break-words">
               {displayName}
             </h4>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-1 break-words">
               {docType}
               {size && ` • ${size}`}
               {isDoc && document.date && ` • ${formatDate(document.date)}`}
@@ -343,7 +344,7 @@ export function CandidateJobApplyPage() {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const { job, loading: jobLoading } = useJobOfferBySlug(slug);
-  const { profile, loading: profileLoading } = useCandidate();
+  const { profile, loading: profileLoading, updateProfile } = useCandidate();
 
   const [savedDocuments, setSavedDocuments] = useState<CandidateDocument[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set());
@@ -351,6 +352,18 @@ export function CandidateJobApplyPage() {
   const [message, setMessage] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [consent, setConsent] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitFeedback, setSubmitFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    first_name: "",
+    last_name: "",
+    phone: "",
+    headline: "",
+  });
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileFeedback, setProfileFeedback] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dragZoneRef = useRef<HTMLDivElement>(null);
 
@@ -364,9 +377,20 @@ export function CandidateJobApplyPage() {
   useEffect(() => {
     if (!profile?.id) return;
 
-    const { documents } = loadCandidateDocuments(profile.id);
-    setSavedDocuments(documents || []);
+    const storedDocuments = loadCandidateDocuments(profile.id);
+    setSavedDocuments(getCandidateDocumentsList(storedDocuments));
   }, [profile?.id]);
+
+  useEffect(() => {
+    if (!profile) return;
+
+    setProfileForm({
+      first_name: profile.first_name || "",
+      last_name: profile.last_name || "",
+      phone: profile.phone || "",
+      headline: profile.headline || "",
+    });
+  }, [profile]);
 
   const handleDocumentSelect = (docId: string, isSelected: boolean) => {
     const newSelected = new Set(selectedDocuments);
@@ -428,28 +452,108 @@ export function CandidateJobApplyPage() {
     navigate(-1);
   };
 
-  const handleSubmit = () => {
-    if (!job?.application_email?.trim()) {
+  const handleProfileChange = (field: keyof typeof profileForm, value: string) => {
+    setProfileForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleProfileSave = async () => {
+    if (!profile) return;
+
+    setProfileSaving(true);
+    setProfileFeedback(null);
+
+    try {
+      await updateProfile({
+        first_name: profileForm.first_name || null,
+        last_name: profileForm.last_name || null,
+        phone: profileForm.phone || null,
+        headline: profileForm.headline || null,
+      });
+      setProfileFeedback("Vos informations ont été mises à jour.");
+      setIsEditingProfile(false);
+    } catch (error) {
+      setProfileFeedback(error instanceof Error ? error.message : "Une erreur est survenue.");
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    const recipientEmail = job?.application_email?.trim();
+
+    if (!recipientEmail) {
+      setSubmitFeedback({
+        type: "error",
+        message: "Veuillez rechercher l'adresse mail dans la description de l'offre",
+      });
       return;
     }
+
     if (selectedDocuments.size === 0 && temporaryDocuments.length === 0) {
-      alert("Veuillez sélectionner ou ajouter au moins un document.");
+      setSubmitFeedback({
+        type: "error",
+        message: "Veuillez sélectionner ou ajouter au moins un document.",
+      });
       return;
     }
+
     if (!consent) {
-      alert("Veuillez accepter les conditions de confidentialité.");
+      setSubmitFeedback({
+        type: "error",
+        message: "Veuillez accepter les conditions de confidentialité.",
+      });
       return;
     }
-    console.log({
-      job: job?.id,
-      candidate: profile?.id,
-      selectedDocuments: Array.from(selectedDocuments),
-      temporaryDocuments: temporaryDocuments.map((doc) => doc.file.name),
-      message,
-      consent,
-    });
-    alert("Votre candidature a été envoyée avec succès ! (Interface de démonstration)");
-    navigate(-1);
+
+    setIsSubmitting(true);
+    setSubmitFeedback(null);
+
+    try {
+      const selectedFileNames = [
+        ...savedDocuments.filter((doc) => selectedDocuments.has(doc.id)).map((doc) => doc.displayName),
+        ...temporaryDocuments.map((doc) => doc.file.name),
+      ];
+
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          recipient: recipientEmail,
+          subject: `Nouvelle candidature - ${job?.title ?? "Offre"}`,
+          html: `
+            <p>Nouvelle candidature reçue pour l'offre <strong>${job?.title ?? ""}</strong> chez <strong>${job?.company ?? ""}</strong>.</p>
+            <p><strong>Candidat :</strong> ${profile?.first_name ?? ""} ${profile?.last_name ?? ""}</p>
+            <p><strong>Email :</strong> ${profile?.email ?? ""}</p>
+            <p><strong>Téléphone :</strong> ${profile?.phone || "-"}</p>
+            <p><strong>Titre professionnel :</strong> ${profile?.headline || "-"}</p>
+            <p><strong>Documents :</strong> ${selectedFileNames.length > 0 ? selectedFileNames.join(", ") : "Aucun document sélectionné"}</p>
+            <p><strong>Message :</strong></p>
+            <p>${message || "-"}</p>
+          `,
+          text: `Nouvelle candidature pour ${job?.title ?? "l'offre"}.\nCandidat: ${profile?.first_name ?? ""} ${profile?.last_name ?? ""}\nEmail: ${profile?.email ?? ""}\nTéléphone: ${profile?.phone || "-"}\nTitre professionnel: ${profile?.headline || "-"}\nDocuments: ${selectedFileNames.length > 0 ? selectedFileNames.join(", ") : "Aucun document sélectionné"}\nMessage: ${message || "-"}`,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Une erreur est survenue lors de l'envoi de la candidature.");
+      }
+
+      setSubmitFeedback({
+        type: "success",
+        message: `Votre candidature a bien été envoyée à ${recipientEmail}.`,
+      });
+    } catch (error) {
+      setSubmitFeedback({
+        type: "error",
+        message: error instanceof Error ? error.message : "Une erreur est survenue lors de l'envoi de la candidature.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Loading state
@@ -507,9 +611,12 @@ export function CandidateJobApplyPage() {
   const submissionChannelAvailable = Boolean(job.application_email?.trim());
   const isFormValid = submissionChannelAvailable && totalDocuments > 0 && consent;
   const displayedDocuments = savedDocuments;
+  const submissionChannelStatusLabel = submissionChannelAvailable
+    ? "Canal de candidature disponible"
+    : "Veuillez rechercher l'adresse mail dans la description de l'offre";
 
   return (
-    <div className="container-page pt-2 pb-8 md:pt-4 md:pb-12 min-h-screen">
+    <div className="container-page pt-2 pb-8 md:pt-4 md:pb-12 min-h-screen overflow-x-hidden w-full max-w-full">
       {/* Back Button */}
       <div className="mb-4">
         <Button
@@ -530,20 +637,20 @@ export function CandidateJobApplyPage() {
       <HeroSection job={job} profile={profile} />
 
       {/* Main Form Layout */}
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid gap-8 lg:grid-cols-3 w-full">
         {/* Left column - Job Description */}
-        <div className="lg:col-span-1">
-          <Card className="border border-border/80 shadow-soft rounded-3xl lg:sticky lg:top-8">
+        <div className="lg:col-span-1 w-full">
+          <Card className="border border-border/80 shadow-soft rounded-3xl lg:sticky lg:top-8 w-full max-w-full">
             <CardHeader className="pb-3 px-4 pt-4 sm:px-6 sm:pt-6 border-b border-border/60">
               <CardTitle className="text-lg">Aperçu du poste</CardTitle>
             </CardHeader>
-            <CardContent className="px-4 pb-4 pt-4 sm:px-6 sm:pb-6 sm:pt-6 space-y-4 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto">
+            <CardContent className="px-4 pb-4 pt-4 sm:px-6 sm:pb-6 sm:pt-6 space-y-4 w-full max-w-full lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto">
               {job.description && (
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
                     Description
                   </p>
-                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line max-h-48 overflow-hidden line-clamp-8">
+                  <p className={`text-sm text-foreground/80 leading-relaxed whitespace-pre-line ${isPreviewExpanded ? "" : "max-h-48 overflow-hidden line-clamp-8"}`}>
                     {job.description}
                   </p>
                 </div>
@@ -554,12 +661,12 @@ export function CandidateJobApplyPage() {
                   <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
                     Profil recherché
                   </p>
-                  <div className="space-y-1.5">
+                  <div className={`space-y-1.5 ${isPreviewExpanded ? "" : "max-h-36 overflow-hidden"}`}>
                     {job.requirements
                       .split(/\n+/)
                       .map((item) => item.trim())
                       .filter(Boolean)
-                      .slice(0, 6)
+                      .slice(0, isPreviewExpanded ? undefined : 6)
                       .map((item, idx) => (
                         <p key={idx} className="text-sm text-foreground/80">
                           • {item}
@@ -568,19 +675,30 @@ export function CandidateJobApplyPage() {
                   </div>
                 </div>
               )}
+
+              {(job.description || job.requirements) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsPreviewExpanded((prev) => !prev)}
+                  className="px-0 h-auto text-brand hover:text-brand/90"
+                >
+                  {isPreviewExpanded ? "Voir moins" : "Voir plus"}
+                </Button>
+              )}
             </CardContent>
           </Card>
         </div>
 
         {/* Right column - Form */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6 w-full">
           {/* Block 1: Your Information */}
-          <Card className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in">
+          <Card className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full">
             <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
               <CardTitle className="text-base">Vos informations</CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="flex gap-4 mb-6">
+              <div className="flex flex-col gap-4 mb-6 w-full max-w-full">
                 {profile.avatar_url && (
                   <img
                     src={profile.avatar_url}
@@ -588,7 +706,7 @@ export function CandidateJobApplyPage() {
                     className="h-16 w-16 rounded-full border border-border/60 object-cover"
                   />
                 )}
-                <div className="flex-1 space-y-2 text-sm">
+                <div className="flex-1 min-w-0 space-y-2 text-sm">
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Prénom</p>
                     <p className="text-foreground font-medium">{profile.first_name || "-"}</p>
@@ -599,33 +717,117 @@ export function CandidateJobApplyPage() {
                   </div>
                 </div>
               </div>
-              <div className="space-y-3 border-t border-border/60 pt-4 text-sm">
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Email</p>
-                  <p className="text-foreground">{profile.email}</p>
+              {profileFeedback && (
+                <Alert className={`mt-4 ${profileFeedback.includes("mis à jour") ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}>
+                  <AlertDescription className={profileFeedback.includes("mis à jour") ? "text-emerald-800" : "text-rose-800"}>
+                    {profileFeedback}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {isEditingProfile ? (
+                <div className="space-y-4 mt-6 border-t border-border/60 pt-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="profile-first-name">Prénom</Label>
+                      <Input
+                        id="profile-first-name"
+                        value={profileForm.first_name}
+                        onChange={(e) => handleProfileChange("first_name", e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="profile-last-name">Nom</Label>
+                      <Input
+                        id="profile-last-name"
+                        value={profileForm.last_name}
+                        onChange={(e) => handleProfileChange("last_name", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="profile-phone">Téléphone</Label>
+                      <Input
+                        id="profile-phone"
+                        value={profileForm.phone}
+                        onChange={(e) => handleProfileChange("phone", e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="profile-headline">Titre professionnel</Label>
+                      <Input
+                        id="profile-headline"
+                        value={profileForm.headline}
+                        onChange={(e) => handleProfileChange("headline", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2 border-t border-border/60 pt-4 text-sm">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Email</p>
+                    <p className="text-foreground">{profile.email}</p>
+                  </div>
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setIsEditingProfile(false);
+                        setProfileForm({
+                          first_name: profile.first_name || "",
+                          last_name: profile.last_name || "",
+                          phone: profile.phone || "",
+                          headline: profile.headline || "",
+                        });
+                      }}
+                      className="sm:flex-1"
+                    >
+                      Annuler
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleProfileSave}
+                      disabled={profileSaving}
+                      className="sm:flex-1"
+                    >
+                      {profileSaving ? "Enregistrement..." : "Enregistrer"}
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Téléphone</p>
-                  <p className="text-foreground">{profile.phone || "-"}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Titre professionnel</p>
-                  <p className="text-foreground">{profile.headline || "-"}</p>
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate("/candidate/profile")}
-                className="w-full gap-2 mt-6"
-              >
-                Modifier mon profil
-              </Button>
+              ) : (
+                <>
+                  <div className="space-y-3 border-t border-border/60 pt-4 text-sm">
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Email</p>
+                      <p className="text-foreground">{profile.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Téléphone</p>
+                      <p className="text-foreground">{profile.phone || "-"}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Titre professionnel</p>
+                      <p className="text-foreground">{profile.headline || "-"}</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setIsEditingProfile(true);
+                      setProfileFeedback(null);
+                    }}
+                    className="w-full gap-2 mt-6"
+                  >
+                    Modifier mon profil
+                  </Button>
+                </>
+              )}
             </CardContent>
           </Card>
 
           {/* Block 2: Message */}
-          <Card className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in" style={{animationDelay: '0.1s'}}>
+          <Card className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full" style={{animationDelay: '0.1s'}}>
             <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
               <CardTitle className="text-base">Message au recruteur</CardTitle>
               <CardDescription className="text-xs mt-1">
@@ -648,7 +850,7 @@ export function CandidateJobApplyPage() {
           </Card>
 
           {/* Block 3: Saved Documents */}
-          <Card className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in" style={{animationDelay: '0.2s'}}>
+          <Card className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full" style={{animationDelay: '0.2s'}}>
             <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
               <CardTitle className="text-base">Documents enregistrés</CardTitle>
               <CardDescription className="text-xs mt-1">
@@ -686,7 +888,7 @@ export function CandidateJobApplyPage() {
           </Card>
 
           {/* Block 4: Temporary Documents */}
-          <Card className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in" style={{animationDelay: '0.3s'}}>
+          <Card className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full" style={{animationDelay: '0.3s'}}>
             <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
               <CardTitle className="text-base">Ajouter des documents</CardTitle>
               <CardDescription className="text-xs mt-1">
@@ -700,7 +902,7 @@ export function CandidateJobApplyPage() {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 ${
+                className={`relative w-full min-w-0 border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 ${
                   isDragging
                     ? "border-brand/60 bg-brand/5"
                     : "border-border/40 bg-background/60"
@@ -739,7 +941,7 @@ export function CandidateJobApplyPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => fileInputRef.current?.click()}
-                  className="relative gap-2 mt-4"
+                  className="relative gap-2 mt-4 w-full sm:w-auto"
                 >
                   <Upload className="h-4 w-4" />
                   Parcourir les fichiers
@@ -756,10 +958,10 @@ export function CandidateJobApplyPage() {
                     >
                       <FileText className="h-5 w-5 text-red-600 shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">
+                        <p className="text-sm font-medium text-foreground break-words">
                           {doc.file.name}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground break-words">
                           {doc.size}
                         </p>
                       </div>
@@ -783,7 +985,7 @@ export function CandidateJobApplyPage() {
           </Card>
 
           {/* Block 5: Summary */}
-          <Card className="border border-brand/30 shadow-soft rounded-3xl overflow-hidden bg-gradient-to-br from-brand/5 to-secondary/5 animate-fade-in" style={{animationDelay: '0.4s'}}>
+          <Card className="border border-brand/30 shadow-soft rounded-3xl overflow-hidden bg-gradient-to-br from-brand/5 to-secondary/5 animate-fade-in w-full max-w-full" style={{animationDelay: '0.4s'}}>
             <CardHeader className="pb-4 px-6 pt-6 border-b border-brand/20 bg-brand/10">
               <CardTitle className="text-base flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-brand" />
@@ -795,31 +997,31 @@ export function CandidateJobApplyPage() {
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">
                   Entreprise & Offre
                 </p>
-                <p className="font-medium text-foreground">{job.company}</p>
-                <p className="text-foreground/80">{job.title}</p>
+                <p className="font-medium text-foreground break-words">{job.company}</p>
+                <p className="text-foreground/80 break-words">{job.title}</p>
               </div>
 
               <div className="border-t border-border/60 pt-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">
                   Candidat
                 </p>
-                <p className="font-medium text-foreground">
+                <p className="font-medium text-foreground break-words">
                   {profile.first_name} {profile.last_name}
                 </p>
-                <p className="text-foreground/80">{profile.email}</p>
+                <p className="text-foreground/80 break-words">{profile.email}</p>
               </div>
 
               <div className="border-t border-border/60 pt-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">
                   État du canal de candidature
                 </p>
-                <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium ${submissionChannelAvailable ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"}`}>
+                <div className={`inline-flex flex-wrap items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium ${submissionChannelAvailable ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"}`}>
                   {submissionChannelAvailable ? (
                     <CheckCircle2 className="h-4 w-4" />
                   ) : (
                     <AlertCircle className="h-4 w-4" />
                   )}
-                  {submissionChannelAvailable ? "Canal de candidature disponible" : "Canal de candidature indisponible"}
+                  {submissionChannelStatusLabel}
                 </div>
                 <p className="mt-2 text-sm text-foreground/70">
                   {submissionChannelAvailable
@@ -839,7 +1041,7 @@ export function CandidateJobApplyPage() {
                     {savedDocuments
                       .filter((doc) => selectedDocuments.has(doc.id))
                       .map((doc) => (
-                        <li key={doc.id} className="text-foreground">
+                        <li key={doc.id} className="text-foreground break-words">
                           ✓ {doc.displayName}
                         </li>
                       ))}
@@ -866,9 +1068,9 @@ export function CandidateJobApplyPage() {
           </Card>
 
           {/* Block 6: Consent */}
-          <Card className="border border-border/80 shadow-soft rounded-3xl animate-fade-in" style={{animationDelay: '0.5s'}}>
+          <Card className="border border-border/80 shadow-soft rounded-3xl animate-fade-in w-full max-w-full" style={{animationDelay: '0.5s'}}>
             <CardContent className="p-6">
-              <div className="flex items-start gap-3">
+              <div className="flex flex-col sm:flex-row items-start gap-3">
                 <Checkbox
                   id="consent"
                   checked={consent}
@@ -877,7 +1079,7 @@ export function CandidateJobApplyPage() {
                 />
                 <label
                   htmlFor="consent"
-                  className="text-sm text-foreground/80 leading-relaxed cursor-pointer"
+                  className="text-sm text-foreground/80 leading-relaxed cursor-pointer break-words"
                 >
                   J'accepte que mes informations personnelles ainsi que les documents sélectionnés
                   soient transmis à l'entreprise dans le cadre de cette candidature.
@@ -901,7 +1103,14 @@ export function CandidateJobApplyPage() {
                 </AlertDescription>
               </Alert>
             )}
-            <div className="flex flex-col gap-3 sm:flex-row sm:sticky sm:bottom-0 bg-background/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-border/60 shadow-lg z-10">
+            {submitFeedback && (
+              <Alert className={`border ${submitFeedback.type === "success" ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}>
+                <AlertDescription className={submitFeedback.type === "success" ? "text-emerald-800" : "text-rose-800"}>
+                  {submitFeedback.message}
+                </AlertDescription>
+              </Alert>
+            )}
+            <div className="flex flex-col gap-3 sm:flex-row sm:sticky sm:bottom-0 bg-background/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-border/60 shadow-lg z-10 w-full max-w-full">
               <Button
                 variant="outline"
                 onClick={handleCancel}
@@ -911,11 +1120,11 @@ export function CandidateJobApplyPage() {
               </Button>
               <Button
                 onClick={handleSubmit}
-                disabled={!isFormValid}
+                disabled={!isFormValid || isSubmitting}
                 className="w-full sm:flex-1 gap-2 bg-brand hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send className="h-4 w-4" />
-                Envoyer ma candidature
+                {isSubmitting ? "Envoi en cours..." : "Envoyer ma candidature"}
               </Button>
             </div>
           </div>

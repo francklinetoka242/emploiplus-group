@@ -87,10 +87,10 @@ export interface CandidateLoginData {
 export interface CandidateProfile {
   id: string;
   user_id: string;
-  first_name: string;
-  last_name: string;
+  first_name: string | null;
+  last_name: string | null;
   email: string;
-  phone: string;
+  phone: string | null;
   avatar_url: string | null;
   bio: string | null;
   headline: string | null;

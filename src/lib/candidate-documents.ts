@@ -23,6 +23,27 @@ export interface CandidateDocumentsState {
   documents?: CandidateDocument[];
 }
 
+export function getCandidateDocumentsList(state: CandidateDocumentsState): CandidateDocument[] {
+  const documents = state.documents ?? [];
+  if (!state.cv) {
+    return documents;
+  }
+
+  return [
+    {
+      id: state.cv.id,
+      type: "other",
+      name: state.cv.name,
+      displayName: state.cv.displayName || state.cv.name,
+      date: state.cv.date,
+      size: state.cv.size,
+      url: state.cv.url,
+      customType: "CV Principal",
+    },
+    ...documents,
+  ];
+}
+
 export function getCandidateDocumentsStorageKey(profileId?: string | null) {
   return profileId ? `emploiplus-candidate-documents-${profileId}` : null;
 }

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useI18n } from "@/lib/i18n";
 import { usePageSEO } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +25,7 @@ interface ProfileFormData {
   lastName: string;
   email: string;
   phone: string;
+  headline: string;
   dateOfBirth: string;
   nationality: string;
   city: string;
@@ -53,8 +53,7 @@ const getCountryPhoneCode = (country: string) => {
 };
 
 export function CandidateProfilePageModern() {
-  const { profile, updateProfile, avatarUrl } = useCandidate();
-  const { translate } = useI18n();
+  const { profile, updateProfile } = useCandidate();
   const [isEditingAvatar, setIsEditingAvatar] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -64,6 +63,7 @@ export function CandidateProfilePageModern() {
     lastName: "",
     email: "",
     phone: "",
+    headline: "",
     dateOfBirth: "",
     nationality: "",
     city: "",
@@ -90,6 +90,7 @@ export function CandidateProfilePageModern() {
       lastName: profile.last_name ?? "",
       email: profile.email ?? "",
       phone: profile.phone?.trim() ? profile.phone : phoneCode,
+      headline: profile.headline ?? "",
       dateOfBirth: profile.date_of_birth ?? "",
       nationality,
       city,
@@ -144,6 +145,7 @@ export function CandidateProfilePageModern() {
         first_name: formData.firstName || null,
         last_name: formData.lastName || null,
         phone: formData.phone || null,
+        headline: formData.headline || null,
         date_of_birth: formData.dateOfBirth || null,
         location_country: formData.nationality || null,
         location_city: formData.city || null,
@@ -199,7 +201,7 @@ export function CandidateProfilePageModern() {
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="relative">
               <Avatar className="w-16 h-16 border border-slate-200">
-                {avatarUrl && <AvatarImage src={avatarUrl} alt={formData.firstName} />}
+                {profile?.avatar_url && <AvatarImage src={profile.avatar_url} alt={formData.firstName} />}
                 <AvatarFallback className="bg-slate-200 text-slate-500 text-xs font-semibold flex items-center justify-center">
                   {initials || "C"}
                 </AvatarFallback>
@@ -293,6 +295,18 @@ export function CandidateProfilePageModern() {
                 />
               </div>
               <p className="text-xs text-slate-500 mt-1">Le code du pays est défini automatiquement selon votre pays.</p>
+            </div>
+
+            {/* Professional Title */}
+            <div>
+              <Label className="text-sm font-medium text-slate-700 mb-2 block">Titre professionnel</Label>
+              <Input
+                type="text"
+                placeholder="Chef de projet junior"
+                value={formData.headline}
+                onChange={(e) => handleInputChange("headline", e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
+              />
             </div>
           </SaasGrid>
         </SaasCardContent>
