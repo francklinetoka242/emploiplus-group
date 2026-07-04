@@ -27,13 +27,9 @@ interface ProfileFormData {
   email: string;
   phone: string;
   dateOfBirth: string;
-  gender: string;
   nationality: string;
-  address: string;
   city: string;
-  zipCode: string;
   about: string;
-  professionalStatus: string;
   avatar: string | null;
 }
 
@@ -44,17 +40,6 @@ const normalizeCountryValue = (value?: string | null) => {
   const match = countryOptions.find((country) => country.toLowerCase() === normalized);
   if (match) return match;
   return countryOptions.find((country) => country.toLowerCase().includes("congo")) ?? countryOptions[0] ?? "Congo";
-};
-
-const normalizeProfessionalStatus = (value?: string | null) => {
-  const normalized = (value ?? "").trim().toLowerCase();
-  if (["student", "étudiant", "etudiant"].includes(normalized)) return "student";
-  if (["recent-graduate", "jeune diplômé", "jeune diplome"].includes(normalized)) return "recent-graduate";
-  if (["employed", "salarié", "salarie"].includes(normalized)) return "employed";
-  if (["unemployed", "sans emploi"].includes(normalized)) return "unemployed";
-  if (["freelance"].includes(normalized)) return "freelance";
-  if (["entrepreneur"].includes(normalized)) return "entrepreneur";
-  return "other";
 };
 
 const getCitiesForCountry = (country: string) => {
@@ -80,13 +65,9 @@ export function CandidateProfilePageModern() {
     email: "",
     phone: "",
     dateOfBirth: "",
-    gender: "",
     nationality: "",
-    address: "",
     city: "",
-    zipCode: "",
     about: "",
-    professionalStatus: "other",
     avatar: null,
   });
 
@@ -110,13 +91,9 @@ export function CandidateProfilePageModern() {
       email: profile.email ?? "",
       phone: profile.phone?.trim() ? profile.phone : phoneCode,
       dateOfBirth: profile.date_of_birth ?? "",
-      gender: profile.gender ?? "",
       nationality,
-      address: profile.address ?? "",
       city,
-      zipCode: profile.zip_code ?? "",
       about: profile.bio ?? "",
-      professionalStatus: normalizeProfessionalStatus(profile.professional_status),
       avatar: profile.avatar_url ?? null,
     });
   }, [profile]);
@@ -163,16 +140,18 @@ export function CandidateProfilePageModern() {
     setSaveError(null);
 
     try {
-      await updateProfile({
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        phone: formData.phone,
-        date_of_birth: formData.dateOfBirth,
-        location_country: formData.nationality,
-        location_city: formData.city,
-        bio: formData.about,
-        avatar_url: formData.avatar,
-      });
+      const updates: Partial<CandidateProfile> = {
+        first_name: formData.firstName || null,
+        last_name: formData.lastName || null,
+        phone: formData.phone || null,
+        date_of_birth: formData.dateOfBirth || null,
+        location_country: formData.nationality || null,
+        location_city: formData.city || null,
+        bio: formData.about || null,
+        avatar_url: formData.avatar || null,
+      };
+
+      await updateProfile(updates);
       setSaveSuccess(true);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Une erreur est survenue";
@@ -334,40 +313,6 @@ export function CandidateProfilePageModern() {
                 className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
               />
             </div>
-
-            {/* Gender */}
-            <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Genre</Label>
-              <Select value={formData.gender} onValueChange={(value) => handleInputChange("gender", value)}>
-                <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
-                  <SelectValue placeholder="Sélectionner..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Homme</SelectItem>
-                  <SelectItem value="female">Femme</SelectItem>
-                  <SelectItem value="other">Autre</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Professional Status */}
-            <div className="col-span-2 sm:col-span-1">
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Statut professionnel</Label>
-              <Select value={formData.professionalStatus} onValueChange={(value) => handleInputChange("professionalStatus", value)}>
-                <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
-                  <SelectValue placeholder="Sélectionner..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="student">Étudiant(e)</SelectItem>
-                  <SelectItem value="recent-graduate">Jeune diplômé(e)</SelectItem>
-                  <SelectItem value="employed">En emploi</SelectItem>
-                  <SelectItem value="unemployed">Demandeur d'emploi</SelectItem>
-                  <SelectItem value="freelance">Freelancer</SelectItem>
-                  <SelectItem value="entrepreneur">Entrepreneur(e)</SelectItem>
-                  <SelectItem value="other">Autre</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </SaasGrid>
         </SaasCardContent>
       </SaasCard>
@@ -413,30 +358,6 @@ export function CandidateProfilePageModern() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            {/* Address */}
-            <div className="col-span-2 sm:col-span-1">
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Adresse</Label>
-              <Input
-                type="text"
-                placeholder="123 Rue..."
-                value={formData.address}
-                onChange={(e) => handleInputChange("address", e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
-              />
-            </div>
-
-            {/* ZIP Code */}
-            <div className="col-span-2 sm:col-span-1">
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Code postal</Label>
-              <Input
-                type="text"
-                placeholder="00000"
-                value={formData.zipCode}
-                onChange={(e) => handleInputChange("zipCode", e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
-              />
             </div>
           </SaasGrid>
         </SaasCardContent>
