@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { renderTransactionalEmail } from '../src/lib/transactional-email';
 
 type UnknownObject = Record<string, unknown>;
 
@@ -109,6 +110,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const signature = base64url(createHmac('sha256', EMAIL_SIGNING_SECRET).update(payloadEncoded).digest());
     const token = `${payloadEncoded}.${signature}`;
     const resetLink = `${confirmationBaseUrl}/candidate/reset-password?token=${encodeURIComponent(token)}`;
+    const logoUrl = `${confirmationBaseUrl}/Logo.png`;
 
     const sendEmailResponse = await fetch(`${confirmationBaseUrl}/api/send-email`, {
       method: 'POST',
@@ -120,6 +122,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         subject: 'Réinitialisation du mot de passe',
         action_link: resetLink,
         text: `Réinitialisez votre mot de passe en cliquant sur ce lien : ${resetLink}`,
+        html: renderTransactionalEmail({
+          title: 'Réinitialisation du mot de passe',
+          intro: 'Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour définir un nouveau mot de passe.',
+          ctaLabel: 'Réinitialiser mon mot de passe',
+          ctaUrl: resetLink,
+          logoUrl,
+          fromName: 'EmploiPlus Group',
+          bodyHtml: '<p style="margin:0;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer cet e-mail.</p>',
+        }),
       }),
     });
 

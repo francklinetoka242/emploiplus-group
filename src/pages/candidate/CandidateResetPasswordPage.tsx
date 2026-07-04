@@ -34,6 +34,19 @@ export function CandidateResetPasswordPage() {
     validateToken();
   }, []);
 
+  const parseResponseBody = async (response: Response) => {
+    const text = await response.text();
+    if (!text) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      return { error: text };
+    }
+  };
+
   const validateToken = async () => {
     const token = searchParams.get('token');
     if (!token) {
@@ -44,11 +57,11 @@ export function CandidateResetPasswordPage() {
 
     try {
       const response = await fetch(`/api/password-reset-validate?token=${encodeURIComponent(token)}`);
-      const body = await response.json();
+      const body = await parseResponseBody(response);
       if (!response.ok) {
         throw new Error(body?.error || 'Lien invalide ou expiré');
       }
-      setUserEmail(body.email || null);
+      setUserEmail(body?.email || null);
       setIsValidToken(true);
     } catch (err: any) {
       console.error('Token validation error:', err);
@@ -107,7 +120,7 @@ export function CandidateResetPasswordPage() {
         body: JSON.stringify({ token, password: formData.password }),
       });
 
-      const body = await response.json().catch(() => null);
+      const body = await parseResponseBody(response);
       if (!response.ok) {
         throw new Error(body?.error || 'Impossible de réinitialiser le mot de passe.');
       }
