@@ -1,7 +1,29 @@
 import 'dotenv/config';
 import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { base64url, base64urlDecode } from '../utils/token';
+// Local base64url helpers to avoid runtime dependency on utils/token
+function base64url(input: string | Buffer) {
+  const buffer =
+    typeof input === 'string'
+      ? Buffer.from(input, 'utf8')
+      : input;
+
+  return buffer
+    .toString('base64')
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+}
+
+function base64urlDecode(input: string) {
+  const normalized = input
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+
+  return Buffer
+    .from(normalized, 'base64')
+    .toString('utf8');
+}
 
 async function updateSupabaseUserConfirmation(
   fetchImpl: typeof fetch,
