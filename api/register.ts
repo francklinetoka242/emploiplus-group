@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { createHmac } from 'crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import * as nodemailer from 'nodemailer';
-import { renderTransactionalEmail } from './lib/transactional-email';
+import { renderTransactionalEmail } from './lib/transactional-email.ts';
 
 type UnknownObject = Record<string, unknown>;
 
