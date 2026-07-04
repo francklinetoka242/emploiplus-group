@@ -901,12 +901,15 @@ export class CandidateAuthService {
    */
   static async requestPasswordReset(email: string) {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/candidate/reset-password`,
+      const response = await fetch('/api/password-reset-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
 
-      if (error) {
-        throw error;
+      const body = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw body?.error ? new Error(body.error) : new Error('Impossible d envoyer le lien de réinitialisation.');
       }
 
       return true;
