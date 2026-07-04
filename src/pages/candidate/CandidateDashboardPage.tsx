@@ -6,8 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { CandidateAuthService, CandidateExperience } from "@/integrations/supabase/candidate-auth";
 import { useCandidate } from "@/hooks/useCandidate";
- import { SaasCard, SaasCardHeader, SaasCardContent } from "@/components/candidate/SaasCard";
- import { SaasGrid } from "@/components/candidate/SaasLayout";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { SaasCard, SaasCardHeader, SaasCardContent } from "@/components/candidate/SaasCard";
+import { SaasGrid } from "@/components/candidate/SaasLayout";
 import {
   ArrowRight,
   Briefcase,
@@ -39,7 +41,8 @@ const quickActions = [
     description: "Remplissez vos informations personnelles",
     icon: CheckCircle2,
     href: "/candidate/profile",
-    color: "from-blue-600 to-blue-700",
+    borderColor: "border-blue-500",
+    bgGradient: "from-blue-50 to-blue-100",
   },
   {
     id: 2,
@@ -47,7 +50,8 @@ const quickActions = [
     description: "Téléchargez votre CV",
     icon: FileText,
     href: "/candidate/cv",
-    color: "from-emerald-600 to-emerald-700",
+    borderColor: "border-emerald-500",
+    bgGradient: "from-emerald-50 to-emerald-100",
   },
   {
     id: 3,
@@ -55,7 +59,8 @@ const quickActions = [
     description: "Suivez le statut de vos candidatures",
     icon: Send,
     href: "/candidate/applications",
-    color: "from-purple-600 to-purple-700",
+    borderColor: "border-purple-500",
+    bgGradient: "from-purple-50 to-purple-100",
   },
   {
     id: 4,
@@ -63,7 +68,8 @@ const quickActions = [
     description: "Mettez à jour vos informations",
     icon: Briefcase,
     href: "/candidate/profile",
-    color: "from-orange-600 to-orange-700",
+    borderColor: "border-orange-500",
+    bgGradient: "from-orange-50 to-orange-100",
   },
 ];
 

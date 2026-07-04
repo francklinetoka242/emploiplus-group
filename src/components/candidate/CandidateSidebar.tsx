@@ -96,7 +96,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
           {/* Header avec Logo et Close Button */}
           <div className="flex items-center justify-between border-b border-white/5 px-4 py-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
                 <img src="/Logo.png" alt="EmploiPlus Group" className="h-6 w-6 object-contain" />
               </div>
               <div>
@@ -205,8 +205,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
       {/* Header avec Logo */}
       <div className="flex items-center justify-between border-b border-white/5 px-4 py-5">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
-            <img src="/Logo.png" alt="EmploiPlus Group" className="h-6 w-6 object-contain" />
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
           </div>
           {open && (
             <div className="min-w-0">
@@ -231,9 +230,9 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
         </Button>
       </div>
 
-      {/* Navigation - Scroll interne */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 scrollbar-hide">
-        <TooltipProvider delayDuration={200}>
+      <TooltipProvider delayDuration={200}>
+        {/* Navigation - Scroll interne */}
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 scrollbar-hide">
           <div className="space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
@@ -245,10 +244,10 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                     <Link
                       to={item.href}
                       className={cn(
-                        "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-250 md:px-3 md:py-2",
+                        "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-250 md:px-3 md:py-2 border border-transparent",
                         active
-                          ? "bg-gradient-to-r from-primary/20 to-secondary/10 text-white shadow-lg shadow-secondary/20"
-                          : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                          ? "bg-secondary text-white shadow-lg shadow-secondary/20"
+                          : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
                       )}
                     >
                       {/* Active indicator bar */}
@@ -259,13 +258,13 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                       {/* Icon container */}
                       <div
                         className={cn(
-                          "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250",
+                          "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
                           active
-                            ? "bg-gradient-to-br from-primary to-secondary text-white shadow-md"
-                            : "bg-slate-800/50 group-hover:bg-slate-700/50"
+                            ? "bg-secondary text-white shadow-md"
+                            : "bg-slate-950/90 text-white"
                         )}
                       >
-                        <Icon className="h-5 w-5" />
+                        <Icon className={cn("h-5 w-5 transition-colors duration-250", active ? "text-white" : "text-slate-200")} />
                       </div>
 
                       {/* Text label */}
@@ -301,40 +300,40 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
               );
             })}
           </div>
-        </TooltipProvider>
-      </nav>
+        </nav>
 
-      {/* Footer - Logout button */}
-      <div className="border-t border-white/5 px-2 py-4">
-        {open ? (
-          <Button
-            onClick={onLogout}
-            className={cn(
-              "w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium transition-all duration-250 hover:from-red-600/20 hover:to-red-700/20 hover:text-red-300"
-            )}
-            variant="ghost"
-          >
-            <LogOut className="h-4 w-4" />
-            Déconnexion
-          </Button>
-        ) : (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={onLogout}
-                size="icon"
-                className="h-10 w-10 rounded-lg bg-slate-800/50 transition-all duration-250 hover:bg-red-600/20 hover:text-red-300"
-                variant="ghost"
-              >
-                <LogOut className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="rounded-lg border border-white/10 bg-slate-900 text-xs font-medium">
+        {/* Footer - Logout button */}
+        <div className="border-t border-white/5 px-2 py-4">
+          {open ? (
+            <Button
+              onClick={onLogout}
+              className={cn(
+                "w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium transition-all duration-250 hover:from-red-600/20 hover:to-red-700/20 hover:text-red-300"
+              )}
+              variant="ghost"
+            >
+              <LogOut className="h-4 w-4" />
               Déconnexion
-            </TooltipContent>
-          </Tooltip>
-        )}
-      </div>
+            </Button>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={onLogout}
+                  size="icon"
+                  className="h-10 w-10 rounded-lg bg-slate-800/50 transition-all duration-250 hover:bg-red-600/20 hover:text-red-300"
+                  variant="ghost"
+                >
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="rounded-lg border border-white/10 bg-slate-900 text-xs font-medium">
+                Déconnexion
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+      </TooltipProvider>
     </aside>
   );
 }

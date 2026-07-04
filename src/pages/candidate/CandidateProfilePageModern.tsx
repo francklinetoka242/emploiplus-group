@@ -63,9 +63,12 @@ const getCitiesForCountry = (country: string) => {
 };
 
 export function CandidateProfilePageModern() {
-  const { profile, updateProfile, avatarUrl, loading, saveLoading, setProfileSaveSuccess, saveSuccess } = useCandidate();
+  const { profile, updateProfile, avatarUrl } = useCandidate();
   const { translate } = useI18n();
   const [isEditingAvatar, setIsEditingAvatar] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [formData, setFormData] = useState<ProfileFormData>({
     firstName: "",
     lastName: "",
@@ -134,22 +137,38 @@ export function CandidateProfilePageModern() {
   };
 
   const handleSave = async () => {
-    if (!profile) return;
+    if (!profile) {
+      setSaveError("Impossible de sauvegarder : profil non chargé.");
+      return;
+    }
 
-    await updateProfile({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      phone: formData.phone,
-      dateOfBirth: formData.dateOfBirth,
-      gender: formData.gender,
-      nationality: formData.nationality,
-      address: formData.address,
-      city: formData.city,
-      zipCode: formData.zipCode,
-      bio: formData.about,
-      professionalStatus: formData.professionalStatus,
-      avatarUrl: formData.avatar,
-    });
+    setSaveLoading(true);
+    setSaveSuccess(false);
+    setSaveError(null);
+
+    try {
+      await updateProfile({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender,
+        nationality: formData.nationality,
+        address: formData.address,
+        city: formData.city,
+        zipCode: formData.zipCode,
+        bio: formData.about,
+        professionalStatus: formData.professionalStatus,
+        avatarUrl: formData.avatar,
+      });
+      setSaveSuccess(true);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Une erreur est survenue";
+      setSaveError(message);
+      console.error('Error saving profile:', error);
+    } finally {
+      setSaveLoading(false);
+    }
   };
 
   const availableCities = getCitiesForCountry(formData.nationality);
@@ -170,6 +189,13 @@ export function CandidateProfilePageModern() {
           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           <AlertDescription className="text-emerald-800 ml-2">
             Vos informations ont été mises à jour avec succès.
+          </AlertDescription>
+        </Alert>
+      )}
+      {saveError && (
+        <Alert className="border-rose-200 bg-rose-50">
+          <AlertDescription className="text-rose-800">
+            {saveError}
           </AlertDescription>
         </Alert>
       )}
@@ -425,8 +451,9 @@ export function CandidateProfilePageModern() {
       {/* Save Button */}
       <div className="flex gap-3 justify-end sticky bottom-4 z-10">
         <Button
+          type="button"
           onClick={handleSave}
-          disabled={saveLoading}
+          disabled={!profile || saveLoading}
           className="gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-6 py-2.5 font-medium transition-colors"
         >
           <Save className="w-4 h-4" />
