@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { usePageSEO } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import favicon from "@/assets/favicon.ico";
 export function CandidateLoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -29,6 +30,15 @@ export function CandidateLoginPage() {
   const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
   const [pendingEmail, setPendingEmail] = useState(state?.pendingEmail || "");
   const [showPendingResend, setShowPendingResend] = useState(Boolean(state?.pendingEmail));
+  const [emailConfirmed, setEmailConfirmed] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('confirmed') === 'true') {
+      setEmailConfirmed(true);
+      // Remove the confirmed parameter from the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [searchParams]);
 
   usePageSEO({
     title: "Connexion Candidat - EmploiPlus Group",
@@ -134,6 +144,18 @@ export function CandidateLoginPage() {
           </CardHeader>
 
           <CardContent>
+            {emailConfirmed && (
+              <Alert className="mb-4 border-green-200 bg-green-50">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-800">
+                  <div className="flex flex-col gap-2">
+                    <span className="font-semibold">✅ Votre adresse e-mail a été confirmée avec succès.</span>
+                    <span>Vous pouvez maintenant vous connecter.</span>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+
             {errorMessage && (
               <Alert className="mb-4 border-red-200 bg-red-50">
                 <AlertCircle className="h-4 w-4 text-red-600" />

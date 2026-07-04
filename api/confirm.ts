@@ -193,8 +193,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .send(`Confirmation failed: ${body || 'Unknown error'}`);
     }
 
-    console.log('[CONFIRM-DEBUG][confirm] redirectUrl', `${confirmationBaseUrl}/candidate/login`);
-    return res.redirect(`${confirmationBaseUrl}/candidate/login`);
+    console.log('[CONFIRM-DEBUG][confirm] redirectUrl', `${confirmationBaseUrl}/candidate/login?confirmed=true`);
+    return res.redirect(
+      `${confirmationBaseUrl}/candidate/login?confirmed=true`
+    );
   } catch (error) {
     console.error('[CONFIRM-DEBUG][confirm] exception', error);
     if (error instanceof Error) {
