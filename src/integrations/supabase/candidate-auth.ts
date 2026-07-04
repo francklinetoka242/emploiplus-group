@@ -107,7 +107,6 @@ export interface CandidateExperience {
   candidate_id: string;
   job_title: string;
   company: string;
-  city: string | null;
   description: string | null;
   start_date: string;
   end_date: string | null;
@@ -119,7 +118,6 @@ export interface CandidateExperience {
 export interface CandidateExperienceInsert {
   job_title: string;
   company: string;
-  city?: string | null;
   description?: string | null;
   start_date: string;
   end_date?: string | null;
@@ -491,7 +489,6 @@ export class CandidateAuthService {
             candidate_id: candidateId,
             job_title: experience.job_title,
             company: experience.company,
-            city: experience.city ?? null,
             description: experience.description ?? null,
             start_date: experience.start_date,
             end_date: experience.end_date ?? null,
@@ -522,7 +519,6 @@ export class CandidateAuthService {
         .update({
           job_title: experience.job_title,
           company: experience.company,
-          city: experience.city ?? null,
           description: experience.description ?? null,
           start_date: experience.start_date,
           end_date: experience.end_date ?? null,

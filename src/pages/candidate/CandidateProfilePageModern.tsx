@@ -223,36 +223,32 @@ export function CandidateProfilePageModern() {
         <SaasCardContent>
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="relative">
-              <Avatar className="w-8 h-8 border border-slate-200">
+              <Avatar className="w-16 h-16 border border-slate-200">
                 {avatarUrl && <AvatarImage src={avatarUrl} alt={formData.firstName} />}
                 <AvatarFallback className="bg-slate-200 text-slate-500 text-xs font-semibold flex items-center justify-center">
                   {initials || "C"}
                 </AvatarFallback>
               </Avatar>
-              <button
-                onClick={() => setIsEditingAvatar(!isEditingAvatar)}
-                className="absolute bottom-0 right-0 p-1.5 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-md"
-              >
-                <Camera className="w-3.5 h-3.5" />
-              </button>
             </div>
 
-            {isEditingAvatar && (
-              <div className="flex-1">
-                <Label className="text-sm font-medium text-slate-700 mb-2 block">
-                  Sélectionner une photo
-                </Label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="w-full"
-                />
-                <p className="text-xs text-slate-500 mt-2">
+            <div className="flex-1 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-slate-700">
+                  Cette fonctionnalité sera bientôt disponible.
+                </p>
+                <p className="text-sm text-slate-500 mt-1">
+                  Vous pourrez bientôt ajouter une photo professionnelle depuis cette section.
+                </p>
+                <p className="text-xs text-slate-400 mt-2">
                   Formats acceptés: JPG, PNG. Taille max: 5MB
                 </p>
               </div>
-            )}
+              <div>
+                <Button disabled className="bg-slate-200 text-slate-400 border-slate-200">
+                  Sélectionner une photo (Bientôt)
+                </Button>
+              </div>
+            </div>
           </div>
         </SaasCardContent>
       </SaasCard>
@@ -450,22 +446,7 @@ export function CandidateProfilePageModern() {
         </SaasCardContent>
       </SaasCard>
 
-      {/* About Section */}
-      <SaasCard>
-        <SaasCardHeader
-          title="À propos"
-          subtitle="Décrivez-vous en quelques mots pour les recruteurs"
-        />
-        <SaasCardContent>
-          <Textarea
-            placeholder="Parlez de vos passions, vos motivations et vos objectifs professionnels..."
-            value={formData.about}
-            onChange={(e) => handleInputChange("about", e.target.value)}
-            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors min-h-[120px] resize-none"
-          />
-          <p className="text-xs text-slate-500 mt-2">{formData.about.length}/500 caractères</p>
-        </SaasCardContent>
-      </SaasCard>
+      {/* About Section removed per request */}
 
       {/* Save Button */}
       <div className="flex gap-3 justify-end sticky bottom-4 z-10">

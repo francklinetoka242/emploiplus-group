@@ -353,9 +353,14 @@ export function CandidateCVPage() {
                         {doc.size && <p className="text-xs text-slate-500">{doc.size}</p>}
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="ghost" className="text-slate-600 hover:text-slate-900" onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}>
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" variant="outline" className="gap-2" onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}>
+                        <Eye className="w-4 h-4" />
+                        Aperçu
+                      </Button>
+                      <Button size="sm" variant="outline" className="gap-2" onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}>
                         <Download className="w-4 h-4" />
+                        Télécharger
                       </Button>
                       <Button size="sm" variant="ghost" className="text-red-600 hover:text-red-700" onClick={() => handleDeleteDocument(doc.id)}>
                         <Trash2 className="w-4 h-4" />

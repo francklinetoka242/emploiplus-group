@@ -18,7 +18,6 @@ export function CandidateExperiencePage() {
   const [currentExperience, setCurrentExperience] = useState<Partial<CandidateExperience>>({
     job_title: "",
     company: "",
-    city: "",
     start_date: "",
     end_date: null,
     is_current: false,
@@ -59,7 +58,6 @@ export function CandidateExperiencePage() {
     setCurrentExperience({
       job_title: "",
       company: "",
-      city: "",
       start_date: "",
       end_date: null,
       is_current: false,
@@ -67,6 +65,14 @@ export function CandidateExperiencePage() {
     });
     setEditingExperienceId(null);
   };
+
+  function formatMonth(value: string | null | undefined) {
+    if (!value) return "";
+    const normalized = /^\d{4}-\d{2}$/.test(value) ? `${value}-01` : value;
+    const date = new Date(normalized as string);
+    if (Number.isNaN(date.getTime())) return value as string;
+    return date.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  }
 
   const handleOpenForm = () => {
     resetForm();
@@ -100,13 +106,21 @@ export function CandidateExperiencePage() {
       return;
     }
 
+    const normalizeMonth = (v?: string | null) => {
+      if (!v) return null;
+      // if already a full date, return as-is
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+      // month input like YYYY-MM -> convert to first day of month
+      if (/^\d{4}-\d{2}$/.test(v)) return `${v}-01`;
+      return v;
+    };
+
     const experienceData = {
       job_title: currentExperience.job_title.trim(),
       company: currentExperience.company.trim(),
-      city: currentExperience.city?.trim() || null,
       description: currentExperience.description?.trim() || null,
-      start_date: currentExperience.start_date || "",
-      end_date: currentExperience.is_current ? null : currentExperience.end_date || null,
+      start_date: normalizeMonth(currentExperience.start_date) || "",
+      end_date: currentExperience.is_current ? null : normalizeMonth(currentExperience.end_date) || null,
       is_current: currentExperience.is_current ?? false,
     };
 
@@ -171,15 +185,6 @@ export function CandidateExperiencePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="city">Ville</Label>
-                  <Input
-                    id="city"
-                    value={currentExperience.city || ""}
-                    onChange={(event) => setCurrentExperience({ ...currentExperience, city: event.target.value })}
-                    placeholder="Paris"
-                  />
-                </div>
-                <div className="space-y-2">
                   <Label htmlFor="startDate">Date de début</Label>
                   <Input
                     id="startDate"
@@ -188,9 +193,6 @@ export function CandidateExperiencePage() {
                     onChange={(event) => setCurrentExperience({ ...currentExperience, start_date: event.target.value })}
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="endDate">Date de fin</Label>
                   <Input
@@ -201,22 +203,23 @@ export function CandidateExperiencePage() {
                     onChange={(event) => setCurrentExperience({ ...currentExperience, end_date: event.target.value })}
                   />
                 </div>
-                <div className="flex items-end gap-2">
-                  <Checkbox
-                    id="isCurrent"
-                    checked={Boolean(currentExperience.is_current)}
-                    onCheckedChange={(checked) =>
-                      setCurrentExperience({
-                        ...currentExperience,
-                        is_current: Boolean(checked),
-                        end_date: checked ? null : currentExperience.end_date,
-                      })
-                    }
-                  />
-                  <Label htmlFor="isCurrent" className="cursor-pointer">
-                    Poste actuel
-                  </Label>
-                </div>
+              </div>
+
+              <div className="flex items-end gap-2">
+                <Checkbox
+                  id="isCurrent"
+                  checked={Boolean(currentExperience.is_current)}
+                  onCheckedChange={(checked) =>
+                    setCurrentExperience({
+                      ...currentExperience,
+                      is_current: Boolean(checked),
+                      end_date: checked ? null : currentExperience.end_date,
+                    })
+                  }
+                />
+                <Label htmlFor="isCurrent" className="cursor-pointer">
+                  Poste actuel
+                </Label>
               </div>
 
               <div className="space-y-2">
@@ -276,7 +279,7 @@ export function CandidateExperiencePage() {
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <h3 className="font-semibold text-lg text-slate-900">{exp.job_title}</h3>
-                        <p className="text-slate-600">{exp.company}{exp.city ? ` • ${exp.city}` : ""}</p>
+                        <p className="text-slate-600">{exp.company}</p>
                       </div>
                       {exp.is_current && (
                         <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
@@ -285,7 +288,7 @@ export function CandidateExperiencePage() {
                       )}
                     </div>
                     <p className="text-sm text-slate-500 mb-3">
-                      {exp.start_date} - {exp.end_date ? exp.end_date : "Aujourd'hui"}
+                      {formatMonth(exp.start_date)} - {exp.is_current ? "Aujourd'hui" : exp.end_date ? formatMonth(exp.end_date) : ""}
                     </p>
                     <p className="text-slate-700 mb-4">{exp.description}</p>
                     <div className="flex gap-2">

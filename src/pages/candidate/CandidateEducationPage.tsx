@@ -30,8 +30,9 @@ function formatMonth(value: string | null | undefined) {
   if (!value) {
     return "";
   }
-
-  const date = new Date(value);
+  // Accept values like YYYY-MM or full ISO date
+  const normalized = /^\d{4}-\d{2}$/.test(value) ? `${value}-01` : value;
+  const date = new Date(normalized as string);
   if (Number.isNaN(date.getTime())) {
     return value;
   }
@@ -120,12 +121,19 @@ export function CandidateEducationPage() {
       return;
     }
 
+    const normalizeMonth = (v?: string | null) => {
+      if (!v) return null;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+      if (/^\d{4}-\d{2}$/.test(v)) return `${v}-01`;
+      return v;
+    };
+
     const educationData = {
       school: currentEducation.school.trim(),
       degree: currentEducation.degree.trim(),
       field_of_study: currentEducation.field_of_study?.trim() || null,
-      start_date: currentEducation.start_date || null,
-      end_date: currentEducation.is_current ? null : currentEducation.end_date || null,
+      start_date: normalizeMonth(currentEducation.start_date) || null,
+      end_date: currentEducation.is_current ? null : normalizeMonth(currentEducation.end_date) || null,
       is_current: currentEducation.is_current ?? false,
     };
 
@@ -304,10 +312,7 @@ export function CandidateEducationPage() {
                         <h3 className="font-semibold text-lg text-slate-900">
                           {edu.degree} {edu.field_of_study ? `en ${edu.field_of_study}` : ""}
                         </h3>
-                        <p className="text-slate-600">
-                          {edu.school}
-                          {edu.start_date || edu.end_date ? ` • ${edu.city || ""}` : ""}
-                        </p>
+                        <p className="text-slate-600">{edu.school}</p>
                       </div>
                       {edu.is_current && (
                         <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">

@@ -136,10 +136,10 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                     to={item.href}
                     onClick={handleMenuClick}
                     className={cn(
-                      "relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250",
+                      "relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250 border border-transparent",
                       active
-                        ? "bg-gradient-to-r from-primary/20 to-secondary/10 text-white shadow-lg shadow-secondary/20"
-                        : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                        ? "bg-secondary text-white shadow-lg shadow-secondary/20"
+                        : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
                     )}
                   >
                     {active && (
@@ -148,16 +148,16 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
 
                     <div
                       className={cn(
-                        "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250",
+                        "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
                         active
-                          ? "bg-gradient-to-br from-primary to-secondary text-white shadow-md"
-                          : "bg-slate-800/50 hover:bg-slate-700/50"
+                          ? "bg-secondary text-white shadow-md"
+                          : "bg-slate-950/90 text-white"
                       )}
                     >
                       <Icon className="h-5 w-5" />
                     </div>
 
-                    <span className="truncate text-sm font-medium">{item.label}</span>
+                    <span className="truncate text-sm font-medium text-slate-300 group-hover:text-slate-100">{item.label}</span>
                   </Link>
                 );
               })}
