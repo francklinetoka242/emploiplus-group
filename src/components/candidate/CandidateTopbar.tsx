@@ -17,11 +17,10 @@ import { cn } from "@/lib/utils";
 
 interface CandidateTopbarProps {
   onMenuToggle?: () => void;
+  onLogout?: () => Promise<void> | void;
 }
 
-export function CandidateTopbar({
-  onMenuToggle,
-}: CandidateTopbarProps) {
+export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
   const { profile, logout } = useCandidate();
   const {
     notifications,
@@ -69,12 +68,7 @@ export function CandidateTopbar({
         {/* Left: Menu Toggle and public links */}
         <div className="flex items-center gap-2 overflow-x-auto">
           {onMenuToggle && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onMenuToggle}
-              className="md:hidden"
-            >
+            <Button variant="ghost" size="icon" onClick={onMenuToggle} className="md:hidden">
               <Menu className="w-5 h-5" />
             </Button>
           )}
@@ -90,7 +84,7 @@ export function CandidateTopbar({
                     "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
                     isActive
                       ? "bg-accent text-foreground"
-                      : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                      : "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
                   )
                 }
               >
@@ -104,12 +98,7 @@ export function CandidateTopbar({
         <div className="flex items-center gap-4">
           {/* Notifications Dropdown */}
           {notificationsLoading ? (
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled
-              className="text-slate-600"
-            >
+            <Button variant="ghost" size="icon" disabled className="text-slate-600">
               <Loader2 className="w-5 h-5 animate-spin" />
             </Button>
           ) : (
@@ -121,7 +110,6 @@ export function CandidateTopbar({
               onDelete={deleteNotification}
             />
           )}
-
 
           {/* User Menu */}
           <DropdownMenu>
@@ -135,9 +123,7 @@ export function CandidateTopbar({
                 </Avatar>
                 <div className="hidden sm:flex flex-col items-start">
                   <p className="text-sm font-medium text-slate-900">{userName}</p>
-                  {userEmail && (
-                    <p className="text-xs text-slate-600">{userEmail}</p>
-                  )}
+                  {userEmail && <p className="text-xs text-slate-600">{userEmail}</p>}
                 </div>
                 <ChevronDown className="w-4 h-4 text-slate-600" />
               </Button>
@@ -145,9 +131,7 @@ export function CandidateTopbar({
             <DropdownMenuContent align="end" className="w-56">
               <div className="px-2 py-1.5">
                 <p className="text-sm font-medium text-slate-900">{userName}</p>
-                {userEmail && (
-                  <p className="text-xs text-slate-600">{userEmail}</p>
-                )}
+                {userEmail && <p className="text-xs text-slate-600">{userEmail}</p>}
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
@@ -162,10 +146,7 @@ export function CandidateTopbar({
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onSelect={handleLogout}
-                className="cursor-pointer text-red-600"
-              >
+              <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer text-red-600">
                 <LogOut className="w-4 h-4 mr-2" />
                 Déconnexion
               </DropdownMenuItem>

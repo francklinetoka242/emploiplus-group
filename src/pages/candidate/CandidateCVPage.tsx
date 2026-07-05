@@ -3,17 +3,41 @@ import { useI18n } from "@/lib/i18n";
 import { usePageSEO } from "@/lib/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Upload, Download, Eye, Trash2, FileText, Award, ClipboardList, Briefcase, Plus, AlertCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Upload,
+  Download,
+  Eye,
+  Trash2,
+  FileText,
+  Award,
+  ClipboardList,
+  Briefcase,
+  Plus,
+  AlertCircle,
+} from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCandidate } from "@/hooks/useCandidate";
-import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES, uploadFileToStorage, CANDIDATE_DOCUMENTS_BUCKET } from "@/lib/supabase-storage";
+import {
+  ALLOWED_DOCUMENT_MIME_TYPES,
+  MAX_DOCUMENT_SIZE_BYTES,
+  uploadFileToStorage,
+  CANDIDATE_DOCUMENTS_BUCKET,
+} from "@/lib/supabase-storage";
 
 interface CandidateDocument {
   id: string;
-  type: "motivation" | "diploma" | "certificate" | "attestation" | "portfolio" | "other" | "recepisse";
+  type:
+    "motivation" | "diploma" | "certificate" | "attestation" | "portfolio" | "other" | "recepisse";
   name: string;
   displayName: string;
   date: string;
@@ -49,7 +73,11 @@ const formatFileSize = (size: number) => {
 
 const formatDate = (value: string) => {
   try {
-    return new Date(value).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
+    return new Date(value).toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
   } catch {
     return value;
   }
@@ -127,7 +155,11 @@ export function CandidateCVPage() {
     setFeedbackMessage("");
 
     try {
-      const url = await uploadFileToStorage(file, `candidates/${profile.id}/cv`, CANDIDATE_DOCUMENTS_BUCKET);
+      const url = await uploadFileToStorage(
+        file,
+        `candidates/${profile.id}/cv`,
+        CANDIDATE_DOCUMENTS_BUCKET,
+      );
       setCv({
         id: `cv-${Date.now()}`,
         name: file.name,
@@ -163,12 +195,19 @@ export function CandidateCVPage() {
     setFeedbackMessage("");
 
     try {
-      const url = await uploadFileToStorage(selectedDocumentFile, `candidates/${profile.id}/documents`, CANDIDATE_DOCUMENTS_BUCKET);
+      const url = await uploadFileToStorage(
+        selectedDocumentFile,
+        `candidates/${profile.id}/documents`,
+        CANDIDATE_DOCUMENTS_BUCKET,
+      );
       const newDocument: CandidateDocument = {
         id: `doc-${Date.now()}`,
         type: selectedType as CandidateDocument["type"],
         name: selectedDocumentFile.name,
-        displayName: selectedType === "other" && otherLabel.trim() ? otherLabel.trim() : selectedDocumentFile.name,
+        displayName:
+          selectedType === "other" && otherLabel.trim()
+            ? otherLabel.trim()
+            : selectedDocumentFile.name,
         date: new Date().toISOString(),
         size: formatFileSize(selectedDocumentFile.size),
         url,
@@ -179,7 +218,9 @@ export function CandidateCVPage() {
       setFeedbackMessage("Le document a été ajouté avec succès.");
       resetDocumentDialog();
     } catch (error) {
-      setFeedbackError(error instanceof Error ? error.message : "Impossible d’ajouter le document.");
+      setFeedbackError(
+        error instanceof Error ? error.message : "Impossible d’ajouter le document.",
+      );
     } finally {
       setIsUploadingDocument(false);
     }
@@ -194,7 +235,11 @@ export function CandidateCVPage() {
   }
 
   if (!profile) {
-    return <div className="py-10 text-center text-slate-600">Veuillez vous reconnecter pour gérer vos documents.</div>;
+    return (
+      <div className="py-10 text-center text-slate-600">
+        Veuillez vous reconnecter pour gérer vos documents.
+      </div>
+    );
   }
 
   return (
@@ -232,11 +277,21 @@ export function CandidateCVPage() {
                     <p className="text-sm text-slate-600">Ajouté le: {formatDate(cv.date)}</p>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="gap-2" onClick={() => window.open(cv.url, "_blank", "noopener,noreferrer")}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-2"
+                      onClick={() => window.open(cv.url, "_blank", "noopener,noreferrer")}
+                    >
                       <Eye className="w-4 h-4" />
                       Aperçu
                     </Button>
-                    <Button size="sm" variant="outline" className="gap-2" onClick={() => window.open(cv.url, "_blank", "noopener,noreferrer")}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-2"
+                      onClick={() => window.open(cv.url, "_blank", "noopener,noreferrer")}
+                    >
                       <Download className="w-4 h-4" />
                       Télécharger
                     </Button>
@@ -252,8 +307,16 @@ export function CandidateCVPage() {
             <div className="border-2 border-dashed border-cyan-300 rounded-lg p-8 text-center hover:border-cyan-500 transition-colors bg-white">
               <Upload className="w-10 h-10 text-cyan-400 mx-auto mb-3" />
               <p className="font-medium text-slate-700 mb-1">Remplacer votre CV</p>
-              <p className="text-sm text-slate-600 mb-4">Sélectionnez un PDF depuis votre appareil</p>
-              <input ref={cvInputRef} type="file" accept="application/pdf" className="hidden" onChange={handleCvUpload} />
+              <p className="text-sm text-slate-600 mb-4">
+                Sélectionnez un PDF depuis votre appareil
+              </p>
+              <input
+                ref={cvInputRef}
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={handleCvUpload}
+              />
               <Button
                 onClick={() => cvInputRef.current?.click()}
                 disabled={isUploadingCv}
@@ -271,7 +334,9 @@ export function CandidateCVPage() {
           <div className="flex items-center justify-between gap-3">
             <div>
               <CardTitle>Documents Complémentaires</CardTitle>
-              <CardDescription>Ajoutez des documents pour renforcer votre candidature</CardDescription>
+              <CardDescription>
+                Ajoutez des documents pour renforcer votre candidature
+              </CardDescription>
             </div>
             <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
               <DialogTrigger asChild>
@@ -284,7 +349,8 @@ export function CandidateCVPage() {
                 <DialogHeader>
                   <DialogTitle>Ajouter un document</DialogTitle>
                   <DialogDescription>
-                    Sélectionnez le type de document à télécharger ou choisissez "Autre" pour préciser un nom.
+                    Sélectionnez le type de document à télécharger ou choisissez "Autre" pour
+                    préciser un nom.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-3">
@@ -310,7 +376,12 @@ export function CandidateCVPage() {
                   {selectedType === "other" && (
                     <div className="space-y-2">
                       <Label htmlFor="otherLabel">Nom du document</Label>
-                      <Input id="otherLabel" placeholder="Ex: Convention de stage" value={otherLabel} onChange={(e) => setOtherLabel(e.target.value)} />
+                      <Input
+                        id="otherLabel"
+                        placeholder="Ex: Convention de stage"
+                        value={otherLabel}
+                        onChange={(e) => setOtherLabel(e.target.value)}
+                      />
                     </div>
                   )}
 
@@ -325,8 +396,14 @@ export function CandidateCVPage() {
                   </div>
 
                   <div className="flex justify-end gap-2 pt-2">
-                    <Button variant="outline" onClick={resetDocumentDialog}>Annuler</Button>
-                    <Button disabled={isUploadingDocument || !selectedDocumentFile} onClick={handleAddDocument} className="bg-brand text-brand-foreground hover:bg-brand/90 text-white">
+                    <Button variant="outline" onClick={resetDocumentDialog}>
+                      Annuler
+                    </Button>
+                    <Button
+                      disabled={isUploadingDocument || !selectedDocumentFile}
+                      onClick={handleAddDocument}
+                      className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
+                    >
                       {isUploadingDocument ? "Ajout..." : "Ajouter"}
                     </Button>
                   </div>
@@ -342,27 +419,47 @@ export function CandidateCVPage() {
                 const typeInfo = documentTypes[doc.type];
                 const Icon = typeInfo.icon;
                 return (
-                  <div key={doc.id} className="flex items-center justify-between gap-3 p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between gap-3 p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                  >
                     <div className="flex items-center gap-3 flex-1">
                       <div className="p-2 bg-slate-100 rounded-lg">
                         <Icon className={`w-5 h-5 ${typeInfo.color}`} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-slate-900">{doc.displayName || doc.name}</p>
-                        <p className="text-sm text-slate-600">{typeInfo.label} • Ajouté le {formatDate(doc.date)}</p>
+                        <p className="text-sm text-slate-600">
+                          {typeInfo.label} • Ajouté le {formatDate(doc.date)}
+                        </p>
                         {doc.size && <p className="text-xs text-slate-500">{doc.size}</p>}
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      <Button size="sm" variant="outline" className="gap-2" onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-2"
+                        onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}
+                      >
                         <Eye className="w-4 h-4" />
                         Aperçu
                       </Button>
-                      <Button size="sm" variant="outline" className="gap-2" onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-2"
+                        onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}
+                      >
                         <Download className="w-4 h-4" />
                         Télécharger
                       </Button>
-                      <Button size="sm" variant="ghost" className="text-red-600 hover:text-red-700" onClick={() => handleDeleteDocument(doc.id)}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-red-600 hover:text-red-700"
+                        onClick={() => handleDeleteDocument(doc.id)}
+                      >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
@@ -373,7 +470,9 @@ export function CandidateCVPage() {
           ) : (
             <Alert>
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>Aucun document complémentaire ajouté pour le moment.</AlertDescription>
+              <AlertDescription>
+                Aucun document complémentaire ajouté pour le moment.
+              </AlertDescription>
             </Alert>
           )}
         </CardContent>
@@ -385,7 +484,10 @@ export function CandidateCVPage() {
             <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-blue-900">
               <p className="font-medium mb-1">💡 Conseil</p>
-              <p>Les documents complémentaires augmentent significativement vos chances de recevoir une réponse positive.</p>
+              <p>
+                Les documents complémentaires augmentent significativement vos chances de recevoir
+                une réponse positive.
+              </p>
             </div>
           </div>
         </CardContent>

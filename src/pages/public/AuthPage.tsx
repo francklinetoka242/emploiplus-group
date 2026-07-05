@@ -41,7 +41,12 @@ export function AuthPage() {
 
   return (
     <>
-      <SEO title={t("auth.page.title")} description={t("auth.page.description")} canonical={`${BASE_URL}/auth`} robots="noindex,nofollow" />
+      <SEO
+        title={t("auth.page.title")}
+        description={t("auth.page.description")}
+        canonical={`${BASE_URL}/auth`}
+        robots="noindex,nofollow"
+      />
       <div className="min-h-screen bg-slate-50 flex items-center justify-center py-20 px-4">
         <div className="mx-auto max-w-xl rounded-3xl border border-slate-200 bg-white p-10 shadow-xl">
           <div className="text-center mb-8">
@@ -49,14 +54,15 @@ export function AuthPage() {
               <img src={favicon} alt="EmploiPlus" className="h-10 w-10 object-contain" />
             </div>
             <h1 className="font-display text-3xl font-bold text-slate-900">{t("auth.heading")}</h1>
-            <p className="mt-4 text-slate-600">
-              {t("auth.subtitle")}
-            </p>
+            <p className="mt-4 text-slate-600">{t("auth.subtitle")}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="mt-4 space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="auth-email">
+              <label
+                className="block text-sm font-semibold text-foreground mb-2"
+                htmlFor="auth-email"
+              >
                 {t("common.email")}
               </label>
               <input
@@ -72,7 +78,10 @@ export function AuthPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2" htmlFor="auth-password">
+              <label
+                className="block text-sm font-semibold text-foreground mb-2"
+                htmlFor="auth-password"
+              >
                 {t("common.password")}
               </label>
               <input
@@ -99,7 +108,11 @@ export function AuthPage() {
               </div>
             ) : null}
 
-            <Button type="submit" size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90">
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full bg-brand text-brand-foreground hover:bg-brand/90"
+            >
               {loading ? t("auth.submit.loading") : t("common.signIn")}
             </Button>
           </form>

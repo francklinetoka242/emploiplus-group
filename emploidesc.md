@@ -5,6 +5,7 @@ Ce document rassemble l'analyse complète du Front‑End existant relative à la
 **Remarque**: Aucune modification de fichier et aucune proposition d'implémentation n'ont été faites — ceci est une analyse uniquement.
 
 **1. Carte d'offre (JobCard)**
+
 - Fichier principal: [src/components/site/JobCard.tsx](src/components/site/JobCard.tsx#L1-L200)
 - Props exposées par le composant (`JobCardProps`):
   - `job` (objet) — l'offre entière telle que fournie par le hook
@@ -44,6 +45,7 @@ Ce document rassemble l'analyse complète du Front‑End existant relative à la
   - `job.updated_at`, `meta_title`, `meta_description` (pas visibles)
 
 **2. Page de détail d'une offre**
+
 - Fichier principal: [src/pages/public/JobOfferDetailPage.tsx](src/pages/public/JobOfferDetailPage.tsx#L1-L400)
 - Route: `/jobs/:slug` (définie dans `App.tsx`)
 
@@ -80,6 +82,7 @@ Ce document rassemble l'analyse complète du Front‑End existant relative à la
   - `id`, `updated_at`, `expires_at` (utilisés pour SEO/structuredData mais pas visibles)
 
 **3. Informations du candidat connecté**
+
 - Hook principal: [src/hooks/useCandidate.ts](src/hooks/useCandidate.ts#L1-L200) — expose `profile`, `loading`, `error`, `logout`, `updateProfile`, `refetch`, `isAuthenticated`.
 - Type central: `CandidateProfile` défini dans [src/integrations/supabase/candidate-auth.ts](src/integrations/supabase/candidate-auth.ts#L1-L120)
 
@@ -110,6 +113,7 @@ Ce document rassemble l'analyse complète du Front‑End existant relative à la
   - Offres enregistrées (`candidate_saved_offers`) retournées par `getCandidateSavedOffers` => `id`, `saved_at`, jointure `job_offers`
 
 **4. Documents du candidat (page "Mes Documents")**
+
 - Fichier principal: [src/pages/candidate/CandidateCVPage.tsx](src/pages/candidate/CandidateCVPage.tsx#L1-L400)
 - Stockage côté front:
   - Les documents (CV + documents complémentaires) sont conservés localement dans `localStorage` sous la clé `emploiplus-candidate-documents-{profile.id}` (cf. `useEffect`)
@@ -147,6 +151,7 @@ Ce document rassemble l'analyse complète du Front‑End existant relative à la
   - Upload fait via `uploadFileToStorage(file, folder, bucket)` qui renvoie une URL
 
 **5. Navigation & accès aux offres**
+
 - Routes importantes (extrait de [src/App.tsx](src/App.tsx#L1-L220)):
   - Page liste: `/jobs` — `JobsPage` ([src/pages/public/JobsPage.tsx](src/pages/public/JobsPage.tsx#L1-L200))
   - Détail: `/jobs/:slug` — `JobOfferDetailPage`
@@ -164,6 +169,7 @@ Ce document rassemble l'analyse complète du Front‑End existant relative à la
   - Dans l'espace candidat: `Voir` / `Retirer` / `Supprimer` (candidatures & offres enregistrées)
 
 **6. Design System — composants réutilisables identifiés**
+
 - Emplacement principal des composants UI: `src/components/ui/`.
 - Composants réutilisables utilisés dans les pages candidat/offres (exemples):
   - `Button` — [src/components/ui/button.tsx](src/components/ui/button.tsx#L1-L120)
@@ -211,7 +217,9 @@ Ci‑dessous la liste des éléments déjà disponibles dans le Front‑End et d
 Cette liste devrait permettre de concevoir l'interface "Postuler" en réutilisant les composants et données existantes pour garantir cohérence visuelle et comportementale.
 
 ---
+
 Fichiers consultés (extraits utiles):
+
 - [src/components/site/JobCard.tsx](src/components/site/JobCard.tsx#L1-L200)
 - [src/pages/public/JobOfferDetailPage.tsx](src/pages/public/JobOfferDetailPage.tsx#L1-L400)
 - [src/pages/public/JobsPage.tsx](src/pages/public/JobsPage.tsx#L1-L220)

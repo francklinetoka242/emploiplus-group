@@ -15,13 +15,15 @@ import {
 import type { Database } from "@/integrations/supabase/types";
 
 function createSlug(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/--+/g, "-")
-    .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
+  return (
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/--+/g, "-")
+      .replace(/^-+|-+$/g, "") || `item-${Date.now()}`
+  );
 }
 
 export function AdminBlogCreatePage() {
@@ -66,7 +68,7 @@ export function AdminBlogCreatePage() {
     setSaving(true);
 
     const slug = createSlug(form.title || `article-${Date.now()}`);
-    const payload = {
+    const payload: Database["public"]["Tables"]["blog_posts"]["Insert"] = {
       slug,
       title: form.title,
       subtitle: form.subtitle || null,
@@ -77,10 +79,16 @@ export function AdminBlogCreatePage() {
       video_url: form.video_url || null,
       external_link: form.external_link || null,
       category: form.category || null,
-      tags: form.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+      tags: form.tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean),
       status: form.status as Database["public"]["Enums"]["post_status"],
-      publish_at: form.publish_at ? new Date(form.publish_at).toISOString() : (form.status === "published" ? new Date().toISOString() : null),
-      is_featured: form.is_featured,
+      publish_at: form.publish_at
+        ? new Date(form.publish_at).toISOString()
+        : form.status === "published"
+          ? new Date().toISOString()
+          : null,
       sort_order: Number(form.sort_order || 0),
     };
 
@@ -108,9 +116,13 @@ export function AdminBlogCreatePage() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="font-display text-3xl font-bold text-foreground">Nouvel article</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Créez un article clair, professionnel et orienté entreprise.</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Créez un article clair, professionnel et orienté entreprise.
+            </p>
           </div>
-          <Button size="lg" variant="outline" onClick={() => navigate("/admin/blog")}>Retour au blog</Button>
+          <Button size="lg" variant="outline" onClick={() => navigate("/admin/blog")}>
+            Retour au blog
+          </Button>
         </div>
       </div>
       <form onSubmit={handleSubmit} className="grid gap-6">
@@ -118,49 +130,105 @@ export function AdminBlogCreatePage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2">Titre</label>
-              <Input name="title" value={form.title} onChange={handleChange} required placeholder="Titre de l'article" />
+              <Input
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                required
+                placeholder="Titre de l'article"
+              />
             </div>
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2">Sous-titre</label>
-              <Input name="subtitle" value={form.subtitle} onChange={handleChange} placeholder="Résumé sous le titre" />
+              <Input
+                name="subtitle"
+                value={form.subtitle}
+                onChange={handleChange}
+                placeholder="Résumé sous le titre"
+              />
             </div>
           </div>
           <div>
             <label className="block text-sm font-semibold text-foreground mb-2">Extrait</label>
-            <Textarea name="excerpt" value={form.excerpt} onChange={handleChange} rows={4} placeholder="Phrase d'accroche visible sur la page blog." />
+            <Textarea
+              name="excerpt"
+              value={form.excerpt}
+              onChange={handleChange}
+              rows={4}
+              placeholder="Phrase d'accroche visible sur la page blog."
+            />
           </div>
           <div>
             <label className="block text-sm font-semibold text-foreground mb-2">Contenu</label>
-            <Textarea name="content" value={form.content} onChange={handleChange} required rows={8} placeholder="Rédigez votre article ici avec un message clair pour les entreprises." />
+            <Textarea
+              name="content"
+              value={form.content}
+              onChange={handleChange}
+              required
+              rows={8}
+              placeholder="Rédigez votre article ici avec un message clair pour les entreprises."
+            />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2">Catégorie</label>
-              <Input name="category" value={form.category} onChange={handleChange} placeholder="Recrutement, SaaS, RH..." />
+              <Input
+                name="category"
+                value={form.category}
+                onChange={handleChange}
+                placeholder="Recrutement, SaaS, RH..."
+              />
             </div>
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2">Auteur</label>
-              <Input name="author" value={form.author} onChange={handleChange} placeholder="Nom de l'auteur" />
+              <Input
+                name="author"
+                value={form.author}
+                onChange={handleChange}
+                placeholder="Nom de l'auteur"
+              />
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Image principale (URL)</label>
-              <Input name="image" value={form.image} onChange={handleChange} placeholder="https://..." />
+              <label className="block text-sm font-semibold text-foreground mb-2">
+                Image principale (URL)
+              </label>
+              <Input
+                name="image"
+                value={form.image}
+                onChange={handleChange}
+                placeholder="https://..."
+              />
             </div>
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2">Lien vidéo</label>
-              <Input name="video_url" value={form.video_url} onChange={handleChange} placeholder="https://..." />
+              <Input
+                name="video_url"
+                value={form.video_url}
+                onChange={handleChange}
+                placeholder="https://..."
+              />
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Lien externe</label>
-              <Input name="external_link" value={form.external_link} onChange={handleChange} placeholder="https://..." />
+              <label className="block text-sm font-semibold text-foreground mb-2">
+                Lien externe
+              </label>
+              <Input
+                name="external_link"
+                value={form.external_link}
+                onChange={handleChange}
+                placeholder="https://..."
+              />
             </div>
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2">Statut</label>
-              <Select value={form.status} onValueChange={(value) => setForm((prev) => ({ ...prev, status: value }))}>
+              <Select
+                value={form.status}
+                onValueChange={(value) => setForm((prev) => ({ ...prev, status: value }))}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choisir" />
                 </SelectTrigger>
@@ -174,24 +242,60 @@ export function AdminBlogCreatePage() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Date de publication</label>
-              <Input name="publish_at" type="datetime-local" value={form.publish_at} onChange={handleChange} />
+              <label className="block text-sm font-semibold text-foreground mb-2">
+                Date de publication
+              </label>
+              <Input
+                name="publish_at"
+                type="datetime-local"
+                value={form.publish_at}
+                onChange={handleChange}
+              />
             </div>
             <div className="rounded-2xl border border-border bg-background/60 p-4">
               <label className="flex items-center gap-3 text-sm font-semibold text-foreground">
-                <input type="checkbox" name="is_featured" checked={form.is_featured} onChange={handleToggleChange} className="size-4 rounded border-border" />
+                <input
+                  type="checkbox"
+                  name="is_featured"
+                  checked={form.is_featured}
+                  onChange={handleToggleChange}
+                  className="size-4 rounded border-border"
+                />
                 Mettre à la une
               </label>
               <div className="mt-3">
-                <label className="block text-sm font-semibold text-foreground mb-2">Ordre d’affichage</label>
-                <Input name="sort_order" type="number" min="0" value={form.sort_order} onChange={handleChange} />
+                <label className="block text-sm font-semibold text-foreground mb-2">
+                  Ordre d’affichage
+                </label>
+                <Input
+                  name="sort_order"
+                  type="number"
+                  min="0"
+                  value={form.sort_order}
+                  onChange={handleChange}
+                />
               </div>
             </div>
           </div>
-          <div className="text-sm text-muted-foreground">Laisser vide pour publier immédiatement selon le statut.</div>
-          {error ? <div className="rounded-2xl bg-destructive/10 border border-destructive px-4 py-3 text-sm text-destructive">{error}</div> : null}
-          {success ? <div className="rounded-2xl bg-success/10 border border-success px-4 py-3 text-sm text-success">{success}</div> : null}
-          <Button type="submit" size="lg" className="w-full bg-brand text-brand-foreground hover:bg-brand/90" disabled={saving}>
+          <div className="text-sm text-muted-foreground">
+            Laisser vide pour publier immédiatement selon le statut.
+          </div>
+          {error ? (
+            <div className="rounded-2xl bg-destructive/10 border border-destructive px-4 py-3 text-sm text-destructive">
+              {error}
+            </div>
+          ) : null}
+          {success ? (
+            <div className="rounded-2xl bg-success/10 border border-success px-4 py-3 text-sm text-success">
+              {success}
+            </div>
+          ) : null}
+          <Button
+            type="submit"
+            size="lg"
+            className="w-full bg-brand text-brand-foreground hover:bg-brand/90"
+            disabled={saving}
+          >
             {saving ? "Enregistrement..." : "Publier l'article"}
           </Button>
         </div>

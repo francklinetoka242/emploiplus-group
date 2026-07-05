@@ -16,18 +16,20 @@ export type TransactionalEmailOptions = {
 };
 
 export function renderTransactionalEmail(options: TransactionalEmailOptions) {
-  const fromName = options.fromName || 'EmploiPlus Group';
-  const brandColor = options.brandColor || '#00009E';
-  const accentColor = options.accentColor || '#E8A900';
-  const supportEmail = options.supportEmail || 'contact@emploiplus-group.com';
-  const supportPhone = options.supportPhone || '+242 0673 11033';
-  const whatsappUrl = options.whatsappUrl || 'https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631';
-  const companyAddress = options.companyAddress || 'Pointe-Noire, République du Congo';
-  const footerNote = options.footerNote || 'Recrutement • Opportunités • Accompagnement professionnel';
+  const fromName = options.fromName || "EmploiPlus Group";
+  const brandColor = options.brandColor || "#00009E";
+  const accentColor = options.accentColor || "#E8A900";
+  const supportEmail = options.supportEmail || "contact@emploiplus-group.com";
+  const supportPhone = options.supportPhone || "+242 0673 11033";
+  const whatsappUrl =
+    options.whatsappUrl || "https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631";
+  const companyAddress = options.companyAddress || "Pointe-Noire, République du Congo";
+  const footerNote =
+    options.footerNote || "Recrutement • Opportunités • Accompagnement professionnel";
 
   const bodySection = options.bodyHtml
     ? `<div style="margin:0 0 24px 0;">${options.bodyHtml}</div>`
-    : '';
+    : "";
 
   return `
     <!doctype html>
@@ -97,7 +99,7 @@ export function renderTransactionalEmail(options: TransactionalEmailOptions) {
                 <tr>
                   <td style="background-color:#f8fafc;padding:24px 32px;border-top:3px solid ${accentColor};">
                     <p style="margin:0 0 10px;font-size:15px;line-height:1.4;font-weight:700;color:#0f172a;font-family:Inter, Segoe UI, Arial, sans-serif;">Nous contacter</p>
-                    <p style="margin:0 0 6px;font-size:13px;line-height:1.6;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Téléphone : <a href="tel:${supportPhone.replace(/[^0-9+]/g, '')}" style="color:${brandColor};text-decoration:none;">${supportPhone}</a></p>
+                    <p style="margin:0 0 6px;font-size:13px;line-height:1.6;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Téléphone : <a href="tel:${supportPhone.replace(/[^0-9+]/g, "")}" style="color:${brandColor};text-decoration:none;">${supportPhone}</a></p>
                     <p style="margin:0 0 6px;font-size:13px;line-height:1.6;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Email : <a href="mailto:${supportEmail}" style="color:${brandColor};text-decoration:none;">${supportEmail}</a></p>
                     <p style="margin:0 0 6px;font-size:13px;line-height:1.6;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Ville : ${companyAddress}</p>
                     <p style="margin:0 0 6px;font-size:13px;line-height:1.6;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Offres WhatsApp : <a href="${whatsappUrl}" style="color:${brandColor};text-decoration:none;">${whatsappUrl}</a></p>

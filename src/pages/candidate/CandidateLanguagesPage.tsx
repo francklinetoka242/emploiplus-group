@@ -12,7 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Plus, Edit2, Trash2, Globe, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCandidate } from "@/hooks/useCandidate";
@@ -147,7 +154,7 @@ export function CandidateLanguagesPage() {
       <div className="flex items-center justify-end">
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
-            <Button 
+            <Button
               className="bg-brand text-brand-foreground hover:bg-brand/90 text-white gap-2"
               onClick={() => {
                 setEditingId(null);
@@ -160,12 +167,8 @@ export function CandidateLanguagesPage() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
-                {editingId ? "Modifier une langue" : "Ajouter une langue"}
-              </DialogTitle>
-              <DialogDescription>
-                Entrez la langue et votre niveau de maîtrise
-              </DialogDescription>
+              <DialogTitle>{editingId ? "Modifier une langue" : "Ajouter une langue"}</DialogTitle>
+              <DialogDescription>Entrez la langue et votre niveau de maîtrise</DialogDescription>
             </DialogHeader>
             <form className="space-y-4">
               <div className="space-y-2">
@@ -181,9 +184,7 @@ export function CandidateLanguagesPage() {
                 <Label htmlFor="level">Niveau</Label>
                 <Select
                   value={newLanguage.level}
-                  onValueChange={(value) =>
-                    setNewLanguage({ ...newLanguage, level: value })
-                  }
+                  onValueChange={(value) => setNewLanguage({ ...newLanguage, level: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -252,15 +253,17 @@ export function CandidateLanguagesPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-slate-900">{lang.language_name}</p>
-                      <p className={`text-sm font-medium px-2 py-1 rounded-full inline-block mt-1 ${getLevelColor(lang.proficiency_level)}`}>
+                      <p
+                        className={`text-sm font-medium px-2 py-1 rounded-full inline-block mt-1 ${getLevelColor(lang.proficiency_level)}`}
+                      >
                         {getProficiencyLabel(lang.proficiency_level)}
                       </p>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                    <Button
+                      size="sm"
+                      variant="outline"
                       className="gap-2"
                       onClick={() => handleEditLanguage(lang)}
                     >
@@ -292,7 +295,9 @@ export function CandidateLanguagesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {proficiencyLevels.map((level) => (
               <div key={level.value} className="flex items-center gap-2">
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(level.value)}`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(level.value)}`}
+                >
                   {level.label}
                 </span>
               </div>

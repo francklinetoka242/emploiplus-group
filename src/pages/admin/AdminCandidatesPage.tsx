@@ -6,8 +6,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { BASE_URL } from "@/lib/seo";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { Database } from "@/integrations/supabase/types";
 
 type CandidateRow = Database["public"]["Tables"]["candidates"]["Row"];
@@ -39,7 +52,9 @@ export function AdminCandidatesPage() {
   const [loading, setLoading] = React.useState(true);
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
   const [selectedCandidate, setSelectedCandidate] = React.useState<CandidateRow | null>(null);
-  const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(
+    null,
+  );
 
   const loadCandidates = React.useCallback(async () => {
     setLoading(true);
@@ -78,7 +93,10 @@ export function AdminCandidatesPage() {
     setActionLoadingId(candidate.id);
     setMessage(null);
 
-    const { error } = await supabase.from("candidates").update({ status: nextStatus }).eq("id", candidate.id);
+    const { error } = await supabase
+      .from("candidates")
+      .update({ status: nextStatus })
+      .eq("id", candidate.id);
 
     setActionLoadingId(null);
     if (error) {
@@ -86,7 +104,10 @@ export function AdminCandidatesPage() {
       return;
     }
 
-    setMessage({ type: "success", text: t("admin.candidates.updateSuccess") || "Statut du candidat mis à jour." });
+    setMessage({
+      type: "success",
+      text: t("admin.candidates.updateSuccess") || "Statut du candidat mis à jour.",
+    });
     void loadCandidates();
   };
 
@@ -109,16 +130,26 @@ export function AdminCandidatesPage() {
       return;
     }
 
-    setMessage({ type: "success", text: t("admin.candidates.deleteSuccess") || "Candidat supprimé." });
+    setMessage({
+      type: "success",
+      text: t("admin.candidates.deleteSuccess") || "Candidat supprimé.",
+    });
     void loadCandidates();
   };
 
   const pageTitle = t("admin.candidates.title") || "Gestion des utilisateurs";
-  const pageDescription = t("admin.candidates.description") || "Gérez les profils des candidats enregistrés et leurs statuts.";
+  const pageDescription =
+    t("admin.candidates.description") ||
+    "Gérez les profils des candidats enregistrés et leurs statuts.";
 
   return (
     <>
-      <SEO title={pageTitle} description={pageDescription} canonical={`${BASE_URL}/admin/candidates`} robots="noindex,nofollow" />
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonical={`${BASE_URL}/admin/candidates`}
+        robots="noindex,nofollow"
+      />
       <div className="space-y-6">
         <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -156,11 +187,17 @@ export function AdminCandidatesPage() {
         <div className="overflow-hidden rounded-[2rem] border border-border bg-background p-6 shadow-soft">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-semibold text-slate-900">{t("admin.candidates.title") || pageTitle}</h2>
-              <p className="mt-2 text-sm text-slate-500">{t("admin.candidates.description") || pageDescription}</p>
+              <h2 className="text-xl font-semibold text-slate-900">
+                {t("admin.candidates.title") || pageTitle}
+              </h2>
+              <p className="mt-2 text-sm text-slate-500">
+                {t("admin.candidates.description") || pageDescription}
+              </p>
             </div>
             <div className="rounded-3xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
-              {loading ? "Chargement..." : `${candidates.length} ${candidates.length > 1 ? "candidats" : "candidat"}`}
+              {loading
+                ? "Chargement..."
+                : `${candidates.length} ${candidates.length > 1 ? "candidats" : "candidat"}`}
             </div>
           </div>
 
@@ -198,7 +235,9 @@ export function AdminCandidatesPage() {
                     <TableCell>{candidate.email}</TableCell>
                     <TableCell>{candidate.phone || "-"}</TableCell>
                     <TableCell>
-                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[candidate.status]}`}>
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[candidate.status]}`}
+                      >
                         {t(statusLabels[candidate.status]) || candidate.status}
                       </span>
                     </TableCell>
@@ -221,7 +260,11 @@ export function AdminCandidatesPage() {
                           disabled={actionLoadingId === candidate.id}
                           className="gap-2"
                         >
-                          {candidate.status === "active" ? <Ban className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
+                          {candidate.status === "active" ? (
+                            <Ban className="h-4 w-4" />
+                          ) : (
+                            <CheckCircle2 className="h-4 w-4" />
+                          )}
                           {candidate.status === "active"
                             ? t("admin.candidates.actions.block") || "Bloquer"
                             : t("admin.candidates.actions.unblock") || "Débloquer"}
@@ -245,22 +288,31 @@ export function AdminCandidatesPage() {
           )}
         </div>
 
-        <Dialog open={Boolean(selectedCandidate)} onOpenChange={(open) => !open && setSelectedCandidate(null)}>
+        <Dialog
+          open={Boolean(selectedCandidate)}
+          onOpenChange={(open) => !open && setSelectedCandidate(null)}
+        >
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>{t("admin.candidates.detail.title") || "Détails du candidat"}</DialogTitle>
+              <DialogTitle>
+                {t("admin.candidates.detail.title") || "Détails du candidat"}
+              </DialogTitle>
             </DialogHeader>
             {selectedCandidate ? (
               <div className="space-y-4 py-2">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <p className="text-sm font-semibold text-slate-600">{t("admin.candidates.table.name") || "Nom"}</p>
+                    <p className="text-sm font-semibold text-slate-600">
+                      {t("admin.candidates.table.name") || "Nom"}
+                    </p>
                     <p className="mt-1 text-sm text-slate-900">
                       {selectedCandidate.first_name} {selectedCandidate.last_name}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-600">{t("admin.candidates.table.email") || "Email"}</p>
+                    <p className="text-sm font-semibold text-slate-600">
+                      {t("admin.candidates.table.email") || "Email"}
+                    </p>
                     <p className="mt-1 text-sm text-slate-900">{selectedCandidate.email}</p>
                   </div>
                 </div>
@@ -272,41 +324,55 @@ export function AdminCandidatesPage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-600">Statut</p>
-                    <p className={`mt-1 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[selectedCandidate.status]}`}>
+                    <p
+                      className={`mt-1 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[selectedCandidate.status]}`}
+                    >
                       {t(statusLabels[selectedCandidate.status]) || selectedCandidate.status}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-600">Inscrit le</p>
-                    <p className="mt-1 text-sm text-slate-900">{formatDate(selectedCandidate.created_at)}</p>
+                    <p className="mt-1 text-sm text-slate-900">
+                      {formatDate(selectedCandidate.created_at)}
+                    </p>
                   </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <p className="text-sm font-semibold text-slate-600">Ville</p>
-                    <p className="mt-1 text-sm text-slate-900">{selectedCandidate.location_city || "-"}</p>
+                    <p className="mt-1 text-sm text-slate-900">
+                      {selectedCandidate.location_city || "-"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-600">Pays</p>
-                    <p className="mt-1 text-sm text-slate-900">{selectedCandidate.location_country || "-"}</p>
+                    <p className="mt-1 text-sm text-slate-900">
+                      {selectedCandidate.location_country || "-"}
+                    </p>
                   </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <p className="text-sm font-semibold text-slate-600">Titre professionnel</p>
-                    <p className="mt-1 text-sm text-slate-900">{selectedCandidate.headline || "-"}</p>
+                    <p className="mt-1 text-sm text-slate-900">
+                      {selectedCandidate.headline || "-"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-600">Date de naissance</p>
-                    <p className="mt-1 text-sm text-slate-900">{selectedCandidate.date_of_birth || "-"}</p>
+                    <p className="mt-1 text-sm text-slate-900">
+                      {selectedCandidate.date_of_birth || "-"}
+                    </p>
                   </div>
                 </div>
 
                 <div>
                   <p className="text-sm font-semibold text-slate-600">Bio</p>
-                  <p className="mt-1 text-sm text-slate-900 whitespace-pre-line">{selectedCandidate.bio || "-"}</p>
+                  <p className="mt-1 text-sm text-slate-900 whitespace-pre-line">
+                    {selectedCandidate.bio || "-"}
+                  </p>
                 </div>
               </div>
             ) : null}

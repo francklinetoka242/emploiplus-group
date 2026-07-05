@@ -12,12 +12,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AlertCircle, Camera, Save, X, User, CheckCircle2, Mail, Phone, MapPin } from "lucide-react";
+import {
+  AlertCircle,
+  Camera,
+  Save,
+  X,
+  User,
+  CheckCircle2,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCandidate } from "@/hooks/useCandidate";
 import { CandidateProfile } from "@/integrations/supabase/candidate-auth";
 import { centralAfricaCityGroups } from "@/lib/centralAfricaCities";
-import { SaasCard, SaasCardHeader, SaasCardContent, SaasCardFooter } from "@/components/candidate/SaasCard";
+import {
+  SaasCard,
+  SaasCardHeader,
+  SaasCardContent,
+  SaasCardFooter,
+} from "@/components/candidate/SaasCard";
 import { SaasGrid } from "@/components/candidate/SaasLayout";
 
 interface ProfileFormData {
@@ -39,7 +54,11 @@ const normalizeCountryValue = (value?: string | null) => {
   const normalized = (value ?? "").trim().toLowerCase();
   const match = countryOptions.find((country) => country.toLowerCase() === normalized);
   if (match) return match;
-  return countryOptions.find((country) => country.toLowerCase().includes("congo")) ?? countryOptions[0] ?? "Congo";
+  return (
+    countryOptions.find((country) => country.toLowerCase().includes("congo")) ??
+    countryOptions[0] ??
+    "Congo"
+  );
 };
 
 const getCitiesForCountry = (country: string) => {
@@ -82,7 +101,7 @@ export function CandidateProfilePageModern() {
 
     const nationality = normalizeCountryValue(profile.location_country);
     const cities = getCitiesForCountry(nationality);
-    const city = cities.includes(profile.location_city ?? "") ? profile.location_city ?? "" : "";
+    const city = cities.includes(profile.location_city ?? "") ? (profile.location_city ?? "") : "";
     const phoneCode = getCountryPhoneCode(nationality);
 
     setFormData({
@@ -105,7 +124,10 @@ export function CandidateProfilePageModern() {
 
   const handlePhoneNumberChange = (value: string) => {
     const normalized = value.replace(/\D/g, "");
-    setFormData((prev) => ({ ...prev, phone: `${getCountryPhoneCode(prev.nationality)}${normalized}` }));
+    setFormData((prev) => ({
+      ...prev,
+      phone: `${getCountryPhoneCode(prev.nationality)}${normalized}`,
+    }));
   };
 
   const handleNationalityChange = (value: string) => {
@@ -114,7 +136,9 @@ export function CandidateProfilePageModern() {
     const nextCode = getCountryPhoneCode(value);
     setFormData((prev) => ({
       ...prev,
-      phone: nextCode ? `${nextCode}${prev.phone ? prev.phone.replace(new RegExp(`^\\+?${nextCode}`), "") : ""}` : prev.phone,
+      phone: nextCode
+        ? `${nextCode}${prev.phone ? prev.phone.replace(new RegExp(`^\\+?${nextCode}`), "") : ""}`
+        : prev.phone,
     }));
   };
 
@@ -158,7 +182,7 @@ export function CandidateProfilePageModern() {
     } catch (error) {
       const message = error instanceof Error ? error.message : "Une erreur est survenue";
       setSaveError(message);
-      console.error('Error saving profile:', error);
+      console.error("Error saving profile:", error);
     } finally {
       setSaveLoading(false);
     }
@@ -171,7 +195,6 @@ export function CandidateProfilePageModern() {
   return (
     <div className="space-y-6">
       {/* Header */}
-    
 
       {/* Alerts */}
       {saveSuccess && (
@@ -184,9 +207,7 @@ export function CandidateProfilePageModern() {
       )}
       {saveError && (
         <Alert className="border-rose-200 bg-rose-50">
-          <AlertDescription className="text-rose-800">
-            {saveError}
-          </AlertDescription>
+          <AlertDescription className="text-rose-800">{saveError}</AlertDescription>
         </Alert>
       )}
 
@@ -201,7 +222,9 @@ export function CandidateProfilePageModern() {
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="relative">
               <Avatar className="w-16 h-16 border border-slate-200">
-                {profile?.avatar_url && <AvatarImage src={profile.avatar_url} alt={formData.firstName} />}
+                {profile?.avatar_url && (
+                  <AvatarImage src={profile.avatar_url} alt={formData.firstName} />
+                )}
                 <AvatarFallback className="bg-slate-200 text-slate-500 text-xs font-semibold flex items-center justify-center">
                   {initials || "C"}
                 </AvatarFallback>
@@ -287,19 +310,26 @@ export function CandidateProfilePageModern() {
                   placeholder="numero"
                   value={
                     formData.phone
-                      ? formData.phone.replace(new RegExp(`^\\+?${getCountryPhoneCode(formData.nationality)}`), "")
+                      ? formData.phone.replace(
+                          new RegExp(`^\\+?${getCountryPhoneCode(formData.nationality)}`),
+                          "",
+                        )
                       : ""
                   }
                   onChange={(e) => handlePhoneNumberChange(e.target.value)}
                   className="w-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
                 />
               </div>
-              <p className="text-xs text-slate-500 mt-1">Le code du pays est défini automatiquement selon votre pays.</p>
+              <p className="text-xs text-slate-500 mt-1">
+                Le code du pays est défini automatiquement selon votre pays.
+              </p>
             </div>
 
             {/* Professional Title */}
             <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Titre professionnel</Label>
+              <Label className="text-sm font-medium text-slate-700 mb-2 block">
+                Titre professionnel
+              </Label>
               <Input
                 type="text"
                 placeholder="Chef de projet junior"
@@ -323,7 +353,9 @@ export function CandidateProfilePageModern() {
           <SaasGrid columns="2" gap="4">
             {/* Date of Birth */}
             <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Date de naissance</Label>
+              <Label className="text-sm font-medium text-slate-700 mb-2 block">
+                Date de naissance
+              </Label>
               <Input
                 type="date"
                 value={formData.dateOfBirth}
@@ -364,7 +396,10 @@ export function CandidateProfilePageModern() {
             {/* City */}
             <div>
               <Label className="text-sm font-medium text-slate-700 mb-2 block">Ville</Label>
-              <Select value={formData.city} onValueChange={(value) => handleInputChange("city", value)}>
+              <Select
+                value={formData.city}
+                onValueChange={(value) => handleInputChange("city", value)}
+              >
                 <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
                   <SelectValue placeholder="Sélectionner..." />
                 </SelectTrigger>
@@ -398,7 +433,9 @@ export function CandidateProfilePageModern() {
               rows={5}
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors resize-none"
             />
-            <p className="text-xs text-slate-500 mt-2">Partagez une brève description de votre profil professionnel.</p>
+            <p className="text-xs text-slate-500 mt-2">
+              Partagez une brève description de votre profil professionnel.
+            </p>
           </div>
         </SaasCardContent>
       </SaasCard>

@@ -64,15 +64,13 @@ export function CandidateSignupPage() {
     if (!formData.firstName.trim()) newErrors.firstName = "Le prénom est requis";
     if (!formData.lastName.trim()) newErrors.lastName = "Le nom est requis";
     if (!formData.email) newErrors.email = "L'email est requis";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
-      newErrors.email = "Email invalide";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Email invalide";
     if (!formData.password) newErrors.password = "Le mot de passe est requis";
     else if (formData.password.length < 8)
       newErrors.password = "Le mot de passe doit contenir au moins 8 caractères";
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Les mots de passe ne correspondent pas";
-    if (!formData.agreeTerms)
-      newErrors.agreeTerms = "Vous devez accepter les conditions";
+    if (!formData.agreeTerms) newErrors.agreeTerms = "Vous devez accepter les conditions";
     return newErrors;
   };
 
@@ -89,9 +87,9 @@ export function CandidateSignupPage() {
 
     setLoading(true);
     try {
-      const resp = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const resp = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
@@ -103,13 +101,13 @@ export function CandidateSignupPage() {
       const body = await resp.json().catch(() => ({}));
       if (!resp.ok) {
         const rawMessage =
-          typeof body?.error === 'string'
+          typeof body?.error === "string"
             ? body.error
-            : typeof body?.message === 'string'
-            ? body.message
-            : body?.error
-            ? JSON.stringify(body.error)
-            : 'Une erreur est survenue';
+            : typeof body?.message === "string"
+              ? body.message
+              : body?.error
+                ? JSON.stringify(body.error)
+                : "Une erreur est survenue";
 
         const duplicateEmailMessage =
           resp.status === 422
@@ -117,9 +115,9 @@ export function CandidateSignupPage() {
             : rawMessage;
 
         setErrorMessage(duplicateEmailMessage);
-        console.error('Register API error', resp.status, body);
+        console.error("Register API error", resp.status, body);
       } else {
-        navigate('/candidate/login', {
+        navigate("/candidate/login", {
           replace: true,
           state: {
             notification:
@@ -128,10 +126,10 @@ export function CandidateSignupPage() {
           },
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMsg = CandidateAuthService.parseErrorMessage(error);
-      setErrorMessage(typeof errorMsg === 'string' ? errorMsg : String(errorMsg));
-      console.error('Signup error:', error);
+      setErrorMessage(typeof errorMsg === "string" ? errorMsg : String(errorMsg));
+      console.error("Signup error:", error);
     } finally {
       setLoading(false);
     }
@@ -148,7 +146,9 @@ export function CandidateSignupPage() {
               </div>
               <div className="flex flex-col">
                 <CardTitle className="text-xl">S'inscrire</CardTitle>
-                <CardDescription className="text-slate-600 text-sm">Remplissez vos informations pour créer un compte</CardDescription>
+                <CardDescription className="text-slate-600 text-sm">
+                  Remplissez vos informations pour créer un compte
+                </CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -157,18 +157,14 @@ export function CandidateSignupPage() {
             {errorMessage && (
               <Alert className="mb-4 border-red-200 bg-red-50">
                 <AlertCircle className="h-4 w-4 text-red-600" />
-                <AlertDescription className="text-red-800">
-                  {errorMessage}
-                </AlertDescription>
+                <AlertDescription className="text-red-800">{errorMessage}</AlertDescription>
               </Alert>
             )}
 
             {successMessage && (
               <Alert className="mb-4 border-green-200 bg-green-50">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">
-                  {successMessage}
-                </AlertDescription>
+                <AlertDescription className="text-green-800">{successMessage}</AlertDescription>
               </Alert>
             )}
 
@@ -189,9 +185,7 @@ export function CandidateSignupPage() {
                     disabled={loading}
                     className={errors.firstName ? "border-red-500" : ""}
                   />
-                  {errors.firstName && (
-                    <p className="text-sm text-red-500">{errors.firstName}</p>
-                  )}
+                  {errors.firstName && <p className="text-sm text-red-500">{errors.firstName}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -208,9 +202,7 @@ export function CandidateSignupPage() {
                     disabled={loading}
                     className={errors.lastName ? "border-red-500" : ""}
                   />
-                  {errors.lastName && (
-                    <p className="text-sm text-red-500">{errors.lastName}</p>
-                  )}
+                  {errors.lastName && <p className="text-sm text-red-500">{errors.lastName}</p>}
                 </div>
               </div>
 
@@ -229,9 +221,7 @@ export function CandidateSignupPage() {
                   disabled={loading}
                   className={errors.email ? "border-red-500" : ""}
                 />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email}</p>
-                )}
+                {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
               </div>
 
               {/* Password and Confirm */}
@@ -250,9 +240,7 @@ export function CandidateSignupPage() {
                     disabled={loading}
                     className={errors.password ? "border-red-500" : ""}
                   />
-                  {errors.password && (
-                    <p className="text-sm text-red-500">{errors.password}</p>
-                  )}
+                  {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -286,13 +274,10 @@ export function CandidateSignupPage() {
                   className="mt-1"
                 />
                 <Label htmlFor="agreeTerms" className="text-sm cursor-pointer">
-                  J'accepte les conditions d'utilisation et la politique de
-                  confidentialité
+                  J'accepte les conditions d'utilisation et la politique de confidentialité
                 </Label>
               </div>
-              {errors.agreeTerms && (
-                <p className="text-sm text-red-500">{errors.agreeTerms}</p>
-              )}
+              {errors.agreeTerms && <p className="text-sm text-red-500">{errors.agreeTerms}</p>}
 
               {/* Submit Button */}
               <Button

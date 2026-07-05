@@ -1,3 +1,4 @@
+import type { Session } from "@supabase/supabase-js";
 import React from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
@@ -23,13 +24,19 @@ import AdminTopbar from "@/components/admin/AdminTopbar";
 type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "candidates";
 
 export function AdminPage() {
-  const [session, setSession] = React.useState<any>(null);
+  const [session, setSession] = React.useState<Session | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
   const [activeView, setActiveView] = React.useState<AdminView>("dashboard");
   const { t } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
+  const seo = usePageSEO({
+    title: t("admin.page.title"),
+    description: t("admin.page.description"),
+    canonical: `${BASE_URL}/admin`,
+    robots: "noindex,nofollow",
+  });
 
   React.useEffect(() => {
     let mounted = true;
@@ -69,12 +76,7 @@ export function AdminPage() {
   if (loading) {
     return (
       <>
-        {usePageSEO({
-          title: t("admin.page.title"),
-          description: t("admin.page.description"),
-          canonical: "https://emploiplus.group/#/admin",
-          robots: "noindex,nofollow",
-        })}
+        {seo}
         <div className="container-page py-20 md:py-28">
           <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
             <p className="text-muted-foreground">{t("admin.page.loading")}</p>
@@ -87,18 +89,18 @@ export function AdminPage() {
   if (!session) {
     return (
       <>
-        {usePageSEO({
-          title: t("admin.page.title"),
-          description: t("admin.page.description"),
-          canonical: "https://emploiplus.group/#/admin",
-          robots: "noindex,nofollow",
-        })}
+        {seo}
         <div className="container-page py-20 md:py-28">
           <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-            <h1 className="font-display text-3xl font-bold text-foreground">{t("admin.page.protectedTitle")}</h1>
+            <h1 className="font-display text-3xl font-bold text-foreground">
+              {t("admin.page.protectedTitle")}
+            </h1>
             <p className="mt-4 text-muted-foreground">{t("admin.page.protectedDescription")}</p>
             <div className="mt-8">
-              <Link to="/auth" className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+              <Link
+                to="/auth"
+                className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+              >
                 {t("admin.page.loginButton")}
               </Link>
             </div>
@@ -110,12 +112,7 @@ export function AdminPage() {
 
   return (
     <>
-      {usePageSEO({
-        title: t("admin.page.title"),
-        description: t("admin.page.description"),
-        canonical: `${BASE_URL}/admin`,
-        robots: "noindex,nofollow",
-      })}
+      {seo}
       <div className="min-h-screen bg-slate-950/5 py-6">
         <div className="mx-auto flex min-h-[calc(100vh-72px)] max-w-[1600px] gap-6 px-4 sm:px-6 lg:px-8">
           <div className="sticky top-6 self-start shrink-0">

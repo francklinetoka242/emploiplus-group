@@ -17,7 +17,6 @@ import {
 import { useCandidate } from "@/hooks/useCandidate";
 import { CandidateAuthService } from "@/integrations/supabase/candidate-auth";
 
-
 interface Application {
   id: string;
   job_offers: {
@@ -156,11 +155,19 @@ export function CandidateApplicationsPage() {
                 <TableBody>
                   {applications.map((app) => (
                     <TableRow key={app.id} className="hover:bg-slate-50">
-                      <TableCell className="font-medium text-slate-900">{app.job_offers?.title || "—"}</TableCell>
-                      <TableCell className="text-slate-600">{app.job_offers?.company || "—"}</TableCell>
-                      <TableCell className="text-slate-600">{app.job_offers?.location_city || "—"}</TableCell>
+                      <TableCell className="font-medium text-slate-900">
+                        {app.job_offers?.title || "—"}
+                      </TableCell>
                       <TableCell className="text-slate-600">
-                        {app.applied_at ? new Date(app.applied_at).toLocaleDateString("fr-FR") : "—"}
+                        {app.job_offers?.company || "—"}
+                      </TableCell>
+                      <TableCell className="text-slate-600">
+                        {app.job_offers?.location_city || "—"}
+                      </TableCell>
+                      <TableCell className="text-slate-600">
+                        {app.applied_at
+                          ? new Date(app.applied_at).toLocaleDateString("fr-FR")
+                          : "—"}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className={getStatusBadgeColor(app.status)}>
@@ -201,7 +208,11 @@ export function CandidateApplicationsPage() {
       {applications.length > 0 && (
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-sm text-blue-900">
-            💡 Vous avez candidaté à <strong>{applications.length} offre{applications.length !== 1 ? "s" : ""}</strong>. Consultez régulièrement cette page pour suivre l'avancement de vos candidatures.
+            💡 Vous avez candidaté à{" "}
+            <strong>
+              {applications.length} offre{applications.length !== 1 ? "s" : ""}
+            </strong>
+            . Consultez régulièrement cette page pour suivre l'avancement de vos candidatures.
           </p>
         </div>
       )}

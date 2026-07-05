@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Save } from "lucide-react";
 import { CandidateAuthService, CandidatePreferences } from "@/integrations/supabase/candidate-auth";
@@ -144,9 +150,7 @@ export function CandidatePreferencesPage() {
 
       {error && (
         <Alert className="bg-red-50 border-red-200">
-          <AlertDescription className="text-red-900">
-            {error}
-          </AlertDescription>
+          <AlertDescription className="text-red-900">{error}</AlertDescription>
         </Alert>
       )}
 
@@ -158,7 +162,10 @@ export function CandidatePreferencesPage() {
         <CardContent>
           <div className="grid gap-3 sm:grid-cols-2">
             {contractOptions.map((option) => (
-              <label key={option.id} className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 cursor-pointer hover:bg-slate-50 transition-colors">
+              <label
+                key={option.id}
+                className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 cursor-pointer hover:bg-slate-50 transition-colors"
+              >
                 <Checkbox
                   checked={preferences.contracts.includes(option.id)}
                   onCheckedChange={() => togglePreference("contracts", option.id)}
@@ -178,7 +185,10 @@ export function CandidatePreferencesPage() {
         <CardContent>
           <div className="grid gap-3 sm:grid-cols-2">
             {workOptions.map((option) => (
-              <label key={option.id} className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 cursor-pointer hover:bg-slate-50 transition-colors">
+              <label
+                key={option.id}
+                className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 cursor-pointer hover:bg-slate-50 transition-colors"
+              >
                 <Checkbox
                   checked={preferences.workTypes.includes(option.id)}
                   onCheckedChange={() => togglePreference("workTypes", option.id)}

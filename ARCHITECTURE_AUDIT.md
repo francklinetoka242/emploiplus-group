@@ -8,6 +8,7 @@ Type : audit statique et de build sans modification de fichiers
 Le projet présente une base fonctionnelle mais un mélange clair d’architectures et de couches qui augmente le risque de bugs, de régressions et de maintenance coûteuse.
 
 Les signes les plus visibles sont :
+
 - coexistence d’un frontend React/Vite moderne avec des vestiges d’une architecture plus ancienne basée sur TanStack Start,
 - présence de fichiers alternatifs et de pages de remplacement dans le dossier des pages candidat,
 - API Vercel présentes dans le dossier api mais avec des dépendances et conventions qui ne sont pas entièrement alignées avec l’architecture actuelle,
@@ -23,6 +24,7 @@ Le risque principal n’est pas seulement “du code mal organisé” : il y a d
 ### 2.1 Architecture observée
 
 Le projet suit globalement une architecture React + TypeScript + Vite avec :
+
 - frontend dans src/
 - backend/serverless dans api/
 - Supabase comme couche de données/auth
@@ -33,6 +35,7 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 ### 2.2 Incohérences détectées
 
 1. Architecture hybride
+
 - Le projet contient des traces d’une architecture TanStack Start via des fichiers comme :
   - src/start.ts
   - src/server.ts
@@ -42,11 +45,13 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 - Cela indique une migration incomplète ou un code laissé en place après une transition.
 
 2. Pages alternatives et fichiers de compatibilité
+
 - Le dossier src/pages/candidate contient un fichier nommé CandidateDashboardPage-old.tsx.
 - Il existe aussi CandidateDashboardPage.tsx et CandidateDashboardPageModern.tsx.
 - Cela suggère une ancienne implémentation encore présente et potentiellement non utilisée, mais source de confusion.
 
 3. Dossiers et fichiers qui ne correspondent pas à une architecture unique
+
 - src/pages/public contient une structure mixte public/ + services/ + UtilityPages.tsx et plusieurs pages “service”.
 - Les composants sont dispersés entre src/components/site, src/components/page, src/components/admin, src/components/candidate, src/components/ui.
 - L’organisation est fonctionnelle mais pas parfaitement homogène.
@@ -67,6 +72,7 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 ### 3.1 Doublons de rôle / logique
 
 1. Pages tableau de bord candidat
+
 - Fichiers concernés :
   - src/pages/candidate/CandidateDashboardPage.tsx
   - src/pages/candidate/CandidateDashboardPageModern.tsx
@@ -75,6 +81,7 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 - Recommandation : conserver une seule implémentation, de préférence la version la plus stable et la plus utilisée.
 
 2. Auth middleware / attacher Supabase
+
 - Fichiers concernés :
   - src/integrations/supabase/auth-middleware.ts
   - src/integrations/supabase/auth-attacher.ts
@@ -82,6 +89,7 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 - Recommandation : supprimer ou archiver si non utilisés, sinon les migrer vers un seul mécanisme d’auth centralisé.
 
 3. Fichiers de service / page utilitaire
+
 - Fichiers concernés :
   - src/pages/public/UtilityPages.tsx
   - src/pages/public/ServicesPage.tsx
@@ -92,6 +100,7 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 ### 3.2 Doublons de fichiers/ressources
 
 1. Fichiers robots
+
 - public/robots.txt
 - src/assets/robots.txt
 - Problème : duplication de fichiers robots, mauvaise localisation (un dans public, un dans src/assets).
@@ -99,6 +108,7 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 - Supprimer/éliminer : src/assets/robots.txt
 
 2. Fichiers favicon / logo
+
 - public/favicon.ico
 - src/assets/favicon.ico
 - public/Logo.png
@@ -108,6 +118,7 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 - Recommandation : conserver un seul favicon et un seul logo officiel, supprimer les variantes non référencées.
 
 3. Rapports et documents de debug
+
 - Beaucoup de fichiers .md / .txt / .mjs / .js de debug ou de suivi sont présents à la racine.
 - Ils ne sont pas des sources de runtime et ne doivent pas être mélangés au cœur du projet.
 
@@ -127,19 +138,24 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 ### 4.1 Fichiers mal placés ou hors de leur logique
 
 1. src/start.ts
+
 - Ce fichier est un indice d’une ancienne architecture de framework.
 - Il ne devrait pas vivre au niveau racine de src si le projet n’est plus basé sur cette stack.
 
 2. src/server.ts
+
 - Similaire : fichier de serveur / runtime d’ancienne architecture, probablement hors de la logique actuelle du projet.
 
 3. src/assets/robots.txt
+
 - Un fichier de robots est normalement dans public/ et non dans src/assets.
 
 4. Scripts de test / debug à la racine
+
 - Scripts comme temp-send-email-hook-test.js, temp-send-email-hook-test.mjs, temp-smtp-test.mjs, generate-curl-test.mjs, curl-test.sh, debug-vite.txt, build-output.txt, vercel-build-debug.txt sont des artefacts de debug et ne devraient pas être au niveau racine du projet.
 
 5. Fichiers de documentation de travail à la racine
+
 - Plusieurs fichiers .md de suivi, d’audit et d’implémentation sont à la racine alors qu’ils devraient être classés dans un dossier docs/ ou docs/archive/.
 
 ### 4.2 Mélange Frontend / Backend
@@ -170,16 +186,20 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 ### 6.1 Problèmes observés
 
 1. Imports cassés / non compatibles
+
 - La compilation TypeScript a détecté une dépendance non résolue : @tanstack/react-start.
 - Cela signifie que le code actuel n’est pas complètement cohérent avec les dépendances installées.
 
 2. Imports vers un modèle d’architecture ancienne
+
 - Les fichiers auth-middleware.ts et auth-attacher.ts importent des modules de TanStack Start qui ne sont pas disponibles dans la configuration actuelle.
 
 3. Imports potentiellement dangereux ou incohérents
+
 - Plusieurs pages appellant des composants ou des hooks semblent avoir été migrées partiellement, ce qui explique les erreurs de typage sur des propriétés attendues mais absentes.
 
 4. Alias et chemins
+
 - L’alias @/ est présent dans tsconfig.json et vite.config.ts, ce qui est bon.
 - En revanche, l’existence de fichiers de runtime et d’imports de stack ancienne rend cet alias moins fiable sur le long terme.
 
@@ -202,10 +222,12 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 ### 7.2 Problèmes constatés
 
 1. La compilation TypeScript échoue réellement
+
 - Commande exécutée : npx tsc --noEmit
 - Résultat : 51 erreurs dans 18 fichiers.
 
 2. Les erreurs ne sont pas anecdotiques
+
 - Elles touchent :
   - types de Supabase / DB mal alignés,
   - propriétés attendues absentes sur les types,
@@ -213,6 +235,7 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
   - composants mal typés (Badge variant, props de CandidateTopbar, etc.).
 
 3. tsconfig.json exclut certains fichiers mais pas tous les fichiers “hors scope”
+
 - Les exclusions actuelles ne couvrent pas entièrement les composants d’ancienne architecture.
 
 ### 7.3 Incohérences avec Vercel
@@ -229,6 +252,7 @@ Cette séparation est globalement correcte, mais elle n’est pas entièrement p
 Commande exécutée : npm run build
 
 Résultat observé :
+
 - le build Vite réussit,
 - il produit dist/,
 - il génère des warnings de chunks volumineux,
@@ -254,6 +278,7 @@ Résultat observé :
 ### 9.1 Structure observée
 
 Les fichiers présents dans api/ sont :
+
 - confirm.ts
 - password-reset-confirm.ts
 - password-reset-request.ts
@@ -268,14 +293,17 @@ C’est globalement cohérent avec une architecture de serverless sur Vercel.
 ### 9.2 Risques détectés
 
 1. Imports internes non homogènes
+
 - Les handlers importent des utilitaires locaux, ce qui est correct.
 - Mais certains fichiers de runtime ou de support semblent être conçus pour une autre stack que l’environnement actuel.
 
 2. Risque d’ignorer des fichiers utiles lors du déploiement
+
 - Si des utilitaires sont déplacés ou ajoutés sans être référencés correctement, ils peuvent être oubliés.
 - Le projet n’a pas d’architecture explicite garantissant la “surface” des fonctions API.
 
 3. Fichiers à vérifier côté Vercel
+
 - Les handlers d’email et d’auth sont sensibles à l’environnement et à la présence de variables d’environnement.
 - Les logs de debug dans ces fichiers ajoutent de la complexité et du bruit à la production.
 
@@ -329,6 +357,7 @@ C’est globalement cohérent avec une architecture de serverless sur Vercel.
 ### 11.1 Documentation à déplacer vers un dossier docs/
 
 Les fichiers suivants devraient être regroupés dans un dossier docs/ ou docs/archive/ :
+
 - AUDIT_POST_REFACTORING.md
 - REFACTORING_REPORT.md
 - CANDIDATE_APPLY_PAGE_IMPLEMENTATION.md
@@ -356,14 +385,17 @@ Ces fichiers ne sont ni des fichiers de runtime ni des fichiers de configuration
 ### 12.1 Problèmes détectés
 
 1. Doublons d’assets de marque
+
 - favicon.ico présent dans public/ et src/assets/
 - logo / variantes d’image présentes plusieurs fois
 
 2. Images lourdes non optimisées
+
 - Le build a généré plusieurs images de grande taille dans dist/.
 - Cela indique une probabilité d’assets trop lourds dans le frontend.
 
 3. Robots.txt dupliqué
+
 - public/robots.txt et src/assets/robots.txt
 
 ### 12.2 Recommandation
@@ -379,14 +411,17 @@ Ces fichiers ne sont ni des fichiers de runtime ni des fichiers de configuration
 ### 13.1 Risques observés
 
 1. Secrets et variables sensibles
+
 - Les fonctions API utilisent fortement process.env et des secrets d’authentification.
 - Le code n’est pas forcément dangereux en soi, mais la logique de configuration et de logging rend la surface de sécurité plus exposée.
 
 2. Logs de debug potentiellement sensibles
+
 - Les handlers de confirm/register log des informations sensibles (token, secrets, body, payload) dans la sortie console.
 - Cela est mauvais pour la sécurité et la traçabilité.
 
 3. Imports non sécurisés / non propres
+
 - L’architecture hybride augmente le risque d’imports non contrôlés et de dépendances non auditées.
 
 ### 13.2 Recommandation
@@ -402,13 +437,16 @@ Ces fichiers ne sont ni des fichiers de runtime ni des fichiers de configuration
 ### 14.1 Observations
 
 1. Bundle volumineux
+
 - Le build Vite indique des chunks grands et un bundle principal de plus de 500 kB.
 - C’est un risque de performance perçu.
 
 2. Chargement de pages lourdes
+
 - App.tsx charge beaucoup de pages en lazy loading, mais la structure reste très dense, ce qui peut nuire à l’expérience utilisateur et au rendement du navigateur.
 
 3. Assets lourds
+
 - Plusieurs images volumineuses sont intégrées au site, ce qui augmente le temps de chargement initial.
 
 ### 14.2 Recommandations
@@ -481,34 +519,40 @@ project/
 ## 16. Plan de nettoyage en étapes indépendantes
 
 ### Étape 1 - Clarifier l’architecture actuelle
+
 - Identifier précisément les fichiers encore liés à TanStack Start.
 - Désactiver ou archiver les fichiers de runtime non utilisés.
 - Ajouter une règle de gouvernance : src/ = frontend pur, api/ = serverless backend.
 - Risque : faible si l’archivage est sélectif et ne touche pas aux routes actives.
 
 ### Étape 2 - Supprimer les doublons et fichiers de compatibilité
+
 - Supprimer CandidateDashboardPage-old.tsx.
 - Choisir une seule implémentation de dashboard candidat.
 - Supprimer les fichiers d’auth middleware/attacher s’ils ne sont plus utilisés.
 - Risque : moyen, mais contrôlable si la sélection se fait après vérification des imports.
 
 ### Étape 3 - Nettoyer les assets et la racine
+
 - Déplacer les documents techniques vers docs/.
 - Supprimer les scripts temporaires et fichiers de debug.
 - Unifier favicon/robots/logo.
 - Risque : faible.
 
 ### Étape 4 - Corriger la base TypeScript
+
 - Résoudre les 51 erreurs TypeScript identifiées.
 - Alignement des types Supabase et des types métier.
 - Risque : moyen.
 
 ### Étape 5 - Rationaliser les imports et la structure des pages
+
 - Éliminer les imports inutiles ou incohérents.
 - Clarifier la structure src/pages/public et src/pages/candidate.
 - Risque : moyen.
 
 ### Étape 6 - Optimiser les performances et la prod
+
 - Décomposer les bundles lourds.
 - Optimiser la gestion des assets.
 - Vérifier le comportement Vercel et les fonctions API en production.
@@ -519,16 +563,19 @@ project/
 ## 17. Problèmes prioritaires à corriger en premier
 
 ### Priorité haute
+
 - Les erreurs TypeScript réelles observées par la compilation.
 - Les imports liés à @tanstack/react-start non résolus.
 - Les implémentations concurrentes de CandidateDashboardPage.
 
 ### Priorité moyenne
+
 - Fichiers de debug, scripts temporaires et rapports techniques à la racine.
 - Doublons d’assets et robots.txt.
 - Structure des pages publiques/services encore dispersée.
 
 ### Priorité basse
+
 - Optimisation des assets et du bundle.
 - Rangement documentaire.
 
@@ -539,6 +586,7 @@ project/
 Le projet n’est pas “cassé” au sens strict du build Vite, mais il n’est pas non plus dans un état d’architecture saine pour une maintenance durable.
 
 Les principaux dangers sont :
+
 - mélange d’anciennes et nouvelles architectures,
 - doublons fonctionnels,
 - typage non fiable,

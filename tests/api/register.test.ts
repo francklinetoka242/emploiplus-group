@@ -1,20 +1,20 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import handler from '../../api/register.ts';
+import test from "node:test";
+import assert from "node:assert/strict";
+import handler from "../../api/register.ts";
 
-test('returns a 500 response when email signing secret is missing', async () => {
+test("returns a 500 response when email signing secret is missing", async () => {
   const previousSecret = process.env.EMAIL_SIGNING_SECRET;
   delete process.env.EMAIL_SIGNING_SECRET;
 
   const req = {
-    method: 'POST',
+    method: "POST",
     body: {
-      email: 'candidate@example.com',
-      password: 'Password123!',
-      firstName: 'Jane',
-      lastName: 'Doe',
+      email: "candidate@example.com",
+      password: "Password123!",
+      firstName: "Jane",
+      lastName: "Doe",
     },
-  } as any;
+  } as { method: string; body: Record<string, string> };
 
   const res = {
     statusCode: 0,
@@ -27,13 +27,18 @@ test('returns a 500 response when email signing secret is missing', async () => 
       this.body = payload;
       return this;
     },
-  } as any;
+  } as {
+    statusCode: number;
+    body: unknown;
+    status(code: number): unknown;
+    json(payload: unknown): unknown;
+  };
 
   try {
     await handler(req, res);
 
     assert.equal(res.statusCode, 500);
-    assert.deepEqual(res.body, { error: 'Server misconfiguration' });
+    assert.deepEqual(res.body, { error: "Server misconfiguration" });
   } finally {
     if (previousSecret === undefined) {
       delete process.env.EMAIL_SIGNING_SECRET;

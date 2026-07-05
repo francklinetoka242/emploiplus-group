@@ -1,17 +1,17 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Bell, Trash2, Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Bell, Trash2, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { NotificationRecord } from '@/integrations/supabase/notifications';
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { NotificationRecord } from "@/integrations/supabase/notifications";
 
 interface NotificationsDropdownProps {
   notifications: NotificationRecord[];
@@ -23,23 +23,23 @@ interface NotificationsDropdownProps {
 }
 
 const typeLabels: Record<string, string> = {
-  candidature: 'Candidature',
-  offre: 'Offre',
-  evenement: 'Événement',
-  job: 'Offre',
-  contact: 'Admin',
-  blog: 'Blog',
-  admin: 'Admin',
+  candidature: "Candidature",
+  offre: "Offre",
+  evenement: "Événement",
+  job: "Offre",
+  contact: "Admin",
+  blog: "Blog",
+  admin: "Admin",
 };
 
 const typeColors: Record<string, string> = {
-  candidature: 'bg-green-100 text-green-800',
-  offre: 'bg-blue-100 text-blue-800',
-  evenement: 'bg-orange-100 text-orange-800',
-  job: 'bg-blue-100 text-blue-800',
-  contact: 'bg-indigo-100 text-indigo-800',
-  blog: 'bg-purple-100 text-purple-800',
-  admin: 'bg-slate-100 text-slate-800',
+  candidature: "bg-green-100 text-green-800",
+  offre: "bg-blue-100 text-blue-800",
+  evenement: "bg-orange-100 text-orange-800",
+  job: "bg-blue-100 text-blue-800",
+  contact: "bg-indigo-100 text-indigo-800",
+  blog: "bg-purple-100 text-purple-800",
+  admin: "bg-slate-100 text-slate-800",
 };
 
 export function NotificationsDropdown({
@@ -64,7 +64,7 @@ export function NotificationsDropdown({
           <Bell className="w-5 h-5" />
           {hasUnread && (
             <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full">
-              {unreadCount > 99 ? '99+' : unreadCount}
+              {unreadCount > 99 ? "99+" : unreadCount}
             </span>
           )}
         </Button>
@@ -90,20 +90,16 @@ export function NotificationsDropdown({
         {/* Notifications List */}
         <ScrollArea className="h-96">
           {loading ? (
-            <div className="px-4 py-8 text-center text-slate-500">
-              Chargement...
-            </div>
+            <div className="px-4 py-8 text-center text-slate-500">Chargement...</div>
           ) : notifications.length === 0 ? (
-            <div className="px-4 py-8 text-center text-slate-500">
-              Aucune notification
-            </div>
+            <div className="px-4 py-8 text-center text-slate-500">Aucune notification</div>
           ) : (
             <div className="divide-y divide-slate-200">
-              {recentNotifications.map(notification => (
+              {recentNotifications.map((notification) => (
                 <div
                   key={notification.id}
                   className={`px-4 py-3 hover:bg-slate-50 transition-colors ${
-                    !notification.is_read ? 'bg-blue-50' : ''
+                    !notification.is_read ? "bg-blue-50" : ""
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -116,7 +112,7 @@ export function NotificationsDropdown({
                           variant="outline"
                           className={`text-xs ${typeColors[notification.type] || typeColors.admin}`}
                         >
-                          {typeLabels[notification.type] || 'Admin'}
+                          {typeLabels[notification.type] || "Admin"}
                         </Badge>
                       </div>
                       {notification.content && (
@@ -125,12 +121,12 @@ export function NotificationsDropdown({
                         </p>
                       )}
                       <p className="text-xs text-slate-400 mt-1">
-                        {new Date(notification.created_at).toLocaleDateString('fr-FR', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
+                        {new Date(notification.created_at).toLocaleDateString("fr-FR", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
                         })}
                       </p>
                     </div>

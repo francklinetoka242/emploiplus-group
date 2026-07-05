@@ -27,12 +27,17 @@ import JobCard from "@/components/site/JobCard";
 
 type DashboardOffer = {
   id: string;
+  slug: string;
   title: string;
   company: string;
   location: string;
   postedDate: string;
   type: string;
   salary: string;
+  description?: string | null;
+  requirements?: string | null;
+  tags?: string[];
+  deadline?: string | null;
 };
 
 const quickActions = [
@@ -96,7 +101,9 @@ export function CandidateDashboardPage() {
       setOffersLoading(true);
       const { data, error } = await supabase
         .from("job_offers")
-        .select("id, slug, title, company, location_city, location_country, contract_type, salary, published_at, status, description, requirements, tags, deadline, expires_at, application_email, external_link")
+        .select(
+          "id, slug, title, company, location_city, location_country, contract_type, salary, published_at, status, description, requirements, tags, deadline, expires_at, application_email, external_link",
+        )
         .eq("status", "published")
         .order("published_at", { ascending: false })
         .limit(3);
@@ -109,7 +116,9 @@ export function CandidateDashboardPage() {
             title: offer.title ?? "Offre à découvrir",
             company: offer.company ?? "Entreprise",
             location: offer.location_city ?? "À distance",
-            postedDate: offer.published_at ? new Date(offer.published_at).toLocaleDateString("fr-FR") : "—",
+            postedDate: offer.published_at
+              ? new Date(offer.published_at).toLocaleDateString("fr-FR")
+              : "—",
             type: offer.contract_type ?? "CDI",
             salary: offer.salary ?? "Salaire à négocier",
             description: offer.description ?? null,
@@ -118,7 +127,7 @@ export function CandidateDashboardPage() {
             deadline: offer.deadline ?? offer.expires_at ?? null,
             application_email: offer.application_email ?? null,
             external_link: offer.external_link ?? null,
-          }))
+          })),
         );
       }
       setOffersLoading(false);
@@ -189,11 +198,12 @@ export function CandidateDashboardPage() {
       profile.email &&
       profile.phone &&
       profile.location_city &&
-      profile.location_country
+      profile.location_country,
     );
     const experienceCompleted = experienceEntries.length > 0;
     const cvCompleted = Boolean(
-      candidateDocuments.cv?.url || candidateDocuments.documents.some((document) => Boolean(document.url))
+      candidateDocuments.cv?.url ||
+      candidateDocuments.documents.some((document) => Boolean(document.url)),
     );
 
     return {
@@ -204,41 +214,48 @@ export function CandidateDashboardPage() {
   }, [profile, experienceEntries, candidateDocuments]);
 
   const profileCompletion = useMemo(() => {
-    const checks = [profileChecks.personalInfoCompleted, profileChecks.experienceCompleted, profileChecks.cvCompleted];
+    const checks = [
+      profileChecks.personalInfoCompleted,
+      profileChecks.experienceCompleted,
+      profileChecks.cvCompleted,
+    ];
     const completedCount = checks.filter(Boolean).length;
     return Math.round((completedCount / checks.length) * 100);
   }, [profileChecks]);
 
-  const stats = useMemo(() => [
-    {
-      label: "Candidatures",
-      value: 0,
-      icon: Send,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-    },
-    {
-      label: "Offres enregistrées",
-      value: 0,
-      icon: Heart,
-      color: "text-red-600",
-      bgColor: "bg-red-50",
-    },
-    {
-      label: "Vues de profil",
-      value: 0,
-      icon: Eye,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-    },
-    {
-      label: "Entretiens",
-      value: 0,
-      icon: Briefcase,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-    },
-  ], []);
+  const stats = useMemo(
+    () => [
+      {
+        label: "Candidatures",
+        value: 0,
+        icon: Send,
+        color: "text-blue-600",
+        bgColor: "bg-blue-50",
+      },
+      {
+        label: "Offres enregistrées",
+        value: 0,
+        icon: Heart,
+        color: "text-red-600",
+        bgColor: "bg-red-50",
+      },
+      {
+        label: "Vues de profil",
+        value: 0,
+        icon: Eye,
+        color: "text-green-600",
+        bgColor: "bg-green-50",
+      },
+      {
+        label: "Entretiens",
+        value: 0,
+        icon: Briefcase,
+        color: "text-purple-600",
+        bgColor: "bg-purple-50",
+      },
+    ],
+    [],
+  );
 
   const firstName = profile?.first_name || "Candidat";
   const fullName = profile ? `${profile.first_name} ${profile.last_name}`.trim() : "Jean Dupont";
@@ -251,11 +268,10 @@ export function CandidateDashboardPage() {
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">
-                Bienvenue, {firstName}!
-              </h1>
+              <h1 className="text-3xl font-bold mb-2">Bienvenue, {firstName}!</h1>
               <p className="text-slate-300">
-                Bienvenue dans votre espace de candidat. Trouvez le poste idéal et suivez vos candidatures.
+                Bienvenue dans votre espace de candidat. Trouvez le poste idéal et suivez vos
+                candidatures.
               </p>
             </div>
             <div className="hidden md:flex items-center justify-center w-24 h-24 bg-slate-700 rounded-full opacity-50">
@@ -293,37 +309,57 @@ export function CandidateDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Complétude de votre profil</CardTitle>
-              <CardDescription>
-                Complétez votre profil pour augmenter vos chances
-              </CardDescription>
+              <CardDescription>Complétez votre profil pour augmenter vos chances</CardDescription>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-slate-900">
-                {profileCompletion}%
-              </p>
+              <p className="text-2xl font-bold text-slate-900">{profileCompletion}%</p>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <Progress value={profileCompletion} className="h-3" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className={`p-3 rounded-lg border ${profileChecks.personalInfoCompleted ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}`}>
-              <p className={`text-sm font-medium ${profileChecks.personalInfoCompleted ? "text-green-900" : "text-yellow-900"}`}>
+            <div
+              className={`p-3 rounded-lg border ${profileChecks.personalInfoCompleted ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}`}
+            >
+              <p
+                className={`text-sm font-medium ${profileChecks.personalInfoCompleted ? "text-green-900" : "text-yellow-900"}`}
+              >
                 {profileChecks.personalInfoCompleted ? "Complété ✓" : "À compléter"}
               </p>
-              <p className={`text-xs ${profileChecks.personalInfoCompleted ? "text-green-700" : "text-yellow-700"}`}>Informations personnelles</p>
+              <p
+                className={`text-xs ${profileChecks.personalInfoCompleted ? "text-green-700" : "text-yellow-700"}`}
+              >
+                Informations personnelles
+              </p>
             </div>
-            <div className={`p-3 rounded-lg border ${profileChecks.experienceCompleted ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}`}>
-              <p className={`text-sm font-medium ${profileChecks.experienceCompleted ? "text-green-900" : "text-yellow-900"}`}>
+            <div
+              className={`p-3 rounded-lg border ${profileChecks.experienceCompleted ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}`}
+            >
+              <p
+                className={`text-sm font-medium ${profileChecks.experienceCompleted ? "text-green-900" : "text-yellow-900"}`}
+              >
                 {profileChecks.experienceCompleted ? "Complété ✓" : "À compléter"}
               </p>
-              <p className={`text-xs ${profileChecks.experienceCompleted ? "text-green-700" : "text-yellow-700"}`}>Expériences professionnelles</p>
+              <p
+                className={`text-xs ${profileChecks.experienceCompleted ? "text-green-700" : "text-yellow-700"}`}
+              >
+                Expériences professionnelles
+              </p>
             </div>
-            <div className={`p-3 rounded-lg border ${profileChecks.cvCompleted ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}`}>
-              <p className={`text-sm font-medium ${profileChecks.cvCompleted ? "text-green-900" : "text-yellow-900"}`}>
+            <div
+              className={`p-3 rounded-lg border ${profileChecks.cvCompleted ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}`}
+            >
+              <p
+                className={`text-sm font-medium ${profileChecks.cvCompleted ? "text-green-900" : "text-yellow-900"}`}
+              >
                 {profileChecks.cvCompleted ? "Complété ✓" : "À compléter"}
               </p>
-              <p className={`text-xs ${profileChecks.cvCompleted ? "text-green-700" : "text-yellow-700"}`}>CV et certifications</p>
+              <p
+                className={`text-xs ${profileChecks.cvCompleted ? "text-green-700" : "text-yellow-700"}`}
+              >
+                CV et certifications
+              </p>
             </div>
           </div>
         </CardContent>
@@ -337,7 +373,9 @@ export function CandidateDashboardPage() {
             const Icon = action.icon;
             return (
               <Link key={action.id} to={action.href}>
-                <Card className={`border-2 ${action.borderColor} hover:shadow-lg transition-all h-full`}>
+                <Card
+                  className={`border-2 ${action.borderColor} hover:shadow-lg transition-all h-full`}
+                >
                   <CardContent className={`pt-6 bg-gradient-to-br ${action.bgGradient}`}>
                     <div className="flex flex-col items-center text-center space-y-3">
                       <div className="p-3 bg-white rounded-lg shadow-sm">
@@ -380,15 +418,26 @@ export function CandidateDashboardPage() {
             ) : offers.length > 0 ? (
               offers.map((offer, index) => {
                 const location = [offer.location, offer.company].filter(Boolean).join(" • ");
-                const previewText = (offer.description || offer.requirements || "").replace(/\s+/g, " ").trim();
+                const previewText = (offer.description || offer.requirements || "")
+                  .replace(/\s+/g, " ")
+                  .trim();
                 const contractLabel = offer.type ?? null;
                 const tags = (offer.tags || []).filter(Boolean).slice(0, 3);
                 const deadlineValue = offer.deadline ?? null;
-                const isExpired = Boolean(deadlineValue && new Date(deadlineValue).getTime() < Date.now());
+                const isExpired = Boolean(
+                  deadlineValue && new Date(deadlineValue).getTime() < Date.now(),
+                );
                 return (
                   <JobCard
                     key={offer.id}
-                    job={offer as any}
+                    job={{
+                      slug: offer.slug,
+                      title: offer.title,
+                      company: offer.company,
+                      application_email: offer.application_email,
+                      external_link: offer.external_link,
+                      salary: offer.salary,
+                    }}
                     location={location}
                     previewText={previewText}
                     contractLabel={contractLabel}

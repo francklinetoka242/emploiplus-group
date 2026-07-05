@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePageSEO } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
@@ -31,8 +31,8 @@ export function CandidateResetPasswordPage() {
   });
 
   useEffect(() => {
-    validateToken();
-  }, []);
+    void validateToken();
+  }, [validateToken]);
 
   const parseResponseBody = async (response: Response) => {
     const text = await response.text();
@@ -47,30 +47,33 @@ export function CandidateResetPasswordPage() {
     }
   };
 
-  const validateToken = async () => {
-    const token = searchParams.get('token');
+  const validateToken = useCallback(async () => {
+    const token = searchParams.get("token");
     if (!token) {
-      setErrorMessage('Lien de réinitialisation manquant');
+      setErrorMessage("Lien de réinitialisation manquant");
       setCheckingToken(false);
       return;
     }
 
     try {
-      const response = await fetch(`/api/password-reset-validate?token=${encodeURIComponent(token)}`);
+      const response = await fetch(
+        `/api/password-reset-validate?token=${encodeURIComponent(token)}`,
+      );
       const body = await parseResponseBody(response);
       if (!response.ok) {
-        throw new Error(body?.error || 'Lien invalide ou expiré');
+        throw new Error(body?.error || "Lien invalide ou expiré");
       }
       setUserEmail(body?.email || null);
       setIsValidToken(true);
-    } catch (err: any) {
-      console.error('Token validation error:', err);
-      setErrorMessage(err?.message || 'Lien invalide ou expiré');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Lien invalide ou expiré";
+      console.error("Token validation error:", err);
+      setErrorMessage(message);
       setIsValidToken(false);
     } finally {
       setCheckingToken(false);
     }
-  };
+  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
@@ -106,33 +109,33 @@ export function CandidateResetPasswordPage() {
       return;
     }
 
-    const token = searchParams.get('token');
+    const token = searchParams.get("token");
     if (!token) {
-      setErrorMessage('Lien de réinitialisation manquant');
+      setErrorMessage("Lien de réinitialisation manquant");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch('/api/password-reset-confirm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/password-reset-confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password: formData.password }),
       });
 
       const body = await parseResponseBody(response);
       if (!response.ok) {
-        throw new Error(body?.error || 'Impossible de réinitialiser le mot de passe.');
+        throw new Error(body?.error || "Impossible de réinitialiser le mot de passe.");
       }
 
       setSubmitted(true);
       setTimeout(() => {
-        navigate('/candidate/login');
+        navigate("/candidate/login");
       }, 3000);
-    } catch (error: any) {
-      const errorMsg = error?.message || 'Une erreur est survenue';
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : "Une erreur est survenue";
       setErrorMessage(errorMsg);
-      console.error('Password reset error:', error);
+      console.error("Password reset error:", error);
     } finally {
       setLoading(false);
     }
@@ -166,11 +169,9 @@ export function CandidateResetPasswordPage() {
               <div className="text-center space-y-4">
                 <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
                 <div>
-                  <h3 className="font-semibold text-lg text-slate-900 mb-2">
-                    Lien invalide
-                  </h3>
+                  <h3 className="font-semibold text-lg text-slate-900 mb-2">Lien invalide</h3>
                   <p className="text-sm text-slate-600">
-                    {errorMessage || 'Le lien de réinitialisation est expiré ou invalide.'}
+                    {errorMessage || "Le lien de réinitialisation est expiré ou invalide."}
                   </p>
                 </div>
                 <Button
@@ -198,9 +199,7 @@ export function CandidateResetPasswordPage() {
                   <img src={favicon} alt="EmploiPlus" className="h-10 w-10 object-contain" />
                 </div>
                 <CardTitle>Réinitialiser le mot de passe</CardTitle>
-                <CardDescription>
-                  Entrez votre nouveau mot de passe ci-dessous
-                </CardDescription>
+                <CardDescription>Entrez votre nouveau mot de passe ci-dessous</CardDescription>
               </CardHeader>
 
               <CardContent>
@@ -208,9 +207,7 @@ export function CandidateResetPasswordPage() {
                   {errorMessage && (
                     <Alert className="border-red-200 bg-red-50">
                       <AlertCircle className="h-4 w-4 text-red-600" />
-                      <AlertDescription className="text-red-800">
-                        {errorMessage}
-                      </AlertDescription>
+                      <AlertDescription className="text-red-800">{errorMessage}</AlertDescription>
                     </Alert>
                   )}
 
@@ -229,9 +226,7 @@ export function CandidateResetPasswordPage() {
                       disabled={loading}
                       className={errors.password ? "border-red-500" : ""}
                     />
-                    {errors.password && (
-                      <p className="text-sm text-red-500">{errors.password}</p>
-                    )}
+                    {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
                   </div>
 
                   {/* Confirm Password */}
@@ -279,9 +274,7 @@ export function CandidateResetPasswordPage() {
                     Votre mot de passe a été réinitialisé avec succès.
                   </p>
                 </div>
-                <p className="text-sm text-slate-600">
-                  Redirection vers la page de connexion...
-                </p>
+                <p className="text-sm text-slate-600">Redirection vers la page de connexion...</p>
               </div>
             </CardContent>
           )}

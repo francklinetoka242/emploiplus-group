@@ -3,7 +3,14 @@ import { useI18n } from "@/lib/i18n";
 import { usePageSEO } from "@/lib/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Trash2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCandidate } from "@/hooks/useCandidate";
@@ -86,14 +93,17 @@ export function CandidateSavedOffersPage() {
         <CardHeader>
           <CardTitle>Tableau de mes offres enregistrées</CardTitle>
           <CardDescription>
-            {savedOffers.length} offre{savedOffers.length !== 1 ? "s" : ""} enregistrée{savedOffers.length !== 1 ? "s" : ""}
+            {savedOffers.length} offre{savedOffers.length !== 1 ? "s" : ""} enregistrée
+            {savedOffers.length !== 1 ? "s" : ""}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {savedOffers.length === 0 ? (
             <div className="text-center py-10 text-slate-600">
               <p className="mb-4">Vous n'avez pas encore d'offres enregistrées.</p>
-              <p className="text-sm">Parcourez les offres d'emploi et enregistrez les offres qui vous intéressent.</p>
+              <p className="text-sm">
+                Parcourez les offres d'emploi et enregistrez les offres qui vous intéressent.
+              </p>
             </div>
           ) : (
             <div className="w-full overflow-x-auto">
@@ -112,13 +122,25 @@ export function CandidateSavedOffersPage() {
                 <TableBody>
                   {savedOffers.map((offer) => (
                     <TableRow key={offer.id} className="hover:bg-slate-50">
-                      <TableCell className="font-medium text-slate-900">{offer.job_offers?.title || "—"}</TableCell>
-                      <TableCell className="text-slate-600">{offer.job_offers?.company || "—"}</TableCell>
-                      <TableCell className="text-slate-600">{offer.job_offers?.location_city || "—"}</TableCell>
-                      <TableCell className="text-slate-600">{offer.job_offers?.contract_type || "—"}</TableCell>
-                      <TableCell className="text-slate-600">{offer.job_offers?.salary || "À négocier"}</TableCell>
+                      <TableCell className="font-medium text-slate-900">
+                        {offer.job_offers?.title || "—"}
+                      </TableCell>
                       <TableCell className="text-slate-600">
-                        {offer.saved_at ? new Date(offer.saved_at).toLocaleDateString("fr-FR") : "—"}
+                        {offer.job_offers?.company || "—"}
+                      </TableCell>
+                      <TableCell className="text-slate-600">
+                        {offer.job_offers?.location_city || "—"}
+                      </TableCell>
+                      <TableCell className="text-slate-600">
+                        {offer.job_offers?.contract_type || "—"}
+                      </TableCell>
+                      <TableCell className="text-slate-600">
+                        {offer.job_offers?.salary || "À négocier"}
+                      </TableCell>
+                      <TableCell className="text-slate-600">
+                        {offer.saved_at
+                          ? new Date(offer.saved_at).toLocaleDateString("fr-FR")
+                          : "—"}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
@@ -149,7 +171,11 @@ export function CandidateSavedOffersPage() {
       {savedOffers.length > 0 && (
         <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
           <p className="text-sm text-amber-900">
-            ❤️ Vous avez enregistré <strong>{savedOffers.length} offre{savedOffers.length !== 1 ? "s" : ""}</strong>. Consultez-les régulièrement pour ne rien manquer!
+            ❤️ Vous avez enregistré{" "}
+            <strong>
+              {savedOffers.length} offre{savedOffers.length !== 1 ? "s" : ""}
+            </strong>
+            . Consultez-les régulièrement pour ne rien manquer!
           </p>
         </div>
       )}

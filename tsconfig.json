@@ -24,5 +24,11 @@
       "@/*": ["./src/*"]
     }
   },
-  "exclude": ["src/routes", "src/routeTree.gen.ts", "src/server.ts", "src/start.ts", "src/router.tsx"]
+  "exclude": [
+    "src/routes",
+    "src/routeTree.gen.ts",
+    "src/server.ts",
+    "src/start.ts",
+    "src/router.tsx"
+  ]
 }

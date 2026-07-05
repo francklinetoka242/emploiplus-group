@@ -30,7 +30,11 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES } from "@/lib/supabase-storage";
-import { getCandidateDocumentsList, loadCandidateDocuments, type CandidateDocument } from "@/lib/candidate-documents";
+import {
+  getCandidateDocumentsList,
+  loadCandidateDocuments,
+  type CandidateDocument,
+} from "@/lib/candidate-documents";
 
 interface TemporaryDocument {
   id: string;
@@ -69,7 +73,7 @@ const formatDate = (dateString: string) => {
 // Breadcrumb Component
 function Breadcrumb({ jobTitle }: { jobTitle: string }) {
   const navigate = useNavigate();
-  
+
   return (
     <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6 flex-wrap">
       <span className="flex items-center gap-1 text-foreground/80">
@@ -129,11 +133,32 @@ function FormSectionSkeleton() {
   );
 }
 
+type JobApplyHeroJob = {
+  location_city?: string | null;
+  location_country?: string | null;
+  contract_type?: string | null;
+  tags?: string[] | null;
+  publish_at?: string | null;
+  deadline?: string | null;
+  company_logo?: string | null;
+  company?: string | null;
+  title?: string | null;
+  salary?: string | null;
+};
+
+type JobApplyHeroProfile = {
+  first_name?: string | null;
+  last_name?: string | null;
+  phone?: string | null;
+  headline?: string | null;
+  avatar_url?: string | null;
+  email?: string | null;
+};
+
 // Hero Section
-function HeroSection({ job, profile }: { job: any; profile: any }) {
-  const jobLocation = [job.location_city, job.location_country]
-    .filter(Boolean)
-    .join(", ") || "Télétravail";
+function HeroSection({ job, profile }: { job: JobApplyHeroJob; profile: JobApplyHeroProfile }) {
+  const jobLocation =
+    [job.location_city, job.location_country].filter(Boolean).join(", ") || "Télétravail";
 
   const getContractLabel = (contractType?: string | null) => {
     if (!contractType) return null;
@@ -251,7 +276,7 @@ function HeroSection({ job, profile }: { job: any; profile: any }) {
             Tags
           </p>
           <div className="flex flex-wrap gap-2">
-            {jobTags.map((tag) => (
+            {jobTags.map((tag: string) => (
               <span
                 key={tag}
                 className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border/60 bg-background/70 px-3 py-1.5 text-xs font-medium text-foreground break-words"
@@ -297,9 +322,7 @@ function DocumentCard({
       <div className="mt-1 shrink-0">
         <div
           className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-all ${
-            selected
-              ? "border-brand bg-brand"
-              : "border-border/60 bg-background"
+            selected ? "border-brand bg-brand" : "border-border/60 bg-background"
           }`}
         >
           {selected && <CheckCircle2 className="h-4 w-4 text-white" />}
@@ -311,9 +334,7 @@ function DocumentCard({
         <div className="flex flex-col sm:flex-row items-start gap-3 w-full">
           <FileText className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-semibold text-foreground break-words">
-              {displayName}
-            </h4>
+            <h4 className="text-sm font-semibold text-foreground break-words">{displayName}</h4>
             <p className="text-xs text-muted-foreground mt-1 break-words">
               {docType}
               {size && ` • ${size}`}
@@ -354,7 +375,10 @@ export function CandidateJobApplyPage() {
   const [consent, setConsent] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitFeedback, setSubmitFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [submitFeedback, setSubmitFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
   const [profileForm, setProfileForm] = useState({
     first_name: "",
@@ -510,7 +534,9 @@ export function CandidateJobApplyPage() {
 
     try {
       const selectedFileNames = [
-        ...savedDocuments.filter((doc) => selectedDocuments.has(doc.id)).map((doc) => doc.displayName),
+        ...savedDocuments
+          .filter((doc) => selectedDocuments.has(doc.id))
+          .map((doc) => doc.displayName),
         ...temporaryDocuments.map((doc) => doc.file.name),
       ];
 
@@ -539,7 +565,9 @@ export function CandidateJobApplyPage() {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(data?.error || "Une erreur est survenue lors de l'envoi de la candidature.");
+        throw new Error(
+          data?.error || "Une erreur est survenue lors de l'envoi de la candidature.",
+        );
       }
 
       setSubmitFeedback({
@@ -549,7 +577,10 @@ export function CandidateJobApplyPage() {
     } catch (error) {
       setSubmitFeedback({
         type: "error",
-        message: error instanceof Error ? error.message : "Une erreur est survenue lors de l'envoi de la candidature.",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Une erreur est survenue lors de l'envoi de la candidature.",
       });
     } finally {
       setIsSubmitting(false);
@@ -581,7 +612,9 @@ export function CandidateJobApplyPage() {
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-foreground mb-4">Offre non trouvée</h1>
-          <p className="text-muted-foreground mb-8">L'offre que vous cherchez n'existe pas ou a été supprimée.</p>
+          <p className="text-muted-foreground mb-8">
+            L'offre que vous cherchez n'existe pas ou a été supprimée.
+          </p>
           <Button onClick={handleCancel} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Retour
@@ -597,7 +630,9 @@ export function CandidateJobApplyPage() {
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-foreground mb-4">Non authentifié</h1>
-          <p className="text-muted-foreground mb-8">Veuillez vous connecter pour postuler à cette offre.</p>
+          <p className="text-muted-foreground mb-8">
+            Veuillez vous connecter pour postuler à cette offre.
+          </p>
           <Button onClick={() => navigate("/candidate/login")} className="gap-2">
             Se connecter
           </Button>
@@ -650,7 +685,9 @@ export function CandidateJobApplyPage() {
                   <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
                     Description
                   </p>
-                  <p className={`text-sm text-foreground/80 leading-relaxed whitespace-pre-line ${isPreviewExpanded ? "" : "max-h-48 overflow-hidden line-clamp-8"}`}>
+                  <p
+                    className={`text-sm text-foreground/80 leading-relaxed whitespace-pre-line ${isPreviewExpanded ? "" : "max-h-48 overflow-hidden line-clamp-8"}`}
+                  >
                     {job.description}
                   </p>
                 </div>
@@ -661,7 +698,9 @@ export function CandidateJobApplyPage() {
                   <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
                     Profil recherché
                   </p>
-                  <div className={`space-y-1.5 ${isPreviewExpanded ? "" : "max-h-36 overflow-hidden"}`}>
+                  <div
+                    className={`space-y-1.5 ${isPreviewExpanded ? "" : "max-h-36 overflow-hidden"}`}
+                  >
                     {job.requirements
                       .split(/\n+/)
                       .map((item) => item.trim())
@@ -702,24 +741,34 @@ export function CandidateJobApplyPage() {
                 {profile.avatar_url && (
                   <img
                     src={profile.avatar_url}
-                    alt={profile.first_name}
+                    alt={profile.first_name ?? undefined}
                     className="h-16 w-16 rounded-full border border-border/60 object-cover"
                   />
                 )}
                 <div className="flex-1 min-w-0 space-y-2 text-sm">
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Prénom</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                      Prénom
+                    </p>
                     <p className="text-foreground font-medium">{profile.first_name || "-"}</p>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Nom</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                      Nom
+                    </p>
                     <p className="text-foreground font-medium">{profile.last_name || "-"}</p>
                   </div>
                 </div>
               </div>
               {profileFeedback && (
-                <Alert className={`mt-4 ${profileFeedback.includes("mis à jour") ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}>
-                  <AlertDescription className={profileFeedback.includes("mis à jour") ? "text-emerald-800" : "text-rose-800"}>
+                <Alert
+                  className={`mt-4 ${profileFeedback.includes("mis à jour") ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}
+                >
+                  <AlertDescription
+                    className={
+                      profileFeedback.includes("mis à jour") ? "text-emerald-800" : "text-rose-800"
+                    }
+                  >
                     {profileFeedback}
                   </AlertDescription>
                 </Alert>
@@ -764,7 +813,9 @@ export function CandidateJobApplyPage() {
                     </div>
                   </div>
                   <div className="space-y-2 border-t border-border/60 pt-4 text-sm">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Email</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                      Email
+                    </p>
                     <p className="text-foreground">{profile.email}</p>
                   </div>
                   <div className="flex flex-col gap-2 sm:flex-row">
@@ -798,15 +849,21 @@ export function CandidateJobApplyPage() {
                 <>
                   <div className="space-y-3 border-t border-border/60 pt-4 text-sm">
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Email</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                        Email
+                      </p>
                       <p className="text-foreground">{profile.email}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Téléphone</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                        Téléphone
+                      </p>
                       <p className="text-foreground">{profile.phone || "-"}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Titre professionnel</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                        Titre professionnel
+                      </p>
                       <p className="text-foreground">{profile.headline || "-"}</p>
                     </div>
                   </div>
@@ -827,7 +884,10 @@ export function CandidateJobApplyPage() {
           </Card>
 
           {/* Block 2: Message */}
-          <Card className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full" style={{animationDelay: '0.1s'}}>
+          <Card
+            className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full"
+            style={{ animationDelay: "0.1s" }}
+          >
             <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
               <CardTitle className="text-base">Message au recruteur</CardTitle>
               <CardDescription className="text-xs mt-1">
@@ -850,7 +910,10 @@ export function CandidateJobApplyPage() {
           </Card>
 
           {/* Block 3: Saved Documents */}
-          <Card className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full" style={{animationDelay: '0.2s'}}>
+          <Card
+            className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full"
+            style={{ animationDelay: "0.2s" }}
+          >
             <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
               <CardTitle className="text-base">Documents enregistrés</CardTitle>
               <CardDescription className="text-xs mt-1">
@@ -864,7 +927,7 @@ export function CandidateJobApplyPage() {
                   <AlertDescription className="text-sm text-foreground/80 ml-2">
                     Vous n'avez pas encore enregistré de documents.
                     <br />
-                    <button 
+                    <button
                       onClick={() => navigate("/candidate/Mes-Documents")}
                       className="font-semibold text-brand hover:underline mt-1 inline-block"
                     >
@@ -888,7 +951,10 @@ export function CandidateJobApplyPage() {
           </Card>
 
           {/* Block 4: Temporary Documents */}
-          <Card className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full" style={{animationDelay: '0.3s'}}>
+          <Card
+            className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full"
+            style={{ animationDelay: "0.3s" }}
+          >
             <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
               <CardTitle className="text-base">Ajouter des documents</CardTitle>
               <CardDescription className="text-xs mt-1">
@@ -903,17 +969,13 @@ export function CandidateJobApplyPage() {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 className={`relative w-full min-w-0 border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 ${
-                  isDragging
-                    ? "border-brand/60 bg-brand/5"
-                    : "border-border/40 bg-background/60"
+                  isDragging ? "border-brand/60 bg-brand/5" : "border-border/40 bg-background/60"
                 }`}
               >
                 <div className="flex flex-col items-center gap-3">
                   <div
                     className={`h-12 w-12 rounded-full flex items-center justify-center transition-all ${
-                      isDragging
-                        ? "bg-brand/20 text-brand"
-                        : "bg-secondary text-muted-foreground"
+                      isDragging ? "bg-brand/20 text-brand" : "bg-secondary text-muted-foreground"
                     }`}
                   >
                     <Upload className="h-6 w-6" />
@@ -922,9 +984,7 @@ export function CandidateJobApplyPage() {
                     <p className="text-sm font-semibold text-foreground">
                       {isDragging ? "Déposez vos fichiers ici" : "Glissez-déposez vos fichiers PDF"}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      ou cliquez pour parcourir
-                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">ou cliquez pour parcourir</p>
                   </div>
                 </div>
 
@@ -961,9 +1021,7 @@ export function CandidateJobApplyPage() {
                         <p className="text-sm font-medium text-foreground break-words">
                           {doc.file.name}
                         </p>
-                        <p className="text-xs text-muted-foreground break-words">
-                          {doc.size}
-                        </p>
+                        <p className="text-xs text-muted-foreground break-words">{doc.size}</p>
                       </div>
                       <button
                         onClick={() => removeTemporaryDocument(doc.id)}
@@ -985,7 +1043,10 @@ export function CandidateJobApplyPage() {
           </Card>
 
           {/* Block 5: Summary */}
-          <Card className="border border-brand/30 shadow-soft rounded-3xl overflow-hidden bg-gradient-to-br from-brand/5 to-secondary/5 animate-fade-in w-full max-w-full" style={{animationDelay: '0.4s'}}>
+          <Card
+            className="border border-brand/30 shadow-soft rounded-3xl overflow-hidden bg-gradient-to-br from-brand/5 to-secondary/5 animate-fade-in w-full max-w-full"
+            style={{ animationDelay: "0.4s" }}
+          >
             <CardHeader className="pb-4 px-6 pt-6 border-b border-brand/20 bg-brand/10">
               <CardTitle className="text-base flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-brand" />
@@ -1015,7 +1076,9 @@ export function CandidateJobApplyPage() {
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">
                   État du canal de candidature
                 </p>
-                <div className={`inline-flex flex-wrap items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium ${submissionChannelAvailable ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"}`}>
+                <div
+                  className={`inline-flex flex-wrap items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium ${submissionChannelAvailable ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"}`}
+                >
                   {submissionChannelAvailable ? (
                     <CheckCircle2 className="h-4 w-4" />
                   ) : (
@@ -1068,7 +1131,10 @@ export function CandidateJobApplyPage() {
           </Card>
 
           {/* Block 6: Consent */}
-          <Card className="border border-border/80 shadow-soft rounded-3xl animate-fade-in w-full max-w-full" style={{animationDelay: '0.5s'}}>
+          <Card
+            className="border border-border/80 shadow-soft rounded-3xl animate-fade-in w-full max-w-full"
+            style={{ animationDelay: "0.5s" }}
+          >
             <CardContent className="p-6">
               <div className="flex flex-col sm:flex-row items-start gap-3">
                 <Checkbox
@@ -1094,28 +1160,32 @@ export function CandidateJobApplyPage() {
               <Alert className="border-amber-200/70 bg-amber-50/80 text-amber-950">
                 <AlertCircle className="h-4 w-4 text-amber-700" />
                 <AlertDescription className="ml-2">
-                  <p className="font-semibold text-amber-950">Candidature momentanément indisponible</p>
+                  <p className="font-semibold text-amber-950">
+                    Candidature momentanément indisponible
+                  </p>
                   <p className="mt-1 text-sm text-amber-900">
-                    Cette offre ne possède actuellement aucune adresse de réception des candidatures.
-                    Le recrutement n'est donc pas disponible pour le moment.
-                    Nous vous invitons à consulter d'autres offres ou à revenir ultérieurement.
+                    Cette offre ne possède actuellement aucune adresse de réception des
+                    candidatures. Le recrutement n'est donc pas disponible pour le moment. Nous vous
+                    invitons à consulter d'autres offres ou à revenir ultérieurement.
                   </p>
                 </AlertDescription>
               </Alert>
             )}
             {submitFeedback && (
-              <Alert className={`border ${submitFeedback.type === "success" ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}>
-                <AlertDescription className={submitFeedback.type === "success" ? "text-emerald-800" : "text-rose-800"}>
+              <Alert
+                className={`border ${submitFeedback.type === "success" ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}
+              >
+                <AlertDescription
+                  className={
+                    submitFeedback.type === "success" ? "text-emerald-800" : "text-rose-800"
+                  }
+                >
                   {submitFeedback.message}
                 </AlertDescription>
               </Alert>
             )}
             <div className="flex flex-col gap-3 sm:flex-row sm:sticky sm:bottom-0 bg-background/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-border/60 shadow-lg z-10 w-full max-w-full">
-              <Button
-                variant="outline"
-                onClick={handleCancel}
-                className="w-full sm:flex-1"
-              >
+              <Button variant="outline" onClick={handleCancel} className="w-full sm:flex-1">
                 Annuler
               </Button>
               <Button

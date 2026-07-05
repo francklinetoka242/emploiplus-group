@@ -4,7 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Plus, X, Trash2 } from "lucide-react";
 import { CandidateAuthService, CandidateSkill } from "@/integrations/supabase/candidate-auth";
 import { useCandidate } from "@/hooks/useCandidate";
@@ -144,14 +151,18 @@ export function CandidateSkillsPage() {
         <CardHeader>
           <CardTitle>Mes compétences</CardTitle>
           <CardDescription>
-            {loading ? "Chargement..." : `${skills.length} compétence${skills.length !== 1 ? "s" : ""} ajoutée${skills.length !== 1 ? "s" : ""}`}
+            {loading
+              ? "Chargement..."
+              : `${skills.length} compétence${skills.length !== 1 ? "s" : ""} ajoutée${skills.length !== 1 ? "s" : ""}`}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="text-center text-slate-500">Chargement des compétences...</div>
           ) : skills.length === 0 ? (
-            <div className="text-center text-slate-500">Aucune compétence ajoutée pour le moment.</div>
+            <div className="text-center text-slate-500">
+              Aucune compétence ajoutée pour le moment.
+            </div>
           ) : (
             <div className="flex flex-wrap gap-3">
               {skills.map((skill) => (
@@ -176,11 +187,11 @@ export function CandidateSkillsPage() {
       <Card className="bg-blue-50 border-blue-200">
         <CardContent className="pt-6">
           <p className="text-sm text-blue-900">
-            <span className="font-medium">💡 Conseil:</span> Ajouter des compétences techniques pertinentes augmente votre visibilité auprès des recruteurs.
+            <span className="font-medium">💡 Conseil:</span> Ajouter des compétences techniques
+            pertinentes augmente votre visibilité auprès des recruteurs.
           </p>
         </CardContent>
       </Card>
     </div>
   );
 }
-

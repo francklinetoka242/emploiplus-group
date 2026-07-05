@@ -21,7 +21,7 @@ export function SaasCard({
         "border-slate-200/50",
         gradient && "border-slate-200/30 bg-gradient-to-br from-white/80 to-slate-50/80",
         hoverable && "hover:border-slate-300/70 hover:shadow-lg hover:bg-white/80",
-        className
+        className,
       )}
     >
       {children}
@@ -70,7 +70,7 @@ export function SaasCardFooter({ children, className }: SaasCardFooterProps) {
     <div
       className={cn(
         "flex items-center justify-between border-t border-slate-100/50 px-6 py-3",
-        className
+        className,
       )}
     >
       {children}

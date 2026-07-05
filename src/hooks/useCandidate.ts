@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { CandidateAuthService, CandidateProfile } from '@/integrations/supabase/candidate-auth';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { CandidateAuthService, CandidateProfile } from "@/integrations/supabase/candidate-auth";
 
 export function useCandidate() {
   const [profile, setProfile] = useState<CandidateProfile | null>(null);
@@ -26,9 +26,9 @@ export function useCandidate() {
       const candidateProfile = await CandidateAuthService.getCurrentProfile();
       setProfile(candidateProfile);
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Erreur lors du chargement du profil';
+      const errorMsg = err instanceof Error ? err.message : "Erreur lors du chargement du profil";
       setError(errorMsg);
-      console.error('Error loading profile:', err);
+      console.error("Error loading profile:", err);
     } finally {
       setLoading(false);
     }
@@ -38,11 +38,11 @@ export function useCandidate() {
     try {
       await CandidateAuthService.logout();
       setProfile(null);
-      navigate('/candidate/login');
+      navigate("/candidate/login");
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Erreur lors de la déconnexion';
+      const errorMsg = err instanceof Error ? err.message : "Erreur lors de la déconnexion";
       setError(errorMsg);
-      console.error('Error during logout:', err);
+      console.error("Error during logout:", err);
     }
   };
 
@@ -53,7 +53,8 @@ export function useCandidate() {
       setProfile(updatedProfile);
       return updatedProfile;
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Erreur lors de la mise à jour du profil';
+      const errorMsg =
+        err instanceof Error ? err.message : "Erreur lors de la mise à jour du profil";
       setError(errorMsg);
       throw err;
     }

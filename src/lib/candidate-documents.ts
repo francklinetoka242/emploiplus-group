@@ -9,7 +9,8 @@ export interface CandidateCVState {
 
 export interface CandidateDocument {
   id: string;
-  type: "motivation" | "diploma" | "certificate" | "attestation" | "portfolio" | "other" | "recepisse";
+  type:
+    "motivation" | "diploma" | "certificate" | "attestation" | "portfolio" | "other" | "recepisse";
   name: string;
   displayName: string;
   date: string;
@@ -71,7 +72,10 @@ export function loadCandidateDocuments(profileId?: string | null): CandidateDocu
   }
 }
 
-export function saveCandidateDocuments(profileId: string | null | undefined, value: CandidateDocumentsState) {
+export function saveCandidateDocuments(
+  profileId: string | null | undefined,
+  value: CandidateDocumentsState,
+) {
   const storageKey = getCandidateDocumentsStorageKey(profileId);
   if (!storageKey) {
     return;

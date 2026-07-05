@@ -44,7 +44,8 @@ export function CandidateEducationPage() {
   const { profile } = useCandidate();
   const [showForm, setShowForm] = useState(false);
   const [educations, setEducations] = useState<CandidateEducation[]>([]);
-  const [currentEducation, setCurrentEducation] = useState<Partial<CandidateEducation>>(emptyEducation);
+  const [currentEducation, setCurrentEducation] =
+    useState<Partial<CandidateEducation>>(emptyEducation);
   const [editingEducationId, setEditingEducationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -133,7 +134,9 @@ export function CandidateEducationPage() {
       degree: currentEducation.degree.trim(),
       field_of_study: currentEducation.field_of_study?.trim() || null,
       start_date: normalizeMonth(currentEducation.start_date) || null,
-      end_date: currentEducation.is_current ? null : normalizeMonth(currentEducation.end_date) || null,
+      end_date: currentEducation.is_current
+        ? null
+        : normalizeMonth(currentEducation.end_date) || null,
       is_current: currentEducation.is_current ?? false,
     };
 
@@ -142,10 +145,18 @@ export function CandidateEducationPage() {
 
     try {
       if (editingEducationId) {
-        const updated = await CandidateAuthService.updateCandidateEducation(editingEducationId, educationData);
-        setEducations((prev) => prev.map((education) => (education.id === editingEducationId ? updated : education)));
+        const updated = await CandidateAuthService.updateCandidateEducation(
+          editingEducationId,
+          educationData,
+        );
+        setEducations((prev) =>
+          prev.map((education) => (education.id === editingEducationId ? updated : education)),
+        );
       } else {
-        const created = await CandidateAuthService.createCandidateEducation(profile.id, educationData);
+        const created = await CandidateAuthService.createCandidateEducation(
+          profile.id,
+          educationData,
+        );
         setEducations((prev) => [created, ...prev]);
       }
 
@@ -161,16 +172,27 @@ export function CandidateEducationPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-end">
-        <Dialog open={showForm} onOpenChange={(open) => { if (!open) resetForm(); setShowForm(open); }}>
+        <Dialog
+          open={showForm}
+          onOpenChange={(open) => {
+            if (!open) resetForm();
+            setShowForm(open);
+          }}
+        >
           <DialogTrigger asChild>
-            <Button onClick={handleOpenForm} className="bg-brand text-brand-foreground hover:bg-brand/90 text-white gap-2">
+            <Button
+              onClick={handleOpenForm}
+              className="bg-brand text-brand-foreground hover:bg-brand/90 text-white gap-2"
+            >
               <Plus className="w-4 h-4" />
               Ajouter une formation
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingEducationId ? "Modifier une formation" : "Ajouter une formation"}</DialogTitle>
+              <DialogTitle>
+                {editingEducationId ? "Modifier une formation" : "Ajouter une formation"}
+              </DialogTitle>
               <DialogDescription>Remplissez les détails de votre formation</DialogDescription>
             </DialogHeader>
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -179,7 +201,9 @@ export function CandidateEducationPage() {
                 <Input
                   id="school"
                   value={currentEducation.school || ""}
-                  onChange={(event) => setCurrentEducation({ ...currentEducation, school: event.target.value })}
+                  onChange={(event) =>
+                    setCurrentEducation({ ...currentEducation, school: event.target.value })
+                  }
                   placeholder="Université Marien Ngouabi"
                 />
               </div>
@@ -190,7 +214,9 @@ export function CandidateEducationPage() {
                   <Input
                     id="degree"
                     value={currentEducation.degree || ""}
-                    onChange={(event) => setCurrentEducation({ ...currentEducation, degree: event.target.value })}
+                    onChange={(event) =>
+                      setCurrentEducation({ ...currentEducation, degree: event.target.value })
+                    }
                     placeholder="Master, Licence, etc."
                   />
                 </div>
@@ -199,7 +225,12 @@ export function CandidateEducationPage() {
                   <Input
                     id="field"
                     value={currentEducation.field_of_study || ""}
-                    onChange={(event) => setCurrentEducation({ ...currentEducation, field_of_study: event.target.value })}
+                    onChange={(event) =>
+                      setCurrentEducation({
+                        ...currentEducation,
+                        field_of_study: event.target.value,
+                      })
+                    }
                     placeholder="Informatique"
                   />
                 </div>
@@ -212,7 +243,9 @@ export function CandidateEducationPage() {
                     id="startDate"
                     type="month"
                     value={currentEducation.start_date || ""}
-                    onChange={(event) => setCurrentEducation({ ...currentEducation, start_date: event.target.value })}
+                    onChange={(event) =>
+                      setCurrentEducation({ ...currentEducation, start_date: event.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -222,7 +255,9 @@ export function CandidateEducationPage() {
                     type="month"
                     disabled={Boolean(currentEducation.is_current)}
                     value={currentEducation.end_date || ""}
-                    onChange={(event) => setCurrentEducation({ ...currentEducation, end_date: event.target.value })}
+                    onChange={(event) =>
+                      setCurrentEducation({ ...currentEducation, end_date: event.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -253,7 +288,9 @@ export function CandidateEducationPage() {
                 <Textarea
                   id="description"
                   value={currentEducation.description || ""}
-                  onChange={(event) => setCurrentEducation({ ...currentEducation, description: event.target.value })}
+                  onChange={(event) =>
+                    setCurrentEducation({ ...currentEducation, description: event.target.value })
+                  }
                   placeholder="Décrivez votre programme, vos projets ou vos résultats..."
                   rows={3}
                 />
@@ -276,7 +313,11 @@ export function CandidateEducationPage() {
                 >
                   Annuler
                 </Button>
-                <Button type="submit" className="bg-brand text-brand-foreground hover:bg-brand/90 text-white" disabled={saving}>
+                <Button
+                  type="submit"
+                  className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
+                  disabled={saving}
+                >
                   {editingEducationId ? "Mettre à jour" : "Ajouter"}
                 </Button>
               </div>
@@ -322,11 +363,20 @@ export function CandidateEducationPage() {
                     </div>
                     <p className="text-sm text-slate-500 mb-3">
                       {formatMonth(edu.start_date)}
-                      {edu.is_current ? " - Aujourd'hui" : edu.end_date ? ` - ${formatMonth(edu.end_date)}` : ""}
+                      {edu.is_current
+                        ? " - Aujourd'hui"
+                        : edu.end_date
+                          ? ` - ${formatMonth(edu.end_date)}`
+                          : ""}
                     </p>
                     <p className="text-slate-700 mb-4">{edu.description}</p>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="gap-2" onClick={() => handleEditEducation(edu)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-2"
+                        onClick={() => handleEditEducation(edu)}
+                      >
                         <Edit2 className="w-4 h-4" />
                         Modifier
                       </Button>

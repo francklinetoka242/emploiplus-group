@@ -3,7 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const STORAGE_BUCKET = import.meta.env.VITE_SUPABASE_STORAGE_BUCKET || "public";
 export const OFFER_IMAGES_BUCKET = import.meta.env.VITE_SUPABASE_OFFRES_BUCKET || STORAGE_BUCKET;
 export const BLOG_IMAGES_BUCKET = import.meta.env.VITE_SUPABASE_BLOG_BUCKET || STORAGE_BUCKET;
-export const CANDIDATE_DOCUMENTS_BUCKET = import.meta.env.VITE_SUPABASE_CANDIDATE_BUCKET || import.meta.env.VITE_SUPABASE_STORAGE_BUCKET || "public";
+export const CANDIDATE_DOCUMENTS_BUCKET =
+  import.meta.env.VITE_SUPABASE_CANDIDATE_BUCKET ||
+  import.meta.env.VITE_SUPABASE_STORAGE_BUCKET ||
+  "public";
 export const MAX_DOCUMENT_SIZE_BYTES = 2 * 1024 * 1024;
 export const ALLOWED_DOCUMENT_MIME_TYPES = ["application/pdf"];
 
@@ -15,7 +18,11 @@ function normalizeBucketName(bucketName?: string) {
 function getBucketCandidates(primaryBucket: string) {
   return [primaryBucket, STORAGE_BUCKET, "public", "storage"].filter((bucket, index, buckets) => {
     const normalizedBucket = normalizeBucketName(bucket);
-    return Boolean(normalizedBucket) && buckets.findIndex((candidate) => normalizeBucketName(candidate) === normalizedBucket) === index;
+    return (
+      Boolean(normalizedBucket) &&
+      buckets.findIndex((candidate) => normalizeBucketName(candidate) === normalizedBucket) ===
+        index
+    );
   });
 }
 
@@ -58,7 +65,9 @@ export async function uploadFileToStorage(file: File, folder: string, bucketName
         return resolvedUrl;
       }
 
-      throw new Error("Le fichier a été téléchargé mais l’URL de consultation n’a pas pu être générée.");
+      throw new Error(
+        "Le fichier a été téléchargé mais l’URL de consultation n’a pas pu être générée.",
+      );
     }
 
     lastError = new Error(error.message);

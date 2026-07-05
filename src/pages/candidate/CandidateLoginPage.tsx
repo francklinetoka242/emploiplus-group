@@ -33,7 +33,7 @@ export function CandidateLoginPage() {
   const [emailConfirmed, setEmailConfirmed] = useState(false);
 
   useEffect(() => {
-    if (searchParams.get('confirmed') === 'true') {
+    if (searchParams.get("confirmed") === "true") {
       setEmailConfirmed(true);
       // Remove the confirmed parameter from the URL
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -71,8 +71,7 @@ export function CandidateLoginPage() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.email) newErrors.email = "L'email est requis";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
-      newErrors.email = "Email invalide";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Email invalide";
     if (!formData.password) newErrors.password = "Le mot de passe est requis";
     return newErrors;
   };
@@ -98,10 +97,15 @@ export function CandidateLoginPage() {
 
       setSuccessMessage("Connexion réussie! Redirection en cours...");
       navigate("/candidate/dashboard", { replace: true });
-    } catch (error: any) {
-      if (error?.code === 'EMAIL_NOT_CONFIRMED') {
+    } catch (error: unknown) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        (error as { code?: string }).code === "EMAIL_NOT_CONFIRMED"
+      ) {
         setEmailNotConfirmed(true);
-        setPendingEmail(error?.userEmail || formData.email);
+        setPendingEmail((error as { userEmail?: string }).userEmail || formData.email);
         setErrorMessage("Veuillez confirmer votre email avant de vous connecter");
       } else {
         const errorMsg = CandidateAuthService.parseErrorMessage(error);
@@ -119,7 +123,7 @@ export function CandidateLoginPage() {
       await CandidateAuthService.resendConfirmationEmail(pendingEmail);
       setSuccessMessage("Email de confirmation renvoyé! Vérifiez votre boîte de réception.");
       setEmailNotConfirmed(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMsg = CandidateAuthService.parseErrorMessage(error);
       setErrorMessage(errorMsg);
     } finally {
@@ -138,7 +142,9 @@ export function CandidateLoginPage() {
               </div>
               <div className="flex flex-col">
                 <CardTitle className="text-xl">Se connecter</CardTitle>
-                <CardDescription className="text-slate-600 text-sm">Entrez vos identifiants pour accéder à votre espace</CardDescription>
+                <CardDescription className="text-slate-600 text-sm">
+                  Entrez vos identifiants pour accéder à votre espace
+                </CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -149,7 +155,9 @@ export function CandidateLoginPage() {
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-800">
                   <div className="flex flex-col gap-2">
-                    <span className="font-semibold">✅ Votre adresse e-mail a été confirmée avec succès.</span>
+                    <span className="font-semibold">
+                      ✅ Votre adresse e-mail a été confirmée avec succès.
+                    </span>
                     <span>Vous pouvez maintenant vous connecter.</span>
                   </div>
                 </AlertDescription>
@@ -182,9 +190,7 @@ export function CandidateLoginPage() {
             {successMessage && (
               <Alert className="mb-4 border-green-200 bg-green-50">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">
-                  {successMessage}
-                </AlertDescription>
+                <AlertDescription className="text-green-800">{successMessage}</AlertDescription>
               </Alert>
             )}
 
@@ -192,7 +198,8 @@ export function CandidateLoginPage() {
               <Alert className="mb-4 border-yellow-200 bg-yellow-50">
                 <AlertCircle className="h-4 w-4 text-yellow-600" />
                 <AlertDescription className="text-yellow-800">
-                  Vous n'avez pas encore confirmé votre email. Si vous n'avez pas reçu le message, renvoyez-le ci-dessous.
+                  Vous n'avez pas encore confirmé votre email. Si vous n'avez pas reçu le message,
+                  renvoyez-le ci-dessous.
                   <div className="mt-3">
                     <Button
                       type="button"
@@ -225,9 +232,7 @@ export function CandidateLoginPage() {
                   disabled={loading}
                   className={errors.email ? "border-red-500" : ""}
                 />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email}</p>
-                )}
+                {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
               </div>
 
               {/* Password */}
@@ -245,9 +250,7 @@ export function CandidateLoginPage() {
                   disabled={loading}
                   className={errors.password ? "border-red-500" : ""}
                 />
-                {errors.password && (
-                  <p className="text-sm text-red-500">{errors.password}</p>
-                )}
+                {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
               </div>
 
               {/* Remember Me */}

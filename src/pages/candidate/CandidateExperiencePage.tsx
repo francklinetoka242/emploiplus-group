@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Edit2, Trash2, Briefcase } from "lucide-react";
 import { CandidateAuthService, CandidateExperience } from "@/integrations/supabase/candidate-auth";
@@ -120,7 +127,9 @@ export function CandidateExperiencePage() {
       company: currentExperience.company.trim(),
       description: currentExperience.description?.trim() || null,
       start_date: normalizeMonth(currentExperience.start_date) || "",
-      end_date: currentExperience.is_current ? null : normalizeMonth(currentExperience.end_date) || null,
+      end_date: currentExperience.is_current
+        ? null
+        : normalizeMonth(currentExperience.end_date) || null,
       is_current: currentExperience.is_current ?? false,
     };
 
@@ -129,10 +138,18 @@ export function CandidateExperiencePage() {
 
     try {
       if (editingExperienceId) {
-        const updated = await CandidateAuthService.updateCandidateExperience(editingExperienceId, experienceData);
-        setExperiences((prev) => prev.map((exp) => (exp.id === editingExperienceId ? updated : exp)));
+        const updated = await CandidateAuthService.updateCandidateExperience(
+          editingExperienceId,
+          experienceData,
+        );
+        setExperiences((prev) =>
+          prev.map((exp) => (exp.id === editingExperienceId ? updated : exp)),
+        );
       } else {
-        const created = await CandidateAuthService.createCandidateExperience(profile.id, experienceData);
+        const created = await CandidateAuthService.createCandidateExperience(
+          profile.id,
+          experienceData,
+        );
         setExperiences((prev) => [created, ...prev]);
       }
       setShowForm(false);
@@ -147,19 +164,30 @@ export function CandidateExperiencePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-end">
-        <Dialog open={showForm} onOpenChange={(open) => { if (!open) resetForm(); setShowForm(open); }}>
+        <Dialog
+          open={showForm}
+          onOpenChange={(open) => {
+            if (!open) resetForm();
+            setShowForm(open);
+          }}
+        >
           <DialogTrigger asChild>
-            <Button onClick={handleOpenForm} className="bg-brand text-brand-foreground hover:bg-brand/90 text-white gap-2">
+            <Button
+              onClick={handleOpenForm}
+              className="bg-brand text-brand-foreground hover:bg-brand/90 text-white gap-2"
+            >
               <Plus className="w-4 h-4" />
               Ajouter une expérience
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingExperienceId ? "Modifier une expérience professionnelle" : "Ajouter une expérience professionnelle"}</DialogTitle>
-              <DialogDescription>
-                Remplissez les informations de votre expérience
-              </DialogDescription>
+              <DialogTitle>
+                {editingExperienceId
+                  ? "Modifier une expérience professionnelle"
+                  : "Ajouter une expérience professionnelle"}
+              </DialogTitle>
+              <DialogDescription>Remplissez les informations de votre expérience</DialogDescription>
             </DialogHeader>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -168,7 +196,9 @@ export function CandidateExperiencePage() {
                   <Input
                     id="title"
                     value={currentExperience.job_title || ""}
-                    onChange={(event) => setCurrentExperience({ ...currentExperience, job_title: event.target.value })}
+                    onChange={(event) =>
+                      setCurrentExperience({ ...currentExperience, job_title: event.target.value })
+                    }
                     placeholder="Développeur Senior"
                   />
                 </div>
@@ -177,7 +207,9 @@ export function CandidateExperiencePage() {
                   <Input
                     id="company"
                     value={currentExperience.company || ""}
-                    onChange={(event) => setCurrentExperience({ ...currentExperience, company: event.target.value })}
+                    onChange={(event) =>
+                      setCurrentExperience({ ...currentExperience, company: event.target.value })
+                    }
                     placeholder="TechCorp"
                   />
                 </div>
@@ -190,7 +222,9 @@ export function CandidateExperiencePage() {
                     id="startDate"
                     type="month"
                     value={currentExperience.start_date || ""}
-                    onChange={(event) => setCurrentExperience({ ...currentExperience, start_date: event.target.value })}
+                    onChange={(event) =>
+                      setCurrentExperience({ ...currentExperience, start_date: event.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -200,7 +234,9 @@ export function CandidateExperiencePage() {
                     type="month"
                     disabled={Boolean(currentExperience.is_current)}
                     value={currentExperience.end_date ?? ""}
-                    onChange={(event) => setCurrentExperience({ ...currentExperience, end_date: event.target.value })}
+                    onChange={(event) =>
+                      setCurrentExperience({ ...currentExperience, end_date: event.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -227,7 +263,9 @@ export function CandidateExperiencePage() {
                 <Textarea
                   id="description"
                   value={currentExperience.description || ""}
-                  onChange={(event) => setCurrentExperience({ ...currentExperience, description: event.target.value })}
+                  onChange={(event) =>
+                    setCurrentExperience({ ...currentExperience, description: event.target.value })
+                  }
                   placeholder="Décrivez vos responsabilités et accomplissements..."
                   rows={4}
                 />
@@ -244,7 +282,10 @@ export function CandidateExperiencePage() {
                 >
                   Annuler
                 </Button>
-                <Button type="submit" className="bg-brand text-brand-foreground hover:bg-brand/90 text-white">
+                <Button
+                  type="submit"
+                  className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
+                >
                   {editingExperienceId ? "Mettre à jour" : "Ajouter"}
                 </Button>
               </div>
@@ -288,11 +329,21 @@ export function CandidateExperiencePage() {
                       )}
                     </div>
                     <p className="text-sm text-slate-500 mb-3">
-                      {formatMonth(exp.start_date)} - {exp.is_current ? "Aujourd'hui" : exp.end_date ? formatMonth(exp.end_date) : ""}
+                      {formatMonth(exp.start_date)} -{" "}
+                      {exp.is_current
+                        ? "Aujourd'hui"
+                        : exp.end_date
+                          ? formatMonth(exp.end_date)
+                          : ""}
                     </p>
                     <p className="text-slate-700 mb-4">{exp.description}</p>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="gap-2" onClick={() => handleEditExperience(exp)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-2"
+                        onClick={() => handleEditExperience(exp)}
+                      >
                         <Edit2 className="w-4 h-4" />
                         Modifier
                       </Button>

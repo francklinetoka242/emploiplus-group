@@ -43,7 +43,8 @@ const FR: Dict = {
   "common.copied": "Copié",
   "home.hero.eyebrow": "GRH · Digitalisation · Formation",
   "home.hero.title": "Construisons votre avenir professionnel et numérique.",
-  "home.hero.subtitle": "Emploiplus Group est une entreprise spécialisée dans la mise à disposition de main-d'œuvre, l'externalisation des ressources humaines, la transformation digitale et les services d'ingénierie destinés aux entreprises en Afrique centrale.",
+  "home.hero.subtitle":
+    "Emploiplus Group est une entreprise spécialisée dans la mise à disposition de main-d'œuvre, l'externalisation des ressources humaines, la transformation digitale et les services d'ingénierie destinés aux entreprises en Afrique centrale.",
   "home.hero.cta.jobs": "Voir les offres",
   "home.hero.cta.services": "Nos services",
   "home.stats.jobs": "Offres diffusées",
@@ -56,7 +57,8 @@ const FR: Dict = {
   "home.services.card2.title": "Diffusion d'offres",
   "home.services.card2.description": "Publiez vos offres et touchez des candidats qualifiés.",
   "home.services.card3.title": "Contenu média",
-  "home.services.card3.description": "Articles métiers et insights pour faire grandir votre visibilité.",
+  "home.services.card3.description":
+    "Articles métiers et insights pour faire grandir votre visibilité.",
   "home.jobs.title": "Dernières offres",
   "home.jobs.subtitle": "Trouvez votre prochain poste parmi les opportunités du moment.",
   "home.jobs.viewAll": "Voir toutes les offres",
@@ -66,14 +68,17 @@ const FR: Dict = {
   "home.partners.title": "Nos partenaires",
   "home.partners.subtitle": "Collaborations stratégiques pour vos projets.",
   "home.cta.title": "Travaillons ensemble.",
-  "home.cta.subtitle": "Une opportunité à diffuser, un projet tech à lancer ou une collaboration média ? Parlons-en.",
+  "home.cta.subtitle":
+    "Une opportunité à diffuser, un projet tech à lancer ou une collaboration média ? Parlons-en.",
   "home.cta.button": "Contactez-nous",
   "about.title": "À propos d'EmploiPlus Group",
   "about.subtitle": "Découvrez notre mission, nos valeurs et nos trois piliers.",
   "about.mission.title": "Notre mission",
-  "about.mission.description": "Notre Mission : Faciliter l'accès à l'emploi et accompagner la transformation des entreprises en leur fournissant des talents, des équipes opérationnelles, des solutions RH et des solutions numériques adaptées à leurs besoins.",
+  "about.mission.description":
+    "Notre Mission : Faciliter l'accès à l'emploi et accompagner la transformation des entreprises en leur fournissant des talents, des équipes opérationnelles, des solutions RH et des solutions numériques adaptées à leurs besoins.",
   "about.team.title": "Notre équipe d'experts",
-  "about.team.subtitle": "Une équipe engagée pour accompagner les entreprises et les talents avec expertise, proximité et performance.",
+  "about.team.subtitle":
+    "Une équipe engagée pour accompagner les entreprises et les talents avec expertise, proximité et performance.",
   "about.team.member1.name": "Francklin ETOKA",
   "about.team.member1.role": "Manager Général",
   "about.team.member2.name": "Destinée MOUISSOU",
@@ -82,35 +87,49 @@ const FR: Dict = {
   "about.team.member3.role": "Responsable Commercial et Marketing",
   "about.values.title": "Nos valeurs",
   "about.values.item1.title": "Transparence et proximité",
-  "about.values.item1.description": "Nous travaillons en confiance, à l'écoute de vos vrais besoins.",
+  "about.values.item1.description":
+    "Nous travaillons en confiance, à l'écoute de vos vrais besoins.",
   "about.values.item2.title": "Expertise tech et emploi",
-  "about.values.item2.description": "Maîtrise profonde des technologies et de l'écosystème recrutement.",
+  "about.values.item2.description":
+    "Maîtrise profonde des technologies et de l'écosystème recrutement.",
   "about.values.item3.title": "Performances mesurables",
-  "about.values.item3.description": "Résultats concrets et chiffrés pour justifier votre investissement.",
+  "about.values.item3.description":
+    "Résultats concrets et chiffrés pour justifier votre investissement.",
   "about.stats.jobs": "Offres diffusées",
   "about.stats.companies": "Entreprises partenaires",
   "about.stats.readers": "Lecteurs mensuels",
   "about.whyChooseUs.title": "Pourquoi nous choisir ?",
   "jobs.page.title": "Offres d'emploi",
-  "jobs.page.description": "Découvrez nos dernières offres d'emploi en Afrique et accédez à des opportunités professionnelles sélectionnées.",
+  "jobs.page.description":
+    "Découvrez nos dernières offres d'emploi en Afrique et accédez à des opportunités professionnelles sélectionnées.",
   "services.title": "Nos services",
-  "services.subtitle": "Des solutions sur mesure pour accompagner les entreprises et les talents dans leur développement.",
+  "services.subtitle":
+    "Des solutions sur mesure pour accompagner les entreprises et les talents dans leur développement.",
   "services.card1.title": "PÔLE 1 : HUB EMPLOI & RECRUTEMENT",
-  "services.card1.description": "Nous connectons les entreprises aux meilleurs talents grâce à la publication, la diffusion et le recrutement ciblé.",
+  "services.card1.description":
+    "Nous connectons les entreprises aux meilleurs talents grâce à la publication, la diffusion et le recrutement ciblé.",
   "services.card2.title": "PÔLE 2 : MISE À DISPOSITION DE PERSONNEL & GESTION RH",
-  "services.card2.description": "Nous mettons à disposition du personnel et assurons la gestion RH administrative et opérationnelle.",
+  "services.card2.description":
+    "Nous mettons à disposition du personnel et assurons la gestion RH administrative et opérationnelle.",
   "services.card3.title": "PÔLE 3 : CONSEIL, FORMATION & TRANSFORMATION DIGITAL",
-  "services.card3.description": "Nous accompagnons les entreprises dans leur transformation digitale, leur conseil et leur montée en compétences.",
+  "services.card3.description":
+    "Nous accompagnons les entreprises dans leur transformation digitale, leur conseil et leur montée en compétences.",
   "services.card4.title": "PÔLE 4 : PRESTATIONS DE SERVICES & SOLUTIONS OPÉRATIONNELLES",
-  "services.card4.description": "Nous déployons des équipes internes pour répondre directement aux besoins opérationnels des entreprises clientes.",
-  "services.card1.detail": "PÔLE 1 : HUB EMPLOI & RECRUTEMENT\n\nNous connectons les entreprises aux meilleurs talents et accompagnons les chercheurs d’emploi. Voici nos services :\n\n- Publication et diffusion d'offres d'emploi\n\n- Recherche et sélection de candidats\n\n- Recrutement pour les entreprises\n\n- Constitution de bases de données de talents\n\n- Évaluation des compétences\n\n- Optimisation des CV et lettres de motivation\n\n- Accompagnement des candidats\n\n- Préparation aux entretiens\n\nNB : L’objectif ici est de faciliter l’accès à l’emploi et constituer un vivier de talents qualifiés.",
-  "services.card2.detail": "PÔLE 2 : MISE À DISPOSITION DE PERSONNEL & GESTION RH\n\nNous fournissons du personnel et gérons tout ou partie de leur administration pour le compte des entreprises. Voici nos services :\n\n- Mise à disposition de personnel (intérim)\n\n- Gestion administrative du personnel\n\n- Gestion de la paie\n\n- Élaboration des contrats de travail\n\n- Suivi des employés\n\n- Sous-traitance de la gestion RH\n\n- Externalisation des fonctions RH\n\nNB : L'objectif est de permettre aux entreprises de disposer rapidement de personnel tout en externalisant la gestion RH.",
-  "services.card3.detail": "PÔLE 3 : CONSEIL, FORMATION & TRANSFORMATION Digital\n\nNous accompagnons les entreprises dans l’amélioration de leurs compétences et de leurs outils de gestion. Nos services :\n\nConseil & Transformation:\n- Conseil en organisation\n- Audit des processus métier\n- Optimisation des processus\n- Accompagnement à la transformation digitale\n- Conseil en stratégie numérique\n- Conduite du changement\n\nDigitalisation des entreprises:\n- Digitalisation des processus métier\n- Digitalisation des processus RH\n- Automatisation des tâches administratives\n- Dématérialisation des documents\n- Gestion électronique des documents (GED)\n- Mise en place de workflows numériques\n- Conception de formulaires numériques\n- Développement de tableaux de bord décisionnels\n- Intégration de solutions collaboratives\n- Déploiement de solutions Cloud\n\nIngénierie informatique:\n- Création de sites web & Mails professionnels\n- Infrastructure & Cloud\n- Réseaux & Systèmes\n\nERP & Solutions de gestion:\n- Installation d'ERP\n- Intégration d'ERP\n- CRM\n- Logiciels de gestion RH\n- Logiciels de gestion commerciale\n- Formation des utilisateurs\n- Maintenance évolutive\n\nFormation:\n- Formations professionnelles\n- Formation aux outils numériques\n- Formation bureautique\n- Formation ERP\n- Développement du leadership\n- Coaching professionnel\n- Intégration des nouveaux employés\n\nNB : L'objectif est d'améliorer la performance des entreprises grâce aux compétences et aux outils numériques.",
-  "services.card4.detail": "PÔLE 4 : PRESTATIONS DE SERVICES & SOLUTIONS OPÉRATIONNELLES\n\nNous mettons à disposition des équipes internes pour exécuter des missions chez nos clients. Nos services :\n\n- Prestations sur site client\n\n- Support administratif\n\n- Assistance opérationnelle\n\n- Services aux entreprises (selon besoins)\n\n- Appui technique et organisationnel\n\n- Missions ponctuelles ou permanentes\n\nNB : L'objectif est de fournir des équipes opérationnelles capables d’exécuter directement les besoins des entreprises clientes.",
+  "services.card4.description":
+    "Nous déployons des équipes internes pour répondre directement aux besoins opérationnels des entreprises clientes.",
+  "services.card1.detail":
+    "PÔLE 1 : HUB EMPLOI & RECRUTEMENT\n\nNous connectons les entreprises aux meilleurs talents et accompagnons les chercheurs d’emploi. Voici nos services :\n\n- Publication et diffusion d'offres d'emploi\n\n- Recherche et sélection de candidats\n\n- Recrutement pour les entreprises\n\n- Constitution de bases de données de talents\n\n- Évaluation des compétences\n\n- Optimisation des CV et lettres de motivation\n\n- Accompagnement des candidats\n\n- Préparation aux entretiens\n\nNB : L’objectif ici est de faciliter l’accès à l’emploi et constituer un vivier de talents qualifiés.",
+  "services.card2.detail":
+    "PÔLE 2 : MISE À DISPOSITION DE PERSONNEL & GESTION RH\n\nNous fournissons du personnel et gérons tout ou partie de leur administration pour le compte des entreprises. Voici nos services :\n\n- Mise à disposition de personnel (intérim)\n\n- Gestion administrative du personnel\n\n- Gestion de la paie\n\n- Élaboration des contrats de travail\n\n- Suivi des employés\n\n- Sous-traitance de la gestion RH\n\n- Externalisation des fonctions RH\n\nNB : L'objectif est de permettre aux entreprises de disposer rapidement de personnel tout en externalisant la gestion RH.",
+  "services.card3.detail":
+    "PÔLE 3 : CONSEIL, FORMATION & TRANSFORMATION Digital\n\nNous accompagnons les entreprises dans l’amélioration de leurs compétences et de leurs outils de gestion. Nos services :\n\nConseil & Transformation:\n- Conseil en organisation\n- Audit des processus métier\n- Optimisation des processus\n- Accompagnement à la transformation digitale\n- Conseil en stratégie numérique\n- Conduite du changement\n\nDigitalisation des entreprises:\n- Digitalisation des processus métier\n- Digitalisation des processus RH\n- Automatisation des tâches administratives\n- Dématérialisation des documents\n- Gestion électronique des documents (GED)\n- Mise en place de workflows numériques\n- Conception de formulaires numériques\n- Développement de tableaux de bord décisionnels\n- Intégration de solutions collaboratives\n- Déploiement de solutions Cloud\n\nIngénierie informatique:\n- Création de sites web & Mails professionnels\n- Infrastructure & Cloud\n- Réseaux & Systèmes\n\nERP & Solutions de gestion:\n- Installation d'ERP\n- Intégration d'ERP\n- CRM\n- Logiciels de gestion RH\n- Logiciels de gestion commerciale\n- Formation des utilisateurs\n- Maintenance évolutive\n\nFormation:\n- Formations professionnelles\n- Formation aux outils numériques\n- Formation bureautique\n- Formation ERP\n- Développement du leadership\n- Coaching professionnel\n- Intégration des nouveaux employés\n\nNB : L'objectif est d'améliorer la performance des entreprises grâce aux compétences et aux outils numériques.",
+  "services.card4.detail":
+    "PÔLE 4 : PRESTATIONS DE SERVICES & SOLUTIONS OPÉRATIONNELLES\n\nNous mettons à disposition des équipes internes pour exécuter des missions chez nos clients. Nos services :\n\n- Prestations sur site client\n\n- Support administratif\n\n- Assistance opérationnelle\n\n- Services aux entreprises (selon besoins)\n\n- Appui technique et organisationnel\n\n- Missions ponctuelles ou permanentes\n\nNB : L'objectif est de fournir des équipes opérationnelles capables d’exécuter directement les besoins des entreprises clientes.",
   "services.cardAction.details": "En savoir plus",
   "services.cardAction.quote": "Demander un devis",
   "services.requestQuote.title": "Prêt à avancer ?",
-  "services.requestQuote.description": "Parlez-nous de votre projet et obtenez un devis adapté à vos besoins numériques.",
+  "services.requestQuote.description":
+    "Parlez-nous de votre projet et obtenez un devis adapté à vos besoins numériques.",
   "services.requestQuote.button": "Demander un devis",
   "services.requestQuote.subjectPrefix": "Demande de devis",
   "services.detail.overviewTitle": "À propos de ce service",
@@ -135,7 +154,8 @@ const FR: Dict = {
   "jobs.location.remote": "Télétravail",
   "jobs.none": "Aucune offre publiée disponible pour le moment.",
   "jobs.quickAccess.title": "Accès rapide",
-  "jobs.quickAccess.description": "Visitez nos chaînes WhatsApp pour recevoir les dernières offres et mises à jour emploi.",
+  "jobs.quickAccess.description":
+    "Visitez nos chaînes WhatsApp pour recevoir les dernières offres et mises à jour emploi.",
   "jobs.quickAccess.channel1": "Chaîne Emploiplus-group",
   "jobs.quickAccess.channel2": "Chaîne Offres d'emploi (gratuit)",
   "blog.title": "Blog EmploiPlus",
@@ -155,7 +175,8 @@ const FR: Dict = {
   "contact.title": "Contactez-nous",
   "contact.subtitle": "Une question, un projet ? Écrivez-nous, nous répondons rapidement.",
   "contact.form.title": "Écrivez-nous",
-  "contact.form.subtitle": "Nous répondons rapidement à toutes les demandes en recrutement, technologie ou stratégie médias.",
+  "contact.form.subtitle":
+    "Nous répondons rapidement à toutes les demandes en recrutement, technologie ou stratégie médias.",
   "contact.form.label.name": "Nom complet",
   "contact.form.label.email": "Email",
   "contact.form.label.subject": "Sujet",
@@ -187,7 +208,8 @@ const FR: Dict = {
   "footer.rights": "Tous droits réservés.",
   "admin.dashboard.overview": "Vue d'ensemble",
   "admin.dashboard.title": "Tableau de bord",
-  "admin.dashboard.description": "Surveillez l'activité du site, les offres et les demandes de contact en temps réel.",
+  "admin.dashboard.description":
+    "Surveillez l'activité du site, les offres et les demandes de contact en temps réel.",
   "admin.dashboard.premium": "Espace premium",
   "admin.dashboard.metric.activeJobs": "Offres actives",
   "admin.dashboard.metric.publishedPosts": "Articles publiés",
@@ -197,9 +219,11 @@ const FR: Dict = {
   "admin.dashboard.jobs.description": "Gérez les annonces publiées et suivez leur performance.",
   "admin.dashboard.content.title": "Contenu",
   "admin.dashboard.content.subtitle": "Articles & actualités",
-  "admin.dashboard.content.description": "Publiez du contenu pertinent et gardez votre audience engagée.",
+  "admin.dashboard.content.description":
+    "Publiez du contenu pertinent et gardez votre audience engagée.",
   "admin.team.title": "Équipe administrative",
-  "admin.team.description": "Affichez tous les administrateurs enregistrés et gérez leurs droits depuis la base de données.",
+  "admin.team.description":
+    "Affichez tous les administrateurs enregistrés et gérez leurs droits depuis la base de données.",
   "admin.team.roleLabel": "Rôle",
   "admin.team.emailLabel": "Email",
   "admin.team.specialtyLabel": "Spécialité",
@@ -219,8 +243,10 @@ const FR: Dict = {
   "admin.team.actions.delete": "Supprimer",
   "admin.team.form.title.create": "Créer un administrateur",
   "admin.team.form.title.edit": "Modifier l'administrateur",
-  "admin.team.form.description.create": "Ajoutez un nouveau compte administrateur avec un rôle et les informations associées.",
-  "admin.team.form.description.edit": "Modifiez le rôle, le nom et la spécialité de cet administrateur.",
+  "admin.team.form.description.create":
+    "Ajoutez un nouveau compte administrateur avec un rôle et les informations associées.",
+  "admin.team.form.description.edit":
+    "Modifiez le rôle, le nom et la spécialité de cet administrateur.",
   "admin.team.form.email": "Email",
   "admin.team.form.password": "Mot de passe",
   "admin.team.form.name": "Nom complet",
@@ -239,7 +265,8 @@ const FR: Dict = {
   "admin.team.toast.blocked": "Administrateur bloqué.",
   "admin.team.toast.unblocked": "Administrateur débloqué.",
   "admin.team.toast.deleted": "Administrateur supprimé.",
-  "admin.team.toast.selfAction": "Vous ne pouvez pas effectuer cette action sur votre propre compte.",
+  "admin.team.toast.selfAction":
+    "Vous ne pouvez pas effectuer cette action sur votre propre compte.",
   "admin.team.toast.error": "Une erreur est survenue.",
   "common.cancel": "Annuler",
   "admin.sidebar.dashboard": "Tableau de bord",
@@ -261,7 +288,8 @@ const FR: Dict = {
   "admin.candidates.counts.inactive": "Inactifs",
   "admin.candidates.counts.archived": "Archivés",
   "admin.candidates.detail.title": "Détails du candidat",
-  "admin.candidates.detail.description": "Informations complètes sur le profil et le statut du candidat.",
+  "admin.candidates.detail.description":
+    "Informations complètes sur le profil et le statut du candidat.",
   "admin.candidates.noCandidates": "Aucun candidat n'a été trouvé.",
   "admin.candidates.table.name": "Nom",
   "admin.candidates.table.email": "Email",
@@ -276,7 +304,8 @@ const FR: Dict = {
   "admin.sidebar.expand": "Ouvrir la barre latérale",
   "admin.sidebar.collapse": "Réduire la barre latérale",
   "admin.blog.pageTitle": "Administration du blog",
-  "admin.blog.pageDescription": "Publiez et gérez vos articles de blog pour garder votre audience engagée.",
+  "admin.blog.pageDescription":
+    "Publiez et gérez vos articles de blog pour garder votre audience engagée.",
   "admin.blog.field.title": "Titre de l'article",
   "admin.blog.field.titlePlaceholder": "Titre de l'article",
   "admin.blog.field.category": "Catégorie",
@@ -297,13 +326,16 @@ const FR: Dict = {
   "admin.blog.field.statusOption.draft": "Brouillon",
   "admin.blog.field.statusOption.published": "Publié",
   "admin.blog.field.requiredFieldsTitle": "Champs obligatoires",
-  "admin.blog.field.requiredFieldsDescription": "Titre, catégorie, contenu et statut sont nécessaires pour publier un article.",
+  "admin.blog.field.requiredFieldsDescription":
+    "Titre, catégorie, contenu et statut sont nécessaires pour publier un article.",
   "admin.blog.submit": "Publier l'article",
   "admin.blog.successDraft": "L'article a été enregistré comme brouillon.",
   "admin.blog.publishedMessage": "L'article a été publié sur le site.",
   "admin.jobs.title": "Publier une offre",
-  "admin.jobs.description": "Créez une annonce structurée pour Brazzaville, Pointe-Noire ou Remote.",
-  "admin.jobs.successMessage": "Informations enregistrées. Vérifiez votre publication avant validation finale.",
+  "admin.jobs.description":
+    "Créez une annonce structurée pour Brazzaville, Pointe-Noire ou Remote.",
+  "admin.jobs.successMessage":
+    "Informations enregistrées. Vérifiez votre publication avant validation finale.",
   "admin.jobs.field.title": "Titre du poste *",
   "admin.jobs.field.titlePlaceholder": "Responsable recrutement",
   "admin.jobs.field.company": "Nom de l'entreprise *",
@@ -334,14 +366,17 @@ const FR: Dict = {
   "admin.jobs.field.autoShare": "Partage automatique",
   "admin.jobs.field.autoShareHelp": "Diffusion automatique vers les partenaires sélectionnés.",
   "admin.jobs.field.requiredFieldsTitle": "Champs obligatoires",
-  "admin.jobs.field.requiredFieldsDescription": "Titre du poste, Nom de l'entreprise, Ville, Description du poste. Les autres champs restent optionnels.",
+  "admin.jobs.field.requiredFieldsDescription":
+    "Titre du poste, Nom de l'entreprise, Ville, Description du poste. Les autres champs restent optionnels.",
   "admin.jobs.field.submit": "Enregistrer l'offre",
   "admin.jobs.field.choosePlaceholder": "Choisir",
   "admin.jobs.field.contractTypeOption.consultance": "Consultance",
   "admin.jobs.create.title": "Créer une offre",
-  "admin.jobs.create.description": "Publiez une nouvelle offre d'emploi depuis l'administration EmploiPlus.",
+  "admin.jobs.create.description":
+    "Publiez une nouvelle offre d'emploi depuis l'administration EmploiPlus.",
   "admin.jobs.create.button.back": "Retour aux offres",
-  "admin.jobs.create.successMessage": "Informations enregistrées. Vérifiez votre publication avant validation finale.",
+  "admin.jobs.create.successMessage":
+    "Informations enregistrées. Vérifiez votre publication avant validation finale.",
   "admin.jobs.create.publishedMessage": "Offre validée et publiée sur le site.",
   "admin.jobs.create.validate": "Valider la publication",
   "admin.jobs.create.field.city": "Ville",
@@ -358,9 +393,11 @@ const FR: Dict = {
   "admin.jobs.create.field.publishAt": "Date de publication",
   "admin.jobs.create.field.expiresAt": "Date d'expiration",
   "admin.jobs.create.field.description": "Résumé de l'offre",
-  "admin.jobs.create.field.descriptionPlaceholder": "Décrivez les missions, les objectifs et la valeur proposée.",
+  "admin.jobs.create.field.descriptionPlaceholder":
+    "Décrivez les missions, les objectifs et la valeur proposée.",
   "admin.jobs.create.field.requirements": "Compétences & exigences",
-  "admin.jobs.create.field.requirementsPlaceholder": "Exemples : expérience, formation, compétences techniques.",
+  "admin.jobs.create.field.requirementsPlaceholder":
+    "Exemples : expérience, formation, compétences techniques.",
   "admin.jobs.create.field.companyLogo": "Logo entreprise (URL)",
   "admin.jobs.create.field.coverImage": "Image de couverture (URL)",
   "admin.jobs.create.field.urlPlaceholder": "https://...",
@@ -369,11 +406,13 @@ const FR: Dict = {
   "admin.dashboard.metric.featuredPosts": "Articles à la une",
   "admin.dashboard.blog.title": "Blog",
   "admin.dashboard.blog.subtitle": "À la une",
-  "admin.dashboard.blog.description": "Suivez les articles publiés et mettez en avant les contenus clés.",
+  "admin.dashboard.blog.description":
+    "Suivez les articles publiés et mettez en avant les contenus clés.",
   "admin.dashboard.blog.featuredCount": "Nombre d’articles à la une",
   "admin.dashboard.admin.title": "Administration",
   "admin.dashboard.admin.subtitle": "Comptes administratifs",
-  "admin.dashboard.admin.description": "Statistiques des comptes administrateurs et répartition par rôle.",
+  "admin.dashboard.admin.description":
+    "Statistiques des comptes administrateurs et répartition par rôle.",
   "admin.dashboard.admin.active": "Actifs",
   "admin.dashboard.admin.blocked": "Bloqués",
   "admin.dashboard.admin.roles": "Répartition des rôles",
@@ -423,7 +462,8 @@ const EN: Dict = {
   "common.copied": "Copied",
   "home.hero.eyebrow": "Tech · Job Media · Digital services",
   "home.hero.title": "Building your professional and digital future.",
-  "home.hero.subtitle": "EmploiPlus Group is a technology company broadcasting professional opportunities and publishing leading media content.",
+  "home.hero.subtitle":
+    "EmploiPlus Group is a technology company broadcasting professional opportunities and publishing leading media content.",
   "home.hero.cta.jobs": "Browse jobs",
   "home.hero.cta.services": "Our services",
   "home.stats.jobs": "Jobs broadcast",
@@ -436,7 +476,8 @@ const EN: Dict = {
   "home.services.card2.title": "Job broadcast",
   "home.services.card2.description": "Publish your opportunities and reach qualified candidates.",
   "home.services.card3.title": "Media content",
-  "home.services.card3.description": "Industry articles and insights that increase your visibility.",
+  "home.services.card3.description":
+    "Industry articles and insights that increase your visibility.",
   "home.jobs.title": "Latest jobs",
   "home.jobs.subtitle": "Find your next role among current opportunities.",
   "home.jobs.viewAll": "View all jobs",
@@ -446,16 +487,20 @@ const EN: Dict = {
   "home.partners.title": "Our partners",
   "home.partners.subtitle": "Strategic collaborations for your projects.",
   "home.cta.title": "Let's work together.",
-  "home.cta.subtitle": "A posting opportunity, a tech project to launch or a media collaboration? Let's talk.",
+  "home.cta.subtitle":
+    "A posting opportunity, a tech project to launch or a media collaboration? Let's talk.",
   "home.cta.button": "Contact us",
   "about.title": "About EmploiPlus Group",
   "about.subtitle": "Discover our mission, values and three pillars.",
   "about.mission.title": "Our mission",
-  "about.mission.description": "EmploiPlus Group supports companies in digital growth and helps talent find job opportunities.",
+  "about.mission.description":
+    "EmploiPlus Group supports companies in digital growth and helps talent find job opportunities.",
   "about.approach.title": "Our approach",
-  "about.approach.description": "We design broadcast strategies, produce industry content and build digital solutions tailored to local and international needs.",
+  "about.approach.description":
+    "We design broadcast strategies, produce industry content and build digital solutions tailored to local and international needs.",
   "about.promise.title": "Our promise",
-  "about.promise.description": "Our approach combines human expertise, modern technology and a strong user experience to deliver measurable results.",
+  "about.promise.description":
+    "Our approach combines human expertise, modern technology and a strong user experience to deliver measurable results.",
   "about.values.title": "Our values",
   "about.values.item1.title": "Transparency and proximity",
   "about.values.item1.description": "We work in trust, listening to your real needs.",
@@ -476,9 +521,11 @@ const EN: Dict = {
   "about.stats.readers": "Monthly readers",
   "about.whyChooseUs.title": "Why choose us?",
   "jobs.page.title": "Job openings",
-  "jobs.page.description": "Discover our latest job openings in Africa and access selected professional opportunities.",
+  "jobs.page.description":
+    "Discover our latest job openings in Africa and access selected professional opportunities.",
   "services.title": "Our services",
-  "services.subtitle": "Custom solutions for broadcast, digital development and media communication.",
+  "services.subtitle":
+    "Custom solutions for broadcast, digital development and media communication.",
   "services.card1.title": "Job broadcasting",
   "services.card1.description": "Attract top talent with visible, targeted listings.",
   "services.card2.title": "Web development",
@@ -491,16 +538,23 @@ const EN: Dict = {
   "services.card5.description": "Concrete actions to optimize your performance online.",
   "services.card6.title": "Operational support",
   "services.card6.description": "Hands-on support from A to Z for your digital projects.",
-  "services.card1.detail": "We help companies create visible, attractive, and targeted job posts to reach the right candidates.",
-  "services.card2.detail": "Web development & engineering: design and build of websites, applications and platforms, with technical support (infrastructure, cloud, networking, programming) for robust, scalable solutions.",
-  "services.card3.detail": "Tailored media strategies to amplify your content, brand, and digital presence.",
-  "services.card4.detail": "Build a strong employer brand to attract and retain the talent your organization needs.",
-  "services.card5.detail": "Pragmatic digital consulting to improve your performance, processes, and online presence.",
-  "services.card6.detail": "Operational support to manage your digital projects from planning through delivery.",
+  "services.card1.detail":
+    "We help companies create visible, attractive, and targeted job posts to reach the right candidates.",
+  "services.card2.detail":
+    "Web development & engineering: design and build of websites, applications and platforms, with technical support (infrastructure, cloud, networking, programming) for robust, scalable solutions.",
+  "services.card3.detail":
+    "Tailored media strategies to amplify your content, brand, and digital presence.",
+  "services.card4.detail":
+    "Build a strong employer brand to attract and retain the talent your organization needs.",
+  "services.card5.detail":
+    "Pragmatic digital consulting to improve your performance, processes, and online presence.",
+  "services.card6.detail":
+    "Operational support to manage your digital projects from planning through delivery.",
   "services.cardAction.details": "Learn more",
   "services.cardAction.quote": "Request a quote",
   "services.requestQuote.title": "Ready to move forward?",
-  "services.requestQuote.description": "Tell us about your project and get a quote tailored to your digital goals.",
+  "services.requestQuote.description":
+    "Tell us about your project and get a quote tailored to your digital goals.",
   "services.requestQuote.button": "Request a quote",
   "services.requestQuote.subjectPrefix": "Quote request",
   "services.detail.overviewTitle": "About this service",
@@ -545,7 +599,8 @@ const EN: Dict = {
   "contact.title": "Contact us",
   "contact.subtitle": "A question, a project? Write to us — we reply fast.",
   "contact.form.title": "Write to us",
-  "contact.form.subtitle": "We respond quickly to all recruitment, tech, or media strategy inquiries.",
+  "contact.form.subtitle":
+    "We respond quickly to all recruitment, tech, or media strategy inquiries.",
   "contact.form.label.name": "Full name",
   "contact.form.label.email": "Email",
   "contact.form.label.subject": "Subject",
@@ -578,7 +633,8 @@ const EN: Dict = {
   "footer.rights": "All rights reserved.",
   "admin.dashboard.overview": "Overview",
   "admin.dashboard.title": "Dashboard",
-  "admin.dashboard.description": "Monitor site activity, job listings, and contact requests in real time.",
+  "admin.dashboard.description":
+    "Monitor site activity, job listings, and contact requests in real time.",
   "admin.dashboard.premium": "Premium space",
   "admin.dashboard.metric.activeJobs": "Active jobs",
   "admin.dashboard.metric.publishedPosts": "Published posts",
@@ -606,7 +662,8 @@ const EN: Dict = {
   "admin.dashboard.action.writeArticle": "Write an article",
   "admin.dashboard.action.manageTeam": "Manage team",
   "admin.team.title": "Admin team",
-  "admin.team.description": "Display all registered admins and manage their access from the database.",
+  "admin.team.description":
+    "Display all registered admins and manage their access from the database.",
   "admin.team.roleLabel": "Role",
   "admin.team.emailLabel": "Email",
   "admin.team.specialtyLabel": "Specialty",
@@ -626,8 +683,10 @@ const EN: Dict = {
   "admin.team.actions.delete": "Delete",
   "admin.team.form.title.create": "Create an admin",
   "admin.team.form.title.edit": "Edit admin",
-  "admin.team.form.description.create": "Add a new administrator account with a role and profile details.",
-  "admin.team.form.description.edit": "Update the role, name, and specialty for this administrator.",
+  "admin.team.form.description.create":
+    "Add a new administrator account with a role and profile details.",
+  "admin.team.form.description.edit":
+    "Update the role, name, and specialty for this administrator.",
   "admin.team.form.email": "Email",
   "admin.team.form.password": "Password",
   "admin.team.form.name": "Full name",
@@ -668,7 +727,8 @@ const EN: Dict = {
   "admin.candidates.counts.inactive": "Inactive",
   "admin.candidates.counts.archived": "Archived",
   "admin.candidates.detail.title": "Candidate details",
-  "admin.candidates.detail.description": "Complete profile and status information for the candidate.",
+  "admin.candidates.detail.description":
+    "Complete profile and status information for the candidate.",
   "admin.candidates.noCandidates": "No candidates found.",
   "admin.candidates.table.name": "Name",
   "admin.candidates.table.email": "Email",
@@ -683,7 +743,8 @@ const EN: Dict = {
   "admin.sidebar.expand": "Expand sidebar",
   "admin.sidebar.collapse": "Collapse sidebar",
   "admin.blog.pageTitle": "Blog administration",
-  "admin.blog.pageDescription": "Publiez et gérez vos articles de blog pour garder votre audience engagée.",
+  "admin.blog.pageDescription":
+    "Publiez et gérez vos articles de blog pour garder votre audience engagée.",
   "admin.blog.field.title": "Titre de l'article",
   "admin.blog.field.titlePlaceholder": "Titre de l'article",
   "admin.blog.field.category": "Catégorie",
@@ -704,7 +765,8 @@ const EN: Dict = {
   "admin.blog.field.statusOption.draft": "Brouillon",
   "admin.blog.field.statusOption.published": "Publié",
   "admin.blog.field.requiredFieldsTitle": "Champs obligatoires",
-  "admin.blog.field.requiredFieldsDescription": "Titre, catégorie, contenu et statut sont nécessaires pour publier un article.",
+  "admin.blog.field.requiredFieldsDescription":
+    "Titre, catégorie, contenu et statut sont nécessaires pour publier un article.",
   "admin.blog.submit": "Publier l'article",
   "admin.blog.successDraft": "L'article a été enregistré comme brouillon.",
   "admin.jobs.title": "Publish a job",
@@ -729,9 +791,11 @@ const EN: Dict = {
   "admin.jobs.create.field.publishAt": "Publish date",
   "admin.jobs.create.field.expiresAt": "Expiration date",
   "admin.jobs.create.field.description": "Job summary",
-  "admin.jobs.create.field.descriptionPlaceholder": "Describe duties, goals, and value proposition.",
+  "admin.jobs.create.field.descriptionPlaceholder":
+    "Describe duties, goals, and value proposition.",
   "admin.jobs.create.field.requirements": "Skills & requirements",
-  "admin.jobs.create.field.requirementsPlaceholder": "Example: experience, education, technical skills.",
+  "admin.jobs.create.field.requirementsPlaceholder":
+    "Example: experience, education, technical skills.",
   "admin.jobs.create.field.companyLogo": "Company logo (URL)",
   "admin.jobs.create.field.coverImage": "Cover image (URL)",
   "admin.jobs.create.field.urlPlaceholder": "https://...",
@@ -769,7 +833,8 @@ const EN: Dict = {
   "admin.jobs.field.autoShare": "Automatic sharing",
   "admin.jobs.field.autoShareHelp": "Automatic broadcast to selected partners.",
   "admin.jobs.field.requiredFieldsTitle": "Required fields",
-  "admin.jobs.field.requiredFieldsDescription": "Job title, company name, city, job description. Other fields remain optional.",
+  "admin.jobs.field.requiredFieldsDescription":
+    "Job title, company name, city, job description. Other fields remain optional.",
   "admin.jobs.field.submit": "Save listing",
 };
 
@@ -812,7 +877,8 @@ const LN: Dict = {
   "common.copied": "Ekopi",
   "home.hero.eyebrow": "Tech · Misala ya mosala · Médias numériques",
   "home.hero.title": "Tonga mokolo na yo ya lisanga ya misala na EmploiPlus Group.",
-  "home.hero.subtitle": "EmploiPlus Group ezali kompani ya teknoloji oyo eyebisi misala ya mosala mpe kosala biloko ya media ya malamu.",
+  "home.hero.subtitle":
+    "EmploiPlus Group ezali kompani ya teknoloji oyo eyebisi misala ya mosala mpe kosala biloko ya media ya malamu.",
   "home.hero.cta.jobs": "Talá misala",
   "home.hero.cta.services": "Mibeko na biso",
   "home.stats.jobs": "Misala ebongwanaki",
@@ -821,7 +887,8 @@ const LN: Dict = {
   "home.services.title": "Mibeko na biso",
   "home.services.subtitle": "Platforme na yo ya banguna mpe bazaleli.",
   "home.services.card1.title": "Mibeko ya numérique",
-  "home.services.card1.description": "Mibeko ya web mpe expérience digitale mpo na kozala eyangani.",
+  "home.services.card1.description":
+    "Mibeko ya web mpe expérience digitale mpo na kozala eyangani.",
   "home.services.card2.title": "Kopesa misala",
   "home.services.card2.description": "Lobela misala mpe wana ba candidats ba key. ",
   "home.services.card3.title": "Boloba média",
@@ -835,29 +902,37 @@ const LN: Dict = {
   "home.partners.title": "Ba partenaires na biso",
   "home.partners.subtitle": "Collaborations ya stratégi mpo na projet na yo.",
   "home.cta.title": "Tosala elongo.",
-  "home.cta.subtitle": "Opportunité ya kopesa, projet ya tech ya kobimisa to collaboration média? Tókangi.",
+  "home.cta.subtitle":
+    "Opportunité ya kopesa, projet ya tech ya kobimisa to collaboration média? Tókangi.",
   "home.cta.button": "Kobongisa biso",
   "about.title": "Na likambo ya EmploiPlus Group",
   "about.subtitle": "Tala mission na biso, valeurs mpe piliers misato.",
   "about.mission.title": "Mission na biso",
-  "about.mission.description": "EmploiPlus Group esalisa ba entreprises na développement numérique mpe ba talents na kozwa misala.",
+  "about.mission.description":
+    "EmploiPlus Group esalisa ba entreprises na développement numérique mpe ba talents na kozwa misala.",
   "about.approach.title": "Approche na biso",
-  "about.approach.description": "Tozali kosala stratégies ya diffusion, kosala contenu métier mpe kotonga solutions numériques mpo na besoins ya ba marché.",
+  "about.approach.description":
+    "Tozali kosala stratégies ya diffusion, kosala contenu métier mpe kotonga solutions numériques mpo na besoins ya ba marché.",
   "about.promise.title": "Lobiko na biso",
-  "about.promise.description": "Approche na biso esangisa mayele ya bato, teknolojie ya sikisiki mpe expérience ya utilisateur mpo na kopesa résultats oyo ekoki komonana.",
+  "about.promise.description":
+    "Approche na biso esangisa mayele ya bato, teknolojie ya sikisiki mpe expérience ya utilisateur mpo na kopesa résultats oyo ekoki komonana.",
   "about.values.title": "Valuers na biso",
   "about.values.item1.title": "Transparence mpe proximité",
   "about.values.item1.description": "Tozali kosala na confiance, kotala ba besoins ya solo.",
   "about.values.item2.title": "Expertise tech mpe misala",
-  "about.values.item2.description": "Mayele ya kokamwa na tekinoloji mpe ekosystème ya recrutement.",
+  "about.values.item2.description":
+    "Mayele ya kokamwa na tekinoloji mpe ekosystème ya recrutement.",
   "about.values.item3.title": "Performances oyo ekoki komonana",
-  "about.values.item3.description": "Résultats oyo ezali na chiffre mpo na komonisa investissement.",
+  "about.values.item3.description":
+    "Résultats oyo ezali na chiffre mpo na komonisa investissement.",
   "about.pillars.title": "Piliers misato",
   "about.pillars.subtitle": "Mibembo ya stratégie na biso mpo na succès na yo",
   "about.pillars.item1.title": "Développement numérique",
-  "about.pillars.item1.description": "Accompagnement ya complet mpo na kobongisa présence digitale na yo.",
+  "about.pillars.item1.description":
+    "Accompagnement ya complet mpo na kobongisa présence digitale na yo.",
   "about.pillars.item2.title": "Kopesa misala",
-  "about.pillars.item2.description": "Stratégies mpo na kozwa ba talents malamu na ba canal ya malamu.",
+  "about.pillars.item2.description":
+    "Stratégies mpo na kozwa ba talents malamu na ba canal ya malamu.",
   "about.pillars.item3.title": "Médias & contenu",
   "about.pillars.item3.description": "Kosala contenu ya métier oyo esangisa ba audiences na yo.",
   "about.stats.jobs": "Misala ebongwanaki",
@@ -865,13 +940,16 @@ const LN: Dict = {
   "about.stats.readers": "Bapeyi sanza moko",
   "about.whyChooseUs.title": "Mpo na nini batika biso ?",
   "jobs.page.title": "Misala oyo ezali",
-  "jobs.page.description": "Kobuka misala na biso ya suka na Afrika mpe kozwa ba opportunités ya professionnel oyo eleki.",
+  "jobs.page.description":
+    "Kobuka misala na biso ya suka na Afrika mpe kozwa ba opportunités ya professionnel oyo eleki.",
   "services.title": "Mibeko na biso",
-  "services.subtitle": "Mibeko ya solo mpo na diffusion, développement numérique mpe communication média.",
+  "services.subtitle":
+    "Mibeko ya solo mpo na diffusion, développement numérique mpe communication média.",
   "services.card1.title": "Kopesa misala",
   "services.card1.description": "Yameli ba talents malamu na annonces oyo eleki ndenge.",
   "services.card2.title": "Développement web",
-  "services.card2.description": "Kosalisa na kosala sites, applications mpe plateformes sur mesure.",
+  "services.card2.description":
+    "Kosalisa na kosala sites, applications mpe plateformes sur mesure.",
   "services.card3.title": "Stratégie média",
   "services.card3.description": "Contenu, blog mpe visibilité mpo na kolakisa marque na yo.",
   "services.card4.title": "Branding employeur",
@@ -920,7 +998,8 @@ const LN: Dict = {
   "contact.title": "Tokota na biso",
   "contact.subtitle": "Mbala moko, projet? Tika to kobenga — toyebi na posa.",
   "contact.form.title": "Tika to ksi",
-  "contact.form.subtitle": "Tosungaka mbala moko na mituna nyonso ya recrutement, teknoloji to stratégie médias.",
+  "contact.form.subtitle":
+    "Tosungaka mbala moko na mituna nyonso ya recrutement, teknoloji to stratégie médias.",
   "contact.form.label.name": "Kombo nyonso",
   "contact.form.label.email": "Email",
   "contact.form.label.subject": "Likambo",
@@ -988,7 +1067,8 @@ const LN: Dict = {
   "admin.jobs.field.autoShare": "Automatic sharing",
   "admin.jobs.field.autoShareHelp": "Automatic broadcast to selected partners.",
   "admin.jobs.field.requiredFieldsTitle": "Required fields",
-  "admin.jobs.field.requiredFieldsDescription": "Job title, company name, city, job description. Other fields remain optional.",
+  "admin.jobs.field.requiredFieldsDescription":
+    "Job title, company name, city, job description. Other fields remain optional.",
   "admin.jobs.field.submit": "Save listing",
 };
 
@@ -1031,7 +1111,8 @@ const ES: Dict = {
   "common.copied": "Copiado",
   "home.hero.eyebrow": "Tech · Job Media · Servicios digitales",
   "home.hero.title": "Construyamos tu futuro profesional y digital.",
-  "home.hero.subtitle": "EmploiPlus Group es una empresa tecnológica que difunde oportunidades profesionales y publica contenido de medios de referencia.",
+  "home.hero.subtitle":
+    "EmploiPlus Group es una empresa tecnológica que difunde oportunidades profesionales y publica contenido de medios de referencia.",
   "home.hero.cta.jobs": "Ver empleos",
   "home.hero.cta.services": "Nuestros servicios",
   "home.stats.jobs": "Ofertas publicadas",
@@ -1044,7 +1125,8 @@ const ES: Dict = {
   "home.services.card2.title": "Difusión de ofertas",
   "home.services.card2.description": "Publica tus vacantes y llega a candidatos cualificados.",
   "home.services.card3.title": "Contenido de medios",
-  "home.services.card3.description": "Artículos del sector e insights para aumentar tu visibilidad.",
+  "home.services.card3.description":
+    "Artículos del sector e insights para aumentar tu visibilidad.",
   "home.jobs.title": "Últimas ofertas",
   "home.jobs.subtitle": "Encuentra tu próximo puesto entre las oportunidades actuales.",
   "home.jobs.viewAll": "Ver todas las ofertas",
@@ -1054,39 +1136,50 @@ const ES: Dict = {
   "home.partners.title": "Nuestros socios",
   "home.partners.subtitle": "Colaboraciones estratégicas para tus proyectos.",
   "home.cta.title": "Trabajemos juntos.",
-  "home.cta.subtitle": "¿Una oportunidad de difusión, un proyecto tech para lanzar o una colaboración mediática? Hablemos.",
+  "home.cta.subtitle":
+    "¿Una oportunidad de difusión, un proyecto tech para lanzar o una colaboración mediática? Hablemos.",
   "home.cta.button": "Contáctanos",
   "about.title": "Acerca de EmploiPlus Group",
   "about.subtitle": "Descubre nuestra misión, valores y tres pilares.",
   "about.mission.title": "Nuestra misión",
-  "about.mission.description": "EmploiPlus Group acompaña a las empresas en su desarrollo digital y ayuda al talento a encontrar oportunidades.",
+  "about.mission.description":
+    "EmploiPlus Group acompaña a las empresas en su desarrollo digital y ayuda al talento a encontrar oportunidades.",
   "about.approach.title": "Nuestro enfoque",
-  "about.approach.description": "Diseñamos estrategias de difusión, producimos contenido sectorial y desarrollamos soluciones digitales adaptadas a necesidades locales e internacionales.",
+  "about.approach.description":
+    "Diseñamos estrategias de difusión, producimos contenido sectorial y desarrollamos soluciones digitales adaptadas a necesidades locales e internacionales.",
   "about.promise.title": "Nuestra promesa",
-  "about.promise.description": "Nuestro enfoque combina experiencia humana, tecnología moderna y exigencia en la experiencia de usuario para ofrecer resultados medibles.",
+  "about.promise.description":
+    "Nuestro enfoque combina experiencia humana, tecnología moderna y exigencia en la experiencia de usuario para ofrecer resultados medibles.",
   "about.values.title": "Nuestros valores",
   "about.values.item1.title": "Transparencia y cercanía",
   "about.values.item1.description": "Trabajamos con confianza y escuchamos tus necesidades reales.",
   "about.values.item2.title": "Experiencia tech y empleo",
-  "about.values.item2.description": "Dominio profundo de tecnología y del ecosistema de reclutamiento.",
+  "about.values.item2.description":
+    "Dominio profundo de tecnología y del ecosistema de reclutamiento.",
   "about.values.item3.title": "Resultados medibles",
-  "about.values.item3.description": "Resultados concretos y cuantificados para justificar tu inversión.",
+  "about.values.item3.description":
+    "Resultados concretos y cuantificados para justificar tu inversión.",
   "about.pillars.title": "Nuestros tres pilares",
   "about.pillars.subtitle": "Los cimientos de nuestra estrategia para tu éxito",
   "about.pillars.item1.title": "Desarrollo digital",
-  "about.pillars.item1.description": "Acompañamiento completo para transformar tu presencia digital.",
+  "about.pillars.item1.description":
+    "Acompañamiento completo para transformar tu presencia digital.",
   "about.pillars.item2.title": "Difusión de ofertas",
-  "about.pillars.item2.description": "Estrategias para llegar a los mejores talentos en los canales adecuados.",
+  "about.pillars.item2.description":
+    "Estrategias para llegar a los mejores talentos en los canales adecuados.",
   "about.pillars.item3.title": "Medios y contenido",
-  "about.pillars.item3.description": "Producción de contenidos sectoriales que conectan con tus audiencias.",
+  "about.pillars.item3.description":
+    "Producción de contenidos sectoriales que conectan con tus audiencias.",
   "about.stats.jobs": "Ofertas publicadas",
   "about.stats.companies": "Empresas asociadas",
   "about.stats.readers": "Lectores mensuales",
   "about.whyChooseUs.title": "¿Por qué elegirnos?",
   "jobs.page.title": "Ofertas de empleo",
-  "jobs.page.description": "Descubre nuestras últimas ofertas de empleo en África y accede a oportunidades profesionales seleccionadas.",
+  "jobs.page.description":
+    "Descubre nuestras últimas ofertas de empleo en África y accede a oportunidades profesionales seleccionadas.",
   "services.title": "Nuestros servicios",
-  "services.subtitle": "Soluciones a medida para difusión, desarrollo digital y comunicación mediática.",
+  "services.subtitle":
+    "Soluciones a medida para difusión, desarrollo digital y comunicación mediática.",
   "services.card1.title": "Difusión de ofertas",
   "services.card1.description": "Atrae a los mejores talentos con anuncios visibles y dirigidos.",
   "services.card2.title": "Desarrollo web",
@@ -1119,7 +1212,8 @@ const ES: Dict = {
   "jobs.location.remote": "Remoto",
   "jobs.none": "No hay ofertas publicadas disponibles en este momento.",
   "jobs.quickAccess.title": "Acceso rápido",
-  "jobs.quickAccess.description": "Visita nuestros canales de WhatsApp para recibir las últimas ofertas.",
+  "jobs.quickAccess.description":
+    "Visita nuestros canales de WhatsApp para recibir las últimas ofertas.",
   "jobs.quickAccess.channel1": "Canal Emploiplus-group",
   "jobs.quickAccess.channel2": "Canal de ofertas de empleo (gratis)",
   "blog.title": "Blog EmploiPlus",
@@ -1139,7 +1233,8 @@ const ES: Dict = {
   "contact.title": "Contáctanos",
   "contact.subtitle": "¿Una pregunta, un proyecto? Escríbenos, respondemos rápido.",
   "contact.form.title": "Escríbenos",
-  "contact.form.subtitle": "Respondemos rápidamente a todas las consultas de reclutamiento, tecnología o estrategia mediática.",
+  "contact.form.subtitle":
+    "Respondemos rápidamente a todas las consultas de reclutamiento, tecnología o estrategia mediática.",
   "contact.form.label.name": "Nombre completo",
   "contact.form.label.email": "Email",
   "contact.form.label.subject": "Asunto",
@@ -1208,7 +1303,8 @@ const ES: Dict = {
   "admin.jobs.field.autoShare": "Compartir automáticamente",
   "admin.jobs.field.autoShareHelp": "Difusión automática a socios seleccionados.",
   "admin.jobs.field.requiredFieldsTitle": "Campos obligatorios",
-  "admin.jobs.field.requiredFieldsDescription": "Título del puesto, nombre de la empresa, ciudad, descripción del puesto. Los demás campos son opcionales.",
+  "admin.jobs.field.requiredFieldsDescription":
+    "Título del puesto, nombre de la empresa, ciudad, descripción del puesto. Los demás campos son opcionales.",
   "admin.jobs.field.submit": "Guardar publicación",
 };
 
@@ -1251,7 +1347,8 @@ const SW: Dict = {
   "common.copied": "Imewekwa",
   "home.hero.eyebrow": "Teknolojia · Job Media · Huduma za kidijitali",
   "home.hero.title": "Tujenge mustakabali wako wa kitaaluma na kidijitali.",
-  "home.hero.subtitle": "EmploiPlus Group ni kampuni ya teknolojia inayotangaza fursa za kazi na kuchapisha maudhui ya vyombo vya habari.",
+  "home.hero.subtitle":
+    "EmploiPlus Group ni kampuni ya teknolojia inayotangaza fursa za kazi na kuchapisha maudhui ya vyombo vya habari.",
   "home.hero.cta.jobs": "Angalia kazi",
   "home.hero.cta.services": "Huduma zetu",
   "home.stats.jobs": "Kazi zilizotangazwa",
@@ -1274,23 +1371,29 @@ const SW: Dict = {
   "home.partners.title": "Washirika wetu",
   "home.partners.subtitle": "Ushirikiano wa kimkakati kwa miradi yako.",
   "home.cta.title": "Tufanye kazi pamoja.",
-  "home.cta.subtitle": "Fursa ya kutangaza, mradi wa teknolojia wa kuanza au ushirikiano wa vyombo vya habari? Tuongee.",
+  "home.cta.subtitle":
+    "Fursa ya kutangaza, mradi wa teknolojia wa kuanza au ushirikiano wa vyombo vya habari? Tuongee.",
   "home.cta.button": "Wasiliana nasi",
   "about.title": "Kuhusu EmploiPlus Group",
   "about.subtitle": "Gundua dhamira, maadili na nguzo zetu tatu.",
   "about.mission.title": "Dhamira yetu",
-  "about.mission.description": "EmploiPlus Group inasaidia kampuni katika ukuaji wa kidijitali na kuwasaidia vipaji kupata fursa za kazi.",
+  "about.mission.description":
+    "EmploiPlus Group inasaidia kampuni katika ukuaji wa kidijitali na kuwasaidia vipaji kupata fursa za kazi.",
   "about.approach.title": "Mbinu yetu",
-  "about.approach.description": "Tunabuni mikakati ya matangazo, tunatengeneza maudhui ya sekta na kuunda suluhisho za dijitali zinazofaa mahitaji ya ndani na ya kimataifa.",
+  "about.approach.description":
+    "Tunabuni mikakati ya matangazo, tunatengeneza maudhui ya sekta na kuunda suluhisho za dijitali zinazofaa mahitaji ya ndani na ya kimataifa.",
   "about.promise.title": "Ahadi yetu",
-  "about.promise.description": "Mbinu yetu inaunganisha utaalamu wa kibinadamu, teknolojia ya kisasa na uzoefu wa mtumiaji ili kutoa matokeo yanayopimika.",
+  "about.promise.description":
+    "Mbinu yetu inaunganisha utaalamu wa kibinadamu, teknolojia ya kisasa na uzoefu wa mtumiaji ili kutoa matokeo yanayopimika.",
   "about.values.title": "Maadili yetu",
   "about.values.item1.title": "Uwazi na ukaribu",
-  "about.values.item1.description": "Tunafanya kazi kwa kuaminiana, tukisikiliza mahitaji yako halisi.",
+  "about.values.item1.description":
+    "Tunafanya kazi kwa kuaminiana, tukisikiliza mahitaji yako halisi.",
   "about.values.item2.title": "Utaalamu wa teknolojia na kazi",
   "about.values.item2.description": "Uwezo wa kina wa teknolojia na mfumo wa ajira.",
   "about.values.item3.title": "Utendaji unaopimika",
-  "about.values.item3.description": "Matokeo ya wazi na yaliyopimwa ili kuthibitisha uwekezaji wako.",
+  "about.values.item3.description":
+    "Matokeo ya wazi na yaliyopimwa ili kuthibitisha uwekezaji wako.",
   "about.pillars.title": "Nguzo zetu tatu",
   "about.pillars.subtitle": "Misingi ya mkakati wetu kwa mafanikio yako",
   "about.pillars.item1.title": "Maendeleo ya dijitali",
@@ -1298,15 +1401,18 @@ const SW: Dict = {
   "about.pillars.item2.title": "Matangazo ya kazi",
   "about.pillars.item2.description": "Mikakati ya kufikia vipaji bora kwenye njia sahihi.",
   "about.pillars.item3.title": "Vyombo vya habari & maudhui",
-  "about.pillars.item3.description": "Uzalishaji wa maudhui ya sekta yanayowafanya hadhira zako kushirikiana.",
+  "about.pillars.item3.description":
+    "Uzalishaji wa maudhui ya sekta yanayowafanya hadhira zako kushirikiana.",
   "about.stats.jobs": "Kazi zilizotangazwa",
   "about.stats.companies": "Kampuni washirika",
   "about.stats.readers": "Wasomaji wa mwezi",
   "about.whyChooseUs.title": "Kwa nini utuombe?",
   "jobs.page.title": "Ajira zilizopo",
-  "jobs.page.description": "Gundua ajira zetu za hivi karibuni barani Afrika na upate fursa za kitaaluma zilizochaguliwa.",
+  "jobs.page.description":
+    "Gundua ajira zetu za hivi karibuni barani Afrika na upate fursa za kitaaluma zilizochaguliwa.",
   "services.title": "Huduma zetu",
-  "services.subtitle": "Suluhisho maalum kwa matangazo, maendeleo ya dijitali na mawasiliano ya vyombo vya habari.",
+  "services.subtitle":
+    "Suluhisho maalum kwa matangazo, maendeleo ya dijitali na mawasiliano ya vyombo vya habari.",
   "services.card1.title": "Matangazo ya kazi",
   "services.card1.description": "Vutia vipaji bora kwa matangazo yanayoonekana na yaliyolengwa.",
   "services.card2.title": "Maendeleo ya wavuti",
@@ -1358,7 +1464,8 @@ const SW: Dict = {
   "contact.title": "Wasiliana nasi",
   "contact.subtitle": "Swali, mradi? Tandika, tutajibu haraka.",
   "contact.form.title": "Tandika kwetu",
-  "contact.form.subtitle": "Tunajibu haraka maswali yote ya ajira, teknolojia au mkakati wa vyombo vya habari.",
+  "contact.form.subtitle":
+    "Tunajibu haraka maswali yote ya ajira, teknolojia au mkakati wa vyombo vya habari.",
   "contact.form.label.name": "Jina kamili",
   "contact.form.label.email": "Barua pepe",
   "contact.form.label.subject": "Kichwa",
@@ -1425,7 +1532,8 @@ const SW: Dict = {
   "admin.jobs.create.saving": "Inaokoa...",
   "admin.jobs.create.submit": "Chapisha kazi",
 
-  "admin.jobs.successMessage": "Informações salvas. Verifique sua publicação antes da aprovação final.",
+  "admin.jobs.successMessage":
+    "Informações salvas. Verifique sua publicação antes da aprovação final.",
   "admin.jobs.field.title": "Título da vaga *",
   "admin.jobs.field.titlePlaceholder": "Gerente de recrutamento",
   "admin.jobs.field.company": "Nome da empresa *",
@@ -1456,7 +1564,8 @@ const SW: Dict = {
   "admin.jobs.field.autoShare": "Compartilhamento automático",
   "admin.jobs.field.autoShareHelp": "Transmissão automática para parceiros selecionados.",
   "admin.jobs.field.requiredFieldsTitle": "Campos obrigatórios",
-  "admin.jobs.field.requiredFieldsDescription": "Título da vaga, nome da empresa, cidade, descrição da vaga. Os demais campos são opcionais.",
+  "admin.jobs.field.requiredFieldsDescription":
+    "Título da vaga, nome da empresa, cidade, descrição da vaga. Os demais campos são opcionais.",
   "admin.jobs.field.submit": "Salvar publicação",
 };
 
@@ -1499,7 +1608,8 @@ const PT: Dict = {
   "common.copied": "Copiado",
   "home.hero.eyebrow": "Tech · Job Media · Serviços digitais",
   "home.hero.title": "Construindo seu futuro profissional e digital.",
-  "home.hero.subtitle": "EmploiPlus Group é uma empresa de tecnologia que divulga oportunidades profissionais e publica conteúdo de mídia relevante.",
+  "home.hero.subtitle":
+    "EmploiPlus Group é uma empresa de tecnologia que divulga oportunidades profissionais e publica conteúdo de mídia relevante.",
   "home.hero.cta.jobs": "Ver vagas",
   "home.hero.cta.services": "Nossos serviços",
   "home.stats.jobs": "Vagas divulgadas",
@@ -1522,29 +1632,36 @@ const PT: Dict = {
   "home.partners.title": "Nossos parceiros",
   "home.partners.subtitle": "Colaborações estratégicas para seus projetos.",
   "home.cta.title": "Vamos trabalhar juntos.",
-  "home.cta.subtitle": "Uma oportunidade para divulgar, um projeto tech para lançar ou uma colaboração de mídia? Vamos conversar.",
+  "home.cta.subtitle":
+    "Uma oportunidade para divulgar, um projeto tech para lançar ou uma colaboração de mídia? Vamos conversar.",
   "home.cta.button": "Contate-nos",
   "about.title": "Sobre o EmploiPlus Group",
   "about.subtitle": "Descubra nossa missão, valores e três pilares.",
   "about.mission.title": "Nossa missão",
-  "about.mission.description": "EmploiPlus Group apoia empresas em seu desenvolvimento digital e ajuda talentos a encontrar oportunidades.",
+  "about.mission.description":
+    "EmploiPlus Group apoia empresas em seu desenvolvimento digital e ajuda talentos a encontrar oportunidades.",
   "about.approach.title": "Nossa abordagem",
-  "about.approach.description": "Desenvolvemos estratégias de divulgação, produzimos conteúdo do setor e construímos soluções digitais adaptadas ao local e ao internacional.",
+  "about.approach.description":
+    "Desenvolvemos estratégias de divulgação, produzimos conteúdo do setor e construímos soluções digitais adaptadas ao local e ao internacional.",
   "about.promise.title": "Nossa promessa",
-  "about.promise.description": "Nossa abordagem combina expertise humana, tecnologia moderna e foco na experiência do usuário para entregar resultados mensuráveis.",
+  "about.promise.description":
+    "Nossa abordagem combina expertise humana, tecnologia moderna e foco na experiência do usuário para entregar resultados mensuráveis.",
   "about.values.title": "Nossos valores",
   "about.values.item1.title": "Transparência e proximidade",
   "about.values.item1.description": "Trabalhamos com confiança, ouvindo suas reais necessidades.",
   "about.values.item2.title": "Expertise em tech e emprego",
-  "about.values.item2.description": "Domínio profundo de tecnologia e do ecossistema de recrutamento.",
+  "about.values.item2.description":
+    "Domínio profundo de tecnologia e do ecossistema de recrutamento.",
   "about.values.item3.title": "Performance mensurável",
-  "about.values.item3.description": "Resultados concretos e mensurados para validar seu investimento.",
+  "about.values.item3.description":
+    "Resultados concretos e mensurados para validar seu investimento.",
   "about.pillars.title": "Nossos três pilares",
   "about.pillars.subtitle": "As bases da nossa estratégia para seu sucesso",
   "about.pillars.item1.title": "Desenvolvimento digital",
   "about.pillars.item1.description": "Suporte completo para transformar sua presença digital.",
   "about.pillars.item2.title": "Divulgação de vagas",
-  "about.pillars.item2.description": "Estratégias para alcançar os melhores talentos nos canais certos.",
+  "about.pillars.item2.description":
+    "Estratégias para alcançar os melhores talentos nos canais certos.",
   "about.pillars.item3.title": "Mídia & conteúdo",
   "about.pillars.item3.description": "Produção de conteúdo do setor que engaja suas audiências.",
   "about.stats.jobs": "Vagas divulgadas",
@@ -1552,9 +1669,11 @@ const PT: Dict = {
   "about.stats.readers": "Leitores mensais",
   "about.whyChooseUs.title": "Por que nos escolher?",
   "jobs.page.title": "Vagas de emprego",
-  "jobs.page.description": "Descubra nossas últimas vagas na África e acesse oportunidades profissionais selecionadas.",
+  "jobs.page.description":
+    "Descubra nossas últimas vagas na África e acesse oportunidades profissionais selecionadas.",
   "services.title": "Nossos serviços",
-  "services.subtitle": "Soluções sob medida para divulgação, desenvolvimento digital e comunicação de mídia.",
+  "services.subtitle":
+    "Soluções sob medida para divulgação, desenvolvimento digital e comunicação de mídia.",
   "services.card1.title": "Divulgação de vagas",
   "services.card1.description": "Atraia os melhores talentos com anúncios visíveis e segmentados.",
   "services.card2.title": "Desenvolvimento web",
@@ -1587,7 +1706,8 @@ const PT: Dict = {
   "jobs.location.remote": "Remoto",
   "jobs.none": "Nenhuma vaga publicada disponível no momento.",
   "jobs.quickAccess.title": "Acesso rápido",
-  "jobs.quickAccess.description": "Visite nossos canais do WhatsApp para receber as últimas ofertas.",
+  "jobs.quickAccess.description":
+    "Visite nossos canais do WhatsApp para receber as últimas ofertas.",
   "jobs.quickAccess.channel1": "Canal Emploiplus-group",
   "jobs.quickAccess.channel2": "Canal de vagas (gratuito)",
   "blog.title": "Blog EmploiPlus",
@@ -1607,7 +1727,8 @@ const PT: Dict = {
   "contact.title": "Contate-nos",
   "contact.subtitle": "Uma pergunta, um projeto? Escreva-nos, respondemos rapidamente.",
   "contact.form.title": "Escreva-nos",
-  "contact.form.subtitle": "Respondemos rapidamente a todas as consultas de recrutamento, tecnologia ou estratégia de mídia.",
+  "contact.form.subtitle":
+    "Respondemos rapidamente a todas as consultas de recrutamento, tecnologia ou estratégia de mídia.",
   "contact.form.label.name": "Nome completo",
   "contact.form.label.email": "Email",
   "contact.form.label.subject": "Assunto",
@@ -1676,7 +1797,8 @@ const PT: Dict = {
   "admin.jobs.field.autoShare": "自动分享",
   "admin.jobs.field.autoShareHelp": "自动发布到已选择的合作伙伴。",
   "admin.jobs.field.requiredFieldsTitle": "必填字段",
-  "admin.jobs.field.requiredFieldsDescription": "职位名称、公司名称、城市、职位描述。其余字段为可选项。",
+  "admin.jobs.field.requiredFieldsDescription":
+    "职位名称、公司名称、城市、职位描述。其余字段为可选项。",
   "admin.jobs.field.submit": "保存发布",
 };
 
@@ -1749,9 +1871,11 @@ const ZH: Dict = {
   "about.mission.title": "我们的使命",
   "about.mission.description": "EmploiPlus Group 帮助企业实现数字化发展，帮助人才寻找工作机会。",
   "about.approach.title": "我们的方法",
-  "about.approach.description": "我们设计传播策略，制作行业内容，并构建适应本地和国际需求的数字解决方案。",
+  "about.approach.description":
+    "我们设计传播策略，制作行业内容，并构建适应本地和国际需求的数字解决方案。",
   "about.promise.title": "我们的承诺",
-  "about.promise.description": "我们的方法结合了人性化专业、现代技术和用户体验要求，以交付可衡量的结果。",
+  "about.promise.description":
+    "我们的方法结合了人性化专业、现代技术和用户体验要求，以交付可衡量的结果。",
   "about.values.title": "我们的价值观",
   "about.values.item1.title": "透明与亲近",
   "about.values.item1.description": "我们以信任合作，倾听您的真实需求。",

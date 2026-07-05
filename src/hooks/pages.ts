@@ -4,7 +4,17 @@ import type { Database } from "@/integrations/supabase/types";
 
 type JobOfferPreview = Pick<
   Database["public"]["Tables"]["job_offers"]["Row"],
-  "id" | "slug" | "title" | "company" | "contract_type" | "location_city" | "location_country" | "description" | "requirements" | "status" | "publish_at"
+  | "id"
+  | "slug"
+  | "title"
+  | "company"
+  | "contract_type"
+  | "location_city"
+  | "location_country"
+  | "description"
+  | "requirements"
+  | "status"
+  | "publish_at"
 >;
 
 type BlogPostPreview = Pick<
@@ -63,7 +73,9 @@ export function usePublishedJobOffers(limit = 10) {
       setLoading(true);
       const { data, error } = await supabase
         .from("job_offers")
-        .select("id, slug, title, company, contract_type, location_city, location_country, description, requirements, status, publish_at")
+        .select(
+          "id, slug, title, company, contract_type, location_city, location_country, description, requirements, status, publish_at",
+        )
         .eq("status", "published")
         .order("publish_at", { ascending: false })
         .limit(limit);
@@ -137,7 +149,7 @@ export function useJobOfferBySlug(slug?: string) {
         .select(
           "id, slug, title, company, contract_type, location_city, location_country, description, requirements, status, publish_at, updated_at, expires_at, cover_image, og_image, meta_title, meta_description, application_email, application_whatsapp, external_link",
         )
-        .eq("slug", slug)
+        .eq("slug", slug ?? "")
         .single();
 
       if (!mounted) return;
@@ -171,8 +183,10 @@ export function useBlogPostBySlug(slug?: string) {
       setLoading(true);
       const { data, error } = await supabase
         .from("blog_posts")
-        .select("id, slug, title, excerpt, content, status, publish_at, updated_at, image, og_image, meta_title, meta_description")
-        .eq("slug", slug)
+        .select(
+          "id, slug, title, excerpt, content, status, publish_at, updated_at, image, og_image, meta_title, meta_description",
+        )
+        .eq("slug", slug ?? "")
         .single();
 
       if (!mounted) return;

@@ -178,12 +178,20 @@ const SERVICE_DETAILS = {
 export function NotFoundPage() {
   return (
     <>
-      <SEO title={"Page non trouvée - 404"} description={"La page que vous recherchez n'existe pas ou a été supprimée."} canonical={`${BASE_URL}/404`} robots="noindex,nofollow" />
+      <SEO
+        title={"Page non trouvée - 404"}
+        description={"La page que vous recherchez n'existe pas ou a été supprimée."}
+        canonical={`${BASE_URL}/404`}
+        robots="noindex,nofollow"
+      />
       <div className="container-page py-20 md:py-28">
         <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
           <h1 className="font-display text-4xl font-bold text-foreground">404</h1>
           <p className="mt-4 text-muted-foreground">Page introuvable.</p>
-          <Link to="/" className="mt-8 inline-flex items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
+          <Link
+            to="/"
+            className="mt-8 inline-flex items-center justify-center rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90"
+          >
             Retour à l'accueil
           </Link>
         </div>
@@ -198,23 +206,24 @@ export function ServiceDetailPage() {
   const navigate = useNavigate();
 
   const service = SERVICES.find((item) => item.slug === slug);
-  const serviceDetail = SERVICE_DETAILS[service?.slug ?? ''];
+  const serviceKey = service?.slug as keyof typeof SERVICE_DETAILS | undefined;
+  const serviceDetail = serviceKey ? SERVICE_DETAILS[serviceKey] : undefined;
 
-  if (!service) {
+  if (!service || !serviceDetail) {
     return <NotFoundPage />;
   }
 
   return (
     <>
       <SEO
-        title={`${t(service.titleKey)} | ${t('services.title')}`}
+        title={`${t(service.titleKey)} | ${t("services.title")}`}
         description={t(service.detailKey)}
         keywords="services, détail, devis, EmploiPlus"
         canonical={`${BASE_URL}/services/${service.slug}`}
         robots="index,follow"
         breadcrumbs={[
-          { name: t('home.hero.title'), url: `${BASE_URL}/` },
-          { name: t('services.title'), url: `${BASE_URL}/services` },
+          { name: t("home.hero.title"), url: `${BASE_URL}/` },
+          { name: t("services.title"), url: `${BASE_URL}/services` },
           { name: t(service.titleKey), url: `${BASE_URL}/services/${service.slug}` },
         ]}
       />
@@ -222,25 +231,39 @@ export function ServiceDetailPage() {
         <div className="grid gap-12 lg:grid-cols-[1.5fr_0.85fr]">
           <div className="space-y-8">
             <div className="space-y-4">
-              <p className="text-sm uppercase tracking-[0.3em] text-brand font-semibold">{t('services.title')}</p>
-              <h1 className="font-display text-4xl font-bold text-foreground">{t(service.titleKey)}</h1>
-              <p className="text-lg text-muted-foreground leading-relaxed">{t(service.descriptionKey)}</p>
+              <p className="text-sm uppercase tracking-[0.3em] text-brand font-semibold">
+                {t("services.title")}
+              </p>
+              <h1 className="font-display text-4xl font-bold text-foreground">
+                {t(service.titleKey)}
+              </h1>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                {t(service.descriptionKey)}
+              </p>
             </div>
             <div className="rounded-3xl border border-border bg-card overflow-hidden">
-              <img src={serviceDetail.image} alt={t(service.titleKey)} className="w-full h-64 object-cover" />
+              <img
+                src={serviceDetail.image}
+                alt={t(service.titleKey)}
+                className="w-full h-64 object-cover"
+              />
               <div className="p-8">
                 {serviceDetail.sections.map((section) => (
                   <div key={section.id} id={section.id} className="scroll-mt-24">
-                    <h2 className="font-display text-2xl font-semibold text-foreground">{section.title}</h2>
+                    <h2 className="font-display text-2xl font-semibold text-foreground">
+                      {section.title}
+                    </h2>
                     {section.list ? (
                       <ul className="mt-4 space-y-3 list-disc pl-5 text-muted-foreground leading-relaxed">
-                        {section.content.map((item) => (
+                        {section.content.map((item: string) => (
                           <li key={item}>{item}</li>
                         ))}
                       </ul>
                     ) : (
-                      section.content.map((paragraph, index) => (
-                        <p key={index} className="mt-4 text-muted-foreground leading-relaxed">{paragraph}</p>
+                      section.content.map((paragraph: string, index: number) => (
+                        <p key={index} className="mt-4 text-muted-foreground leading-relaxed">
+                          {paragraph}
+                        </p>
                       ))
                     )}
                   </div>
@@ -251,24 +274,40 @@ export function ServiceDetailPage() {
 
           <aside className="space-y-6">
             <div className="rounded-3xl border border-border bg-card p-8">
-              <h2 className="text-xl font-semibold text-foreground">{t('services.requestQuote.title')}</h2>
-              <p className="mt-3 text-muted-foreground leading-relaxed">{t('services.requestQuote.description')}</p>
-              <Button asChild size="lg" className="mt-6 w-full bg-brand text-brand-foreground hover:bg-brand/90">
-                <Link to={`/contact?subject=${encodeURIComponent(`${t('services.requestQuote.subjectPrefix')} - ${t(service.titleKey)}`)}`}>{t('services.requestQuote.button')}</Link>
+              <h2 className="text-xl font-semibold text-foreground">
+                {t("services.requestQuote.title")}
+              </h2>
+              <p className="mt-3 text-muted-foreground leading-relaxed">
+                {t("services.requestQuote.description")}
+              </p>
+              <Button
+                asChild
+                size="lg"
+                className="mt-6 w-full bg-brand text-brand-foreground hover:bg-brand/90"
+              >
+                <Link
+                  to={`/contact?subject=${encodeURIComponent(`${t("services.requestQuote.subjectPrefix")} - ${t(service.titleKey)}`)}`}
+                >
+                  {t("services.requestQuote.button")}
+                </Link>
               </Button>
             </div>
             <div className="rounded-3xl border border-border bg-card p-8">
               <h3 className="text-lg font-semibold text-foreground">Sections</h3>
               <div className="mt-4 grid gap-3">
                 {serviceDetail.sections.map((section) => (
-                  <a key={section.id} href={`#${section.id}`} className="rounded-2xl border border-border bg-surface px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted/10">
+                  <a
+                    key={section.id}
+                    href={`#${section.id}`}
+                    className="rounded-2xl border border-border bg-surface px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted/10"
+                  >
                     {section.title}
                   </a>
                 ))}
               </div>
             </div>
-            <Button variant="outline" className="w-full" onClick={() => navigate('/services')}>
-              {t('services.detail.back')}
+            <Button variant="outline" className="w-full" onClick={() => navigate("/services")}>
+              {t("services.detail.back")}
             </Button>
           </aside>
         </div>

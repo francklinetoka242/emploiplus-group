@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { fetchNotifications, NotificationRecord } from '@/integrations/supabase/notifications';
+import { useEffect, useState, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { fetchNotifications, NotificationRecord } from "@/integrations/supabase/notifications";
 
 interface NotificationState {
   notifications: NotificationRecord[];
@@ -34,7 +34,10 @@ const loadNotifications = async () => {
   try {
     updateState({ loading: true, error: null });
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError) throw authError;
 
     if (!user) {
@@ -45,16 +48,24 @@ const loadNotifications = async () => {
     const { data, error: notifError } = await fetchNotifications();
     if (notifError) throw notifError;
 
-    const userNotifications = (data || []).filter((notif) =>
-      notif.status === 'active' && (notif.user_id === null || notif.user_id === user.id)
+    const notifications = Array.isArray(data) ? data : [];
+    const userNotifications = notifications.filter(
+      (notif: NotificationRecord) =>
+        notif.status === "active" && (notif.user_id === null || notif.user_id === user.id),
     );
 
-    const unread = userNotifications.filter((n) => !n.is_read).length;
-    updateState({ notifications: userNotifications, unreadCount: unread, loading: false, error: null });
+    const unread = userNotifications.filter((n: NotificationRecord) => !n.is_read).length;
+    updateState({
+      notifications: userNotifications,
+      unreadCount: unread,
+      loading: false,
+      error: null,
+    });
   } catch (err) {
-    const errorMsg = err instanceof Error ? err.message : 'Erreur lors du chargement des notifications';
+    const errorMsg =
+      err instanceof Error ? err.message : "Erreur lors du chargement des notifications";
     updateState({ error: errorMsg, loading: false });
-    console.error('Error loading notifications:', err);
+    console.error("Error loading notifications:", err);
   }
 };
 
@@ -65,17 +76,17 @@ const initNotificationSubscription = () => {
   loadNotifications();
 
   supabase
-    .channel('notifications-updates')
+    .channel("notifications-updates")
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: '*',
-        schema: 'public',
-        table: 'notifications',
+        event: "*",
+        schema: "public",
+        table: "notifications",
       },
       () => {
         loadNotifications();
-      }
+      },
     )
     .subscribe();
 };
@@ -99,25 +110,28 @@ export function useNotifications() {
   const markAsRead = useCallback(async (notificationId: string) => {
     try {
       const { error: updateError } = await supabase
-        .from('notifications')
+        .from("notifications")
         .update({ is_read: true, read_at: new Date().toISOString() })
-        .eq('id', notificationId);
+        .eq("id", notificationId);
 
       if (updateError) throw updateError;
 
       const notifications = notificationState.notifications.map((notif) =>
-        notif.id === notificationId ? { ...notif, is_read: true } : notif
+        notif.id === notificationId ? { ...notif, is_read: true } : notif,
       );
       const unreadCount = notifications.filter((notif) => !notif.is_read).length;
       updateState({ notifications, unreadCount });
     } catch (err) {
-      console.error('Error marking notification as read:', err);
+      console.error("Error marking notification as read:", err);
     }
   }, []);
 
   const markAllAsRead = useCallback(async () => {
     try {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
       if (authError) throw authError;
 
       if (!user) return;
@@ -126,25 +140,28 @@ export function useNotifications() {
       if (unreadIds.length === 0) return;
 
       const { error: updateError } = await supabase
-        .from('notifications')
+        .from("notifications")
         .update({ is_read: true, read_at: new Date().toISOString() })
-        .in('id', unreadIds);
+        .in("id", unreadIds);
 
       if (updateError) throw updateError;
 
-      const notifications = notificationState.notifications.map((notif) => ({ ...notif, is_read: true }));
+      const notifications = notificationState.notifications.map((notif) => ({
+        ...notif,
+        is_read: true,
+      }));
       updateState({ notifications, unreadCount: 0 });
     } catch (err) {
-      console.error('Error marking all notifications as read:', err);
+      console.error("Error marking all notifications as read:", err);
     }
   }, []);
 
   const deleteNotification = useCallback(async (notificationId: string) => {
     try {
       const { error: deleteError } = await supabase
-        .from('notifications')
+        .from("notifications")
         .delete()
-        .eq('id', notificationId);
+        .eq("id", notificationId);
 
       if (deleteError) throw deleteError;
 
@@ -152,7 +169,7 @@ export function useNotifications() {
       const unreadCount = notifications.filter((notif) => !notif.is_read).length;
       updateState({ notifications, unreadCount });
     } catch (err) {
-      console.error('Error deleting notification:', err);
+      console.error("Error deleting notification:", err);
     }
   }, []);
 

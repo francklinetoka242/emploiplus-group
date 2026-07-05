@@ -1,6 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+import type { PostgrestError } from "@supabase/supabase-js";
 
-export type NotificationType = "candidature" | "admin" | "evenement" | "offre" | "contact" | "job" | "blog";
+export type NotificationType =
+  "candidature" | "admin" | "evenement" | "offre" | "contact" | "job" | "blog";
 export type NotificationStatus = "active" | "masked";
 
 export type NotificationRecord = {
@@ -18,7 +21,12 @@ export type NotificationRecord = {
 };
 
 export type NotificationInsert = Omit<NotificationRecord, "id" | "created_at">;
-export type NotificationUpdate = Partial<Omit<NotificationInsert, "is_read">>;
+export type NotificationUpdate = Partial<Omit<NotificationRecord, "id" | "created_at">>;
+
+type NotificationInsertPayload = Database["public"]["Tables"]["notifications"]["Insert"];
+type NotificationUpdatePayload = Database["public"]["Tables"]["notifications"]["Update"];
+type NotificationListResult = { data: NotificationRecord[] | null; error: PostgrestError | null };
+type NotificationSingleResult = { data: NotificationRecord | null; error: PostgrestError | null };
 
 function normalizeNotification(row: Record<string, unknown>): NotificationRecord {
   return {
@@ -38,10 +46,57 @@ function normalizeNotification(row: Record<string, unknown>): NotificationRecord
 
 function isSchemaError(error: unknown) {
   const message = error instanceof Error ? error.message : String(error);
-  return message.toLowerCase().includes("does not exist") || message.toLowerCase().includes("column") || message.toLowerCase().includes("permission denied");
+  return (
+    message.toLowerCase().includes("does not exist") ||
+    message.toLowerCase().includes("column") ||
+    message.toLowerCase().includes("permission denied")
+  );
 }
 
-export async function fetchNotifications() {
+function toPostgrestError(error: unknown): PostgrestError | null {
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+      details: "",
+      hint: "",
+      code: "",
+      name: "PostgrestError",
+      toJSON: () => ({
+        name: "PostgrestError",
+        message: error.message,
+        details: "",
+        hint: "",
+        code: "",
+      }),
+    };
+  }
+
+  return null;
+}
+
+function buildInsertPayload(payload: NotificationInsert): NotificationInsertPayload {
+  return {
+    title: payload.title,
+    body: payload.content ?? null,
+    type: payload.type,
+    user_id: payload.user_id,
+    status: payload.status,
+    is_read: payload.is_read,
+  };
+}
+
+function buildUpdatePayload(payload: NotificationUpdate): NotificationUpdatePayload {
+  return {
+    title: payload.title,
+    body: payload.content ?? null,
+    type: payload.type,
+    user_id: payload.user_id,
+    status: payload.status,
+    is_read: payload.is_read,
+  };
+}
+
+export async function fetchNotifications(): Promise<NotificationListResult> {
   const { data, error } = await supabase
     .from("notifications")
     .select("*")
@@ -49,19 +104,14 @@ export async function fetchNotifications() {
 
   return {
     data: (data ?? []).map((row) => normalizeNotification(row as Record<string, unknown>)),
-    error,
+    error: error ?? null,
   };
 }
 
-export async function createNotification(payload: NotificationInsert) {
-  const primaryPayload = {
-    title: payload.title,
-    content: payload.content ?? "",
-    type: payload.type,
-    user_id: payload.user_id,
-    status: payload.status,
-    is_read: payload.is_read,
-  };
+export async function createNotification(
+  payload: NotificationInsert,
+): Promise<NotificationSingleResult> {
+  const primaryPayload = buildInsertPayload(payload);
 
   const legacyPayload = {
     title: payload.title,
@@ -85,14 +135,19 @@ export async function createNotification(payload: NotificationInsert) {
           .select("*")
           .single();
         return {
-          data: fallback.data ? normalizeNotification(fallback.data as Record<string, unknown>) : null,
+          data: fallback.data
+            ? normalizeNotification(fallback.data as Record<string, unknown>)
+            : null,
           error: fallback.error,
         };
       }
       return { data: null, error };
     }
 
-    return { data: data ? normalizeNotification(data as Record<string, unknown>) : null, error: null };
+    return {
+      data: data ? normalizeNotification(data as Record<string, unknown>) : null,
+      error: null,
+    };
   } catch (error) {
     const fallback = await supabase
       .from("notifications")
@@ -106,15 +161,11 @@ export async function createNotification(payload: NotificationInsert) {
   }
 }
 
-export async function updateNotification(id: string, payload: NotificationUpdate) {
-  const primaryPayload = {
-    title: payload.title,
-    content: payload.content,
-    type: payload.type,
-    user_id: payload.user_id,
-    status: payload.status,
-    is_read: payload.is_read,
-  };
+export async function updateNotification(
+  id: string,
+  payload: NotificationUpdate,
+): Promise<NotificationSingleResult> {
+  const primaryPayload = buildUpdatePayload(payload);
 
   const legacyPayload = {
     title: payload.title,
@@ -140,14 +191,19 @@ export async function updateNotification(id: string, payload: NotificationUpdate
           .select("*")
           .single();
         return {
-          data: fallback.data ? normalizeNotification(fallback.data as Record<string, unknown>) : null,
+          data: fallback.data
+            ? normalizeNotification(fallback.data as Record<string, unknown>)
+            : null,
           error: fallback.error,
         };
       }
       return { data: null, error };
     }
 
-    return { data: data ? normalizeNotification(data as Record<string, unknown>) : null, error: null };
+    return {
+      data: data ? normalizeNotification(data as Record<string, unknown>) : null,
+      error: null,
+    };
   } catch (error) {
     const fallback = await supabase
       .from("notifications")
@@ -162,7 +218,10 @@ export async function updateNotification(id: string, payload: NotificationUpdate
   }
 }
 
-export async function toggleNotificationVisibility(id: string, status: NotificationStatus) {
+export async function toggleNotificationVisibility(
+  id: string,
+  status: NotificationStatus,
+): Promise<NotificationSingleResult> {
   try {
     const { data, error } = await supabase
       .from("notifications")
@@ -180,16 +239,21 @@ export async function toggleNotificationVisibility(id: string, status: Notificat
           .select("*")
           .single();
         return {
-          data: fallback.data ? normalizeNotification(fallback.data as Record<string, unknown>) : null,
+          data: fallback.data
+            ? normalizeNotification(fallback.data as Record<string, unknown>)
+            : null,
           error: fallback.error,
         };
       }
       return { data: null, error };
     }
 
-    return { data: data ? normalizeNotification(data as Record<string, unknown>) : null, error: null };
+    return {
+      data: data ? normalizeNotification(data as Record<string, unknown>) : null,
+      error: null,
+    };
   } catch (error) {
-    return { data: null, error };
+    return { data: null, error: toPostgrestError(error) };
   }
 }
 

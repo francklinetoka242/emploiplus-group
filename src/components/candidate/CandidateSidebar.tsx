@@ -34,18 +34,33 @@ const menuItems = [
   { id: "dashboard", label: "Tableau de bord", icon: Home, href: "/candidate/dashboard" },
   { id: "profile", label: "Mon profil", icon: User, href: "/candidate/profile" },
   { id: "cv", label: "Mes Documents", icon: FileText, href: "/candidate/Mes-Documents" },
-  { id: "experience", label: "Expériences professionnelles", icon: Briefcase, href: "/candidate/experience" },
+  {
+    id: "experience",
+    label: "Expériences professionnelles",
+    icon: Briefcase,
+    href: "/candidate/experience",
+  },
   { id: "education", label: "Formations", icon: GraduationCap, href: "/candidate/education" },
   { id: "skills", label: "Compétences", icon: Star, href: "/candidate/skills" },
   { id: "languages", label: "Langues", icon: Globe, href: "/candidate/languages" },
-  { id: "preferences", label: "Préférences d'emploi", icon: Target, href: "/candidate/preferences" },
+  {
+    id: "preferences",
+    label: "Préférences d'emploi",
+    icon: Target,
+    href: "/candidate/preferences",
+  },
   { id: "applications", label: "Mes candidatures", icon: Send, href: "/candidate/applications" },
   { id: "saved", label: "Offres enregistrées", icon: Heart, href: "/candidate/saved-offers" },
   { id: "notifications", label: "Notifications", icon: Bell, href: "/candidate/notifications" },
   { id: "settings", label: "Paramètres", icon: Settings, href: "/candidate/settings" },
 ];
 
-export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer = false }: CandidateSidebarProps) {
+export function CandidateSidebar({
+  open = true,
+  onOpenChange,
+  onLogout,
+  isDrawer = false,
+}: CandidateSidebarProps) {
   const location = useLocation();
   const { profile } = useCandidate();
 
@@ -90,7 +105,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
         <aside
           className={cn(
             "fixed left-0 top-0 z-50 h-screen w-4/5 flex flex-col bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100 shadow-2xl transition-transform duration-300 ease-in-out md:hidden",
-            open ? "translate-x-0" : "-translate-x-full"
+            open ? "translate-x-0" : "-translate-x-full",
           )}
         >
           {/* Close Button */}
@@ -111,7 +126,8 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
             <div className="border-b border-white/5 px-4 py-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-white font-semibold">
-                  {profile.first_name?.[0]}{profile.last_name?.[0]}
+                  {profile.first_name?.[0]}
+                  {profile.last_name?.[0]}
                 </div>
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-white">
@@ -139,7 +155,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                       "relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250 border border-transparent",
                       active
                         ? "bg-secondary text-white shadow-lg shadow-secondary/20"
-                        : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
+                        : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
                     )}
                   >
                     {active && (
@@ -149,15 +165,15 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                     <div
                       className={cn(
                         "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
-                        active
-                          ? "bg-secondary text-white shadow-md"
-                          : "bg-slate-950/90 text-white"
+                        active ? "bg-secondary text-white shadow-md" : "bg-slate-950/90 text-white",
                       )}
                     >
                       <Icon className="h-5 w-5" />
                     </div>
 
-                    <span className="truncate text-sm font-medium text-slate-300 group-hover:text-slate-100">{item.label}</span>
+                    <span className="truncate text-sm font-medium text-slate-300 group-hover:text-slate-100">
+                      {item.label}
+                    </span>
                   </Link>
                 );
               })}
@@ -188,7 +204,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
     <aside
       className={cn(
         "fixed left-0 top-0 z-40 hidden h-screen flex-col bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100 shadow-2xl transition-all duration-300 ease-in-out md:flex",
-        open ? "w-72 md:w-72" : "w-20 md:w-20"
+        open ? "w-72 md:w-72" : "w-20 md:w-20",
       )}
       style={{ minWidth: open ? 288 : 80 }}
     >
@@ -201,11 +217,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
           className="flex-shrink-0 rounded-lg p-2 text-slate-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-secondary"
           aria-label={open ? "Replier le menu" : "Déplier le menu"}
         >
-          {open ? (
-            <ChevronLeft className="h-5 w-5" />
-          ) : (
-            <Menu className="h-5 w-5" />
-          )}
+          {open ? <ChevronLeft className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
       </div>
 
@@ -226,7 +238,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                         "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-250 md:px-3 md:py-2 border border-transparent",
                         active
                           ? "bg-secondary text-white shadow-lg shadow-secondary/20"
-                          : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
+                          : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
                       )}
                     >
                       {/* Active indicator bar */}
@@ -240,10 +252,15 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                           "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
                           active
                             ? "bg-secondary text-white shadow-md"
-                            : "bg-slate-950/90 text-white"
+                            : "bg-slate-950/90 text-white",
                         )}
                       >
-                        <Icon className={cn("h-5 w-5 transition-colors duration-250", active ? "text-white" : "text-slate-200")} />
+                        <Icon
+                          className={cn(
+                            "h-5 w-5 transition-colors duration-250",
+                            active ? "text-white" : "text-slate-200",
+                          )}
+                        />
                       </div>
 
                       {/* Text label */}
@@ -251,7 +268,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                         <span
                           className={cn(
                             "truncate text-sm font-medium transition-colors duration-250",
-                            active ? "text-white" : "text-slate-300 group-hover:text-slate-100"
+                            active ? "text-white" : "text-slate-300 group-hover:text-slate-100",
                           )}
                         >
                           {item.label}
@@ -287,7 +304,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
             <Button
               onClick={onLogout}
               className={cn(
-                "w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium transition-all duration-250 hover:from-red-600/20 hover:to-red-700/20 hover:text-red-300"
+                "w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium transition-all duration-250 hover:from-red-600/20 hover:to-red-700/20 hover:text-red-300",
               )}
               variant="ghost"
             >
@@ -306,7 +323,10 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                   <LogOut className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="right" className="rounded-lg border border-white/10 bg-slate-900 text-xs font-medium">
+              <TooltipContent
+                side="right"
+                className="rounded-lg border border-white/10 bg-slate-900 text-xs font-medium"
+              >
                 Déconnexion
               </TooltipContent>
             </Tooltip>
@@ -316,4 +336,3 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
     </aside>
   );
 }
-

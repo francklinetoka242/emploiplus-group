@@ -12,24 +12,27 @@ export async function updateSupabaseUserConfirmation(
   serviceKey: string,
   confirmedAt: string,
 ): Promise<ConfirmationResponse> {
-  const url = `${supabaseUrl.replace(/\/$/, '')}/auth/v1/admin/users/${userId}`;
+  const url = `${supabaseUrl.replace(/\/$/, "")}/auth/v1/admin/users/${userId}`;
   const headers = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     apikey: serviceKey,
     Authorization: `Bearer ${serviceKey}`,
   };
 
   const requestBody = JSON.stringify({ email_confirmed_at: confirmedAt });
-  console.log('[CONFIRM-DEBUG][confirm-utils] request', { url, method: 'PUT', body: requestBody });
+  console.log("[CONFIRM-DEBUG][confirm-utils] request", { url, method: "PUT", body: requestBody });
 
   const putResponse = await fetchImpl(url, {
-    method: 'PUT',
+    method: "PUT",
     headers,
     body: requestBody,
   });
 
   const putBody = await putResponse.text();
-  console.log('[CONFIRM-DEBUG][confirm-utils] response', { status: putResponse.status, body: putBody });
+  console.log("[CONFIRM-DEBUG][confirm-utils] response", {
+    status: putResponse.status,
+    body: putBody,
+  });
 
   if (putResponse.ok) {
     return {
@@ -41,14 +44,17 @@ export async function updateSupabaseUserConfirmation(
   }
 
   if (putResponse.status === 405 || putResponse.status === 404) {
-    console.log('[CONFIRM-DEBUG][confirm-utils] retryingWithPatch', { url, body: requestBody });
+    console.log("[CONFIRM-DEBUG][confirm-utils] retryingWithPatch", { url, body: requestBody });
     const patchResponse = await fetchImpl(url, {
-      method: 'PATCH',
+      method: "PATCH",
       headers,
       body: requestBody,
     });
     const patchBody = await patchResponse.text();
-    console.log('[CONFIRM-DEBUG][confirm-utils] patchResponse', { status: patchResponse.status, body: patchBody });
+    console.log("[CONFIRM-DEBUG][confirm-utils] patchResponse", {
+      status: patchResponse.status,
+      body: patchBody,
+    });
 
     return {
       ok: patchResponse.ok,

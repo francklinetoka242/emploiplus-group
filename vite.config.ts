@@ -24,14 +24,7 @@ function sitemapGeneratorPlugin(env: Record<string, string>) {
     async closeBundle() {
       const hostname = "https://emploiplus-group.com".replace(/\/$/, "");
 
-      const staticRoutes = [
-        "/",
-        "/about",
-        "/services",
-        "/jobs",
-        "/blog",
-        "/contact",
-      ];
+      const staticRoutes = ["/", "/about", "/services", "/jobs", "/blog", "/contact"];
 
       const now = new Date().toISOString();
 
@@ -52,8 +45,7 @@ function sitemapGeneratorPlugin(env: Record<string, string>) {
       try {
         const { createClient } = await import("@supabase/supabase-js");
 
-        const supabaseUrl =
-          env.VITE_SUPABASE_URL || env.SUPABASE_URL || "";
+        const supabaseUrl = env.VITE_SUPABASE_URL || env.SUPABASE_URL || "";
 
         const supabaseKey =
           env.VITE_SUPABASE_ANON_KEY ||
@@ -80,8 +72,7 @@ function sitemapGeneratorPlugin(env: Record<string, string>) {
             sitemapItems.push(
               ...jobs.map((job) => {
                 const route = `/jobs/${job.slug}`;
-                const lastmod =
-                  job.updated_at || job.publish_at || now;
+                const lastmod = job.updated_at || job.publish_at || now;
 
                 return publishRoute(route, lastmod, "weekly", "0.8");
               }),
@@ -92,8 +83,7 @@ function sitemapGeneratorPlugin(env: Record<string, string>) {
             sitemapItems.push(
               ...posts.map((post) => {
                 const route = `/blog/${post.slug}`;
-                const lastmod =
-                  post.updated_at || post.publish_at || now;
+                const lastmod = post.updated_at || post.publish_at || now;
 
                 return publishRoute(route, lastmod, "weekly", "0.8");
               }),
@@ -111,11 +101,7 @@ function sitemapGeneratorPlugin(env: Record<string, string>) {
         `</urlset>`;
 
       mkdirSync(outputDir, { recursive: true });
-      writeFileSync(
-        join(outputDir, "sitemap.xml"),
-        sitemapXml,
-        "utf8",
-      );
+      writeFileSync(join(outputDir, "sitemap.xml"), sitemapXml, "utf8");
 
       try {
         const indexPath = join(outputDir, "index.html");
@@ -135,11 +121,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
-    plugins: [
-      react(),
-      tailwindcss(),
-      sitemapGeneratorPlugin(env),
-    ],
+    plugins: [react(), tailwindcss(), sitemapGeneratorPlugin(env)],
 
     // ✅ FIX COMPLET alias @ (Vite + TS + dev scan)
     resolve: {
@@ -156,10 +138,10 @@ export default defineConfig(({ mode }) => {
 
     server: {
       proxy: {
-        '/api': {
-          target: 'http://localhost:3000',
+        "/api": {
+          target: "http://localhost:3000",
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
+          rewrite: (path) => path.replace(/^\/api/, ""),
         },
       },
     },

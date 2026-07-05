@@ -14,4 +14,3 @@ L'endpoint `POST /send-email` accepte des payloads JSON non signés et envoie l'
 
 - `SEND_EMAIL_HOOK_SECRET` n'est plus utilisé et ne doit plus être configuré.
 - La signature et la validation des tokens utilisent uniquement `EMAIL_SIGNING_SECRET`.
-

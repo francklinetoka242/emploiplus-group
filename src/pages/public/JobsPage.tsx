@@ -1,6 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { BadgeDollarSign, BriefcaseBusiness, Building2, CalendarDays, MapPin, Sparkles } from "lucide-react";
+import {
+  BadgeDollarSign,
+  BriefcaseBusiness,
+  Building2,
+  CalendarDays,
+  MapPin,
+  Sparkles,
+} from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import JobCard from "@/components/site/JobCard";
@@ -43,7 +50,8 @@ export function JobsPage() {
     return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("fr-FR");
   };
   const filteredOffers = offers.filter((job) => {
-    const hay = `${job.title || ""} ${job.company || ""} ${job.description || ""} ${job.requirements || ""}`.toLowerCase();
+    const hay =
+      `${job.title || ""} ${job.company || ""} ${job.description || ""} ${job.requirements || ""}`.toLowerCase();
     if (q && !hay.includes(q)) return false;
     if (companyFilter && !job.company?.toLowerCase().includes(companyFilter)) return false;
     if (lq) {
@@ -80,91 +88,141 @@ export function JobsPage() {
           <div className="space-y-6 text-foreground/90 leading-relaxed">
             <div className="rounded-3xl p-[1px] gradient-brand">
               <div className="rounded-3xl bg-card p-6 md:p-8">
-                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <h3 className="font-display text-lg font-bold text-foreground">{t("jobs.search.title")}</h3>
-                    <button
-                      type="button"
-                      onClick={() => setFiltersOpen((prev) => !prev)}
-                      className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-primary/5"
-                    >
-                      {filtersOpen ? "Masquer les filtres" : "Afficher les filtres"}
-                    </button>
-                  </div>
-                  {filtersOpen && (
-                    <form onSubmit={(e) => e.preventDefault()} className="mt-6 grid gap-4 md:grid-cols-[1fr_1fr]">
-                      <div>
-                        <label className="text-sm font-semibold text-foreground mb-1 block">{t("jobs.search.keywords")}</label>
-                        <input
-                          value={query}
-                          onChange={(e) => setQuery(e.target.value)}
-                          placeholder={t("jobs.search.keywords.placeholder")}
-                          className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-semibold text-foreground mb-1 block">{t("jobs.search.company")}</label>
-                        <input
-                          value={companyQuery}
-                          onChange={(e) => setCompanyQuery(e.target.value)}
-                          placeholder={t("jobs.search.company.placeholder")}
-                          className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-semibold text-foreground mb-1 block">{t("jobs.search.location")}</label>
-                        <input
-                          value={locationQuery}
-                          onChange={(e) => setLocationQuery(e.target.value)}
-                          placeholder={t("jobs.search.location.placeholder")}
-                          className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-semibold text-foreground mb-1 block">{t("jobs.search.contractType")}</label>
-                        <select
-                          value={contractType}
-                          onChange={(e) => setContractType(e.target.value)}
-                          className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                        >
-                          <option value="">{t("jobs.search.all")}</option>
-                          <option value="cdi">{t("jobs.search.type.cdi")}</option>
-                          <option value="cdd">{t("jobs.search.type.cdd")}</option>
-                          <option value="stage">{t("jobs.search.type.stage")}</option>
-                          <option value="freelance">{t("jobs.search.type.freelance")}</option>
-                          <option value="temps_partiel">{t("jobs.search.type.temps_partiel")}</option>
-                          <option value="interim">{t("jobs.search.type.interim")}</option>
-                        </select>
-                      </div>
-                      <div className="md:col-span-2 flex flex-wrap justify-end gap-3 mt-2">
-                        <button type="button" onClick={() => { setQuery(""); setCompanyQuery(""); setLocationQuery(""); setContractType(""); }} className="rounded-md px-4 py-2 border border-border text-sm text-foreground hover:bg-primary/5">{t("jobs.search.reset")}</button>
-                        <button type="submit" className="rounded-md px-4 py-2 bg-brand text-brand-foreground font-semibold">{t("jobs.search.submit")}</button>
-                      </div>
-                    </form>
-                  )}
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <h3 className="font-display text-lg font-bold text-foreground">
+                    {t("jobs.search.title")}
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setFiltersOpen((prev) => !prev)}
+                    className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-primary/5"
+                  >
+                    {filtersOpen ? "Masquer les filtres" : "Afficher les filtres"}
+                  </button>
                 </div>
+                {filtersOpen && (
+                  <form
+                    onSubmit={(e) => e.preventDefault()}
+                    className="mt-6 grid gap-4 md:grid-cols-[1fr_1fr]"
+                  >
+                    <div>
+                      <label className="text-sm font-semibold text-foreground mb-1 block">
+                        {t("jobs.search.keywords")}
+                      </label>
+                      <input
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder={t("jobs.search.keywords.placeholder")}
+                        className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-foreground mb-1 block">
+                        {t("jobs.search.company")}
+                      </label>
+                      <input
+                        value={companyQuery}
+                        onChange={(e) => setCompanyQuery(e.target.value)}
+                        placeholder={t("jobs.search.company.placeholder")}
+                        className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-foreground mb-1 block">
+                        {t("jobs.search.location")}
+                      </label>
+                      <input
+                        value={locationQuery}
+                        onChange={(e) => setLocationQuery(e.target.value)}
+                        placeholder={t("jobs.search.location.placeholder")}
+                        className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-foreground mb-1 block">
+                        {t("jobs.search.contractType")}
+                      </label>
+                      <select
+                        value={contractType}
+                        onChange={(e) => setContractType(e.target.value)}
+                        className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                      >
+                        <option value="">{t("jobs.search.all")}</option>
+                        <option value="cdi">{t("jobs.search.type.cdi")}</option>
+                        <option value="cdd">{t("jobs.search.type.cdd")}</option>
+                        <option value="stage">{t("jobs.search.type.stage")}</option>
+                        <option value="freelance">{t("jobs.search.type.freelance")}</option>
+                        <option value="temps_partiel">{t("jobs.search.type.temps_partiel")}</option>
+                        <option value="interim">{t("jobs.search.type.interim")}</option>
+                      </select>
+                    </div>
+                    <div className="md:col-span-2 flex flex-wrap justify-end gap-3 mt-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQuery("");
+                          setCompanyQuery("");
+                          setLocationQuery("");
+                          setContractType("");
+                        }}
+                        className="rounded-md px-4 py-2 border border-border text-sm text-foreground hover:bg-primary/5"
+                      >
+                        {t("jobs.search.reset")}
+                      </button>
+                      <button
+                        type="submit"
+                        className="rounded-md px-4 py-2 bg-brand text-brand-foreground font-semibold"
+                      >
+                        {t("jobs.search.submit")}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
+            </div>
 
             <div className="mt-6 grid gap-4">
               {loading ? (
                 [1, 2, 3].map((index) => (
-                  <article key={index} className="rounded-3xl border border-border bg-card p-6 shadow-soft animate-pulse" />
+                  <article
+                    key={index}
+                    className="rounded-3xl border border-border bg-card p-6 shadow-soft animate-pulse"
+                  />
                 ))
               ) : filteredOffers.length > 0 ? (
                 <>
                   {paginatedOffers.map((job, i) => {
-                  const location = [job.location_city, job.location_country].filter(Boolean).join(", ") || t("jobs.location.remote");
-                  const previewText = (job.description || job.requirements || "")
-                    .replace(/\s+/g, " ")
-                    .trim();
-                  const contractLabel = getContractLabel(job.contract_type);
-                  const tags = (job.tags || []).filter(Boolean).slice(0, 3);
-                  const deadlineValue = job.deadline || job.expires_at || null;
-                  const isExpired = Boolean(deadlineValue && new Date(deadlineValue).getTime() < Date.now());
-                  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/jobs/${job.slug}` : `${BASE_URL}/jobs/${job.slug}`;
-                  const shareText = `Offre d'emploi : ${job.title} chez ${job.company}\n\n${previewText.slice(0, 220)}\n\nOffre partagée depuis https://emploiplus-group.com`;
-                  return (
-                    <JobCard key={job.id} job={job} location={location} previewText={previewText} contractLabel={contractLabel} tags={tags} deadlineValue={deadlineValue} isExpired={isExpired} t={t} index={i} />
-                  );
+                    const location =
+                      [job.location_city, job.location_country].filter(Boolean).join(", ") ||
+                      t("jobs.location.remote");
+                    const previewText = (job.description || job.requirements || "")
+                      .replace(/\s+/g, " ")
+                      .trim();
+                    const contractLabel = getContractLabel(job.contract_type);
+                    const tags = (job.tags || []).filter(Boolean).slice(0, 3);
+                    const deadlineValue = job.deadline || null;
+                    const isExpired = Boolean(
+                      deadlineValue && new Date(deadlineValue).getTime() < Date.now(),
+                    );
+                    const shareUrl =
+                      typeof window !== "undefined"
+                        ? `${window.location.origin}/jobs/${job.slug}`
+                        : `${BASE_URL}/jobs/${job.slug}`;
+                    const shareText = `Offre d'emploi : ${job.title} chez ${job.company}\n\n${previewText.slice(0, 220)}\n\nOffre partagée depuis https://emploiplus-group.com`;
+                    return (
+                      <JobCard
+                        key={job.id}
+                        job={job}
+                        location={location}
+                        previewText={previewText}
+                        contractLabel={contractLabel}
+                        tags={tags}
+                        deadlineValue={deadlineValue}
+                        isExpired={isExpired}
+                        t={t}
+                        index={i}
+                      />
+                    );
                   })}
                   {totalPages > 1 ? (
                     <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card/80 px-4 py-3">
@@ -193,20 +251,37 @@ export function JobsPage() {
                   ) : null}
                 </>
               ) : (
-                <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">{t("jobs.none")}</div>
+                <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">
+                  {t("jobs.none")}
+                </div>
               )}
             </div>
           </div>
-          <aside className="rounded-3xl border border-border bg-card p-8 shadow-soft fade-up" style={{ animationDelay: "240ms" }}>
-            <div className="text-sm uppercase tracking-[0.25em] text-muted-foreground">{t("jobs.quickAccess.title")}</div>
+          <aside
+            className="rounded-3xl border border-border bg-card p-8 shadow-soft fade-up"
+            style={{ animationDelay: "240ms" }}
+          >
+            <div className="text-sm uppercase tracking-[0.25em] text-muted-foreground">
+              {t("jobs.quickAccess.title")}
+            </div>
             <p className="mt-4 text-foreground/90 leading-relaxed">
               {t("jobs.quickAccess.description")}
             </p>
             <div className="mt-6 flex flex-col gap-3">
-              <a href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1ea952]">
+              <a
+                href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1ea952]"
+              >
                 {t("jobs.quickAccess.channel1")}
               </a>
-              <a href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1ea952]">
+              <a
+                href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1ea952]"
+              >
                 {t("jobs.quickAccess.channel2")}
               </a>
             </div>

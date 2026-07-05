@@ -15,9 +15,10 @@ export function CandidateMobileHeader({ title, onMenuOpen, onLogout }: Candidate
   const { profile } = useCandidate();
   const { unreadCount } = useNotifications();
 
-  const initials = profile?.first_name && profile?.last_name
-    ? `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase()
-    : "C";
+  const initials =
+    profile?.first_name && profile?.last_name
+      ? `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase()
+      : "C";
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-4 shadow-sm md:hidden">
@@ -56,7 +57,9 @@ export function CandidateMobileHeader({ title, onMenuOpen, onLogout }: Candidate
 
         {/* Avatar */}
         <Avatar className="h-9 w-9 border-2 border-slate-200">
-          {profile?.avatar_url && <AvatarImage src={profile.avatar_url} alt={profile?.first_name} />}
+          {profile?.avatar_url && (
+            <AvatarImage src={profile.avatar_url} alt={profile?.first_name ?? undefined} />
+          )}
           <AvatarFallback className="bg-slate-200 text-xs font-semibold text-slate-600">
             {initials}
           </AvatarFallback>

@@ -55,7 +55,9 @@ export function CandidateSettingsPage() {
       setStatusMessage("Votre mot de passe a été mis à jour.");
     } catch (err) {
       setStatusType("error");
-      setStatusMessage(err instanceof Error ? err.message : "La modification du mot de passe a échoué.");
+      setStatusMessage(
+        err instanceof Error ? err.message : "La modification du mot de passe a échoué.",
+      );
     } finally {
       setIsChangingPassword(false);
     }
@@ -68,7 +70,9 @@ export function CandidateSettingsPage() {
       return;
     }
 
-    const confirmed = window.confirm("Cette action supprimera définitivement votre profil et vous déconnectera. Continuer ?");
+    const confirmed = window.confirm(
+      "Cette action supprimera définitivement votre profil et vous déconnectera. Continuer ?",
+    );
     if (!confirmed) {
       return;
     }
@@ -92,7 +96,9 @@ export function CandidateSettingsPage() {
   return (
     <div className="space-y-6 max-w-3xl">
       {statusMessage && (
-        <div className={`rounded-md border px-4 py-3 text-sm ${statusType === "success" ? "border-secondary/30 bg-secondary/10 text-brand" : "border-red-200 bg-red-50 text-red-700"}`}>
+        <div
+          className={`rounded-md border px-4 py-3 text-sm ${statusType === "success" ? "border-secondary/30 bg-secondary/10 text-brand" : "border-red-200 bg-red-50 text-red-700"}`}
+        >
           {statusMessage}
         </div>
       )}
@@ -117,7 +123,9 @@ export function CandidateSettingsPage() {
                   id="newPassword"
                   type="password"
                   value={passwordForm.newPassword}
-                  onChange={(event) => setPasswordForm({ ...passwordForm, newPassword: event.target.value })}
+                  onChange={(event) =>
+                    setPasswordForm({ ...passwordForm, newPassword: event.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -126,20 +134,36 @@ export function CandidateSettingsPage() {
                   id="confirmPassword"
                   type="password"
                   value={passwordForm.confirmPassword}
-                  onChange={(event) => setPasswordForm({ ...passwordForm, confirmPassword: event.target.value })}
+                  onChange={(event) =>
+                    setPasswordForm({ ...passwordForm, confirmPassword: event.target.value })
+                  }
                 />
               </div>
               <div className="flex gap-2 pt-2">
-                <Button type="submit" disabled={isChangingPassword} className="bg-brand text-brand-foreground hover:bg-brand/90">
+                <Button
+                  type="submit"
+                  disabled={isChangingPassword}
+                  className="bg-brand text-brand-foreground hover:bg-brand/90"
+                >
                   {isChangingPassword ? "Mise à jour…" : "Enregistrer le mot de passe"}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setShowPasswordForm(false)} disabled={isChangingPassword} className="border-brand/30 text-brand hover:bg-brand/5 hover:text-brand">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowPasswordForm(false)}
+                  disabled={isChangingPassword}
+                  className="border-brand/30 text-brand hover:bg-brand/5 hover:text-brand"
+                >
                   Annuler
                 </Button>
               </div>
             </form>
           ) : (
-            <Button variant="outline" className="gap-2 border-brand/30 text-brand hover:bg-brand/5 hover:text-brand" onClick={() => setShowPasswordForm(true)}>
+            <Button
+              variant="outline"
+              className="gap-2 border-brand/30 text-brand hover:bg-brand/5 hover:text-brand"
+              onClick={() => setShowPasswordForm(true)}
+            >
               <Lock className="w-4 h-4" />
               Modifier le mot de passe
             </Button>
@@ -159,9 +183,14 @@ export function CandidateSettingsPage() {
         </CardHeader>
         <CardContent>
           <p className="text-red-900 text-sm mb-4">
-            Supprimer votre compte supprimera définitivement toutes vos données. Cette action ne peut pas être annulée.
+            Supprimer votre compte supprimera définitivement toutes vos données. Cette action ne
+            peut pas être annulée.
           </p>
-          <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/80 gap-2" onClick={handleDeleteAccount} disabled={isDeleting}>
+          <Button
+            className="bg-secondary text-secondary-foreground hover:bg-secondary/80 gap-2"
+            onClick={handleDeleteAccount}
+            disabled={isDeleting}
+          >
             <Trash2 className="w-4 h-4" />
             {isDeleting ? "Suppression…" : "Supprimer mon compte"}
           </Button>

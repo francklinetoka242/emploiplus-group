@@ -4,10 +4,23 @@ import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { AlertCircle, Ban, CheckCircle2, Pencil, PlusCircle, Trash2, Users } from "lucide-react";
 
@@ -99,23 +112,44 @@ export function AdminTeamPage() {
       return;
     }
 
-    const members = (rolesData ?? []).map((row: any) => {
-      const isCurrentUser = row.user_id === currentUser.id;
-      const displayName = row.full_name || row.email || currentUser.user_metadata?.full_name || currentUser.email || t("admin.team.defaultName");
-      const displayEmail = row.email || (isCurrentUser ? currentUser.email : `user-${row.user_id.slice(0, 8)}@local`);
-      const displayRole = row.role ?? "admin";
+    const members = (rolesData ?? []).map(
+      (row: {
+        id: string;
+        role: string | null;
+        user_id: string;
+        email: string | null;
+        full_name: string | null;
+        specialty: string | null;
+        is_active: boolean | null;
+      }) => {
+        const isCurrentUser = row.user_id === currentUser.id;
+        const displayName =
+          row.full_name ||
+          row.email ||
+          currentUser.user_metadata?.full_name ||
+          currentUser.email ||
+          t("admin.team.defaultName");
+        const displayEmail =
+          row.email ||
+          (isCurrentUser ? currentUser.email : `user-${row.user_id.slice(0, 8)}@local`);
+        const displayRole = row.role ?? "admin";
 
-      return {
-        id: row.id,
-        user_id: row.user_id,
-        email: displayEmail,
-        name: displayName,
-        role: displayRole,
-        specialty: row.specialty || (isCurrentUser ? currentUser.user_metadata?.specialty || t("admin.team.defaultSpecialty") : t("admin.team.defaultSpecialty")),
-        isActive: row.is_active ?? true,
-        isCurrentUser,
-      } as AdminMember;
-    });
+        return {
+          id: row.id,
+          user_id: row.user_id,
+          email: displayEmail,
+          name: displayName,
+          role: displayRole,
+          specialty:
+            row.specialty ||
+            (isCurrentUser
+              ? currentUser.user_metadata?.specialty || t("admin.team.defaultSpecialty")
+              : t("admin.team.defaultSpecialty")),
+          isActive: row.is_active ?? true,
+          isCurrentUser,
+        } as AdminMember;
+      },
+    );
 
     setTeamMembers(members);
   }, [t]);
@@ -220,31 +254,41 @@ export function AdminTeamPage() {
         ]);
         toast.success(t("admin.team.toast.created"));
       } else if (currentMemberId) {
-        const { error: updateError } = await supabase.from("user_roles").update({
-          role: formState.role,
-          email: formState.email.trim(),
-          full_name: formState.name.trim(),
-          specialty: formState.specialty.trim(),
-        }).eq("id", currentMemberId);
+        const { error: updateError } = await supabase
+          .from("user_roles")
+          .update({
+            role: formState.role,
+            email: formState.email.trim(),
+            full_name: formState.name.trim(),
+            specialty: formState.specialty.trim(),
+          })
+          .eq("id", currentMemberId);
 
         if (updateError) {
           throw updateError;
         }
 
-        setTeamMembers((prev) => prev.map((member) => (member.id === currentMemberId ? {
-          ...member,
-          email: formState.email.trim(),
-          name: formState.name.trim() || formState.email.trim(),
-          role: formState.role,
-          specialty: formState.specialty.trim() || t("admin.team.defaultSpecialty"),
-        } : member)));
+        setTeamMembers((prev) =>
+          prev.map((member) =>
+            member.id === currentMemberId
+              ? {
+                  ...member,
+                  email: formState.email.trim(),
+                  name: formState.name.trim() || formState.email.trim(),
+                  role: formState.role,
+                  specialty: formState.specialty.trim() || t("admin.team.defaultSpecialty"),
+                }
+              : member,
+          ),
+        );
         toast.success(t("admin.team.toast.updated"));
       }
 
       resetDialog();
       await loadTeam();
-    } catch (error: any) {
-      toast.error(error?.message || t("admin.team.toast.error"));
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : t("admin.team.toast.error");
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -257,15 +301,23 @@ export function AdminTeamPage() {
     }
 
     try {
-      const { error } = await supabase.from("user_roles").update({ is_active: !member.isActive }).eq("id", member.id);
+      const { error } = await supabase
+        .from("user_roles")
+        .update({ is_active: !member.isActive })
+        .eq("id", member.id);
       if (error) {
         throw error;
       }
 
-      setTeamMembers((prev) => prev.map((row) => (row.id === member.id ? { ...row, isActive: !member.isActive } : row)));
-      toast.success(member.isActive ? t("admin.team.toast.blocked") : t("admin.team.toast.unblocked"));
-    } catch (error: any) {
-      toast.error(error?.message || t("admin.team.toast.error"));
+      setTeamMembers((prev) =>
+        prev.map((row) => (row.id === member.id ? { ...row, isActive: !member.isActive } : row)),
+      );
+      toast.success(
+        member.isActive ? t("admin.team.toast.blocked") : t("admin.team.toast.unblocked"),
+      );
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : t("admin.team.toast.error");
+      toast.error(message);
     }
   };
 
@@ -283,8 +335,9 @@ export function AdminTeamPage() {
 
       setTeamMembers((prev) => prev.filter((row) => row.id !== member.id));
       toast.success(t("admin.team.toast.deleted"));
-    } catch (error: any) {
-      toast.error(error?.message || t("admin.team.toast.error"));
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : t("admin.team.toast.error");
+      toast.error(message);
     }
   };
 
@@ -345,13 +398,21 @@ export function AdminTeamPage() {
                 </div>
                 <div className="mt-4 space-y-2 text-sm text-muted-foreground">
                   <div>
-                    <span className="font-semibold text-foreground">{t("admin.team.emailLabel")} :</span> {member.email}
+                    <span className="font-semibold text-foreground">
+                      {t("admin.team.emailLabel")} :
+                    </span>{" "}
+                    {member.email}
                   </div>
                   <div>
-                    <span className="font-semibold text-foreground">{t("admin.team.specialtyLabel")} :</span> {member.specialty || "-"}
+                    <span className="font-semibold text-foreground">
+                      {t("admin.team.specialtyLabel")} :
+                    </span>{" "}
+                    {member.specialty || "-"}
                   </div>
                   <div>
-                    <span className="font-semibold text-foreground">{t("admin.team.statusLabel")} :</span>{" "}
+                    <span className="font-semibold text-foreground">
+                      {t("admin.team.statusLabel")} :
+                    </span>{" "}
                     {member.isActive ? (
                       <span className="text-emerald-600">{t("admin.team.status.active")}</span>
                     ) : (
@@ -360,15 +421,36 @@ export function AdminTeamPage() {
                   </div>
                 </div>
                 <div className="mt-5 flex flex-wrap gap-2">
-                  <Button size="sm" variant="outline" onClick={() => openEditDialog(member)} className="gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => openEditDialog(member)}
+                    className="gap-2"
+                  >
                     <Pencil className="h-4 w-4" />
                     {t("admin.team.actions.edit")}
                   </Button>
-                  <Button size="sm" variant="secondary" onClick={() => handleToggleStatus(member)} className="gap-2">
-                    {member.isActive ? <Ban className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
-                    {member.isActive ? t("admin.team.actions.block") : t("admin.team.actions.unblock")}
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => handleToggleStatus(member)}
+                    className="gap-2"
+                  >
+                    {member.isActive ? (
+                      <Ban className="h-4 w-4" />
+                    ) : (
+                      <CheckCircle2 className="h-4 w-4" />
+                    )}
+                    {member.isActive
+                      ? t("admin.team.actions.block")
+                      : t("admin.team.actions.unblock")}
                   </Button>
-                  <Button size="sm" variant="destructive" onClick={() => handleDelete(member)} className="gap-2">
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleDelete(member)}
+                    className="gap-2"
+                  >
                     <Trash2 className="h-4 w-4" />
                     {t("admin.team.actions.delete")}
                   </Button>
@@ -379,34 +461,76 @@ export function AdminTeamPage() {
         )}
       </div>
 
-      <Dialog open={dialogOpen} onOpenChange={(open) => (open ? setDialogOpen(true) : resetDialog())}>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open) => (open ? setDialogOpen(true) : resetDialog())}
+      >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{isEditing ? t("admin.team.form.title.edit") : t("admin.team.form.title.create")}</DialogTitle>
-            <DialogDescription>{isEditing ? t("admin.team.form.description.edit") : t("admin.team.form.description.create")}</DialogDescription>
+            <DialogTitle>
+              {isEditing ? t("admin.team.form.title.edit") : t("admin.team.form.title.create")}
+            </DialogTitle>
+            <DialogDescription>
+              {isEditing
+                ? t("admin.team.form.description.edit")
+                : t("admin.team.form.description.create")}
+            </DialogDescription>
           </DialogHeader>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="admin-email">{t("admin.team.form.email")}</Label>
-              <Input id="admin-email" type="email" value={formState.email} onChange={(event) => setFormState((prev) => ({ ...prev, email: event.target.value }))} required />
+              <Input
+                id="admin-email"
+                type="email"
+                value={formState.email}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, email: event.target.value }))
+                }
+                required
+              />
             </div>
             {!isEditing && (
               <div className="space-y-2">
                 <Label htmlFor="admin-password">{t("admin.team.form.password")}</Label>
-                <Input id="admin-password" type="password" value={formState.password} onChange={(event) => setFormState((prev) => ({ ...prev, password: event.target.value }))} required />
+                <Input
+                  id="admin-password"
+                  type="password"
+                  value={formState.password}
+                  onChange={(event) =>
+                    setFormState((prev) => ({ ...prev, password: event.target.value }))
+                  }
+                  required
+                />
               </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="admin-name">{t("admin.team.form.name")}</Label>
-              <Input id="admin-name" value={formState.name} onChange={(event) => setFormState((prev) => ({ ...prev, name: event.target.value }))} />
+              <Input
+                id="admin-name"
+                value={formState.name}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, name: event.target.value }))
+                }
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="admin-specialty">{t("admin.team.form.specialty")}</Label>
-              <Input id="admin-specialty" value={formState.specialty} onChange={(event) => setFormState((prev) => ({ ...prev, specialty: event.target.value }))} />
+              <Input
+                id="admin-specialty"
+                value={formState.specialty}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, specialty: event.target.value }))
+                }
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="admin-role">{t("admin.team.form.role")}</Label>
-              <Select value={formState.role} onValueChange={(value: AdminRole) => setFormState((prev) => ({ ...prev, role: value }))}>
+              <Select
+                value={formState.role}
+                onValueChange={(value: AdminRole) =>
+                  setFormState((prev) => ({ ...prev, role: value }))
+                }
+              >
                 <SelectTrigger id="admin-role">
                   <SelectValue placeholder={t("admin.team.form.role")} />
                 </SelectTrigger>
@@ -418,8 +542,16 @@ export function AdminTeamPage() {
               </Select>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={resetDialog}>{t("common.cancel")}</Button>
-              <Button type="submit" disabled={submitting}>{submitting ? t("admin.team.form.saving") : isEditing ? t("admin.team.form.save") : t("admin.team.form.create")}</Button>
+              <Button type="button" variant="outline" onClick={resetDialog}>
+                {t("common.cancel")}
+              </Button>
+              <Button type="submit" disabled={submitting}>
+                {submitting
+                  ? t("admin.team.form.saving")
+                  : isEditing
+                    ? t("admin.team.form.save")
+                    : t("admin.team.form.create")}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>

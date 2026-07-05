@@ -1,28 +1,17 @@
-import 'dotenv/config';
-import { createHmac } from 'crypto';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import "dotenv/config";
+import { createHmac } from "crypto";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 // Local base64url helpers to avoid runtime dependency on utils/token
 function base64url(input: string | Buffer) {
-  const buffer =
-    typeof input === 'string'
-      ? Buffer.from(input, 'utf8')
-      : input;
+  const buffer = typeof input === "string" ? Buffer.from(input, "utf8") : input;
 
-  return buffer
-    .toString('base64')
-    .replace(/=/g, '')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_');
+  return buffer.toString("base64").replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 
 function base64urlDecode(input: string) {
-  const normalized = input
-    .replace(/-/g, '+')
-    .replace(/_/g, '/');
+  const normalized = input.replace(/-/g, "+").replace(/_/g, "/");
 
-  return Buffer
-    .from(normalized, 'base64')
-    .toString('utf8');
+  return Buffer.from(normalized, "base64").toString("utf8");
 }
 
 async function updateSupabaseUserConfirmation(
@@ -32,26 +21,29 @@ async function updateSupabaseUserConfirmation(
   serviceKey: string,
   confirmedAt: string,
 ) {
-  const url = `${supabaseUrl.replace(/\/$/, '')}/auth/v1/admin/users/${userId}`;
+  const url = `${supabaseUrl.replace(/\/$/, "")}/auth/v1/admin/users/${userId}`;
   const headers = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     apikey: serviceKey,
     Authorization: `Bearer ${serviceKey}`,
   };
 
   const requestBody = JSON.stringify({
-    email_confirm: true
+    email_confirm: true,
   });
-  console.log('[CONFIRM-DEBUG][confirm-utils] request', { url, method: 'PUT', body: requestBody });
+  console.log("[CONFIRM-DEBUG][confirm-utils] request", { url, method: "PUT", body: requestBody });
 
   const putResponse = await fetchImpl(url, {
-    method: 'PUT',
+    method: "PUT",
     headers,
     body: requestBody,
   });
 
   const putBody = await putResponse.text();
-  console.log('[CONFIRM-DEBUG][confirm-utils] response', { status: putResponse.status, body: putBody });
+  console.log("[CONFIRM-DEBUG][confirm-utils] response", {
+    status: putResponse.status,
+    body: putBody,
+  });
 
   if (putResponse.ok) {
     return {
@@ -63,14 +55,17 @@ async function updateSupabaseUserConfirmation(
   }
 
   if (putResponse.status === 405 || putResponse.status === 404) {
-    console.log('[CONFIRM-DEBUG][confirm-utils] retryingWithPatch', { url, body: requestBody });
+    console.log("[CONFIRM-DEBUG][confirm-utils] retryingWithPatch", { url, body: requestBody });
     const patchResponse = await fetchImpl(url, {
-      method: 'PATCH',
+      method: "PATCH",
       headers,
       body: requestBody,
     });
     const patchBody = await patchResponse.text();
-    console.log('[CONFIRM-DEBUG][confirm-utils] patchResponse', { status: patchResponse.status, body: patchBody });
+    console.log("[CONFIRM-DEBUG][confirm-utils] patchResponse", {
+      status: patchResponse.status,
+      body: patchBody,
+    });
 
     return {
       ok: patchResponse.ok,
@@ -89,71 +84,75 @@ async function updateSupabaseUserConfirmation(
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'GET') {
-    res.setHeader('Allow', 'GET');
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "GET") {
+    res.setHeader("Allow", "GET");
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const token = String(req.query.token || '');
+  const token = String(req.query.token || "");
   const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET as string | undefined;
   if (!EMAIL_SIGNING_SECRET) {
-    throw new Error('EMAIL_SIGNING_SECRET missing');
+    throw new Error("EMAIL_SIGNING_SECRET missing");
   }
-  console.log('EMAIL_SIGNING_SECRET length', EMAIL_SIGNING_SECRET.length);
-  const confirmationBaseUrl = process.env.SITE_URL || 'https://www.emploiplus-group.com';
+  console.log("EMAIL_SIGNING_SECRET length", EMAIL_SIGNING_SECRET.length);
+  const confirmationBaseUrl = process.env.SITE_URL || "https://www.emploiplus-group.com";
 
   if (!token || !SUPABASE_URL || !SERVICE_KEY) {
-    return res.status(400).send('Invalid confirmation request');
+    return res.status(400).send("Invalid confirmation request");
   }
-  const [payloadEncoded, signature] = token.split('.');
+  const [payloadEncoded, signature] = token.split(".");
   if (!payloadEncoded || !signature) {
-    return res.status(400).send('Invalid confirmation token');
+    return res.status(400).send("Invalid confirmation token");
   }
 
-  console.log('TOKEN RECEIVED', token);
-  console.log('[CONFIRM-DEBUG][confirm] payloadEncoded', payloadEncoded);
-  console.log('RECEIVED SIGNATURE', signature);
-  console.log('[CONFIRM-DEBUG][confirm] confirmationBaseUrl', confirmationBaseUrl);
+  console.log("TOKEN RECEIVED", token);
+  console.log("[CONFIRM-DEBUG][confirm] payloadEncoded", payloadEncoded);
+  console.log("RECEIVED SIGNATURE", signature);
+  console.log("[CONFIRM-DEBUG][confirm] confirmationBaseUrl", confirmationBaseUrl);
 
-  const expectedSignature = base64url(createHmac('sha256', EMAIL_SIGNING_SECRET).update(payloadEncoded).digest());
-  console.log('EXPECTED SIGNATURE', expectedSignature);
-  console.log('SIGNATURE MATCH', expectedSignature === signature);
+  const expectedSignature = base64url(
+    createHmac("sha256", EMAIL_SIGNING_SECRET).update(payloadEncoded).digest(),
+  );
+  console.log("EXPECTED SIGNATURE", expectedSignature);
+  console.log("SIGNATURE MATCH", expectedSignature === signature);
   if (expectedSignature !== signature) {
-    console.error('Token signature mismatch', { signature, expectedSignature });
-    return res.status(400).send('Invalid or expired token');
+    console.error("Token signature mismatch", { signature, expectedSignature });
+    return res.status(400).send("Invalid or expired token");
   }
 
-  let payload: any;
+  let payload: Record<string, unknown> | null = null;
   try {
     const decoded = base64urlDecode(payloadEncoded);
-    payload = JSON.parse(decoded);
-    console.log('DECODED PAYLOAD', payload);
+    payload = JSON.parse(decoded) as Record<string, unknown>;
+    console.log("DECODED PAYLOAD", payload);
   } catch (error) {
-    console.error('Failed to parse confirmation token', error);
-    return res.status(400).send('Invalid token payload');
+    console.error("Failed to parse confirmation token", error);
+    return res.status(400).send("Invalid token payload");
   }
 
-  if (!payload || !payload.sub || !payload.exp) {
-    return res.status(400).send('Invalid token payload');
+  const payloadSub = typeof payload?.sub === "string" ? payload.sub : undefined;
+  const payloadExp = typeof payload?.exp === "number" ? payload.exp : undefined;
+  if (!payloadSub || payloadExp === undefined) {
+    return res.status(400).send("Invalid token payload");
   }
 
-  if (Math.floor(Date.now() / 1000) > payload.exp) {
-    return res.status(400).send('Token expired');
+  if (Math.floor(Date.now() / 1000) > payloadExp) {
+    return res.status(400).send("Token expired");
   }
 
   try {
-    console.log('[CONFIRM-DEBUG][confirm] supabaseUpdateRequest', {
-      url: `${SUPABASE_URL.replace(/\/$/, '')}/auth/v1/admin/users/${payload.sub}`,
-      method: 'PUT/PATCH',
+    console.log("[CONFIRM-DEBUG][confirm] supabaseUpdateRequest", {
+      url: `${SUPABASE_URL.replace(/\/$/, "")}/auth/v1/admin/users/${payloadSub}`,
+      method: "PUT/PATCH",
       payload: { email_confirmed_at: new Date().toISOString() },
     });
 
     const confirmResp = await updateSupabaseUserConfirmation(
       fetch,
       SUPABASE_URL,
-      payload.sub,
+      payloadSub,
       SERVICE_KEY,
       new Date().toISOString(),
     );
@@ -161,47 +160,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const body = await confirmResp.text();
     const parsedBody = JSON.parse(body);
 
-    console.log(
-      '[CONFIRM-DEBUG] email_confirmed_at',
-      parsedBody.email_confirmed_at
-    );
+    console.log("[CONFIRM-DEBUG] email_confirmed_at", parsedBody.email_confirmed_at);
+
+    console.log("[CONFIRM-DEBUG] confirmed_at", parsedBody.confirmed_at);
 
     console.log(
-      '[CONFIRM-DEBUG] confirmed_at',
-      parsedBody.confirmed_at
+      "[CONFIRM-DEBUG] email_verified",
+      parsedBody.identities?.[0]?.identity_data?.email_verified,
     );
 
-    console.log(
-      '[CONFIRM-DEBUG] email_verified',
-      parsedBody.identities?.[0]?.identity_data?.email_verified
-    );
+    console.log("[CONFIRM-DEBUG] fullResponse", parsedBody);
 
-    console.log(
-      '[CONFIRM-DEBUG] fullResponse',
-      parsedBody
-    );
-
-    console.log('[CONFIRM-DEBUG][confirm] supabaseUpdateResponse', {
+    console.log("[CONFIRM-DEBUG][confirm] supabaseUpdateResponse", {
       status: confirmResp.status,
       body,
     });
 
     if (!confirmResp.ok) {
-      console.error('Supabase confirm failed', confirmResp.status, body);
-      return res
-        .status(confirmResp.status)
-        .send(`Confirmation failed: ${body || 'Unknown error'}`);
+      console.error("Supabase confirm failed", confirmResp.status, body);
+      return res.status(confirmResp.status).send(`Confirmation failed: ${body || "Unknown error"}`);
     }
 
-    console.log('[CONFIRM-DEBUG][confirm] redirectUrl', `${confirmationBaseUrl}/candidate/login?confirmed=true`);
-    return res.redirect(
-      `${confirmationBaseUrl}/candidate/login?confirmed=true`
+    console.log(
+      "[CONFIRM-DEBUG][confirm] redirectUrl",
+      `${confirmationBaseUrl}/candidate/login?confirmed=true`,
     );
+    return res.redirect(`${confirmationBaseUrl}/candidate/login?confirmed=true`);
   } catch (error) {
-    console.error('[CONFIRM-DEBUG][confirm] exception', error);
+    console.error("[CONFIRM-DEBUG][confirm] exception", error);
     if (error instanceof Error) {
       console.error(error.stack);
     }
-    return res.status(500).send('Server error');
+    return res.status(500).send("Server error");
   }
 }

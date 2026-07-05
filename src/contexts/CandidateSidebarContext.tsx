@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface CandidateSidebarContextType {
   open: boolean;
@@ -11,7 +11,7 @@ export function CandidateSidebarProvider({ children }: { children: React.ReactNo
   const [open, setOpen] = useState(() => {
     // Persist sidebar state in localStorage
     try {
-      const stored = localStorage.getItem('candidateSidebarOpen');
+      const stored = localStorage.getItem("candidateSidebarOpen");
       return stored ? JSON.parse(stored) : true;
     } catch {
       return true;
@@ -20,9 +20,9 @@ export function CandidateSidebarProvider({ children }: { children: React.ReactNo
 
   useEffect(() => {
     try {
-      localStorage.setItem('candidateSidebarOpen', JSON.stringify(open));
+      localStorage.setItem("candidateSidebarOpen", JSON.stringify(open));
     } catch {
-      console.warn('Could not persist sidebar state');
+      console.warn("Could not persist sidebar state");
     }
   }, [open]);
 
@@ -36,7 +36,7 @@ export function CandidateSidebarProvider({ children }: { children: React.ReactNo
 export function useCandidateSidebar() {
   const context = useContext(CandidateSidebarContext);
   if (!context) {
-    throw new Error('useCandidateSidebar must be used within CandidateSidebarProvider');
+    throw new Error("useCandidateSidebar must be used within CandidateSidebarProvider");
   }
   return context;
 }

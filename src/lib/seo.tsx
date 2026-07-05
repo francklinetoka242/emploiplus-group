@@ -35,7 +35,8 @@ const SEO_SETTINGS_STORAGE_KEY = "emploiplus.site-seo";
 
 export const DEFAULT_SITE_SEO_SETTINGS: SiteSEOSettings = {
   title: "EmploiPlus Group",
-  description: "Solutions numériques, diffusion d'offres d'emploi et services médias pour les talents et les entreprises.",
+  description:
+    "Solutions numériques, diffusion d'offres d'emploi et services médias pour les talents et les entreprises.",
   keywords: "emploi, offres d'emploi, recrutement, diffusion d'annonces, Congo",
   canonical: BASE_URL,
   robots: "index,follow",
@@ -58,7 +59,8 @@ function buildJsonLd(metadata: SEOMetadata) {
     "@type": "WebSite",
     url: BASE_URL,
     name: "EmploiPlus Group",
-    description: "Solutions numériques, diffusion d'offres d'emploi et contenus médias professionnels pour le marché congolais.",
+    description:
+      "Solutions numériques, diffusion d'offres d'emploi et contenus médias professionnels pour le marché congolais.",
     publisher: {
       "@type": "Organization",
       name: "EmploiPlus Group",
@@ -80,7 +82,11 @@ function buildJsonLd(metadata: SEOMetadata) {
   }
 
   if (metadata.structuredData) {
-    graph.push(...(Array.isArray(metadata.structuredData) ? metadata.structuredData : [metadata.structuredData]));
+    graph.push(
+      ...(Array.isArray(metadata.structuredData)
+        ? metadata.structuredData
+        : [metadata.structuredData]),
+    );
   }
 
   return {
@@ -153,12 +159,25 @@ function resolveAbsoluteUrl(value: string) {
 
 export function usePageSEO(metadata: SEOMetadata) {
   const siteSeo = useSiteSeoSettings();
-  const resolvedTitle = metadata.title === DEFAULT_SEO.title ? siteSeo.title : metadata.title || siteSeo.title;
-  const resolvedDescription = metadata.description === DEFAULT_SEO.description ? siteSeo.description : metadata.description || siteSeo.description;
-  const resolvedKeywords = metadata.keywords === DEFAULT_SEO.keywords ? siteSeo.keywords : metadata.keywords || siteSeo.keywords;
-  const resolvedCanonical = metadata.canonical === DEFAULT_SEO.canonical ? siteSeo.canonical : metadata.canonical || siteSeo.canonical;
-  const resolvedRobots = metadata.robots === DEFAULT_SEO.robots ? siteSeo.robots : metadata.robots || siteSeo.robots;
-  const resolvedOgImage = resolveAbsoluteUrl(metadata.ogImage || siteSeo.ogImage || `${BASE_URL}/og-default.svg`);
+  const resolvedTitle =
+    metadata.title === DEFAULT_SEO.title ? siteSeo.title : metadata.title || siteSeo.title;
+  const resolvedDescription =
+    metadata.description === DEFAULT_SEO.description
+      ? siteSeo.description
+      : metadata.description || siteSeo.description;
+  const resolvedKeywords =
+    metadata.keywords === DEFAULT_SEO.keywords
+      ? siteSeo.keywords
+      : metadata.keywords || siteSeo.keywords;
+  const resolvedCanonical =
+    metadata.canonical === DEFAULT_SEO.canonical
+      ? siteSeo.canonical
+      : metadata.canonical || siteSeo.canonical;
+  const resolvedRobots =
+    metadata.robots === DEFAULT_SEO.robots ? siteSeo.robots : metadata.robots || siteSeo.robots;
+  const resolvedOgImage = resolveAbsoluteUrl(
+    metadata.ogImage || siteSeo.ogImage || `${BASE_URL}/og-default.svg`,
+  );
   const ogUrl = metadata.ogUrl || resolvedCanonical;
   const schema = buildJsonLd(metadata);
 
@@ -179,8 +198,12 @@ export function usePageSEO(metadata: SEOMetadata) {
       <meta property="og:image:type" content="image/jpeg" />
       <meta property="og:url" content={ogUrl} />
       <meta property="og:type" content={metadata.ogType || "website"} />
-      {metadata.publishedTime && <meta property="article:published_time" content={metadata.publishedTime} />}
-      {metadata.modifiedTime && <meta property="article:modified_time" content={metadata.modifiedTime} />}
+      {metadata.publishedTime && (
+        <meta property="article:published_time" content={metadata.publishedTime} />
+      )}
+      {metadata.modifiedTime && (
+        <meta property="article:modified_time" content={metadata.modifiedTime} />
+      )}
 
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />

@@ -56,8 +56,12 @@ export function AdminNotificationsPage() {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
-  const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(null);
-  const [users, setUsers] = React.useState<Array<{ id: string; first_name: string | null; last_name: string | null; email: string | null }>>([]);
+  const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(
+    null,
+  );
+  const [users, setUsers] = React.useState<
+    Array<{ id: string; first_name: string | null; last_name: string | null; email: string | null }>
+  >([]);
   const [usersLoading, setUsersLoading] = React.useState(false);
   const [typeFilter, setTypeFilter] = React.useState<"all" | NotificationType>("all");
   const [statusFilter, setStatusFilter] = React.useState<"all" | NotificationStatus>("all");
@@ -69,6 +73,10 @@ export function AdminNotificationsPage() {
     setLoading(false);
     if (error) {
       setMessage({ type: "error", text: error.message });
+      return;
+    }
+    if (Array.isArray(data)) {
+      setAllNotifications(data);
       return;
     }
     // Keep all notifications in memory, then split them into manual admin notifications
@@ -90,7 +98,14 @@ export function AdminNotificationsPage() {
           .order("created_at", { ascending: false });
 
         if (!error && data) {
-          setUsers(data.map((u: any) => ({ id: u.id, first_name: u.first_name ?? null, last_name: u.last_name ?? null, email: u.email ?? null })));
+          setUsers(
+            data.map((u) => ({
+              id: u.id,
+              first_name: u.first_name ?? null,
+              last_name: u.last_name ?? null,
+              email: u.email ?? null,
+            })),
+          );
         }
       } catch (err) {
         console.error("Failed to load candidates for admin notification target", err);
@@ -108,7 +123,9 @@ export function AdminNotificationsPage() {
     setMessage(null);
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
     const { name, value, type } = event.target;
     setForm((prev) => ({
       ...prev,
@@ -139,7 +156,10 @@ export function AdminNotificationsPage() {
         setMessage({ type: "error", text: response.error.message });
         return;
       }
-      setMessage({ type: "success", text: editingId ? "Notification mise à jour." : "Notification créée avec succès." });
+      setMessage({
+        type: "success",
+        text: editingId ? "Notification mise à jour." : "Notification créée avec succès.",
+      });
       resetForm();
       await loadNotifications();
     } finally {
@@ -171,7 +191,10 @@ export function AdminNotificationsPage() {
       setMessage({ type: "error", text: error.message });
       return;
     }
-    setMessage({ type: "success", text: `Notification ${nextStatus === "masked" ? "masquée" : "réactivée"}.` });
+    setMessage({
+      type: "success",
+      text: `Notification ${nextStatus === "masked" ? "masquée" : "réactivée"}.`,
+    });
     await loadNotifications();
   };
 
@@ -240,7 +263,8 @@ export function AdminNotificationsPage() {
             </div>
             <div className="grid gap-3 sm:auto-cols-min sm:grid-flow-col">
               <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                {activeCount} notification{activeCount > 1 ? "s" : ""} active{activeCount > 1 ? "s" : ""}
+                {activeCount} notification{activeCount > 1 ? "s" : ""} active
+                {activeCount > 1 ? "s" : ""}
               </div>
               <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
                 {notifications.length} total
@@ -250,7 +274,9 @@ export function AdminNotificationsPage() {
         </div>
 
         {message && (
-          <div className={`rounded-3xl border px-4 py-4 text-sm ${message.type === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}>
+          <div
+            className={`rounded-3xl border px-4 py-4 text-sm ${message.type === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}
+          >
             {message.text}
           </div>
         )}
@@ -259,8 +285,13 @@ export function AdminNotificationsPage() {
           <section className="rounded-[2rem] border border-border bg-background p-6 shadow-soft">
             <div className="mb-6 flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">Créer ou modifier une notification</h2>
-                <p className="text-sm text-slate-500">Le statut "Masqué" permet de conserver l'enregistrement sans le rendre visible aux candidats.</p>
+                <h2 className="text-xl font-semibold text-slate-900">
+                  Créer ou modifier une notification
+                </h2>
+                <p className="text-sm text-slate-500">
+                  Le statut "Masqué" permet de conserver l'enregistrement sans le rendre visible aux
+                  candidats.
+                </p>
               </div>
               {editingId && (
                 <Button variant="outline" onClick={handleCancelEdit} disabled={saving}>
@@ -272,35 +303,78 @@ export function AdminNotificationsPage() {
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <label htmlFor="title" className="block text-sm font-medium text-slate-700">Titre</label>
-                  <Input id="title" name="title" value={form.title} onChange={handleChange} required />
+                  <label htmlFor="title" className="block text-sm font-medium text-slate-700">
+                    Titre
+                  </label>
+                  <Input
+                    id="title"
+                    name="title"
+                    value={form.title}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="type" className="block text-sm font-medium text-slate-700">Type</label>
-                  <select id="type" name="type" value={form.type} onChange={handleChange} className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200">
+                  <label htmlFor="type" className="block text-sm font-medium text-slate-700">
+                    Type
+                  </label>
+                  <select
+                    id="type"
+                    name="type"
+                    value={form.type}
+                    onChange={handleChange}
+                    className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                  >
                     {notificationTypes.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
                     ))}
                   </select>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="content" className="block text-sm font-medium text-slate-700">Message</label>
-                <Textarea id="content" name="content" value={form.content} onChange={handleChange} rows={5} required />
+                <label htmlFor="content" className="block text-sm font-medium text-slate-700">
+                  Message
+                </label>
+                <Textarea
+                  id="content"
+                  name="content"
+                  value={form.content}
+                  onChange={handleChange}
+                  rows={5}
+                  required
+                />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <label htmlFor="target" className="block text-sm font-medium text-slate-700">Cible</label>
-                  <select id="target" name="target" value={form.target} onChange={handleChange} className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200">
+                  <label htmlFor="target" className="block text-sm font-medium text-slate-700">
+                    Cible
+                  </label>
+                  <select
+                    id="target"
+                    name="target"
+                    value={form.target}
+                    onChange={handleChange}
+                    className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                  >
                     <option value="all">Tous les candidats</option>
                     <option value="user">Utilisateur spécifique</option>
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="status" className="block text-sm font-medium text-slate-700">Statut</label>
-                  <select id="status" name="status" value={form.status} onChange={handleChange} className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200">
+                  <label htmlFor="status" className="block text-sm font-medium text-slate-700">
+                    Statut
+                  </label>
+                  <select
+                    id="status"
+                    name="status"
+                    value={form.status}
+                    onChange={handleChange}
+                    className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                  >
                     <option value="active">Actif</option>
                     <option value="masked">Masqué</option>
                   </select>
@@ -309,7 +383,9 @@ export function AdminNotificationsPage() {
 
               {form.target === "user" && (
                 <div className="space-y-2">
-                  <label htmlFor="userId" className="block text-sm font-medium text-slate-700">Utilisateur cible</label>
+                  <label htmlFor="userId" className="block text-sm font-medium text-slate-700">
+                    Utilisateur cible
+                  </label>
                   {usersLoading ? (
                     <div className="text-sm text-slate-500">Chargement des utilisateurs…</div>
                   ) : users.length > 0 ? (
@@ -322,11 +398,19 @@ export function AdminNotificationsPage() {
                     >
                       <option value="">Sélectionnez un utilisateur</option>
                       {users.map((u) => (
-                        <option key={u.id} value={u.id}>{`${u.first_name ?? ""} ${u.last_name ?? ""} — ${u.email ?? u.id}`.trim()}</option>
+                        <option key={u.id} value={u.id}>
+                          {`${u.first_name ?? ""} ${u.last_name ?? ""} — ${u.email ?? u.id}`.trim()}
+                        </option>
                       ))}
                     </select>
                   ) : (
-                    <Input id="userId" name="userId" value={form.userId} onChange={handleChange} placeholder="UUID utilisateur" />
+                    <Input
+                      id="userId"
+                      name="userId"
+                      value={form.userId}
+                      onChange={handleChange}
+                      placeholder="UUID utilisateur"
+                    />
                   )}
                 </div>
               )}
@@ -346,7 +430,11 @@ export function AdminNotificationsPage() {
             <div className="space-y-4">
               <div>
                 <h2 className="text-xl font-semibold text-slate-900">Aide rapide</h2>
-                <p className="text-sm text-slate-500">Utilisez "Cible" pour envoyer des notifications globales ou à un candidat précis. Les notifications masquées restent en base sans être visibles dans les listes publiques.</p>
+                <p className="text-sm text-slate-500">
+                  Utilisez "Cible" pour envoyer des notifications globales ou à un candidat précis.
+                  Les notifications masquées restent en base sans être visibles dans les listes
+                  publiques.
+                </p>
               </div>
               <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-700">
                 <p className="font-semibold">Bonnes pratiques</p>
@@ -363,10 +451,19 @@ export function AdminNotificationsPage() {
         <div className="rounded-[2rem] border border-dashed border-slate-300 bg-slate-50/70 p-4 shadow-soft">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">Notifications système des offres d'emploi</h2>
-              <p className="text-sm text-slate-500">Affichez ici les notifications automatiques générées lors de la publication d'offres.</p>
+              <h2 className="text-lg font-semibold text-slate-900">
+                Notifications système des offres d'emploi
+              </h2>
+              <p className="text-sm text-slate-500">
+                Affichez ici les notifications automatiques générées lors de la publication
+                d'offres.
+              </p>
             </div>
-            <Button type="button" variant="outline" onClick={() => setShowSystemNotifications((value) => !value)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowSystemNotifications((value) => !value)}
+            >
               {showSystemNotifications ? "Masquer" : "Afficher les notifications d'offres d'emploi"}
             </Button>
           </div>
@@ -375,13 +472,18 @@ export function AdminNotificationsPage() {
             <div className="mt-4 space-y-3">
               {systemOfferNotifications.length > 0 ? (
                 systemOfferNotifications.map((notification) => (
-                  <div key={notification.id} className="rounded-2xl border border-slate-200 bg-white p-4">
+                  <div
+                    key={notification.id}
+                    className="rounded-2xl border border-slate-200 bg-white p-4"
+                  >
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <div className="font-medium text-slate-900">{notification.title}</div>
                         <div className="text-sm text-slate-600">{notification.content}</div>
                       </div>
-                      <div className="text-sm text-slate-500">{new Date(notification.created_at).toLocaleString("fr-FR")}</div>
+                      <div className="text-sm text-slate-500">
+                        {new Date(notification.created_at).toLocaleString("fr-FR")}
+                      </div>
                     </div>
                   </div>
                 ))
@@ -405,12 +507,16 @@ export function AdminNotificationsPage() {
               >
                 <option value="all">Toutes les catégories</option>
                 {notificationTypes.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
               <select
                 value={statusFilter}
-                onChange={(event) => setStatusFilter(event.target.value as "all" | NotificationStatus)}
+                onChange={(event) =>
+                  setStatusFilter(event.target.value as "all" | NotificationStatus)
+                }
                 className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm"
               >
                 <option value="all">Tous les statuts</option>
@@ -432,10 +538,15 @@ export function AdminNotificationsPage() {
             </thead>
             <tbody className="divide-y divide-slate-200">
               {filteredNotifications.map((notification) => (
-                <tr key={notification.id} className={notification.status === "masked" ? "bg-slate-50/70" : ""}>
+                <tr
+                  key={notification.id}
+                  className={notification.status === "masked" ? "bg-slate-50/70" : ""}
+                >
                   <td className="px-4 py-4">
                     <div className="font-medium text-slate-900">{notification.title}</div>
-                    <div className="mt-1 text-xs text-slate-500 line-clamp-2">{notification.content}</div>
+                    <div className="mt-1 text-xs text-slate-500 line-clamp-2">
+                      {notification.content}
+                    </div>
                   </td>
                   <td className="px-4 py-4">
                     <Badge variant="secondary">{notification.type}</Badge>
@@ -446,16 +557,26 @@ export function AdminNotificationsPage() {
                       {notificationStatusLabels[notification.status]}
                     </Badge>
                   </td>
-                  <td className="px-4 py-4 text-slate-500">{new Date(notification.created_at).toLocaleString("fr-FR")}</td>
+                  <td className="px-4 py-4 text-slate-500">
+                    {new Date(notification.created_at).toLocaleString("fr-FR")}
+                  </td>
                   <td className="px-4 py-4 text-right">
                     <div className="inline-flex items-center gap-2">
                       <Button size="sm" variant="outline" onClick={() => handleEdit(notification)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <Button size="sm" variant="ghost" onClick={() => handleToggle(notification)}>
-                        {notification.status === "active" ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {notification.status === "active" ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
                       </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(notification)}>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDelete(notification)}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

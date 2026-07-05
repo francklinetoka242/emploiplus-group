@@ -11,11 +11,7 @@ interface SaasContainerProps {
  * Mobile: 16px, Tablet: 24px, Desktop: 32px
  */
 export function SaasContainer({ children, className }: SaasContainerProps) {
-  return (
-    <div className={cn("mx-auto w-full px-4 sm:px-6 lg:px-8", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("mx-auto w-full px-4 sm:px-6 lg:px-8", className)}>{children}</div>;
 }
 
 interface SaasGridProps {
@@ -45,11 +41,7 @@ export function SaasGrid({ children, columns = "3", gap = "6" }: SaasGridProps) 
     "8": "gap-8",
   };
 
-  return (
-    <div className={cn("grid", gridClasses[columns], gapClasses[gap])}>
-      {children}
-    </div>
-  );
+  return <div className={cn("grid", gridClasses[columns], gapClasses[gap])}>{children}</div>;
 }
 
 interface SaasPageHeaderProps {

@@ -16,6 +16,7 @@ Le système de notifications pour les candidats a été entièrement modernisé 
 Hook React personnalisé pour gérer l'état et les interactions des notifications.
 
 **Fonctionnalités:**
+
 - Récupération automatique des notifications au montage
 - Souscription aux mises à jour en temps réel via Supabase Realtime
 - Calcul du nombre de notifications non lues
@@ -23,8 +24,9 @@ Hook React personnalisé pour gérer l'état et les interactions des notificatio
 - Gestion d'erreurs appropriée
 
 **Utilisation:**
+
 ```tsx
-import { useNotifications } from '@/hooks/useNotifications';
+import { useNotifications } from "@/hooks/useNotifications";
 
 function MyComponent() {
   const {
@@ -37,7 +39,7 @@ function MyComponent() {
     deleteNotification,
     refetch,
   } = useNotifications();
-  
+
   // Utiliser les données...
 }
 ```
@@ -47,6 +49,7 @@ function MyComponent() {
 Composant dropdown affichant les notifications récentes directement dans la topbar.
 
 **Caractéristiques:**
+
 - Badge de compteur dynamique
 - Affichage des 5 dernières notifications
 - Actions rapides: marquer comme lu, supprimer
@@ -58,6 +61,7 @@ Composant dropdown affichant les notifications récentes directement dans la top
 Intégration du système de notifications et utilisation des données réelles du profil candidat.
 
 **Changements:**
+
 - ✅ Affichage dynamique des données utilisateur (nom, email, avatar)
 - ✅ Icône de notifications fonctionnelle avec dropdown
 - ✅ Badge de compteur de notifications non lues
@@ -69,6 +73,7 @@ Intégration du système de notifications et utilisation des données réelles d
 Rénovation complète de la page de notifications.
 
 **Améliorations:**
+
 - Utilisation du hook `useNotifications` pour plus de clarté
 - Interactions améliorées: cliquer sur une notification la marque comme lue
 - Affichage du timestamp complet au survol
@@ -80,6 +85,7 @@ Rénovation complète de la page de notifications.
 Amélioration de la base de données pour les notifications des candidats.
 
 **Contient:**
+
 - Triggers automatiques pour les changements de statut de candidature
 - Triggers pour les offres d'emploi correspondantes
 - Indexes optimisés pour les requêtes de notifications
@@ -159,6 +165,7 @@ export function CandidateLayout() {
 ### Accès à la page complète
 
 Les utilisateurs peuvent accéder à la page complète via:
+
 - Le lien "Voir toutes les notifications" dans le dropdown
 - Le menu sidebar
 - URL directe: `/candidate/notifications`
@@ -166,6 +173,7 @@ Les utilisateurs peuvent accéder à la page complète via:
 ## Fonctionnalités en temps réel
 
 Grâce aux Realtime de Supabase, les notifications se mettent à jour automatiquement lorsque:
+
 - Un nouvel événement est créé
 - Une notification existante est modifiée (marquée comme lue, supprimée)
 - Un changement de statut de candidature crée une nouvelle notification
@@ -192,16 +200,19 @@ Grâce aux Realtime de Supabase, les notifications se mettent à jour automatiqu
 ## Dépannage
 
 ### Les notifications ne s'affichent pas
+
 1. Vérifier que l'utilisateur est authentifié
 2. Vérifier que `user_id` est défini correctement dans la BD
 3. Consulter la console pour les erreurs
 
 ### Les notifications ne se mettent pas à jour en temps réel
+
 1. Vérifier que Realtime est activé dans Supabase
 2. Vérifier les permissions Row Level Security (RLS)
 3. Vérifier la connexion WebSocket
 
 ### Erreurs de type TypeScript
+
 1. Vérifier que tous les imports sont corrects
 2. Vérifier que `NotificationRecord` type correspond à la structure BD
 

@@ -1,5 +1,6 @@
-import { supabase } from './client';
-import type { User } from '@supabase/supabase-js';
+import { supabase } from "./client";
+import type { User } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 
 export interface CandidateSignupData {
   email: string;
@@ -19,7 +20,7 @@ export interface SignUpFormData {
 }
 
 export async function registerCandidate(
-  form: SignUpFormData
+  form: SignUpFormData,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -34,21 +35,21 @@ export async function registerCandidate(
     });
 
     if (authError) {
-      console.error('[registerCandidate] auth.signUp failed', authError);
+      console.error("[registerCandidate] auth.signUp failed", authError);
       return {
         success: false,
-        error: authError.message || 'Création du compte impossible.',
+        error: authError.message || "Création du compte impossible.",
       };
     }
 
     const userId = authData.user?.id || authData.session?.user?.id;
     if (!userId) {
-      const message = 'Impossible de récupérer l’UUID utilisateur après l’inscription.';
-      console.error('[registerCandidate]', message, authData);
+      const message = "Impossible de récupérer l’UUID utilisateur après l’inscription.";
+      console.error("[registerCandidate]", message, authData);
       return { success: false, error: message };
     }
 
-    const { error: profileError } = await supabase.from('candidates').insert([
+    const { error: profileError } = await supabase.from("candidates").insert([
       {
         user_id: userId,
         first_name: form.firstName,
@@ -57,21 +58,21 @@ export async function registerCandidate(
         location_city: form.location_city ?? null,
         location_country: form.location_country ?? null,
         date_of_birth: form.date_of_birth ?? null,
-        status: 'active',
+        status: "active",
       },
     ]);
 
     if (profileError) {
-      console.error('[registerCandidate] insert candidates failed', profileError);
+      console.error("[registerCandidate] insert candidates failed", profileError);
       return {
         success: false,
-        error: profileError.message || 'Insertion du profil impossible.',
+        error: profileError.message || "Insertion du profil impossible.",
       };
     }
 
     return { success: true };
   } catch (error) {
-    console.error('[registerCandidate] unexpected error', error);
+    console.error("[registerCandidate] unexpected error", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : String(error),
@@ -133,6 +134,7 @@ export interface CandidateEducation {
   start_date: string | null;
   end_date: string | null;
   is_current: boolean;
+  description?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -144,6 +146,7 @@ export interface CandidateEducationInsert {
   start_date?: string | null;
   end_date?: string | null;
   is_current?: boolean;
+  description?: string | null;
 }
 
 export interface CandidateSkill {
@@ -195,26 +198,31 @@ export interface CandidateLanguageInsert {
 
 export class CandidateAuthService {
   private static clearAuthStorage() {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
     try {
       Object.keys(localStorage).forEach((key) => {
-        if (typeof key !== 'string') return;
-        if (key.startsWith('sb-') && (key.includes('auth-token') || key.includes('auth-session') || key.includes('auth-token-code-verifier'))) {
+        if (typeof key !== "string") return;
+        if (
+          key.startsWith("sb-") &&
+          (key.includes("auth-token") ||
+            key.includes("auth-session") ||
+            key.includes("auth-token-code-verifier"))
+        ) {
           localStorage.removeItem(key);
         }
       });
 
       Object.keys(sessionStorage).forEach((key) => {
-        if (typeof key !== 'string') return;
-        if (key.startsWith('sb-') || key.includes('auth')) {
+        if (typeof key !== "string") return;
+        if (key.startsWith("sb-") || key.includes("auth")) {
           sessionStorage.removeItem(key);
         }
       });
     } catch (error) {
-      console.warn('[CandidateAuthService] clearAuthStorage failed', error);
+      console.warn("[CandidateAuthService] clearAuthStorage failed", error);
     }
   }
 
@@ -226,9 +234,12 @@ export class CandidateAuthService {
     await supabase.auth.signOut();
     this.clearAuthStorage();
 
-    const error = new Error('EMAIL_NOT_CONFIRMED');
-    (error as any).code = 'EMAIL_NOT_CONFIRMED';
-    (error as any).userEmail = user?.email ?? null;
+    const error = new Error("EMAIL_NOT_CONFIRMED") as Error & {
+      code?: string;
+      userEmail?: string | null;
+    };
+    error.code = "EMAIL_NOT_CONFIRMED";
+    error.userEmail = user?.email ?? null;
     throw error;
   }
 
@@ -257,19 +268,19 @@ export class CandidateAuthService {
       const user = authData.user || authData.session?.user;
       const session = authData.session;
       if (!user) {
-        throw new Error('User creation failed');
+        throw new Error("User creation failed");
       }
 
       // Create candidate profile now that the account exists
       const { data: profile, error: profileError } = await supabase
-        .from('candidates')
+        .from("candidates")
         .insert([
           {
             user_id: user.id,
             first_name: data.firstName,
             last_name: data.lastName,
             email: data.email,
-            status: 'active',
+            status: "active",
           },
         ])
         .select()
@@ -284,17 +295,17 @@ export class CandidateAuthService {
       if (session) {
         const { error: signOutError } = await supabase.auth.signOut();
         if (signOutError) {
-          console.warn('Signup cleanup signOut failed', signOutError);
+          console.warn("Signup cleanup signOut failed", signOutError);
         }
       }
 
       // Clear any cached session data to ensure email confirmation is required
       try {
-        localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token');
-        localStorage.removeItem('sb-zhldgrvmmdhtlsnsxuys-auth-token-code-verifier');
+        localStorage.removeItem("sb-zhldgrvmmdhtlsnsxuys-auth-token");
+        localStorage.removeItem("sb-zhldgrvmmdhtlsnsxuys-auth-token-code-verifier");
         sessionStorage.clear();
       } catch (e) {
-        console.warn('Could not clear session storage:', e);
+        console.warn("Could not clear session storage:", e);
       }
 
       return {
@@ -302,7 +313,7 @@ export class CandidateAuthService {
         profile: profile as CandidateProfile,
       };
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error("Signup error:", error);
       throw error;
     }
   }
@@ -323,7 +334,7 @@ export class CandidateAuthService {
 
       const user = authData.user || authData.session?.user;
       if (!user) {
-        throw new Error('Login failed');
+        throw new Error("Login failed");
       }
 
       // TEST: force login failure if email_confirmed_at is null
@@ -331,9 +342,9 @@ export class CandidateAuthService {
 
       // Get candidate profile
       const { data: profile, error: profileError } = await supabase
-        .from('candidates')
-        .select('*')
-        .eq('user_id', user.id)
+        .from("candidates")
+        .select("*")
+        .eq("user_id", user.id)
         .single();
 
       if (profileError) {
@@ -345,7 +356,7 @@ export class CandidateAuthService {
         profile: profile as CandidateProfile,
       };
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       throw error;
     }
   }
@@ -360,7 +371,7 @@ export class CandidateAuthService {
         throw error;
       }
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
       throw error;
     }
   }
@@ -374,7 +385,7 @@ export class CandidateAuthService {
       if (error) {
         throw error;
       }
-      
+
       const session = data.session;
       if (!session) {
         return null;
@@ -384,7 +395,7 @@ export class CandidateAuthService {
         // Enforce session invalidation when email_confirmed_at is null
         await this.assertEmailConfirmed(session.user);
       } catch (error) {
-        console.warn('[getSession] Unconfirmed email session invalidated');
+        console.warn("[getSession] Unconfirmed email session invalidated");
         await supabase.auth.signOut();
         this.clearAuthStorage();
         return null;
@@ -392,7 +403,7 @@ export class CandidateAuthService {
 
       return session;
     } catch (error) {
-      console.error('Get session error:', error);
+      console.error("Get session error:", error);
       return null;
     }
   }
@@ -416,9 +427,9 @@ export class CandidateAuthService {
       }
 
       const { data, error } = await supabase
-        .from('candidates')
-        .select('*')
-        .eq('user_id', session.user.id)
+        .from("candidates")
+        .select("*")
+        .eq("user_id", session.user.id)
         .single();
 
       if (error) {
@@ -427,7 +438,7 @@ export class CandidateAuthService {
 
       return data as CandidateProfile;
     } catch (error) {
-      console.error('Get profile error:', error);
+      console.error("Get profile error:", error);
       return null;
     }
   }
@@ -440,33 +451,91 @@ export class CandidateAuthService {
       // Defensive: only send allowed columns to the DB to avoid sending
       // stale/invalid keys that don't exist in the candidates table
       const allowed = new Set<keyof CandidateProfile>([
-        'first_name',
-        'last_name',
-        'email',
-        'phone',
-        'avatar_url',
-        'bio',
-        'headline',
-        'location_city',
-        'location_country',
-        'date_of_birth',
-        'status',
+        "first_name",
+        "last_name",
+        "email",
+        "phone",
+        "avatar_url",
+        "bio",
+        "headline",
+        "location_city",
+        "location_country",
+        "date_of_birth",
+        "status",
       ]);
 
-      const safeUpdates: Record<string, any> = {};
-      Object.keys(updates || {}).forEach((k) => {
-        if (allowed.has(k as keyof CandidateProfile)) {
-          // @ts-ignore
-          safeUpdates[k] = (updates as any)[k];
-        } else {
-          console.warn(`[CandidateAuthService] Ignoring unknown profile field: ${k}`);
+      const safeUpdates: Database["public"]["Tables"]["candidates"]["Update"] = {};
+      Object.entries(updates || {}).forEach(([key, value]) => {
+        if (!allowed.has(key as keyof CandidateProfile)) {
+          console.warn(`[CandidateAuthService] Ignoring unknown profile field: ${key}`);
+          return;
+        }
+
+        switch (key) {
+          case "first_name":
+            if (typeof value === "string") {
+              safeUpdates.first_name = value;
+            }
+            break;
+          case "last_name":
+            if (typeof value === "string") {
+              safeUpdates.last_name = value;
+            }
+            break;
+          case "email":
+            if (typeof value === "string") {
+              safeUpdates.email = value;
+            }
+            break;
+          case "phone":
+            if (typeof value === "string" || value === null) {
+              safeUpdates.phone = value;
+            }
+            break;
+          case "avatar_url":
+            if (typeof value === "string" || value === null) {
+              safeUpdates.avatar_url = value;
+            }
+            break;
+          case "bio":
+            if (typeof value === "string" || value === null) {
+              safeUpdates.bio = value;
+            }
+            break;
+          case "headline":
+            if (typeof value === "string" || value === null) {
+              safeUpdates.headline = value;
+            }
+            break;
+          case "location_city":
+            if (typeof value === "string" || value === null) {
+              safeUpdates.location_city = value;
+            }
+            break;
+          case "location_country":
+            if (typeof value === "string" || value === null) {
+              safeUpdates.location_country = value;
+            }
+            break;
+          case "date_of_birth":
+            if (typeof value === "string" || value === null) {
+              safeUpdates.date_of_birth = value;
+            }
+            break;
+          case "status":
+            if (typeof value === "string") {
+              safeUpdates.status = value as Database["public"]["Enums"]["candidate_status"];
+            }
+            break;
+          default:
+            break;
         }
       });
 
       const { data, error } = await supabase
-        .from('candidates')
+        .from("candidates")
         .update(safeUpdates)
-        .eq('id', candidateId)
+        .eq("id", candidateId)
         .select()
         .single();
 
@@ -476,7 +545,7 @@ export class CandidateAuthService {
 
       return data as CandidateProfile;
     } catch (error) {
-      console.error('Update profile error:', error);
+      console.error("Update profile error:", error);
       throw error;
     }
   }
@@ -487,10 +556,10 @@ export class CandidateAuthService {
   static async getCandidateExperiences(candidateId: string) {
     try {
       const { data, error } = await supabase
-        .from('candidate_experience')
-        .select('*')
-        .eq('candidate_id', candidateId)
-        .order('start_date', { ascending: false });
+        .from("candidate_experience")
+        .select("*")
+        .eq("candidate_id", candidateId)
+        .order("start_date", { ascending: false });
 
       if (error) {
         throw error;
@@ -498,7 +567,7 @@ export class CandidateAuthService {
 
       return data as CandidateExperience[];
     } catch (error) {
-      console.error('Get candidate experiences error:', error);
+      console.error("Get candidate experiences error:", error);
       throw error;
     }
   }
@@ -506,10 +575,13 @@ export class CandidateAuthService {
   /**
    * Create a new experience entry
    */
-  static async createCandidateExperience(candidateId: string, experience: CandidateExperienceInsert) {
+  static async createCandidateExperience(
+    candidateId: string,
+    experience: CandidateExperienceInsert,
+  ) {
     try {
       const { data, error } = await supabase
-        .from('candidate_experience')
+        .from("candidate_experience")
         .insert([
           {
             candidate_id: candidateId,
@@ -530,7 +602,7 @@ export class CandidateAuthService {
 
       return data as CandidateExperience;
     } catch (error) {
-      console.error('Create candidate experience error:', error);
+      console.error("Create candidate experience error:", error);
       throw error;
     }
   }
@@ -538,10 +610,13 @@ export class CandidateAuthService {
   /**
    * Update an existing experience entry
    */
-  static async updateCandidateExperience(experienceId: string, experience: CandidateExperienceInsert) {
+  static async updateCandidateExperience(
+    experienceId: string,
+    experience: CandidateExperienceInsert,
+  ) {
     try {
       const { data, error } = await supabase
-        .from('candidate_experience')
+        .from("candidate_experience")
         .update({
           job_title: experience.job_title,
           company: experience.company,
@@ -550,7 +625,7 @@ export class CandidateAuthService {
           end_date: experience.end_date ?? null,
           is_current: experience.is_current ?? false,
         })
-        .eq('id', experienceId)
+        .eq("id", experienceId)
         .select()
         .single();
 
@@ -560,7 +635,7 @@ export class CandidateAuthService {
 
       return data as CandidateExperience;
     } catch (error) {
-      console.error('Update candidate experience error:', error);
+      console.error("Update candidate experience error:", error);
       throw error;
     }
   }
@@ -570,10 +645,7 @@ export class CandidateAuthService {
    */
   static async deleteCandidateExperience(experienceId: string) {
     try {
-      const { error } = await supabase
-        .from('candidate_experience')
-        .delete()
-        .eq('id', experienceId);
+      const { error } = await supabase.from("candidate_experience").delete().eq("id", experienceId);
 
       if (error) {
         throw error;
@@ -581,7 +653,7 @@ export class CandidateAuthService {
 
       return true;
     } catch (error) {
-      console.error('Delete candidate experience error:', error);
+      console.error("Delete candidate experience error:", error);
       throw error;
     }
   }
@@ -592,10 +664,10 @@ export class CandidateAuthService {
   static async getCandidateEducations(candidateId: string) {
     try {
       const { data, error } = await supabase
-        .from('candidate_education')
-        .select('*')
-        .eq('candidate_id', candidateId)
-        .order('start_date', { ascending: false });
+        .from("candidate_education")
+        .select("*")
+        .eq("candidate_id", candidateId)
+        .order("start_date", { ascending: false });
 
       if (error) {
         throw error;
@@ -603,7 +675,7 @@ export class CandidateAuthService {
 
       return data as CandidateEducation[];
     } catch (error) {
-      console.error('Get candidate educations error:', error);
+      console.error("Get candidate educations error:", error);
       throw error;
     }
   }
@@ -614,7 +686,7 @@ export class CandidateAuthService {
   static async createCandidateEducation(candidateId: string, education: CandidateEducationInsert) {
     try {
       const { data, error } = await supabase
-        .from('candidate_education')
+        .from("candidate_education")
         .insert([
           {
             candidate_id: candidateId,
@@ -635,7 +707,7 @@ export class CandidateAuthService {
 
       return data as CandidateEducation;
     } catch (error) {
-      console.error('Create candidate education error:', error);
+      console.error("Create candidate education error:", error);
       throw error;
     }
   }
@@ -646,7 +718,7 @@ export class CandidateAuthService {
   static async updateCandidateEducation(educationId: string, education: CandidateEducationInsert) {
     try {
       const { data, error } = await supabase
-        .from('candidate_education')
+        .from("candidate_education")
         .update({
           school: education.school,
           degree: education.degree,
@@ -655,7 +727,7 @@ export class CandidateAuthService {
           end_date: education.end_date ?? null,
           is_current: education.is_current ?? false,
         })
-        .eq('id', educationId)
+        .eq("id", educationId)
         .select()
         .single();
 
@@ -665,7 +737,7 @@ export class CandidateAuthService {
 
       return data as CandidateEducation;
     } catch (error) {
-      console.error('Update candidate education error:', error);
+      console.error("Update candidate education error:", error);
       throw error;
     }
   }
@@ -675,10 +747,7 @@ export class CandidateAuthService {
    */
   static async deleteCandidateEducation(educationId: string) {
     try {
-      const { error } = await supabase
-        .from('candidate_education')
-        .delete()
-        .eq('id', educationId);
+      const { error } = await supabase.from("candidate_education").delete().eq("id", educationId);
 
       if (error) {
         throw error;
@@ -686,7 +755,7 @@ export class CandidateAuthService {
 
       return true;
     } catch (error) {
-      console.error('Delete candidate education error:', error);
+      console.error("Delete candidate education error:", error);
       throw error;
     }
   }
@@ -697,10 +766,10 @@ export class CandidateAuthService {
   static async getCandidateSkills(candidateId: string) {
     try {
       const { data, error } = await supabase
-        .from('candidate_skills')
-        .select('*')
-        .eq('candidate_id', candidateId)
-        .order('created_at', { ascending: false });
+        .from("candidate_skills")
+        .select("*")
+        .eq("candidate_id", candidateId)
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw error;
@@ -708,7 +777,7 @@ export class CandidateAuthService {
 
       return data as CandidateSkill[];
     } catch (error) {
-      console.error('Get candidate skills error:', error);
+      console.error("Get candidate skills error:", error);
       throw error;
     }
   }
@@ -719,7 +788,7 @@ export class CandidateAuthService {
   static async createCandidateSkill(candidateId: string, skill: CandidateSkillInsert) {
     try {
       const { data, error } = await supabase
-        .from('candidate_skills')
+        .from("candidate_skills")
         .insert([
           {
             candidate_id: candidateId,
@@ -736,7 +805,7 @@ export class CandidateAuthService {
 
       return data as CandidateSkill;
     } catch (error) {
-      console.error('Create candidate skill error:', error);
+      console.error("Create candidate skill error:", error);
       throw error;
     }
   }
@@ -747,12 +816,12 @@ export class CandidateAuthService {
   static async updateCandidateSkill(skillId: string, skill: CandidateSkillInsert) {
     try {
       const { data, error } = await supabase
-        .from('candidate_skills')
+        .from("candidate_skills")
         .update({
           skill_name: skill.skill_name,
           proficiency_level: skill.proficiency_level ?? null,
         })
-        .eq('id', skillId)
+        .eq("id", skillId)
         .select()
         .single();
 
@@ -762,7 +831,7 @@ export class CandidateAuthService {
 
       return data as CandidateSkill;
     } catch (error) {
-      console.error('Update candidate skill error:', error);
+      console.error("Update candidate skill error:", error);
       throw error;
     }
   }
@@ -772,10 +841,7 @@ export class CandidateAuthService {
    */
   static async deleteCandidateSkill(skillId: string) {
     try {
-      const { error } = await supabase
-        .from('candidate_skills')
-        .delete()
-        .eq('id', skillId);
+      const { error } = await supabase.from("candidate_skills").delete().eq("id", skillId);
 
       if (error) {
         throw error;
@@ -783,7 +849,7 @@ export class CandidateAuthService {
 
       return true;
     } catch (error) {
-      console.error('Delete candidate skill error:', error);
+      console.error("Delete candidate skill error:", error);
       throw error;
     }
   }
@@ -794,12 +860,12 @@ export class CandidateAuthService {
   static async getCandidatePreferences(candidateId: string) {
     try {
       const { data, error } = await supabase
-        .from('candidate_preferences')
-        .select('*')
-        .eq('candidate_id', candidateId)
+        .from("candidate_preferences")
+        .select("*")
+        .eq("candidate_id", candidateId)
         .single();
 
-      if (error && error.code === 'PGRST116') {
+      if (error && error.code === "PGRST116") {
         // No preferences found, return default
         return null;
       }
@@ -810,7 +876,7 @@ export class CandidateAuthService {
 
       return data as CandidatePreferences;
     } catch (error) {
-      console.error('Get candidate preferences error:', error);
+      console.error("Get candidate preferences error:", error);
       throw error;
     }
   }
@@ -818,7 +884,10 @@ export class CandidateAuthService {
   /**
    * Create or update candidate preferences
    */
-  static async saveCandidatePreferences(candidateId: string, preferences: CandidatePreferencesInsert) {
+  static async saveCandidatePreferences(
+    candidateId: string,
+    preferences: CandidatePreferencesInsert,
+  ) {
     try {
       // First, try to get existing preferences
       const existing = await this.getCandidatePreferences(candidateId);
@@ -826,7 +895,7 @@ export class CandidateAuthService {
       if (existing) {
         // Update existing
         const { data, error } = await supabase
-          .from('candidate_preferences')
+          .from("candidate_preferences")
           .update({
             contract_types: preferences.contract_types,
             work_types: preferences.work_types,
@@ -834,7 +903,7 @@ export class CandidateAuthService {
             salary_max: preferences.salary_max,
             seniority_level: preferences.seniority_level,
           })
-          .eq('id', existing.id)
+          .eq("id", existing.id)
           .select()
           .single();
 
@@ -846,7 +915,7 @@ export class CandidateAuthService {
       } else {
         // Create new
         const { data, error } = await supabase
-          .from('candidate_preferences')
+          .from("candidate_preferences")
           .insert([
             {
               candidate_id: candidateId,
@@ -867,7 +936,7 @@ export class CandidateAuthService {
         return data as CandidatePreferences;
       }
     } catch (error) {
-      console.error('Save candidate preferences error:', error);
+      console.error("Save candidate preferences error:", error);
       throw error;
     }
   }
@@ -887,7 +956,7 @@ export class CandidateAuthService {
 
       return true;
     } catch (error) {
-      console.error('Change password error:', error);
+      console.error("Change password error:", error);
       throw error;
     }
   }
@@ -898,9 +967,9 @@ export class CandidateAuthService {
   static async deleteCurrentProfile(candidateId: string) {
     try {
       const { error: profileError } = await supabase
-        .from('candidates')
+        .from("candidates")
         .delete()
-        .eq('id', candidateId);
+        .eq("id", candidateId);
 
       if (profileError) {
         throw profileError;
@@ -913,7 +982,7 @@ export class CandidateAuthService {
 
       return true;
     } catch (error) {
-      console.error('Delete profile error:', error);
+      console.error("Delete profile error:", error);
       throw error;
     }
   }
@@ -923,20 +992,22 @@ export class CandidateAuthService {
    */
   static async requestPasswordReset(email: string) {
     try {
-      const response = await fetch('/api/password-reset-request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/password-reset-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
 
       const body = await response.json().catch(() => null);
       if (!response.ok) {
-        throw body?.error ? new Error(body.error) : new Error('Impossible d envoyer le lien de réinitialisation.');
+        throw body?.error
+          ? new Error(body.error)
+          : new Error("Impossible d envoyer le lien de réinitialisation.");
       }
 
       return true;
     } catch (error) {
-      console.error('Password reset request error:', error);
+      console.error("Password reset request error:", error);
       throw error;
     }
   }
@@ -956,7 +1027,7 @@ export class CandidateAuthService {
 
       return true;
     } catch (error) {
-      console.error('Reset password error:', error);
+      console.error("Reset password error:", error);
       throw error;
     }
   }
@@ -967,19 +1038,19 @@ export class CandidateAuthService {
   static async checkEmailExists(email: string): Promise<boolean> {
     try {
       const { data, error } = await supabase
-        .from('candidates')
-        .select('id')
-        .eq('email', email)
+        .from("candidates")
+        .select("id")
+        .eq("email", email)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== "PGRST116") {
         // PGRST116 = no rows returned, which is expected
         throw error;
       }
 
       return !!data;
     } catch (error) {
-      console.error('Check email error:', error);
+      console.error("Check email error:", error);
       return false;
     }
   }
@@ -990,10 +1061,10 @@ export class CandidateAuthService {
   static async getCandidateLanguages(candidateId: string) {
     try {
       const { data, error } = await supabase
-        .from('candidate_languages')
-        .select('*')
-        .eq('candidate_id', candidateId)
-        .order('created_at', { ascending: false });
+        .from("candidate_languages")
+        .select("*")
+        .eq("candidate_id", candidateId)
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw error;
@@ -1001,7 +1072,7 @@ export class CandidateAuthService {
 
       return data as CandidateLanguage[];
     } catch (error) {
-      console.error('Get candidate languages error:', error);
+      console.error("Get candidate languages error:", error);
       throw error;
     }
   }
@@ -1012,7 +1083,7 @@ export class CandidateAuthService {
   static async createCandidateLanguage(candidateId: string, language: CandidateLanguageInsert) {
     try {
       const { data, error } = await supabase
-        .from('candidate_languages')
+        .from("candidate_languages")
         .insert([
           {
             candidate_id: candidateId,
@@ -1029,7 +1100,7 @@ export class CandidateAuthService {
 
       return data as CandidateLanguage;
     } catch (error) {
-      console.error('Create candidate language error:', error);
+      console.error("Create candidate language error:", error);
       throw error;
     }
   }
@@ -1040,12 +1111,12 @@ export class CandidateAuthService {
   static async updateCandidateLanguage(languageId: string, language: CandidateLanguageInsert) {
     try {
       const { data, error } = await supabase
-        .from('candidate_languages')
+        .from("candidate_languages")
         .update({
           language_name: language.language_name,
           proficiency_level: language.proficiency_level,
         })
-        .eq('id', languageId)
+        .eq("id", languageId)
         .select()
         .single();
 
@@ -1055,7 +1126,7 @@ export class CandidateAuthService {
 
       return data as CandidateLanguage;
     } catch (error) {
-      console.error('Update candidate language error:', error);
+      console.error("Update candidate language error:", error);
       throw error;
     }
   }
@@ -1065,10 +1136,7 @@ export class CandidateAuthService {
    */
   static async deleteCandidateLanguage(languageId: string) {
     try {
-      const { error } = await supabase
-        .from('candidate_languages')
-        .delete()
-        .eq('id', languageId);
+      const { error } = await supabase.from("candidate_languages").delete().eq("id", languageId);
 
       if (error) {
         throw error;
@@ -1076,7 +1144,7 @@ export class CandidateAuthService {
 
       return true;
     } catch (error) {
-      console.error('Delete candidate language error:', error);
+      console.error("Delete candidate language error:", error);
       throw error;
     }
   }
@@ -1087,25 +1155,27 @@ export class CandidateAuthService {
   static async getCandidateApplications(candidateId: string) {
     try {
       const { data, error } = await supabase
-        .from('job_applications')
-        .select(`
+        .from("job_applications")
+        .select(
+          `
           id,
           status,
           cover_letter,
           applied_at,
           updated_at,
           job_offers:job_offer_id(id, title, company, location_city, contract_type, salary)
-        `)
-        .eq('candidate_id', candidateId)
-        .order('applied_at', { ascending: false });
+        `,
+        )
+        .eq("candidate_id", candidateId)
+        .order("applied_at", { ascending: false });
 
       if (error) {
         throw error;
       }
 
-      return data as any[];
+      return data as Array<Record<string, unknown>>;
     } catch (error) {
-      console.error('Get candidate applications error:', error);
+      console.error("Get candidate applications error:", error);
       throw error;
     }
   }
@@ -1116,13 +1186,13 @@ export class CandidateAuthService {
   static async applyToJob(candidateId: string, jobOfferId: string, coverLetter?: string) {
     try {
       const { data, error } = await supabase
-        .from('job_applications')
+        .from("job_applications")
         .insert([
           {
             candidate_id: candidateId,
             job_offer_id: jobOfferId,
             cover_letter: coverLetter ?? null,
-            status: 'submitted',
+            status: "submitted",
           },
         ])
         .select()
@@ -1132,9 +1202,9 @@ export class CandidateAuthService {
         throw error;
       }
 
-      return data as any;
+      return data as Record<string, unknown>;
     } catch (error) {
-      console.error('Apply to job error:', error);
+      console.error("Apply to job error:", error);
       throw error;
     }
   }
@@ -1145,9 +1215,9 @@ export class CandidateAuthService {
   static async withdrawApplication(applicationId: string) {
     try {
       const { data, error } = await supabase
-        .from('job_applications')
-        .update({ status: 'withdrawn' })
-        .eq('id', applicationId)
+        .from("job_applications")
+        .update({ status: "withdrawn" })
+        .eq("id", applicationId)
         .select()
         .single();
 
@@ -1155,9 +1225,9 @@ export class CandidateAuthService {
         throw error;
       }
 
-      return data as any;
+      return data as Record<string, unknown>;
     } catch (error) {
-      console.error('Withdraw application error:', error);
+      console.error("Withdraw application error:", error);
       throw error;
     }
   }
@@ -1168,22 +1238,24 @@ export class CandidateAuthService {
   static async getCandidateSavedOffers(candidateId: string) {
     try {
       const { data, error } = await supabase
-        .from('candidate_saved_offers')
-        .select(`
+        .from("candidate_saved_offers")
+        .select(
+          `
           id,
           saved_at,
           job_offers:job_offer_id(id, title, company, location_city, contract_type, salary)
-        `)
-        .eq('candidate_id', candidateId)
-        .order('saved_at', { ascending: false });
+        `,
+        )
+        .eq("candidate_id", candidateId)
+        .order("saved_at", { ascending: false });
 
       if (error) {
         throw error;
       }
 
-      return data as any[];
+      return data as Array<Record<string, unknown>>;
     } catch (error) {
-      console.error('Get candidate saved offers error:', error);
+      console.error("Get candidate saved offers error:", error);
       throw error;
     }
   }
@@ -1194,7 +1266,7 @@ export class CandidateAuthService {
   static async saveJobOffer(candidateId: string, jobOfferId: string) {
     try {
       const { data, error } = await supabase
-        .from('candidate_saved_offers')
+        .from("candidate_saved_offers")
         .insert([
           {
             candidate_id: candidateId,
@@ -1208,9 +1280,9 @@ export class CandidateAuthService {
         throw error;
       }
 
-      return data as any;
+      return data as Record<string, unknown>;
     } catch (error) {
-      console.error('Save job offer error:', error);
+      console.error("Save job offer error:", error);
       throw error;
     }
   }
@@ -1221,9 +1293,9 @@ export class CandidateAuthService {
   static async unsaveJobOffer(savedOfferId: string) {
     try {
       const { error } = await supabase
-        .from('candidate_saved_offers')
+        .from("candidate_saved_offers")
         .delete()
-        .eq('id', savedOfferId);
+        .eq("id", savedOfferId);
 
       if (error) {
         throw error;
@@ -1231,7 +1303,7 @@ export class CandidateAuthService {
 
       return true;
     } catch (error) {
-      console.error('Unsave job offer error:', error);
+      console.error("Unsave job offer error:", error);
       throw error;
     }
   }
@@ -1242,7 +1314,7 @@ export class CandidateAuthService {
   static async resendConfirmationEmail(email: string) {
     try {
       const { error } = await supabase.auth.resend({
-        type: 'signup',
+        type: "signup",
         email: email,
         options: {
           emailRedirectTo: `${window.location.origin}/candidate/login`,
@@ -1255,7 +1327,7 @@ export class CandidateAuthService {
 
       return { success: true };
     } catch (error) {
-      console.error('Resend confirmation email error:', error);
+      console.error("Resend confirmation email error:", error);
       throw error;
     }
   }
@@ -1263,44 +1335,47 @@ export class CandidateAuthService {
   /**
    * Parse auth error message in French
    */
-  static parseErrorMessage(error: any): string {
+  static parseErrorMessage(error: unknown): string {
     if (error == null) {
-      return 'Une erreur est survenue';
+      return "Une erreur est survenue";
     }
 
-    const getStringValue = (value: any) => {
-      if (typeof value === 'string' && value.trim()) return value.trim();
-      if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+    const getStringValue = (value: unknown) => {
+      if (typeof value === "string" && value.trim()) return value.trim();
+      if (typeof value === "number" || typeof value === "boolean") return String(value);
       return null;
     };
 
-    if (typeof error === 'string') {
+    if (typeof error === "string") {
       const trimmed = error.trim();
-      return trimmed || 'Une erreur est survenue';
+      return trimmed || "Une erreur est survenue";
     }
 
     if (error instanceof Error) {
       const errorMessage = error.message?.trim();
-      if (errorMessage && errorMessage !== '{}' && errorMessage !== '[]') {
+      if (errorMessage && errorMessage !== "{}" && errorMessage !== "[]") {
         return errorMessage;
       }
     }
 
+    const errorRecord = error as Record<string, unknown>;
     const candidates = [
-      error.message,
-      error.error_description,
-      error.code,
-      error.error,
-      error.name,
-      error.details,
-      error.hint,
-      error.status && `Erreur ${error.status}`,
-      error.body?.error,
-      error.body?.message,
-      error.data?.message,
-      error.data?.error,
-      error.response?.data?.message,
-      error.response?.data?.error,
+      errorRecord.message,
+      errorRecord.error_description,
+      errorRecord.code,
+      errorRecord.error,
+      errorRecord.name,
+      errorRecord.details,
+      errorRecord.hint,
+      typeof errorRecord.status === "number" ? `Erreur ${errorRecord.status}` : null,
+      (errorRecord.body as { error?: unknown } | undefined)?.error,
+      (errorRecord.body as { message?: unknown } | undefined)?.message,
+      (errorRecord.data as { message?: unknown } | undefined)?.message,
+      (errorRecord.data as { error?: unknown } | undefined)?.error,
+      (errorRecord.response as { data?: { message?: unknown; error?: unknown } } | undefined)?.data
+        ?.message,
+      (errorRecord.response as { data?: { message?: unknown; error?: unknown } } | undefined)?.data
+        ?.error,
     ];
 
     for (const candidate of candidates) {
@@ -1310,18 +1385,21 @@ export class CandidateAuthService {
       }
     }
 
-    if (typeof error === 'object' && error !== null) {
-      if (typeof error.toJSON === 'function') {
+    if (typeof error === "object" && error !== null) {
+      const errorWithToJson = error as { toJSON?: () => unknown };
+      if (typeof errorWithToJson.toJSON === "function") {
         try {
-          const jsonData = error.toJSON();
-          const parsedKeys = Object.entries(jsonData)
-            .map(([key, value]) => {
-              const stringValue = getStringValue(value);
-              return stringValue ? `${key}: ${stringValue}` : null;
-            })
-            .filter(Boolean);
-          if (parsedKeys.length > 0) {
-            return parsedKeys.join(', ');
+          const jsonData = errorWithToJson.toJSON();
+          if (jsonData && typeof jsonData === "object") {
+            const parsedKeys = Object.entries(jsonData)
+              .map(([key, value]) => {
+                const stringValue = getStringValue(value);
+                return stringValue ? `${key}: ${stringValue}` : null;
+              })
+              .filter(Boolean);
+            if (parsedKeys.length > 0) {
+              return parsedKeys.join(", ");
+            }
           }
         } catch {
           // ignored
@@ -1330,7 +1408,7 @@ export class CandidateAuthService {
 
       try {
         const json = JSON.stringify(error);
-        if (json && json !== '{}' && json !== '[]') {
+        if (json && json !== "{}" && json !== "[]") {
           return json;
         }
       } catch {
@@ -1339,17 +1417,17 @@ export class CandidateAuthService {
 
       const props = Object.getOwnPropertyNames(error)
         .map((key) => {
-          const value = (error as any)[key];
+          const value = (error as Record<string, unknown>)[key];
           const stringValue = getStringValue(value);
           return stringValue ? `${key}: ${stringValue}` : null;
         })
         .filter(Boolean);
 
       if (props.length > 0) {
-        return props.join(', ');
+        return props.join(", ");
       }
     }
 
-    return 'Une erreur est survenue';
+    return "Une erreur est survenue";
   }
 }

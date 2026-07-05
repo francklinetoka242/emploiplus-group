@@ -1,5 +1,14 @@
 import React from "react";
-import { Eye, EyeOff, ExternalLink, PencilLine, Plus, RefreshCw, Trash2, UploadCloud } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  ExternalLink,
+  PencilLine,
+  Plus,
+  RefreshCw,
+  Trash2,
+  UploadCloud,
+} from "lucide-react";
 import { uploadFileToStorage } from "@/lib/supabase-storage";
 import { useI18n } from "@/lib/i18n";
 import SEO from "@/components/SEO";
@@ -24,7 +33,26 @@ import type { Database } from "@/integrations/supabase/types";
 
 type JobOffer = Database["public"]["Tables"]["job_offers"]["Row"];
 
-function createEmptyForm() {
+type JobFormState = {
+  title: string;
+  company: string;
+  location_city: string;
+  contract_type: Database["public"]["Enums"]["contract_type"] | "";
+  description: string;
+  salary: string;
+  company_logo: string;
+  cover_image: string;
+  keywords: string;
+  auto_share: boolean;
+  deadline: string;
+  seo_description: string;
+  application_email: string;
+  application_whatsapp: string;
+  external_link: string;
+  status: Database["public"]["Enums"]["job_status"];
+};
+
+function createEmptyForm(): JobFormState {
   return {
     title: "",
     company: "",
@@ -53,7 +81,7 @@ function formatDateInput(value?: string | null) {
 
 export function AdminJobsPage() {
   const { t } = useI18n();
-  const [form, setForm] = React.useState(createEmptyForm());
+  const [form, setForm] = React.useState<JobFormState>(createEmptyForm());
   const [jobs, setJobs] = React.useState<JobOffer[]>([]);
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [showForm, setShowForm] = React.useState(false);
@@ -61,7 +89,9 @@ export function AdminJobsPage() {
   const [submitting, setSubmitting] = React.useState(false);
   const [uploadingImage, setUploadingImage] = React.useState(false);
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
-  const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(
+    null,
+  );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type, checked } = event.target as HTMLInputElement;
@@ -70,7 +100,10 @@ export function AdminJobsPage() {
 
   const loadJobs = React.useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase.from("job_offers").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase
+      .from("job_offers")
+      .select("*")
+      .order("created_at", { ascending: false });
     setLoading(false);
     if (!error) {
       setJobs(data ?? []);
@@ -84,13 +117,15 @@ export function AdminJobsPage() {
   }, [loadJobs]);
 
   function createSlug(value: string) {
-    return value
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "")
-      .replace(/--+/g, "-")
-      .replace(/^-+|-+$/g, "") || `item-${Date.now()}`;
+    return (
+      value
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "")
+        .replace(/--+/g, "-")
+        .replace(/^-+|-+$/g, "") || `item-${Date.now()}`
+    );
   }
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,11 +136,16 @@ export function AdminJobsPage() {
     setMessage(null);
 
     try {
-      const publicUrl = await uploadFileToStorage(file, "job-offers", import.meta.env.VITE_SUPABASE_OFFRES_BUCKET || undefined);
+      const publicUrl = await uploadFileToStorage(
+        file,
+        "job-offers",
+        import.meta.env.VITE_SUPABASE_OFFRES_BUCKET || undefined,
+      );
       setForm((prev) => ({ ...prev, cover_image: publicUrl }));
       setMessage({ type: "success", text: "Image téléchargée dans Supabase Storage." });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Échec du téléchargement de l’image.";
+      const message =
+        error instanceof Error ? error.message : "Échec du téléchargement de l’image.";
       setMessage({ type: "error", text: message });
     } finally {
       setUploadingImage(false);
@@ -158,17 +198,51 @@ export function AdminJobsPage() {
     setSubmitting(true);
 
     const slug = createSlug(`${form.title}-${form.company}`);
-    const payload = {
+    const contractType = form.contract_type === "" ? null : form.contract_type;
+    const updatePayload: Database["public"]["Tables"]["job_offers"]["Update"] = {
       slug: editingId ? `${slug}-${editingId.slice(0, 6)}` : slug,
       title: form.title.trim(),
       company: form.company.trim(),
       location_city: form.location_city || null,
-      contract_type: form.contract_type || null,
+      contract_type: contractType,
       description: form.description,
       salary: form.salary || null,
       company_logo: form.company_logo || null,
       cover_image: form.cover_image || null,
-      tags: form.keywords ? form.keywords.split(",").map((s) => s.trim()).filter(Boolean) : [],
+      tags: form.keywords
+        ? form.keywords
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
+      status: form.status,
+      publish_at: form.status === "published" ? new Date().toISOString() : null,
+      deadline: form.deadline ? new Date(form.deadline).toISOString() : null,
+      expires_at: form.deadline ? new Date(form.deadline).toISOString() : null,
+      application_email: form.application_email || null,
+      application_whatsapp: form.application_whatsapp || null,
+      external_link: form.external_link || null,
+      meta_description: form.seo_description || null,
+      auto_share: form.auto_share,
+      updated_at: new Date().toISOString(),
+    };
+
+    const insertPayload: Database["public"]["Tables"]["job_offers"]["Insert"] = {
+      slug: editingId ? `${slug}-${editingId.slice(0, 6)}` : slug,
+      title: form.title.trim(),
+      company: form.company.trim(),
+      location_city: form.location_city || null,
+      contract_type: contractType,
+      description: form.description,
+      salary: form.salary || null,
+      company_logo: form.company_logo || null,
+      cover_image: form.cover_image || null,
+      tags: form.keywords
+        ? form.keywords
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
       status: form.status,
       publish_at: form.status === "published" ? new Date().toISOString() : null,
       deadline: form.deadline ? new Date(form.deadline).toISOString() : null,
@@ -183,8 +257,8 @@ export function AdminJobsPage() {
 
     try {
       const query = editingId
-        ? supabase.from("job_offers").update(payload).eq("id", editingId)
-        : supabase.from("job_offers").insert([payload]).select("id").single();
+        ? supabase.from("job_offers").update(updatePayload).eq("id", editingId)
+        : supabase.from("job_offers").insert([insertPayload]).select("id").single();
 
       const { error } = await query;
 
@@ -194,24 +268,36 @@ export function AdminJobsPage() {
         return;
       }
 
-      setMessage({ type: "success", text: editingId ? "Offre mise à jour avec succès." : t("admin.jobs.create.publishedMessage") });
+      setMessage({
+        type: "success",
+        text: editingId
+          ? "Offre mise à jour avec succès."
+          : t("admin.jobs.create.publishedMessage"),
+      });
       resetForm();
       await loadJobs();
     } catch (err) {
       console.error("Job save error", err);
-      setMessage({ type: "error", text: err instanceof Error ? err.message : "Une erreur inattendue est survenue." });
+      setMessage({
+        type: "error",
+        text: err instanceof Error ? err.message : "Une erreur inattendue est survenue.",
+      });
     } finally {
       setSubmitting(false);
     }
   };
 
-  const updateStatus = async (job: JobOffer, nextStatus: Database["public"]["Enums"]["job_status"]) => {
+  const updateStatus = async (
+    job: JobOffer,
+    nextStatus: Database["public"]["Enums"]["job_status"],
+  ) => {
     setActionLoadingId(job.id);
     const { error } = await supabase
       .from("job_offers")
       .update({
         status: nextStatus,
-        publish_at: nextStatus === "published" ? (job.publish_at ?? new Date().toISOString()) : null,
+        publish_at:
+          nextStatus === "published" ? (job.publish_at ?? new Date().toISOString()) : null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", job.id);
@@ -220,7 +306,10 @@ export function AdminJobsPage() {
       setMessage({ type: "error", text: error.message });
       return;
     }
-    setMessage({ type: "success", text: nextStatus === "published" ? "Offre publiée." : "Visibilité masquée." });
+    setMessage({
+      type: "success",
+      text: nextStatus === "published" ? "Offre publiée." : "Visibilité masquée.",
+    });
     await loadJobs();
   };
 
@@ -262,7 +351,8 @@ export function AdminJobsPage() {
             </div>
             <div className="flex gap-2">
               <Button type="button" variant="outline" onClick={toggleForm}>
-                <Plus className="mr-2 size-4" />{editingId ? "Annuler l'édition" : "Nouvelle offre"}
+                <Plus className="mr-2 size-4" />
+                {editingId ? "Annuler l'édition" : "Nouvelle offre"}
               </Button>
               <Button type="button" variant="secondary" onClick={() => void loadJobs()}>
                 <RefreshCw className={`mr-2 size-4 ${loading ? "animate-spin" : ""}`} /> Actualiser
@@ -272,7 +362,9 @@ export function AdminJobsPage() {
         </div>
 
         {message ? (
-          <div className={`rounded-3xl border px-4 py-3 text-sm ${message.type === "success" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600" : "border-destructive/30 bg-destructive/10 text-destructive"}`}>
+          <div
+            className={`rounded-3xl border px-4 py-3 text-sm ${message.type === "success" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600" : "border-destructive/30 bg-destructive/10 text-destructive"}`}
+          >
             {message.text}
           </div>
         ) : null}
@@ -282,143 +374,287 @@ export function AdminJobsPage() {
             <div className="rounded-[2rem] border border-border bg-background p-8 shadow-soft">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-foreground">{editingId ? "Modifier l'offre" : "Créer une offre"}</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">Renseignez les informations essentielles pour la publication.</p>
+                  <h2 className="text-xl font-semibold text-foreground">
+                    {editingId ? "Modifier l'offre" : "Créer une offre"}
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Renseignez les informations essentielles pour la publication.
+                  </p>
                 </div>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.title")}</label>
-                <Input name="title" value={form.title} onChange={handleChange} required placeholder={t("admin.jobs.field.titlePlaceholder")} />
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
+                    {t("admin.jobs.field.title")}
+                  </label>
+                  <Input
+                    name="title"
+                    value={form.title}
+                    onChange={handleChange}
+                    required
+                    placeholder={t("admin.jobs.field.titlePlaceholder")}
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
+                    {t("admin.jobs.field.company")}
+                  </label>
+                  <Input
+                    name="company"
+                    value={form.company}
+                    onChange={handleChange}
+                    required
+                    placeholder={t("admin.jobs.field.companyPlaceholder")}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.company")}</label>
-                <Input name="company" value={form.company} onChange={handleChange} required placeholder={t("admin.jobs.field.companyPlaceholder")} />
-              </div>
-            </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.city")}</label>
-                <Select value={form.location_city} onValueChange={(value) => setForm((prev) => ({ ...prev, location_city: value }))}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("admin.jobs.field.cityPlaceholder")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {centralAfricaCityGroups.map((group) => (
-                      <SelectGroup key={group.country}>
-                        <SelectLabel>{group.country}</SelectLabel>
-                        {group.cities.map((city) => (
-                          <SelectItem key={city} value={city}>
-                            {city}
-                          </SelectItem>
-                        ))}
-                        <SelectSeparator />
-                      </SelectGroup>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="mt-4 grid gap-4 md:grid-cols-3">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
+                    {t("admin.jobs.field.city")}
+                  </label>
+                  <Select
+                    value={form.location_city}
+                    onValueChange={(value) =>
+                      setForm((prev) => ({ ...prev, location_city: value }))
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={t("admin.jobs.field.cityPlaceholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {centralAfricaCityGroups.map((group) => (
+                        <SelectGroup key={group.country}>
+                          <SelectLabel>{group.country}</SelectLabel>
+                          {group.cities.map((city) => (
+                            <SelectItem key={city} value={city}>
+                              {city}
+                            </SelectItem>
+                          ))}
+                          <SelectSeparator />
+                        </SelectGroup>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
+                    {t("admin.jobs.field.contractType")}
+                  </label>
+                  <Select
+                    value={form.contract_type}
+                    onValueChange={(value) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        contract_type: value as Database["public"]["Enums"]["contract_type"],
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={t("admin.jobs.field.contractTypePlaceholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cdi">
+                        {t("admin.jobs.field.contractTypeOption.cdi")}
+                      </SelectItem>
+                      <SelectItem value="cdd">
+                        {t("admin.jobs.field.contractTypeOption.cdd")}
+                      </SelectItem>
+                      <SelectItem value="stage">
+                        {t("admin.jobs.field.contractTypeOption.stage")}
+                      </SelectItem>
+                      <SelectItem value="freelance">
+                        {t("admin.jobs.field.contractTypeOption.freelance")}
+                      </SelectItem>
+                      <SelectItem value="temps_partiel">
+                        {t("admin.jobs.field.contractTypeOption.temps_partiel")}
+                      </SelectItem>
+                      <SelectItem value="interim">
+                        {t("admin.jobs.field.contractTypeOption.interim")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
+                    {t("admin.jobs.field.salary")}
+                  </label>
+                  <Input
+                    name="salary"
+                    value={form.salary}
+                    onChange={handleChange}
+                    placeholder={t("admin.jobs.field.salaryPlaceholder")}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.contractType")}</label>
-                <Select value={form.contract_type} onValueChange={(value) => setForm((prev) => ({ ...prev, contract_type: value }))}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("admin.jobs.field.contractTypePlaceholder")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="cdi">{t("admin.jobs.field.contractTypeOption.cdi")}</SelectItem>
-                    <SelectItem value="cdd">{t("admin.jobs.field.contractTypeOption.cdd")}</SelectItem>
-                    <SelectItem value="stage">{t("admin.jobs.field.contractTypeOption.stage")}</SelectItem>
-                    <SelectItem value="freelance">{t("admin.jobs.field.contractTypeOption.freelance")}</SelectItem>
-                    <SelectItem value="temps_partiel">{t("admin.jobs.field.contractTypeOption.temps_partiel")}</SelectItem>
-                    <SelectItem value="interim">{t("admin.jobs.field.contractTypeOption.interim")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.salary")}</label>
-                <Input name="salary" value={form.salary} onChange={handleChange} placeholder={t("admin.jobs.field.salaryPlaceholder")} />
-              </div>
-            </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-foreground">{t("admin.jobs.field.description")}</label>
-                <Textarea name="description" value={form.description} onChange={handleChange} rows={6} required placeholder={t("admin.jobs.field.descriptionPlaceholder")} />
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-foreground">
+                    {t("admin.jobs.field.description")}
+                  </label>
+                  <Textarea
+                    name="description"
+                    value={form.description}
+                    onChange={handleChange}
+                    rows={6}
+                    required
+                    placeholder={t("admin.jobs.field.descriptionPlaceholder")}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-foreground">
+                    {t("admin.jobs.field.seoDescription")}
+                  </label>
+                  <Textarea
+                    name="seo_description"
+                    value={form.seo_description}
+                    onChange={handleChange}
+                    rows={6}
+                    placeholder={t("admin.jobs.field.seoDescriptionPlaceholder")}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-foreground">{t("admin.jobs.field.seoDescription")}</label>
-                <Textarea name="seo_description" value={form.seo_description} onChange={handleChange} rows={6} placeholder={t("admin.jobs.field.seoDescriptionPlaceholder")} />
-              </div>
-            </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">Email de réception</label>
-                <Input name="application_email" value={form.application_email} onChange={handleChange} placeholder="contact@entreprise.com" />
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
+                    Email de réception
+                  </label>
+                  <Input
+                    name="application_email"
+                    value={form.application_email}
+                    onChange={handleChange}
+                    placeholder="contact@entreprise.com"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
+                    WhatsApp
+                  </label>
+                  <Input
+                    name="application_whatsapp"
+                    value={form.application_whatsapp}
+                    onChange={handleChange}
+                    placeholder="+242..."
+                  />
+                </div>
               </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">WhatsApp</label>
-                <Input name="application_whatsapp" value={form.application_whatsapp} onChange={handleChange} placeholder="+242..." />
-              </div>
-            </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">Lien externe</label>
-                <Input name="external_link" value={form.external_link} onChange={handleChange} placeholder="https://..." />
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
+                    Lien externe
+                  </label>
+                  <Input
+                    name="external_link"
+                    value={form.external_link}
+                    onChange={handleChange}
+                    placeholder="https://..."
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
+                    {t("admin.jobs.field.keywords")}
+                  </label>
+                  <Input
+                    name="keywords"
+                    value={form.keywords}
+                    onChange={handleChange}
+                    placeholder={t("admin.jobs.field.keywordsPlaceholder")}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.keywords")}</label>
-                <Input name="keywords" value={form.keywords} onChange={handleChange} placeholder={t("admin.jobs.field.keywordsPlaceholder")} />
-              </div>
-            </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-2 items-end">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">{t("admin.jobs.field.deadline")}</label>
-                <Input name="deadline" type="date" value={form.deadline} onChange={handleChange} />
+              <div className="mt-4 grid gap-4 md:grid-cols-2 items-end">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
+                    {t("admin.jobs.field.deadline")}
+                  </label>
+                  <Input
+                    name="deadline"
+                    type="date"
+                    value={form.deadline}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="rounded-3xl border border-border bg-secondary/10 p-4">
+                  <label className="inline-flex items-center gap-3 text-sm font-medium text-foreground">
+                    <input
+                      type="checkbox"
+                      name="auto_share"
+                      checked={form.auto_share}
+                      onChange={handleChange}
+                      className="h-4 w-4 rounded border-input bg-background text-primary focus:ring-primary"
+                    />
+                    {t("admin.jobs.field.autoShare")}
+                  </label>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {t("admin.jobs.field.autoShareHelp")}
+                  </p>
+                </div>
               </div>
-              <div className="rounded-3xl border border-border bg-secondary/10 p-4">
-                <label className="inline-flex items-center gap-3 text-sm font-medium text-foreground">
-                  <input type="checkbox" name="auto_share" checked={form.auto_share} onChange={handleChange} className="h-4 w-4 rounded border-input bg-background text-primary focus:ring-primary" />
-                  {t("admin.jobs.field.autoShare")}
-                </label>
-                <p className="mt-2 text-xs text-muted-foreground">{t("admin.jobs.field.autoShareHelp")}</p>
-              </div>
-            </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">Statut</label>
-                <Select value={form.status} onValueChange={(value) => setForm((prev) => ({ ...prev, status: value as Database["public"]["Enums"]["job_status"] }))}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choisir" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="draft">Brouillon</SelectItem>
-                    <SelectItem value="published">Publié</SelectItem>
-                    <SelectItem value="archived">Archivé</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">Statut</label>
+                  <Select
+                    value={form.status}
+                    onValueChange={(value) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        status: value as Database["public"]["Enums"]["job_status"],
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Choisir" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft">Brouillon</SelectItem>
+                      <SelectItem value="published">Publié</SelectItem>
+                      <SelectItem value="archived">Archivé</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
+                    Image de l’offre (Supabase)
+                  </label>
+                  <label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-background/70 px-4 py-3 text-sm font-medium text-foreground transition hover:bg-secondary/10">
+                    <UploadCloud className="size-4" />
+                    <span>{uploadingImage ? "Téléchargement..." : "Choisir une image"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(event) => void handleImageUpload(event)}
+                    />
+                  </label>
+                  {form.cover_image ? (
+                    <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-background/70 p-2">
+                      <img
+                        src={form.cover_image}
+                        alt="Aperçu de l’offre"
+                        className="h-32 w-full rounded-xl object-cover"
+                      />
+                    </div>
+                  ) : null}
+                </div>
               </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-foreground">Image de l’offre (Supabase)</label>
-                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-background/70 px-4 py-3 text-sm font-medium text-foreground transition hover:bg-secondary/10">
-                  <UploadCloud className="size-4" />
-                  <span>{uploadingImage ? "Téléchargement..." : "Choisir une image"}</span>
-                  <input type="file" accept="image/*" className="hidden" onChange={(event) => void handleImageUpload(event)} />
-                </label>
-                {form.cover_image ? (
-                  <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-background/70 p-2">
-                    <img src={form.cover_image} alt="Aperçu de l’offre" className="h-32 w-full rounded-xl object-cover" />
-                  </div>
-                ) : null}
-              </div>
-            </div>
 
-              <Button type="submit" size="lg" className="mt-6 w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={submitting}>
-                {submitting ? "Enregistrement..." : editingId ? "Enregistrer les modifications" : t("admin.jobs.field.submit")}
+              <Button
+                type="submit"
+                size="lg"
+                className="mt-6 w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                disabled={submitting}
+              >
+                {submitting
+                  ? "Enregistrement..."
+                  : editingId
+                    ? "Enregistrer les modifications"
+                    : t("admin.jobs.field.submit")}
               </Button>
             </div>
           </form>
@@ -428,65 +664,104 @@ export function AdminJobsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-foreground">Liste des offres</h2>
-              <p className="mt-1 text-sm text-muted-foreground">Publiez, masquez, modifiez ou supprimez une offre en quelques clics.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Publiez, masquez, modifiez ou supprimez une offre en quelques clics.
+              </p>
             </div>
             <div className="text-sm text-muted-foreground">{jobs.length} élément(s)</div>
           </div>
 
           {loading ? (
-            <div className="mt-6 rounded-3xl border border-border bg-background/70 p-6 text-sm text-muted-foreground">Chargement...</div>
+            <div className="mt-6 rounded-3xl border border-border bg-background/70 p-6 text-sm text-muted-foreground">
+              Chargement...
+            </div>
           ) : jobs.length === 0 ? (
-            <div className="mt-6 rounded-3xl border border-border bg-background/70 p-6 text-sm text-muted-foreground">Aucune offre pour le moment.</div>
+            <div className="mt-6 rounded-3xl border border-border bg-background/70 p-6 text-sm text-muted-foreground">
+              Aucune offre pour le moment.
+            </div>
           ) : (
             <div className="mt-6 max-h-[60vh] overflow-y-auto rounded-3xl border border-border/60">
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border text-left text-muted-foreground">
-                    <th className="px-3 py-3 font-medium">Offre</th>
-                    <th className="px-3 py-3 font-medium">Date</th>
-                    <th className="px-3 py-3 font-medium">Statut</th>
-                    <th className="px-3 py-3 font-medium">Ville</th>
-                    <th className="px-3 py-3 font-medium text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {jobs.map((job) => {
-                    const meta = statusMeta[job.status as keyof typeof statusMeta] ?? statusMeta.draft;
-                    return (
-                      <tr key={job.id} className="border-b border-border/60 align-top">
-                        <td className="px-3 py-4">
-                          <div className="font-semibold text-foreground">{job.title}</div>
-                          <div className="mt-1 text-muted-foreground">{job.company}</div>
-                        </td>
-                        <td className="px-3 py-4 text-muted-foreground">
-                          {job.publish_at ? new Date(job.publish_at).toLocaleDateString("fr-FR") : new Date(job.created_at).toLocaleDateString("fr-FR")}
-                        </td>
-                        <td className="px-3 py-4"><Badge variant={meta.badge}>{meta.label}</Badge></td>
-                        <td className="px-3 py-4 text-muted-foreground">{job.location_city || "—"}</td>
-                        <td className="px-3 py-4">
-                          <div className="flex flex-wrap justify-end gap-2">
-                            <Button type="button" size="sm" variant="outline" onClick={() => startEdit(job)}>
-                              <PencilLine className="mr-2 size-4" /> Modifier
-                            </Button>
-                            <Button type="button" size="sm" variant="secondary" onClick={() => void updateStatus(job, job.status === "published" ? "archived" : "published")} disabled={actionLoadingId === job.id}>
-                              {job.status === "published" ? <EyeOff className="mr-2 size-4" /> : <Eye className="mr-2 size-4" />}
-                              {job.status === "published" ? "Masquer" : "Publier"}
-                            </Button>
-                            <Button type="button" size="sm" variant="ghost" asChild>
-                              <a href={`/jobs/${job.slug}`} target="_blank" rel="noreferrer">
-                                <ExternalLink className="mr-2 size-4" /> Voir
-                              </a>
-                            </Button>
-                            <Button type="button" size="sm" variant="destructive" onClick={() => void deleteJob(job)} disabled={actionLoadingId === job.id}>
-                              <Trash2 className="mr-2 size-4" /> Supprimer
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
+                  <thead>
+                    <tr className="border-b border-border text-left text-muted-foreground">
+                      <th className="px-3 py-3 font-medium">Offre</th>
+                      <th className="px-3 py-3 font-medium">Date</th>
+                      <th className="px-3 py-3 font-medium">Statut</th>
+                      <th className="px-3 py-3 font-medium">Ville</th>
+                      <th className="px-3 py-3 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {jobs.map((job) => {
+                      const meta =
+                        statusMeta[job.status as keyof typeof statusMeta] ?? statusMeta.draft;
+                      return (
+                        <tr key={job.id} className="border-b border-border/60 align-top">
+                          <td className="px-3 py-4">
+                            <div className="font-semibold text-foreground">{job.title}</div>
+                            <div className="mt-1 text-muted-foreground">{job.company}</div>
+                          </td>
+                          <td className="px-3 py-4 text-muted-foreground">
+                            {job.publish_at
+                              ? new Date(job.publish_at).toLocaleDateString("fr-FR")
+                              : new Date(job.created_at).toLocaleDateString("fr-FR")}
+                          </td>
+                          <td className="px-3 py-4">
+                            <Badge variant={meta.badge}>{meta.label}</Badge>
+                          </td>
+                          <td className="px-3 py-4 text-muted-foreground">
+                            {job.location_city || "—"}
+                          </td>
+                          <td className="px-3 py-4">
+                            <div className="flex flex-wrap justify-end gap-2">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => startEdit(job)}
+                              >
+                                <PencilLine className="mr-2 size-4" /> Modifier
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="secondary"
+                                onClick={() =>
+                                  void updateStatus(
+                                    job,
+                                    job.status === "published" ? "archived" : "published",
+                                  )
+                                }
+                                disabled={actionLoadingId === job.id}
+                              >
+                                {job.status === "published" ? (
+                                  <EyeOff className="mr-2 size-4" />
+                                ) : (
+                                  <Eye className="mr-2 size-4" />
+                                )}
+                                {job.status === "published" ? "Masquer" : "Publier"}
+                              </Button>
+                              <Button type="button" size="sm" variant="ghost" asChild>
+                                <a href={`/jobs/${job.slug}`} target="_blank" rel="noreferrer">
+                                  <ExternalLink className="mr-2 size-4" /> Voir
+                                </a>
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => void deleteJob(job)}
+                                disabled={actionLoadingId === job.id}
+                              >
+                                <Trash2 className="mr-2 size-4" /> Supprimer
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
                 </table>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import "dotenv/config";
 import * as nodemailer from "nodemailer";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 interface SendEmailPayload {
   recipient?: string;
@@ -30,10 +31,12 @@ const smtpPass = assertEnv("SMTP_PASS", process.env.SMTP_PASS);
 
 const fromEmailCandidate = process.env.FROM_EMAIL?.trim();
 const fromEmail = smtpUser;
-const replyToEmail = fromEmailCandidate && fromEmailCandidate.length > 0 ? fromEmailCandidate : smtpUser;
+const replyToEmail =
+  fromEmailCandidate && fromEmailCandidate.length > 0 ? fromEmailCandidate : smtpUser;
 const smtpFromEmail = smtpUser;
 const fromName = process.env.FROM_NAME?.trim() || "EmploiPlus Group";
-const siteUrl = process.env.SITE_URL || process.env.VITE_SUPABASE_URL || "https://emploiplus-group.com";
+const siteUrl =
+  process.env.SITE_URL || process.env.VITE_SUPABASE_URL || "https://emploiplus-group.com";
 const logoUrl = process.env.LOGO_URL || `${siteUrl.replace(/\/$/, "")}/assets/favicon.ico`;
 const brandColor = process.env.BRAND_COLOR || "#0ea5a4";
 const supportEmail = process.env.SUPPORT_EMAIL || process.env.SMTP_USER || fromEmail;
@@ -70,7 +73,7 @@ function getPayloadValue(body: SendEmailPayload, keys: string[]): string | undef
   return undefined;
 }
 
-async function readRawBody(req: any): Promise<string> {
+async function readRawBody(req: VercelRequest): Promise<string> {
   const buffers: Uint8Array[] = [];
   for await (const chunk of req) {
     buffers.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
@@ -78,7 +81,7 @@ async function readRawBody(req: any): Promise<string> {
   return Buffer.concat(buffers).toString("utf8");
 }
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
@@ -101,14 +104,23 @@ export default async function handler(req: any, res: any) {
   // Try to extract an actionable link (confirmation / reset) from common payload keys
   const actionLink =
     getPayloadValue(body, ["action_link", "link", "url", "confirmation_url"]) ||
-    (body.params && (body.params as any).action_link) ||
+    (typeof body.params === "object" && body.params !== null
+      ? getPayloadValue(body.params as SendEmailPayload, ["action_link"])
+      : undefined) ||
     undefined;
 
   // Helper to build a branded HTML template
-  function buildTemplate(opts: { title: string; intro: string; cta?: string; actionLink?: string; bodyHtml?: string; }) {
-    const ctaHtml = opts.cta && opts.actionLink
-      ? `<p style="text-align:center;margin:24px 0"><a href="${opts.actionLink}" target="_blank" rel="noreferrer" style="background:var(--secondary, ${brandColor});color:var(--primary, #ffffff);padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:700">${opts.cta}</a></p>`
-      : "";
+  function buildTemplate(opts: {
+    title: string;
+    intro: string;
+    cta?: string;
+    actionLink?: string;
+    bodyHtml?: string;
+  }) {
+    const ctaHtml =
+      opts.cta && opts.actionLink
+        ? `<p style="text-align:center;margin:24px 0"><a href="${opts.actionLink}" target="_blank" rel="noreferrer" style="background:var(--secondary, ${brandColor});color:var(--primary, #ffffff);padding:12px 20px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:700">${opts.cta}</a></p>`
+        : "";
 
     const bodySection = opts.bodyHtml ? `<div style="margin:12px 0">${opts.bodyHtml}</div>` : "";
 
@@ -164,13 +176,17 @@ export default async function handler(req: any, res: any) {
 
   const lowerSub = (subject || "").toLowerCase();
 
-  if (actionLink || /reset|mot de passe|réinitialis|password/i.test(lowerSub) || /confirm|inscri|confirmation|activer/i.test(lowerSub)) {
+  if (
+    actionLink ||
+    /reset|mot de passe|réinitialis|password/i.test(lowerSub) ||
+    /confirm|inscri|confirmation|activer/i.test(lowerSub)
+  ) {
     // Decide template type
     if (/reset|mot de passe|réinitialis|password/i.test(lowerSub)) {
       const contactHtml = `
         ${originalHtml ? originalHtml : ""}
-        <p style=\"margin-top:12px;color:#475569;\">Si vous n'avez pas demandé la réinitialisation de votre mot de passe, ignorez cet e-mail.</p>
-        <p style=\"margin-top:10px;color:#475569;\">Pour toute aide : Email: <a href=\"mailto:contact@emploiplus-group.com\">contact@emploiplus-group.com</a> • WhatsApp: <a href=\"https://wa.me/242067311033\">+242 0673 11033</a></p>
+        <p style="margin-top:12px;color:#475569;">Si vous n'avez pas demandé la réinitialisation de votre mot de passe, ignorez cet e-mail.</p>
+        <p style="margin-top:10px;color:#475569;">Pour toute aide : Email: <a href="mailto:contact@emploiplus-group.com">contact@emploiplus-group.com</a> • WhatsApp: <a href="https://wa.me/242067311033">+242 0673 11033</a></p>
       `;
 
       finalHtml = buildTemplate({
@@ -184,7 +200,8 @@ export default async function handler(req: any, res: any) {
     } else {
       finalHtml = buildTemplate({
         title: "Confirmation de votre inscription",
-        intro: "Merci de vous être inscrit(e). Cliquez sur le bouton ci-dessous pour confirmer votre adresse e-mail.",
+        intro:
+          "Merci de vous être inscrit(e). Cliquez sur le bouton ci-dessous pour confirmer votre adresse e-mail.",
         cta: "Confirmer mon e-mail",
         actionLink: actionLink,
         bodyHtml: originalHtml ? originalHtml : undefined,
@@ -225,7 +242,9 @@ export default async function handler(req: any, res: any) {
 
   try {
     const info = await sendMail(fromEmail);
-    return res.status(200).json({ status: "sent", messageId: info.messageId, from: fromEmail, replyTo: replyToEmail });
+    return res
+      .status(200)
+      .json({ status: "sent", messageId: info.messageId, from: fromEmail, replyTo: replyToEmail });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("Failed to send email", error);

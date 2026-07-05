@@ -45,10 +45,10 @@ export function CandidateForgotPasswordPage() {
     try {
       await CandidateAuthService.requestPasswordReset(email);
       setSubmitted(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMsg = CandidateAuthService.parseErrorMessage(error);
       setErrors(errorMsg);
-      console.error('Password reset request error:', error);
+      console.error("Password reset request error:", error);
     } finally {
       setLoading(false);
     }
@@ -110,11 +110,7 @@ export function CandidateForgotPasswordPage() {
                 {/* Back to Login */}
                 <div className="mt-6">
                   <Link to="/candidate/login">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full"
-                    >
+                    <Button type="button" variant="outline" className="w-full">
                       <ArrowLeft className="w-4 h-4 mr-2" />
                       Retour à la connexion
                     </Button>
@@ -129,17 +125,15 @@ export function CandidateForgotPasswordPage() {
                   <CheckCircle2 className="w-12 h-12 text-green-500" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg text-slate-900 mb-2">
-                    Email envoyé
-                  </h3>
+                  <h3 className="font-semibold text-lg text-slate-900 mb-2">Email envoyé</h3>
                   <p className="text-sm text-slate-600">
                     Un lien de réinitialisation a été envoyé à:
                   </p>
                   <p className="font-medium text-slate-900 mt-1">{email}</p>
                 </div>
                 <p className="text-sm text-slate-600">
-                  Vérifiez votre boîte de réception et suivez les instructions
-                  pour réinitialiser votre mot de passe.
+                  Vérifiez votre boîte de réception et suivez les instructions pour réinitialiser
+                  votre mot de passe.
                 </p>
 
                 <div className="pt-4 space-y-2">

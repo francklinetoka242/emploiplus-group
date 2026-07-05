@@ -46,10 +46,16 @@ export function SiteHeader() {
     >
       <div className="container-page flex h-16 items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-3 group">
-          <img src="/Logo.png" alt="EmploiPlus Group" className="h-9 w-9 rounded-lg object-cover shadow-brand" />
+          <img
+            src="/Logo.png"
+            alt="EmploiPlus Group"
+            className="h-9 w-9 rounded-lg object-cover shadow-brand"
+          />
           <div className="leading-tight hidden sm:block">
             <div className="font-display font-bold text-foreground">EmploiPlus</div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Group</div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              Group
+            </div>
           </div>
         </Link>
 
@@ -62,7 +68,9 @@ export function SiteHeader() {
               className={({ isActive }) =>
                 cn(
                   "px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                  isActive ? "text-foreground bg-accent" : "text-muted-foreground hover:text-foreground",
+                  isActive
+                    ? "text-foreground bg-accent"
+                    : "text-muted-foreground hover:text-foreground",
                 )
               }
             >
@@ -87,7 +95,11 @@ export function SiteHeader() {
               </SelectContent>
             </Select>
           </div>
-          <Button asChild size="sm" className="hidden md:inline-flex bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand">
+          <Button
+            asChild
+            size="sm"
+            className="hidden md:inline-flex bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand"
+          >
             <Link to="/jobs">{t("cta.viewJobs")}</Link>
           </Button>
           <button
@@ -115,7 +127,9 @@ export function SiteHeader() {
               </Link>
             ))}
             <Button asChild className="mt-2 bg-brand hover:bg-brand/90 text-brand-foreground">
-              <Link to="/jobs" onClick={() => setOpen(false)}>{t("cta.viewJobs")}</Link>
+              <Link to="/jobs" onClick={() => setOpen(false)}>
+                {t("cta.viewJobs")}
+              </Link>
             </Button>
           </nav>
         </div>
