@@ -5,6 +5,9 @@ import { SiteFooter } from "@/components/site/Footer";
 import { SiteHeader } from "@/components/site/Header";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useCandidate } from "@/hooks/useCandidate";
+import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
+import { CandidateAppShell } from "@/pages/candidate/CandidateLayout";
 
 // Immediately loaded pages (critical path)
 import { HomePage, AuthPage, NotFoundPage } from "@/pages";
@@ -170,10 +173,18 @@ const PageLoadingFallback = () => (
 
 export default function App() {
   const location = useLocation();
+  const { profile, loading: candidateLoading } = useCandidate();
+  const shouldShowCandidateShell =
+    !candidateLoading &&
+    !!profile &&
+    location.pathname !== "/auth" &&
+    !location.pathname.startsWith("/admin") &&
+    !location.pathname.startsWith("/candidate");
   const hideShell =
     location.pathname === "/auth" ||
     location.pathname.startsWith("/admin") ||
-    location.pathname.startsWith("/candidate");
+    location.pathname.startsWith("/candidate") ||
+    shouldShowCandidateShell;
 
   // CRITICAL: On app startup, verify that any restored candidate session has a confirmed email
   // This prevents Supabase from silently restoring an unconfirmed session from localStorage
@@ -204,79 +215,89 @@ export default function App() {
     validateCandidateSession();
   }, []);
 
+  const routes = (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/services" element={<ServicesPage />} />
+      <Route path="/services/:slug" element={<ServiceDetailPage />} />
+      <Route path="/services/hub-emploi-recrutement/landing" element={<HubEmploiPage />} />
+      <Route path="/jobs" element={<JobsPage />} />
+      <Route path="/jobs/:slug" element={<JobOfferDetailPage />} />
+      <Route path="/blog" element={<BlogPage />} />
+      <Route path="/blog/:slug" element={<BlogPostDetailPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/auth" element={<AuthPage />} />
+
+      {/* Candidate pages */}
+      <Route path="/candidate/login" element={<CandidateLoginPage />} />
+      <Route path="/candidate/signup" element={<CandidateSignupPage />} />
+      <Route path="/candidate/forgot-password" element={<CandidateForgotPasswordPage />} />
+      <Route path="/candidate/reset-password" element={<CandidateResetPasswordPage />} />
+      <Route path="/candidate/confirm" element={<CandidateConfirmPage />} />
+      <Route
+        path="/candidate"
+        element={
+          <ProtectedCandidateRoute>
+            <CandidateLayout />
+          </ProtectedCandidateRoute>
+        }
+      >
+        <Route index element={<Navigate to="/candidate/dashboard" replace />} />
+        <Route path="dashboard" element={<CandidateDashboardPage />} />
+        <Route path="public" element={<HomePage />} />
+        <Route path="public/services" element={<ServicesPage />} />
+        <Route path="public/jobs" element={<JobsPage />} />
+        <Route path="public/blog" element={<BlogPage />} />
+        <Route path="public/about" element={<AboutPage />} />
+        <Route path="public/contact" element={<ContactPage />} />
+        <Route path="profile" element={<CandidateProfilePage />} />
+        <Route path="Mes-Documents" element={<CandidateCVPage />} />
+        <Route path="experience" element={<CandidateExperiencePage />} />
+        <Route path="education" element={<CandidateEducationPage />} />
+        <Route path="skills" element={<CandidateSkillsPage />} />
+        <Route path="languages" element={<CandidateLanguagesPage />} />
+        <Route path="preferences" element={<CandidatePreferencesPage />} />
+        <Route path="applications" element={<CandidateApplicationsPage />} />
+        <Route path="saved-offers" element={<CandidateSavedOffersPage />} />
+        <Route path="notifications" element={<CandidateNotificationsPage />} />
+        <Route path="settings" element={<CandidateSettingsPage />} />
+        <Route path="jobs/:slug/apply" element={<CandidateJobApplyPage />} />
+      </Route>
+
+      <Route path="/admin" element={<AdminPage />}>
+        <Route index element={<AdminHomePage />} />
+        <Route path="jobs" element={<AdminJobsPage />} />
+        <Route path="jobs/new" element={<AdminJobCreatePage />} />
+        <Route path="blog" element={<AdminBlogPage />} />
+        <Route path="blog/new" element={<AdminBlogCreatePage />} />
+        <Route path="candidates" element={<AdminCandidatesPage />} />
+        <Route path="notifications" element={<AdminNotificationsPage />} />
+        <Route path="seo" element={<AdminSEOPage />} />
+        <Route path="team" element={<AdminTeamPage />} />
+      </Route>
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
+
   return (
     <I18nProvider>
-      <div className="min-h-screen flex flex-col bg-background text-foreground">
-        {!hideShell && <SiteHeader />}
-        <main className="flex-1">
-          <Suspense fallback={<PageLoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/services/:slug" element={<ServiceDetailPage />} />
-              <Route path="/services/hub-emploi-recrutement/landing" element={<HubEmploiPage />} />
-              <Route path="/jobs" element={<JobsPage />} />
-              <Route path="/jobs/:slug" element={<JobOfferDetailPage />} />
-              <Route path="/blog" element={<BlogPage />} />
-              <Route path="/blog/:slug" element={<BlogPostDetailPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/auth" element={<AuthPage />} />
-
-              {/* Candidate pages */}
-              <Route path="/candidate/login" element={<CandidateLoginPage />} />
-              <Route path="/candidate/signup" element={<CandidateSignupPage />} />
-              <Route path="/candidate/forgot-password" element={<CandidateForgotPasswordPage />} />
-              <Route path="/candidate/reset-password" element={<CandidateResetPasswordPage />} />
-              <Route path="/candidate/confirm" element={<CandidateConfirmPage />} />
-              <Route
-                path="/candidate"
-                element={
-                  <ProtectedCandidateRoute>
-                    <CandidateLayout />
-                  </ProtectedCandidateRoute>
-                }
-              >
-                <Route index element={<Navigate to="/candidate/dashboard" replace />} />
-                <Route path="dashboard" element={<CandidateDashboardPage />} />
-                <Route path="public" element={<HomePage />} />
-                <Route path="public/services" element={<ServicesPage />} />
-                <Route path="public/jobs" element={<JobsPage />} />
-                <Route path="public/blog" element={<BlogPage />} />
-                <Route path="public/about" element={<AboutPage />} />
-                <Route path="public/contact" element={<ContactPage />} />
-                <Route path="profile" element={<CandidateProfilePage />} />
-                <Route path="Mes-Documents" element={<CandidateCVPage />} />
-                <Route path="experience" element={<CandidateExperiencePage />} />
-                <Route path="education" element={<CandidateEducationPage />} />
-                <Route path="skills" element={<CandidateSkillsPage />} />
-                <Route path="languages" element={<CandidateLanguagesPage />} />
-                <Route path="preferences" element={<CandidatePreferencesPage />} />
-                <Route path="applications" element={<CandidateApplicationsPage />} />
-                <Route path="saved-offers" element={<CandidateSavedOffersPage />} />
-                <Route path="notifications" element={<CandidateNotificationsPage />} />
-                <Route path="settings" element={<CandidateSettingsPage />} />
-                <Route path="jobs/:slug/apply" element={<CandidateJobApplyPage />} />
-              </Route>
-
-              <Route path="/admin" element={<AdminPage />}>
-                <Route index element={<AdminHomePage />} />
-                <Route path="jobs" element={<AdminJobsPage />} />
-                <Route path="jobs/new" element={<AdminJobCreatePage />} />
-                <Route path="blog" element={<AdminBlogPage />} />
-                <Route path="blog/new" element={<AdminBlogCreatePage />} />
-                <Route path="candidates" element={<AdminCandidatesPage />} />
-                <Route path="notifications" element={<AdminNotificationsPage />} />
-                <Route path="seo" element={<AdminSEOPage />} />
-                <Route path="team" element={<AdminTeamPage />} />
-              </Route>
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
-        </main>
-        {!hideShell && <SiteFooter />}
-        <Toaster richColors position="top-right" />
-      </div>
+      <CandidateSidebarProvider>
+        <div className="min-h-screen flex flex-col bg-background text-foreground">
+          {!hideShell && <SiteHeader />}
+          <main className="flex-1">
+            <Suspense fallback={<PageLoadingFallback />}>
+              {shouldShowCandidateShell ? (
+                <CandidateAppShell pageTitle="Mon Espace">{routes}</CandidateAppShell>
+              ) : (
+                routes
+              )}
+            </Suspense>
+          </main>
+          {!hideShell && <SiteFooter />}
+          <Toaster richColors position="top-right" />
+        </div>
+      </CandidateSidebarProvider>
     </I18nProvider>
   );
 }

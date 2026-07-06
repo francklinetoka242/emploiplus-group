@@ -8,6 +8,11 @@ import { useCandidateSidebar } from "@/contexts/CandidateSidebarContext";
 import { usePageSEO } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
+interface CandidateAppShellProps {
+  children: React.ReactNode;
+  pageTitle?: string;
+}
+
 // Map des titres de page
 const pageToTitle: Record<string, string> = {
   "/candidate/dashboard": "Tableau de bord",
@@ -24,21 +29,9 @@ const pageToTitle: Record<string, string> = {
   "/candidate/settings": "",
 };
 
-export function CandidateLayout() {
+export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: CandidateAppShellProps) {
   const { open, setOpen } = useCandidateSidebar();
   const { logout } = useCandidate();
-  const location = useLocation();
-
-  // Déterminer le titre basé sur la route actuelle
-  const pageTitle = useMemo(() => {
-    return pageToTitle[location.pathname] || "Mon Espace";
-  }, [location.pathname]);
-
-  usePageSEO({
-    title: "Mon Espace Candidat - EmploiPlus Group",
-    description: "Accédez à votre espace candidat sur EmploiPlus Group",
-    robots: "noindex,nofollow",
-  });
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
@@ -67,12 +60,33 @@ export function CandidateLayout() {
           <main className="flex-1 overflow-y-auto overflow-x-hidden">
             <div className="w-full">
               <div className="mx-auto w-full px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10 max-w-7xl">
-                <Outlet />
+                {children}
               </div>
             </div>
           </main>
         </div>
       </div>
     </div>
+  );
+}
+
+export function CandidateLayout() {
+  const location = useLocation();
+
+  // Déterminer le titre basé sur la route actuelle
+  const pageTitle = useMemo(() => {
+    return pageToTitle[location.pathname] || "Mon Espace";
+  }, [location.pathname]);
+
+  usePageSEO({
+    title: "Mon Espace Candidat - EmploiPlus Group",
+    description: "Accédez à votre espace candidat sur EmploiPlus Group",
+    robots: "noindex,nofollow",
+  });
+
+  return (
+    <CandidateAppShell pageTitle={pageTitle}>
+      <Outlet />
+    </CandidateAppShell>
   );
 }
