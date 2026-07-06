@@ -553,13 +553,6 @@ export function CandidateJobApplyPage() {
         throw new Error("Impossible de récupérer votre adresse email de candidature.");
       }
 
-      const selectedFileNames = [
-        ...savedDocuments
-          .filter((doc) => selectedDocuments.has(doc.id))
-          .map((doc) => doc.displayName),
-        ...temporaryDocuments.map((doc) => doc.file.name),
-      ];
-
       const escapeHtml = (value: string) =>
         value
           .replace(/&/g, "&amp;")
@@ -567,6 +560,45 @@ export function CandidateJobApplyPage() {
           .replace(/>/g, "&gt;")
           .replace(/\"/g, "&quot;")
           .replace(/'/g, "&#39;");
+
+      const buildAttachmentName = (name: string) => {
+        if (!name) return "document.pdf";
+        return name.toLowerCase().endsWith(".pdf") ? name : `${name}.pdf`;
+      };
+
+      const readFileAsBase64 = (file: File) =>
+        new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === "string") {
+              const commaIndex = reader.result.indexOf(",");
+              resolve(commaIndex >= 0 ? reader.result.slice(commaIndex + 1) : reader.result);
+            } else {
+              reject(new Error("Impossible de lire le fichier joint."));
+            }
+          };
+          reader.onerror = () => reject(new Error("Échec de lecture du fichier joint."));
+          reader.readAsDataURL(file);
+        });
+
+      const selectedAttachments = await Promise.all([
+        ...savedDocuments
+          .filter((doc) => selectedDocuments.has(doc.id))
+          .map(async (doc) => ({
+            filename: buildAttachmentName(doc.displayName || doc.name || "document"),
+            path: doc.url || undefined,
+            contentType: "application/pdf",
+          })),
+        ...temporaryDocuments.map(async (doc) => ({
+          filename: buildAttachmentName(doc.file.name || "document"),
+          content: await readFileAsBase64(doc.file),
+          encoding: "base64",
+          contentType: doc.file.type || "application/pdf",
+        })),
+      ]);
+
+      const candidateMessage = (message || "").replace(/\r\n/g, "\n");
+      const htmlMessage = escapeHtml(candidateMessage).replace(/\n/g, "<br />");
 
       const response = await fetch("/api/send-email", {
         method: "POST",
@@ -577,21 +609,9 @@ export function CandidateJobApplyPage() {
           recipient: recipientEmail,
           replyTo: candidateEmail,
           subject: `Nouvelle candidature - ${job?.title ?? "Offre"}`,
-          html: `
-            <div style="font-family:Inter, Arial, sans-serif; color:#0f172a; line-height:1.7;">
-              <p style="margin:0 0 12px;"><strong>Nouvelle candidature reçue</strong></p>
-              <p style="margin:0 0 8px;">Offre : <strong>${escapeHtml(job?.title ?? "")}</strong></p>
-              <p style="margin:0 0 8px;">Entreprise : <strong>${escapeHtml(job?.company ?? "")}</strong></p>
-              <p style="margin:0 0 8px;">Candidat : <strong>${escapeHtml(profile?.first_name ?? "")} ${escapeHtml(profile?.last_name ?? "")}</strong></p>
-              <p style="margin:0 0 8px;">Email : <strong>${escapeHtml(candidateEmail)}</strong></p>
-              <p style="margin:0 0 8px;">Téléphone : <strong>${escapeHtml(profile?.phone || "-")}</strong></p>
-              <p style="margin:0 0 8px;">Titre professionnel : <strong>${escapeHtml(profile?.headline || "-")}</strong></p>
-              <p style="margin:0 0 8px;">Pièces jointes : <strong>${escapeHtml(selectedFileNames.length > 0 ? selectedFileNames.join(", ") : "Aucun document sélectionné")}</strong></p>
-              <p style="margin:12px 0 6px;"><strong>Message du candidat</strong></p>
-              <div style="padding:12px 14px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc; white-space:pre-wrap;">${escapeHtml(message || "-")}</div>
-            </div>
-          `,
-          text: `Nouvelle candidature pour ${job?.title ?? "l'offre"}.\nCandidat: ${profile?.first_name ?? ""} ${profile?.last_name ?? ""}\nEmail: ${candidateEmail}\nTéléphone: ${profile?.phone || "-"}\nTitre professionnel: ${profile?.headline || "-"}\nPièces jointes: ${selectedFileNames.length > 0 ? selectedFileNames.join(", ") : "Aucun document sélectionné"}\nMessage: ${message || "-"}`,
+          html: htmlMessage,
+          text: candidateMessage,
+          attachments: selectedAttachments.filter((attachment) => attachment.path || attachment.content),
         }),
       });
 

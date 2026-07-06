@@ -2,6 +2,14 @@ import "dotenv/config";
 import * as nodemailer from "nodemailer";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
+interface EmailAttachmentPayload {
+  filename?: string;
+  path?: string;
+  content?: string;
+  contentType?: string;
+  encoding?: string;
+}
+
 interface SendEmailPayload {
   recipient?: string;
   to?: string;
@@ -12,6 +20,7 @@ interface SendEmailPayload {
   subject?: string;
   html?: string;
   text?: string;
+  attachments?: EmailAttachmentPayload[];
   params?: Record<string, unknown>;
   [key: string]: unknown;
 }
@@ -234,6 +243,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const sendMail = async (senderEmail: string) => {
+    const attachments = Array.isArray(body.attachments)
+      ? body.attachments.filter((attachment): attachment is EmailAttachmentPayload => Boolean(attachment))
+      : [];
+
     return transporter.sendMail({
       from: `"${fromName}" <${senderEmail}>`,
       to: recipient,
@@ -241,6 +254,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       subject,
       html: finalHtml,
       text: finalText ?? undefined,
+      attachments: attachments.length > 0 ? attachments : undefined,
     });
   };
 
