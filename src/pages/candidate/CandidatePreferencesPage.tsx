@@ -16,6 +16,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Save } from "lucide-react";
 import { CandidateAuthService, CandidatePreferences } from "@/integrations/supabase/candidate-auth";
 import { useCandidate } from "@/hooks/useCandidate";
+import { Settings } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 const contractOptions = [
   { id: "cdi", label: "CDI" },
@@ -82,6 +84,32 @@ export function CandidatePreferencesPage() {
     loadPreferences();
   }, [profile]);
 
+  // Theme (dark / light)
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem("theme");
+      if (stored === "dark") return true;
+      if (stored === "light") return false;
+      return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    } catch (e) {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (darkMode) {
+        document.documentElement.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [darkMode]);
+
   usePageSEO({
     title: "Préférences d'emploi - EmploiPlus Group",
     description: "Gérez vos préférences d'emploi",
@@ -140,6 +168,24 @@ export function CandidatePreferencesPage() {
 
   return (
     <div className="space-y-6 max-w-4xl">
+      <Card>
+        <CardHeader>
+          <CardTitle>Apparence</CardTitle>
+          <CardDescription>Choisissez le thème de l'interface.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Settings className="h-5 w-5 text-slate-600" />
+              <div>
+                <p className="font-medium">Mode sombre</p>
+                <p className="text-xs text-slate-500">Basculer entre mode sombre et mode clair</p>
+              </div>
+            </div>
+            <Switch checked={darkMode} onCheckedChange={(v) => setDarkMode(Boolean(v))} />
+          </div>
+        </CardContent>
+      </Card>
       {showSuccess && (
         <Alert className="bg-emerald-50 border-emerald-200">
           <AlertDescription className="text-emerald-900">
