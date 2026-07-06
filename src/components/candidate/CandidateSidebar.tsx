@@ -21,6 +21,11 @@ import {
   ChevronLeft,
   Menu,
   X,
+  BriefcaseBusiness,
+  BookOpen,
+  Info,
+  Mail,
+  Search,
 } from "lucide-react";
 
 interface CandidateSidebarProps {
@@ -29,6 +34,15 @@ interface CandidateSidebarProps {
   onLogout?: () => void;
   isDrawer?: boolean;
 }
+
+const publicMenuItems = [
+  { id: "public-home", label: "Accueil", icon: Home, href: "/candidate/public" },
+  { id: "public-services", label: "Services", icon: BriefcaseBusiness, href: "/candidate/public/services" },
+  { id: "public-jobs", label: "Emplois", icon: Search, href: "/candidate/public/jobs" },
+  { id: "public-blog", label: "Blog", icon: BookOpen, href: "/candidate/public/blog" },
+  { id: "public-about", label: "À propos", icon: Info, href: "/candidate/public/about" },
+  { id: "public-contact", label: "Contact", icon: Mail, href: "/candidate/public/contact" },
+];
 
 const menuItems = [
   { id: "dashboard", label: "Tableau de bord", icon: Home, href: "/candidate/dashboard" },
@@ -141,42 +155,92 @@ export function CandidateSidebar({
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 scrollbar-hide">
-            <div className="space-y-1">
-              {menuItems.map((item) => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-2">
+                <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
+                  Navigation publique
+                </p>
+                <div className="space-y-1">
+                  {publicMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    const active = isActive(item.href);
 
-                return (
-                  <Link
-                    key={item.id}
-                    to={item.href}
-                    onClick={handleMenuClick}
-                    className={cn(
-                      "relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250 border border-transparent",
-                      active
-                        ? "bg-secondary text-white shadow-lg shadow-secondary/20"
-                        : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
-                    )}
-                  >
-                    {active && (
-                      <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
-                    )}
+                    return (
+                      <Link
+                        key={item.id}
+                        to={item.href}
+                        onClick={handleMenuClick}
+                        className={cn(
+                          "relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250 border border-transparent",
+                          active
+                            ? "bg-secondary text-white shadow-lg shadow-secondary/20"
+                            : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
+                        )}
+                      >
+                        {active && (
+                          <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
+                        )}
 
-                    <div
-                      className={cn(
-                        "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
-                        active ? "bg-secondary text-white shadow-md" : "bg-slate-950/90 text-white",
-                      )}
-                    >
-                      <Icon className="h-5 w-5" />
-                    </div>
+                        <div
+                          className={cn(
+                            "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
+                            active ? "bg-secondary text-white shadow-md" : "bg-slate-950/90 text-white",
+                          )}
+                        >
+                          <Icon className="h-5 w-5" />
+                        </div>
 
-                    <span className="truncate text-sm font-medium text-slate-300 group-hover:text-slate-100">
-                      {item.label}
-                    </span>
-                  </Link>
-                );
-              })}
+                        <span className="truncate text-sm font-medium text-slate-300 group-hover:text-slate-100">
+                          {item.label}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-2">
+                <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
+                  Mon espace
+                </p>
+                <div className="space-y-1">
+                  {menuItems.map((item) => {
+                    const Icon = item.icon;
+                    const active = isActive(item.href);
+
+                    return (
+                      <Link
+                        key={item.id}
+                        to={item.href}
+                        onClick={handleMenuClick}
+                        className={cn(
+                          "relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250 border border-transparent",
+                          active
+                            ? "bg-secondary text-white shadow-lg shadow-secondary/20"
+                            : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
+                        )}
+                      >
+                        {active && (
+                          <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
+                        )}
+
+                        <div
+                          className={cn(
+                            "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
+                            active ? "bg-secondary text-white shadow-md" : "bg-slate-950/90 text-white",
+                          )}
+                        >
+                          <Icon className="h-5 w-5" />
+                        </div>
+
+                        <span className="truncate text-sm font-medium text-slate-300 group-hover:text-slate-100">
+                          {item.label}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </nav>
 
@@ -224,77 +288,135 @@ export function CandidateSidebar({
       <TooltipProvider delayDuration={200}>
         {/* Navigation - Scroll interne */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 scrollbar-hide">
-          <div className="space-y-1">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.href);
-
-              return (
-                <Tooltip key={item.id}>
-                  <TooltipTrigger asChild>
-                    <Link
-                      to={item.href}
-                      className={cn(
-                        "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-250 md:px-3 md:py-2 border border-transparent",
-                        active
-                          ? "bg-secondary text-white shadow-lg shadow-secondary/20"
-                          : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
-                      )}
-                    >
-                      {/* Active indicator bar */}
-                      {active && (
-                        <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
-                      )}
-
-                      {/* Icon container */}
-                      <div
-                        className={cn(
-                          "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
-                          active
-                            ? "bg-secondary text-white shadow-md"
-                            : "bg-slate-950/90 text-white",
-                        )}
-                      >
-                        <Icon
+          <div className="space-y-4">
+            {/* Public navigation (desktop) */}
+            <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-2">
+              {open && (
+                <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
+                  Navigation publique
+                </p>
+              )}
+              <div className="space-y-1">
+                {publicMenuItems.map((item) => {
+                  const Icon = item.icon;
+                  const active = isActive(item.href);
+                  return (
+                    <Tooltip key={item.id}>
+                      <TooltipTrigger asChild>
+                        <Link
+                          to={item.href}
                           className={cn(
-                            "h-5 w-5 transition-colors duration-250",
-                            active ? "text-white" : "text-slate-200",
-                          )}
-                        />
-                      </div>
-
-                      {/* Text label */}
-                      {open && (
-                        <span
-                          className={cn(
-                            "truncate text-sm font-medium transition-colors duration-250",
-                            active ? "text-white" : "text-slate-300 group-hover:text-slate-100",
+                            "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-250 md:px-3 md:py-2 border border-transparent",
+                            active
+                              ? "bg-secondary text-white shadow-lg shadow-secondary/20"
+                              : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
                           )}
                         >
-                          {item.label}
-                        </span>
-                      )}
+                          {active && (
+                            <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
+                          )}
 
-                      {/* Hover glow effect when collapsed */}
+                          <div
+                            className={cn(
+                              "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
+                              active ? "bg-secondary text-white shadow-md" : "bg-slate-950/90 text-white",
+                            )}
+                          >
+                            <Icon className={cn("h-5 w-5 transition-colors duration-250", active ? "text-white" : "text-slate-200")} />
+                          </div>
+
+                          {open && (
+                            <span className={cn("truncate text-sm font-medium transition-colors duration-250", active ? "text-white" : "text-slate-300 group-hover:text-slate-100")}>
+                              {item.label}
+                            </span>
+                          )}
+
+                          {!open && (
+                            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/0 to-secondary/0 opacity-0 transition-all duration-250 group-hover:from-primary/10 group-hover:to-secondary/10 group-hover:opacity-100" />
+                          )}
+                        </Link>
+                      </TooltipTrigger>
+
                       {!open && (
-                        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/0 to-secondary/0 opacity-0 transition-all duration-250 group-hover:from-primary/10 group-hover:to-secondary/10 group-hover:opacity-100" />
+                        <TooltipContent side="right" align="center" className="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-xs font-medium text-slate-100 shadow-lg">
+                          {item.label}
+                        </TooltipContent>
                       )}
-                    </Link>
-                  </TooltipTrigger>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            </div>
 
-                  {/* Tooltip when collapsed */}
-                  {!open && (
-                    <TooltipContent
-                      side="right"
-                      align="center"
-                      className="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-xs font-medium text-slate-100 shadow-lg"
-                    >
-                      {item.label}
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              );
-            })}
+            {/* Mon espace (desktop) */}
+            <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-2">
+              {open && (
+                <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">Mon espace</p>
+              )}
+              <div className="space-y-1">
+                {menuItems.map((item) => {
+                  const Icon = item.icon;
+                  const active = isActive(item.href);
+
+                  return (
+                    <Tooltip key={item.id}>
+                      <TooltipTrigger asChild>
+                        <Link
+                          to={item.href}
+                          className={cn(
+                            "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-250 md:px-3 md:py-2 border border-transparent",
+                            active
+                              ? "bg-secondary text-white shadow-lg shadow-secondary/20"
+                              : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
+                          )}
+                        >
+                          {active && (
+                            <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
+                          )}
+
+                          <div
+                            className={cn(
+                              "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
+                              active
+                                ? "bg-secondary text-white shadow-md"
+                                : "bg-slate-950/90 text-white",
+                            )}
+                          >
+                            <Icon
+                              className={cn(
+                                "h-5 w-5 transition-colors duration-250",
+                                active ? "text-white" : "text-slate-200",
+                              )}
+                            />
+                          </div>
+
+                          {open && (
+                            <span
+                              className={cn(
+                                "truncate text-sm font-medium transition-colors duration-250",
+                                active ? "text-white" : "text-slate-300 group-hover:text-slate-100",
+                              )}
+                            >
+                              {item.label}
+                            </span>
+                          )}
+
+                          {!open && (
+                            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/0 to-secondary/0 opacity-0 transition-all duration-250 group-hover:from-primary/10 group-hover:to-secondary/10 group-hover:opacity-100" />
+                          )}
+                        </Link>
+                      </TooltipTrigger>
+
+                      {!open && (
+                        <TooltipContent side="right" align="center" className="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-xs font-medium text-slate-100 shadow-lg">
+                          {item.label}
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </nav>
 

@@ -174,12 +174,21 @@ const PageLoadingFallback = () => (
 export default function App() {
   const location = useLocation();
   const { profile, loading: candidateLoading } = useCandidate();
+  const isCandidateAwareRoute =
+    location.pathname === "/" ||
+    location.pathname.startsWith("/services") ||
+    location.pathname.startsWith("/jobs") ||
+    location.pathname.startsWith("/blog") ||
+    location.pathname.startsWith("/contact") ||
+    location.pathname.startsWith("/about");
+
   const shouldShowCandidateShell =
     !candidateLoading &&
     !!profile &&
     location.pathname !== "/auth" &&
     !location.pathname.startsWith("/admin") &&
-    !location.pathname.startsWith("/candidate");
+    !location.pathname.startsWith("/candidate") &&
+    isCandidateAwareRoute;
   const hideShell =
     location.pathname === "/auth" ||
     location.pathname.startsWith("/admin") ||
