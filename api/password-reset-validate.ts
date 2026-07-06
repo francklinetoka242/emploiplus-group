@@ -1,6 +1,6 @@
 import "dotenv/config";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { verifyPasswordResetToken } from "./lib/password-reset-utils";
+import { verifyPasswordResetToken } from "./lib/password-reset-utils.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {

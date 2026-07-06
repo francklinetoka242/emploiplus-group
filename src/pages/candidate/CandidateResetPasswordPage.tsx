@@ -30,10 +30,6 @@ export function CandidateResetPasswordPage() {
     canonical: "https://emploiplus.group/#/candidate/reset-password",
   });
 
-  useEffect(() => {
-    void validateToken();
-  }, [validateToken]);
-
   const parseResponseBody = async (response: Response) => {
     const text = await response.text();
     if (!text) {
@@ -74,6 +70,11 @@ export function CandidateResetPasswordPage() {
       setCheckingToken(false);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    void validateToken();
+  }, [validateToken]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget;
