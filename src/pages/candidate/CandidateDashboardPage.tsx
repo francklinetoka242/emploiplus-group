@@ -238,6 +238,7 @@ export function CandidateDashboardPage() {
         icon: Heart,
         color: "text-red-600",
         bgColor: "bg-red-50",
+        comingSoon: true,
       },
       {
         label: "Vues de profil",
@@ -245,6 +246,7 @@ export function CandidateDashboardPage() {
         icon: Eye,
         color: "text-green-600",
         bgColor: "bg-green-50",
+        comingSoon: true,
       },
       {
         label: "Entretiens",
@@ -252,6 +254,7 @@ export function CandidateDashboardPage() {
         icon: Briefcase,
         color: "text-purple-600",
         bgColor: "bg-purple-50",
+        comingSoon: true,
       },
     ],
     [],
@@ -291,7 +294,9 @@ export function CandidateDashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-600 mb-1">{stat.label}</p>
-                    <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                    <p className="text-3xl font-bold text-foreground">
+                      {stat.comingSoon ? "Fonctionnalite bientot disponible" : stat.value}
+                    </p>
                   </div>
                   <div className={`${stat.bgColor} p-3 rounded-lg`}>
                     <Icon className={`${stat.color} w-6 h-6`} />
