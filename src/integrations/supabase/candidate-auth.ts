@@ -1313,21 +1313,20 @@ export class CandidateAuthService {
    */
   static async resendConfirmationEmail(email: string) {
     try {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/candidate/login`,
-        },
+      const response = await fetch('/api/resend-confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
 
-      if (error) {
-        throw error;
+      const body = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw body?.error ? new Error(body.error) : new Error("Impossible de renvoyer l'email de confirmation.");
       }
 
       return { success: true };
     } catch (error) {
-      console.error("Resend confirmation email error:", error);
+      console.error('Resend confirmation email error:', error);
       throw error;
     }
   }
