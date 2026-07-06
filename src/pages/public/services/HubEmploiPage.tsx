@@ -41,6 +41,29 @@ export default function HubEmploiPage() {
               <div className="mt-10 space-y-6">
                 <section className="rounded-3xl border border-border/70 bg-background/90 p-6 shadow-sm">
                   <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="w-full max-w-[280px] overflow-hidden rounded-2xl border border-border/70 shadow-sm lg:order-2">
+                      <img
+                        src={hubImage}
+                        alt="Optimisation de CV & lettres"
+                        className="h-44 w-full object-cover"
+                      />
+                    </div>
+                    <div className="max-w-2xl lg:order-1">
+                      <div className="inline-flex items-center rounded-full bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">
+                        Positionnement professionnel
+                      </div>
+                      <h3 className="mt-4 text-2xl font-semibold text-foreground">
+                        Optimisation de CV & lettres
+                      </h3>
+                      <p className="mt-3 text-base leading-7 text-muted-foreground">
+                        Des documents clairs, impactants et adaptés aux attentes des recruteurs.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="rounded-3xl border border-border/70 bg-background/90 p-6 shadow-sm">
+                  <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                     <div className="max-w-2xl">
                       <div className="inline-flex items-center rounded-full bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">
                         Accompagnement carrière
@@ -59,29 +82,6 @@ export default function HubEmploiPage() {
                         alt="Évaluation des compétences"
                         className="h-44 w-full object-cover"
                       />
-                    </div>
-                  </div>
-                </section>
-
-                <section className="rounded-3xl border border-border/70 bg-background/90 p-6 shadow-sm">
-                  <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                    <div className="w-full max-w-[280px] overflow-hidden rounded-2xl border border-border/70 shadow-sm lg:order-2">
-                      <img
-                        src={hubImage}
-                        alt="Optimisation de CV & lettres"
-                        className="h-44 w-full object-cover"
-                      />
-                    </div>
-                    <div className="max-w-2xl lg:order-1">
-                      <div className="inline-flex items-center rounded-full bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">
-                        Positionnement professionnel
-                      </div>
-                      <h3 className="mt-4 text-2xl font-semibold text-foreground">
-                        Optimisation de CV & lettres
-                      </h3>
-                      <p className="mt-3 text-base leading-7 text-muted-foreground">
-                        Des documents clairs, impactants et adaptés aux attentes des recruteurs.
-                      </p>
                     </div>
                   </div>
                 </section>
