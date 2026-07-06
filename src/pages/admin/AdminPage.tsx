@@ -113,7 +113,7 @@ export function AdminPage() {
   return (
     <>
       {seo}
-      <div className="min-h-screen bg-slate-950/5 py-6">
+      <div className="min-h-screen bg-background py-6">
         <div className="mx-auto flex min-h-[calc(100vh-72px)] max-w-[1600px] gap-6 px-4 sm:px-6 lg:px-8">
           <div className="sticky top-6 self-start shrink-0">
             <AdminSidebar
