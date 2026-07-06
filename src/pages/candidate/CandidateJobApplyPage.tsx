@@ -22,6 +22,7 @@ import { useI18n } from "@/lib/i18n";
 import { usePageSEO } from "@/lib/seo";
 import { useJobOfferBySlug } from "@/hooks/usePublishedOffers";
 import { useCandidate } from "@/hooks/useCandidate";
+import { CandidateAuthService } from "@/integrations/supabase/candidate-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -309,10 +310,21 @@ function DocumentCard({
   const size = isDoc ? document.size : document.size;
   const docType = isDoc ? documentTypeLabels[document.type] : "Document";
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onSelect(!selected);
+    }
+  };
+
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
+      aria-pressed={selected}
       onClick={() => onSelect(!selected)}
-      className={`text-left w-full min-w-0 p-4 rounded-2xl border-2 transition-all duration-200 flex flex-col sm:flex-row items-start gap-4 hover:shadow-md ${
+      onKeyDown={handleKeyDown}
+      className={`text-left w-full min-w-0 p-4 rounded-2xl border-2 transition-all duration-200 flex flex-col sm:flex-row items-start gap-4 hover:shadow-md cursor-pointer ${
         selected
           ? "border-brand bg-brand/5 shadow-md"
           : "border-border/60 bg-background/70 hover:border-brand/30 hover:bg-background"
@@ -347,16 +359,17 @@ function DocumentCard({
       {/* View Button */}
       {isDoc && (
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
-            window.open((document as CandidateDocument).url);
+            window.open((document as CandidateDocument).url, "_blank", "noopener,noreferrer");
           }}
           className="shrink-0 p-2 rounded-lg hover:bg-secondary transition-colors"
         >
           <Eye className="h-4 w-4 text-brand" />
         </button>
       )}
-    </button>
+    </div>
   );
 }
 
@@ -533,12 +546,27 @@ export function CandidateJobApplyPage() {
     setSubmitFeedback(null);
 
     try {
+      const session = await CandidateAuthService.getSession();
+      const candidateEmail = session?.user?.email?.trim() || profile?.email?.trim();
+
+      if (!candidateEmail) {
+        throw new Error("Impossible de récupérer votre adresse email de candidature.");
+      }
+
       const selectedFileNames = [
         ...savedDocuments
           .filter((doc) => selectedDocuments.has(doc.id))
           .map((doc) => doc.displayName),
         ...temporaryDocuments.map((doc) => doc.file.name),
       ];
+
+      const escapeHtml = (value: string) =>
+        value
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
 
       const response = await fetch("/api/send-email", {
         method: "POST",
@@ -547,18 +575,23 @@ export function CandidateJobApplyPage() {
         },
         body: JSON.stringify({
           recipient: recipientEmail,
+          replyTo: candidateEmail,
           subject: `Nouvelle candidature - ${job?.title ?? "Offre"}`,
           html: `
-            <p>Nouvelle candidature reçue pour l'offre <strong>${job?.title ?? ""}</strong> chez <strong>${job?.company ?? ""}</strong>.</p>
-            <p><strong>Candidat :</strong> ${profile?.first_name ?? ""} ${profile?.last_name ?? ""}</p>
-            <p><strong>Email :</strong> ${profile?.email ?? ""}</p>
-            <p><strong>Téléphone :</strong> ${profile?.phone || "-"}</p>
-            <p><strong>Titre professionnel :</strong> ${profile?.headline || "-"}</p>
-            <p><strong>Documents :</strong> ${selectedFileNames.length > 0 ? selectedFileNames.join(", ") : "Aucun document sélectionné"}</p>
-            <p><strong>Message :</strong></p>
-            <p>${message || "-"}</p>
+            <div style="font-family:Inter, Arial, sans-serif; color:#0f172a; line-height:1.7;">
+              <p style="margin:0 0 12px;"><strong>Nouvelle candidature reçue</strong></p>
+              <p style="margin:0 0 8px;">Offre : <strong>${escapeHtml(job?.title ?? "")}</strong></p>
+              <p style="margin:0 0 8px;">Entreprise : <strong>${escapeHtml(job?.company ?? "")}</strong></p>
+              <p style="margin:0 0 8px;">Candidat : <strong>${escapeHtml(profile?.first_name ?? "")} ${escapeHtml(profile?.last_name ?? "")}</strong></p>
+              <p style="margin:0 0 8px;">Email : <strong>${escapeHtml(candidateEmail)}</strong></p>
+              <p style="margin:0 0 8px;">Téléphone : <strong>${escapeHtml(profile?.phone || "-")}</strong></p>
+              <p style="margin:0 0 8px;">Titre professionnel : <strong>${escapeHtml(profile?.headline || "-")}</strong></p>
+              <p style="margin:0 0 8px;">Pièces jointes : <strong>${escapeHtml(selectedFileNames.length > 0 ? selectedFileNames.join(", ") : "Aucun document sélectionné")}</strong></p>
+              <p style="margin:12px 0 6px;"><strong>Message du candidat</strong></p>
+              <div style="padding:12px 14px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc; white-space:pre-wrap;">${escapeHtml(message || "-")}</div>
+            </div>
           `,
-          text: `Nouvelle candidature pour ${job?.title ?? "l'offre"}.\nCandidat: ${profile?.first_name ?? ""} ${profile?.last_name ?? ""}\nEmail: ${profile?.email ?? ""}\nTéléphone: ${profile?.phone || "-"}\nTitre professionnel: ${profile?.headline || "-"}\nDocuments: ${selectedFileNames.length > 0 ? selectedFileNames.join(", ") : "Aucun document sélectionné"}\nMessage: ${message || "-"}`,
+          text: `Nouvelle candidature pour ${job?.title ?? "l'offre"}.\nCandidat: ${profile?.first_name ?? ""} ${profile?.last_name ?? ""}\nEmail: ${candidateEmail}\nTéléphone: ${profile?.phone || "-"}\nTitre professionnel: ${profile?.headline || "-"}\nPièces jointes: ${selectedFileNames.length > 0 ? selectedFileNames.join(", ") : "Aucun document sélectionné"}\nMessage: ${message || "-"}`,
         }),
       });
 

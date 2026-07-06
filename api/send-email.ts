@@ -6,6 +6,9 @@ interface SendEmailPayload {
   recipient?: string;
   to?: string;
   email?: string;
+  replyTo?: string;
+  reply_to?: string;
+  replyto?: string;
   subject?: string;
   html?: string;
   text?: string;
@@ -97,6 +100,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const recipient = getPayloadValue(body, ["recipient", "to", "email"]);
+  const replyTo = getPayloadValue(body, ["replyTo", "reply_to", "replyto"]) || replyToEmail;
   const subject = getPayloadValue(body, ["subject"]) || "Message from " + fromName;
   const originalHtml = getPayloadValue(body, ["html", "body", "message"]);
   const text = getPayloadValue(body, ["text"]);
@@ -233,7 +237,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return transporter.sendMail({
       from: `"${fromName}" <${senderEmail}>`,
       to: recipient,
-      replyTo: replyToEmail,
+      replyTo,
       subject,
       html: finalHtml,
       text: finalText ?? undefined,
@@ -244,7 +248,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const info = await sendMail(fromEmail);
     return res
       .status(200)
-      .json({ status: "sent", messageId: info.messageId, from: fromEmail, replyTo: replyToEmail });
+      .json({ status: "sent", messageId: info.messageId, from: fromEmail, replyTo });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("Failed to send email", error);
