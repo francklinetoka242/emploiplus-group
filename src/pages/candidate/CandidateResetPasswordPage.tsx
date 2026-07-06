@@ -144,15 +144,15 @@ export function CandidateResetPasswordPage() {
 
   if (checkingToken) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <Card className="shadow-xl border border-slate-200 bg-white">
+          <Card className="shadow-xl border border-border bg-card">
             <CardContent className="pt-6">
               <div className="text-center space-y-4">
                 <div className="inline-block animate-spin">
                   <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full"></div>
                 </div>
-                <p className="text-slate-600">Vérification du lien...</p>
+                <p className="text-muted-foreground">Vérification du lien...</p>
               </div>
             </CardContent>
           </Card>
@@ -163,15 +163,15 @@ export function CandidateResetPasswordPage() {
 
   if (!isValidToken) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="w-full max-w-md">
-          <Card className="shadow-xl border border-slate-200 bg-white">
+          <Card className="shadow-xl border border-border bg-card">
             <CardContent className="pt-6">
               <div className="text-center space-y-4">
                 <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
                 <div>
-                  <h3 className="font-semibold text-lg text-slate-900 mb-2">Lien invalide</h3>
-                  <p className="text-sm text-slate-600">
+                  <h3 className="font-semibold text-lg text-foreground mb-2">Lien invalide</h3>
+                  <p className="text-sm text-muted-foreground">
                     {errorMessage || "Le lien de réinitialisation est expiré ou invalide."}
                   </p>
                 </div>
@@ -190,13 +190,13 @@ export function CandidateResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Card className="shadow-xl border border-slate-200 bg-white">
+        <Card className="shadow-xl border border-border bg-card">
           {!submitted ? (
             <>
-              <CardHeader className="rounded-t-3xl bg-white text-slate-900 px-8 py-8 text-center border-b border-slate-200">
-                <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-100 border border-slate-200">
+              <CardHeader className="rounded-t-3xl bg-card text-foreground px-8 py-8 text-center border-b border-border">
+                <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-muted border border-border">
                   <img src={favicon} alt="EmploiPlus" className="h-10 w-10 object-contain" />
                 </div>
                 <CardTitle>Réinitialiser le mot de passe</CardTitle>
@@ -268,21 +268,21 @@ export function CandidateResetPasswordPage() {
                   <CheckCircle2 className="w-12 h-12 text-green-500" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg text-slate-900 mb-2">
+                  <h3 className="font-semibold text-lg text-foreground mb-2">
                     Mot de passe réinitialisé
                   </h3>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-muted-foreground">
                     Votre mot de passe a été réinitialisé avec succès.
                   </p>
                 </div>
-                <p className="text-sm text-slate-600">Redirection vers la page de connexion...</p>
+                <p className="text-sm text-muted-foreground">Redirection vers la page de connexion...</p>
               </div>
             </CardContent>
           )}
         </Card>
 
         {/* Footer */}
-        <p className="text-center text-sm text-slate-600 mt-6">
+        <p className="text-center text-sm text-muted-foreground mt-6">
           © 2024 EmploiPlus Group. Tous droits réservés.
         </p>
       </div>

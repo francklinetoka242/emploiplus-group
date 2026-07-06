@@ -59,7 +59,7 @@ export function NotificationsDropdown({
         <Button
           variant="ghost"
           size="icon"
-          className="relative text-slate-600 hover:text-slate-900"
+          className="relative text-muted-foreground hover:text-foreground"
         >
           <Bell className="w-5 h-5" />
           {hasUnread && (
@@ -72,14 +72,14 @@ export function NotificationsDropdown({
 
       <DropdownMenuContent align="end" className="w-96 p-0">
         {/* Header */}
-        <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-slate-900">Notifications</h3>
+        <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
           {hasUnread && (
             <Button
               variant="ghost"
               size="sm"
               onClick={onMarkAllAsRead}
-              className="text-xs text-slate-600 hover:text-slate-900"
+              className="text-xs text-muted-foreground hover:text-foreground"
             >
               <Check className="w-3 h-3 mr-1" />
               Tout marquer comme lu
@@ -90,22 +90,22 @@ export function NotificationsDropdown({
         {/* Notifications List */}
         <ScrollArea className="h-96">
           {loading ? (
-            <div className="px-4 py-8 text-center text-slate-500">Chargement...</div>
+            <div className="px-4 py-8 text-center text-muted-foreground">Chargement...</div>
           ) : notifications.length === 0 ? (
-            <div className="px-4 py-8 text-center text-slate-500">Aucune notification</div>
+            <div className="px-4 py-8 text-center text-muted-foreground">Aucune notification</div>
           ) : (
-            <div className="divide-y divide-slate-200">
+            <div className="divide-y divide-border">
               {recentNotifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`px-4 py-3 hover:bg-slate-50 transition-colors ${
+                  className={`px-4 py-3 hover:bg-muted transition-colors ${
                     !notification.is_read ? "bg-blue-50" : ""
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-medium text-slate-900 truncate">
+                        <p className="text-sm font-medium text-foreground truncate">
                           {notification.title}
                         </p>
                         <Badge
@@ -116,11 +116,11 @@ export function NotificationsDropdown({
                         </Badge>
                       </div>
                       {notification.content && (
-                        <p className="text-sm text-slate-600 line-clamp-2">
+                        <p className="text-sm text-muted-foreground line-clamp-2">
                           {notification.content}
                         </p>
                       )}
-                      <p className="text-xs text-slate-400 mt-1">
+                      <p className="text-xs text-muted-foreground/80 mt-1">
                         {new Date(notification.created_at).toLocaleDateString("fr-FR", {
                           year: "numeric",
                           month: "short",
@@ -138,14 +138,14 @@ export function NotificationsDropdown({
                           onClick={() => onMarkAsRead(notification.id)}
                           className="w-8 h-8 p-0"
                         >
-                          <Check className="w-4 h-4 text-slate-400" />
+                          <Check className="w-4 h-4 text-muted-foreground" />
                         </Button>
                       )}
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => onDelete(notification.id)}
-                        className="w-8 h-8 p-0 text-slate-400 hover:text-red-600"
+                        className="w-8 h-8 p-0 text-muted-foreground hover:text-red-600"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -164,7 +164,7 @@ export function NotificationsDropdown({
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link
                 to="/candidate/notifications"
-                className="flex items-center justify-center py-2 text-slate-600 hover:text-slate-900"
+                className="flex items-center justify-center py-2 text-muted-foreground hover:text-foreground"
               >
                 Voir toutes les notifications
               </Link>

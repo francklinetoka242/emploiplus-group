@@ -34,7 +34,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   const { logout } = useCandidate();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Mobile Header (visible uniquement sur mobile) */}
       <CandidateMobileHeader title={pageTitle} onMenuOpen={() => setOpen(true)} onLogout={logout} />
 

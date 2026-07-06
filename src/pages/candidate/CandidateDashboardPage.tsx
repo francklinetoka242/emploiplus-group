@@ -291,7 +291,7 @@ export function CandidateDashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-600 mb-1">{stat.label}</p>
-                    <p className="text-3xl font-bold text-slate-900">{stat.value}</p>
+                    <p className="text-3xl font-bold text-foreground">{stat.value}</p>
                   </div>
                   <div className={`${stat.bgColor} p-3 rounded-lg`}>
                     <Icon className={`${stat.color} w-6 h-6`} />
@@ -312,7 +312,7 @@ export function CandidateDashboardPage() {
               <CardDescription>Complétez votre profil pour augmenter vos chances</CardDescription>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-slate-900">{profileCompletion}%</p>
+              <p className="text-2xl font-bold text-foreground">{profileCompletion}%</p>
             </div>
           </div>
         </CardHeader>
@@ -367,7 +367,7 @@ export function CandidateDashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-4">Actions rapides</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-4">Actions rapides</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {quickActions.map((action) => {
             const Icon = action.icon;
@@ -378,11 +378,11 @@ export function CandidateDashboardPage() {
                 >
                   <CardContent className={`pt-6 bg-gradient-to-br ${action.bgGradient}`}>
                     <div className="flex flex-col items-center text-center space-y-3">
-                      <div className="p-3 bg-white rounded-lg shadow-sm">
-                        <Icon className="w-6 h-6 text-slate-900" />
+                      <div className="p-3 bg-card rounded-lg shadow-sm border border-border">
+                        <Icon className="w-6 h-6 text-foreground" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-slate-900">{action.title}</h3>
+                        <h3 className="font-semibold text-foreground">{action.title}</h3>
                         <p className="text-sm text-slate-600">{action.description}</p>
                       </div>
                       <ArrowRight className="w-4 h-4 text-slate-400" />
@@ -412,7 +412,7 @@ export function CandidateDashboardPage() {
         <CardContent>
           <div className="space-y-4">
             {offersLoading ? (
-              <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">
+              <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
                 Chargement des offres…
               </div>
             ) : offers.length > 0 ? (
@@ -450,7 +450,7 @@ export function CandidateDashboardPage() {
                 );
               })
             ) : (
-              <div className="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">
+              <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
                 Aucune offre publiée pour le moment.
               </div>
             )}

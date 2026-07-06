@@ -55,17 +55,17 @@ export function CandidateForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Card className="shadow-xl border border-slate-200 bg-white">
+        <Card className="shadow-xl border border-border bg-card">
           {!submitted ? (
             <>
-              <CardHeader className="rounded-t-3xl bg-white text-slate-900 px-8 py-8 text-center border-b border-slate-200">
-                <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-100 border border-slate-200">
+              <CardHeader className="rounded-t-3xl bg-card text-foreground px-8 py-8 text-center border-b border-border">
+                <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-muted border border-border">
                   <img src={favicon} alt="EmploiPlus" className="h-10 w-10 object-contain" />
                 </div>
                 <CardTitle>Mot de passe oublié</CardTitle>
-                <CardDescription className="text-slate-600">
+                <CardDescription className="text-muted-foreground">
                   Entrez votre email pour recevoir un lien de réinitialisation
                 </CardDescription>
               </CardHeader>
@@ -160,7 +160,7 @@ export function CandidateForgotPasswordPage() {
         </Card>
 
         {/* Footer */}
-        <p className="text-center text-sm text-slate-600 mt-6">
+        <p className="text-center text-sm text-muted-foreground mt-6">
           © 2024 EmploiPlus Group. Tous droits réservés.
         </p>
       </div>

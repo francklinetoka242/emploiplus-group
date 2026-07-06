@@ -136,17 +136,17 @@ export function CandidateSignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4">
+    <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        <Card className="shadow-xl border border-slate-200 bg-white">
-          <CardHeader className="rounded-t-3xl bg-white text-slate-900 px-8 py-6 border-b border-slate-200">
+        <Card className="shadow-xl border border-border bg-card">
+          <CardHeader className="rounded-t-3xl bg-card text-foreground px-8 py-6 border-b border-border">
             <div className="flex items-center gap-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded bg-slate-100 border border-slate-200">
+              <div className="flex h-10 w-10 items-center justify-center rounded bg-muted border border-border">
                 <img src={favicon} alt="EmploiPlus" className="h-6 w-6 object-contain" />
               </div>
               <div className="flex flex-col">
                 <CardTitle className="text-xl">S'inscrire</CardTitle>
-                <CardDescription className="text-slate-600 text-sm">
+                <CardDescription className="text-muted-foreground text-sm">
                   Remplissez vos informations pour créer un compte
                 </CardDescription>
               </div>
@@ -292,16 +292,16 @@ export function CandidateSignupPage() {
             {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200"></div>
+                <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-600">Ou</span>
+                <span className="px-2 bg-card text-muted-foreground">Ou</span>
               </div>
             </div>
 
             {/* Login Link */}
             <div className="text-center text-sm">
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 Vous avez déjà un compte?{" "}
                 <Link
                   to="/candidate/login"
@@ -315,7 +315,7 @@ export function CandidateSignupPage() {
         </Card>
 
         {/* Footer */}
-        <p className="text-center text-sm text-slate-600 mt-6">
+        <p className="text-center text-sm text-muted-foreground mt-6">
           © 2024 EmploiPlus Group. Tous droits réservés.
         </p>
       </div>

@@ -112,22 +112,22 @@
 }
 
 .dark {
-  --background: oklch(0.12 0.02 264);
-  --foreground: oklch(0.97 0.005 250);
-  --card: oklch(0.18 0.04 264);
-  --card-foreground: oklch(0.97 0.005 250);
-  --popover: oklch(0.18 0.04 264);
-  --popover-foreground: oklch(0.97 0.005 250);
+  --background: oklch(0.18 0.03 264);
+  --foreground: oklch(0.95 0.03 250);
+  --card: oklch(0.26 0.04 264);
+  --card-foreground: oklch(0.96 0.02 250);
+  --popover: oklch(0.26 0.04 264);
+  --popover-foreground: oklch(0.96 0.02 250);
   --primary: #00009e;
   --primary-foreground: #ffffff;
   --secondary: #e8a900;
   --secondary-foreground: #000000;
-  --muted: oklch(0.22 0.04 264);
-  --muted-foreground: oklch(0.6 0.02 264);
+  --muted: oklch(0.35 0.03 264);
+  --muted-foreground: oklch(0.84 0.02 264);
   --accent: #e8a900;
   --accent-foreground: #000000;
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: oklch(0.68 0.03 264 / 22%);
+  --input: oklch(0.94 0.03 264 / 18%);
 }
 
 @layer base {
@@ -140,6 +140,53 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+
+  .dark .bg-white,
+  .dark [class*="bg-white/"] ,
+  .dark .bg-slate-50,
+  .dark [class*="bg-slate-50/"] ,
+  .dark .bg-slate-100,
+  .dark [class*="bg-slate-100/"] ,
+  .dark .bg-slate-200,
+  .dark [class*="bg-slate-200/"] {
+    background-color: var(--card) !important;
+  }
+
+  .dark .text-slate-900,
+  .dark [class*="text-slate-900"],
+  .dark .text-slate-800,
+  .dark [class*="text-slate-800"],
+  .dark .text-slate-700,
+  .dark [class*="text-slate-700"] {
+    color: var(--color-foreground) !important;
+  }
+
+  .dark .text-slate-600,
+  .dark [class*="text-slate-600"],
+  .dark .text-slate-500,
+  .dark [class*="text-slate-500"],
+  .dark .text-slate-400,
+  .dark [class*="text-slate-400"],
+  .dark .text-slate-300,
+  .dark [class*="text-slate-300"] {
+    color: var(--muted-foreground) !important;
+  }
+
+  .dark .border-slate-200,
+  .dark [class*="border-slate-200"],
+  .dark .border-slate-100,
+  .dark [class*="border-slate-100"],
+  .dark .border-slate-300,
+  .dark [class*="border-slate-300"] {
+    border-color: var(--border) !important;
+  }
+
+  .dark .placeholder-slate-400,
+  .dark [class*="placeholder-slate-400"],
+  .dark .text-slate-400,
+  .dark [class*="text-slate-400"] {
+    color: var(--muted-foreground) !important;
   }
   h1,
   h2,

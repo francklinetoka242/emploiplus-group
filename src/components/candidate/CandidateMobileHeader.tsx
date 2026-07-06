@@ -42,13 +42,13 @@ export function CandidateMobileHeader({ title, onMenuOpen, onLogout }: Candidate
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-4 shadow-sm md:hidden">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-background px-4 shadow-sm md:hidden">
       {/* Hamburger Button */}
       <Button
         variant="ghost"
         size="icon"
         onClick={onMenuOpen}
-        className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"
+        className="rounded-lg p-2 text-muted-foreground hover:bg-muted"
         aria-label="Ouvrir le menu"
       >
         <Menu className="h-6 w-6" />
@@ -56,13 +56,13 @@ export function CandidateMobileHeader({ title, onMenuOpen, onLogout }: Candidate
 
       {/* Page Title */}
       <div className="flex-1">
-        <h1 className="truncate text-sm font-semibold text-slate-900">{title}</h1>
+        <h1 className="truncate text-sm font-semibold text-foreground">{title}</h1>
       </div>
 
       {/* Notifications & Avatar */}
       <div className="flex items-center gap-3">
         {notificationsLoading ? (
-          <Button variant="ghost" size="icon" disabled className="rounded-lg p-2 text-slate-600">
+          <Button variant="ghost" size="icon" disabled className="rounded-lg p-2 text-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin" />
           </Button>
         ) : (
@@ -82,11 +82,11 @@ export function CandidateMobileHeader({ title, onMenuOpen, onLogout }: Candidate
               className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
               aria-label="Ouvrir le menu du compte"
             >
-              <Avatar className="h-9 w-9 border-2 border-slate-200">
+              <Avatar className="h-9 w-9 border-2 border-border">
                 {profile?.avatar_url && (
                   <AvatarImage src={profile.avatar_url} alt={profile?.first_name ?? undefined} />
                 )}
-                <AvatarFallback className="bg-slate-200 text-xs font-semibold text-slate-600">
+                <AvatarFallback className="bg-muted text-xs font-semibold text-muted-foreground">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -94,10 +94,10 @@ export function CandidateMobileHeader({ title, onMenuOpen, onLogout }: Candidate
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <div className="px-2 py-1.5">
-              <p className="text-sm font-medium text-slate-900">
+              <p className="text-sm font-medium text-foreground">
                 {profile?.first_name || "Candidat"}
               </p>
-              {profile?.email && <p className="text-xs text-slate-600">{profile.email}</p>}
+              {profile?.email && <p className="text-xs text-muted-foreground">{profile.email}</p>}
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

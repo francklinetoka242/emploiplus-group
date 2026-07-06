@@ -63,7 +63,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
   };
 
   return (
-    <header className="hidden md:flex bg-white border-b border-slate-200 px-6 py-4 w-full">
+    <header className="hidden md:flex bg-background border-b border-border px-6 py-4 w-full">
       <div className="flex items-center justify-between max-w-full w-full">
         {/* Left: Menu Toggle and public links */}
         <div className="flex items-center gap-2 overflow-x-auto">
@@ -84,7 +84,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
                     "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
                     isActive
                       ? "bg-accent text-foreground"
-                      : "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )
                 }
               >
@@ -98,7 +98,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
         <div className="flex items-center gap-4">
           {/* Notifications Dropdown */}
           {notificationsLoading ? (
-            <Button variant="ghost" size="icon" disabled className="text-slate-600">
+            <Button variant="ghost" size="icon" disabled className="text-muted-foreground">
               <Loader2 className="w-5 h-5 animate-spin" />
             </Button>
           ) : (
@@ -117,21 +117,21 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
               <Button variant="ghost" className="flex items-center gap-3 pl-2 pr-1">
                 <Avatar className="w-8 h-8">
                   <AvatarImage src={avatarUrl} alt={userName} />
-                  <AvatarFallback className="bg-slate-200 text-slate-500 text-xs font-semibold flex items-center justify-center">
+                  <AvatarFallback className="bg-muted text-muted-foreground text-xs font-semibold flex items-center justify-center">
                     <User className="w-5 h-5" />
                   </AvatarFallback>
                 </Avatar>
                 <div className="hidden sm:flex flex-col items-start">
-                  <p className="text-sm font-medium text-slate-900">{userName}</p>
-                  {userEmail && <p className="text-xs text-slate-600">{userEmail}</p>}
+                  <p className="text-sm font-medium text-foreground">{userName}</p>
+                  {userEmail && <p className="text-xs text-muted-foreground">{userEmail}</p>}
                 </div>
-                <ChevronDown className="w-4 h-4 text-slate-600" />
+                <ChevronDown className="w-4 h-4 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <div className="px-2 py-1.5">
-                <p className="text-sm font-medium text-slate-900">{userName}</p>
-                {userEmail && <p className="text-xs text-slate-600">{userEmail}</p>}
+                <p className="text-sm font-medium text-foreground">{userName}</p>
+                {userEmail && <p className="text-xs text-muted-foreground">{userEmail}</p>}
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
