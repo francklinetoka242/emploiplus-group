@@ -198,26 +198,7 @@ export function CandidateSidebar({
                   })}
                 </div>
               </div>
-              {/* Preferences link (mobile) */}
-              <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-2 mt-2">
-                <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
-                  Préférences
-                </p>
-                <div className="space-y-1">
-                  <Link
-                    to="/candidate/preferences"
-                    onClick={handleMenuClick}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250 border border-transparent bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
-                    )}
-                  >
-                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-slate-950/90 text-white">
-                      <Settings className="h-5 w-5" />
-                    </div>
-                    <span className="truncate text-sm font-medium text-slate-300">Préférences</span>
-                  </Link>
-                </div>
-              </div>
+              {/* end Navigation publique */}
 
               <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-2">
                 <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
@@ -259,6 +240,26 @@ export function CandidateSidebar({
                       </Link>
                     );
                   })}
+                </div>
+              </div>
+              {/* Preferences link (mobile) - placed after Mon espace */}
+              <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-2 mt-2">
+                <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
+                  Préférences
+                </p>
+                <div className="space-y-1">
+                  <Link
+                    to="/candidate/preferences"
+                    onClick={handleMenuClick}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250 border border-transparent bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
+                    )}
+                  >
+                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-slate-950/90 text-white">
+                      <Settings className="h-5 w-5" />
+                    </div>
+                    <span className="truncate text-sm font-medium text-slate-300">Préférences</span>
+                  </Link>
                 </div>
               </div>
             </div>
