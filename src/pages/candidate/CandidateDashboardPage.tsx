@@ -294,7 +294,7 @@ export function CandidateDashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-slate-600 mb-1">{stat.label}</p>
-                    <p className="text-3xl font-bold text-foreground">
+                    <p className={`text-2xl font-bold text-foreground ${stat.comingSoon ? "text-base font-semibold" : ""}`}>
                       {stat.comingSoon ? "Fonctionnalite bientot disponible" : stat.value}
                     </p>
                   </div>
