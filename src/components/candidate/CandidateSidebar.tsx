@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ import {
   Info,
   Mail,
   Search,
+  ChevronDown,
 } from "lucide-react";
 
 interface CandidateSidebarProps {
@@ -102,6 +103,8 @@ export function CandidateSidebar({
     }
   };
 
+  const [publicOpen, setPublicOpen] = useState(false);
+
   // Rendu du Drawer mobile
   if (isDrawer) {
     return (
@@ -157,46 +160,59 @@ export function CandidateSidebar({
           <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-4 scrollbar-hide">
             <div className="space-y-4">
               <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-2">
-                <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
-                  Navigation publique
-                </p>
-                <div className="space-y-1">
-                  {publicMenuItems.map((item) => {
-                    const Icon = item.icon;
-                    const active = isActive(item.href);
+                <div className="flex items-center justify-between px-2 pb-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
+                    Navigation publique
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setPublicOpen((v) => !v)}
+                    className="rounded-md p-1 text-slate-300 hover:bg-white/5"
+                    aria-label={publicOpen ? "Masquer la navigation publique" : "Afficher la navigation publique"}
+                  >
+                    <ChevronDown className={publicOpen ? "h-4 w-4 rotate-180 transform" : "h-4 w-4"} />
+                  </Button>
+                </div>
+                {publicOpen && (
+                  <div className="space-y-1">
+                    {publicMenuItems.map((item) => {
+                      const Icon = item.icon;
+                      const active = isActive(item.href);
 
-                    return (
-                      <Link
-                        key={item.id}
-                        to={item.href}
-                        onClick={handleMenuClick}
-                        className={cn(
-                          "relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250 border border-transparent",
-                          active
-                            ? "bg-secondary text-white shadow-lg shadow-secondary/20"
-                            : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
-                        )}
-                      >
-                        {active && (
-                          <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
-                        )}
-
-                        <div
+                      return (
+                        <Link
+                          key={item.id}
+                          to={item.href}
+                          onClick={handleMenuClick}
                           className={cn(
-                            "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
-                            active ? "bg-secondary text-white shadow-md" : "bg-slate-950/90 text-white",
+                            "relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250 border border-transparent",
+                            active
+                              ? "bg-secondary text-white shadow-lg shadow-secondary/20"
+                              : "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
                           )}
                         >
-                          <Icon className="h-5 w-5" />
-                        </div>
+                          {active && (
+                            <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
+                          )}
 
-                        <span className="truncate text-sm font-medium text-slate-300 group-hover:text-slate-100">
-                          {item.label}
-                        </span>
-                      </Link>
-                    );
-                  })}
-                </div>
+                          <div
+                            className={cn(
+                              "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-all duration-250 border border-white/10",
+                              active ? "bg-secondary text-white shadow-md" : "bg-slate-950/90 text-white",
+                            )}
+                          >
+                            <Icon className="h-5 w-5" />
+                          </div>
+
+                          <span className="truncate text-sm font-medium text-slate-300 group-hover:text-slate-100">
+                            {item.label}
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               {/* end Navigation publique */}
 

@@ -9,6 +9,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useNavigate } from "react-router-dom";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import JobCard from "@/components/site/JobCard";
 import SEO from "@/components/SEO";
@@ -17,6 +18,7 @@ import { usePublishedJobOffers } from "@/hooks/usePublishedOffers";
 
 export function JobsPage() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const { offers, loading } = usePublishedJobOffers(100);
   const [query, setQuery] = React.useState("");
   const [companyQuery, setCompanyQuery] = React.useState("");
@@ -221,6 +223,7 @@ export function JobsPage() {
                         isExpired={isExpired}
                         t={t}
                         index={i}
+                        onApplyClick={() => navigate(`/candidate/jobs/${job.slug}/apply`)}
                       />
                     );
                   })}
