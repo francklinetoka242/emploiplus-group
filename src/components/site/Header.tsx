@@ -2,20 +2,16 @@ import { Link, NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Menu, X, Globe } from "lucide-react";
 import { useI18n, type Locale } from "@/lib/i18n";
+import { useCandidate } from "@/hooks/useCandidate";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 const AVAILABLE_LOCALES: Locale[] = ["fr", "en", "ln", "es", "sw", "pt", "zh"];
 
 export function SiteHeader() {
   const { t, locale, setLocale } = useI18n();
+  const { profile, loading } = useCandidate();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -80,11 +76,32 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {!loading && !profile && (
+            <>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="hidden md:inline-flex border-border/70 bg-background/80 px-3 text-sm font-medium hover:bg-accent"
+              >
+                <Link to="/candidate/login">Se connecter</Link>
+              </Button>
+              <Button
+                asChild
+                size="sm"
+                className="hidden md:inline-flex bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand"
+              >
+                <Link to="/candidate/signup">Créer un compte</Link>
+              </Button>
+            </>
+          )}
           <div className="hidden sm:block">
             <Select value={locale} onValueChange={(value) => setLocale(value as Locale)}>
-              <SelectTrigger className="w-[10.5rem] text-xs uppercase tracking-wider rounded-md border border-border bg-background px-2.5 py-1.5 text-foreground shadow-sm hover:bg-accent transition-colors">
-                <Globe className="size-3.5" />
-                <SelectValue placeholder={t("lang." + locale)} />
+              <SelectTrigger
+                aria-label={t(`lang.${locale}`)}
+                className="w-10 rounded-md border border-border bg-background p-2 text-foreground shadow-sm hover:bg-accent transition-colors"
+              >
+                <Globe className="size-4" />
               </SelectTrigger>
               <SelectContent>
                 {AVAILABLE_LOCALES.map((code) => (
@@ -95,13 +112,6 @@ export function SiteHeader() {
               </SelectContent>
             </Select>
           </div>
-          <Button
-            asChild
-            size="sm"
-            className="hidden md:inline-flex bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand"
-          >
-            <Link to="/jobs">{t("cta.viewJobs")}</Link>
-          </Button>
           <button
             type="button"
             className="lg:hidden p-2 rounded-md hover:bg-accent"
@@ -126,11 +136,16 @@ export function SiteHeader() {
                 {l.label}
               </Link>
             ))}
-            <Button asChild className="mt-2 bg-brand hover:bg-brand/90 text-brand-foreground">
-              <Link to="/jobs" onClick={() => setOpen(false)}>
-                {t("cta.viewJobs")}
-              </Link>
-            </Button>
+            {!loading && !profile && (
+              <div className="mt-2 flex flex-col gap-2">
+                <Button asChild variant="outline" className="justify-center" onClick={() => setOpen(false)}>
+                  <Link to="/candidate/login">Se connecter</Link>
+                </Button>
+                <Button asChild className="justify-center bg-brand hover:bg-brand/90 text-brand-foreground" onClick={() => setOpen(false)}>
+                  <Link to="/candidate/signup">Créer un compte</Link>
+                </Button>
+              </div>
+            )}
           </nav>
         </div>
       )}

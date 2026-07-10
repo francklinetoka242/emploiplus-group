@@ -15,7 +15,6 @@ import {
   Briefcase,
   Heart,
   CheckCircle2,
-  FileText,
   Send,
   Eye,
   TrendingUp,
@@ -52,15 +51,6 @@ const quickActions = [
   },
   {
     id: 2,
-    title: "Déposer mon CV",
-    description: "Téléchargez votre CV",
-    icon: FileText,
-    href: "/candidate/Mes-Documents",
-    borderColor: "border-emerald-500",
-    bgGradient: "from-emerald-50 to-emerald-100",
-  },
-  {
-    id: 3,
     title: "Voir mes candidatures",
     description: "Suivez le statut de vos candidatures",
     icon: Send,
@@ -69,7 +59,7 @@ const quickActions = [
     bgGradient: "from-purple-50 to-purple-100",
   },
   {
-    id: 4,
+    id: 3,
     title: "Modifier mon profil",
     description: "Mettez à jour vos informations",
     icon: Briefcase,
@@ -188,7 +178,6 @@ export function CandidateDashboardPage() {
       return {
         personalInfoCompleted: false,
         experienceCompleted: false,
-        cvCompleted: false,
       };
     }
 
@@ -201,23 +190,17 @@ export function CandidateDashboardPage() {
       profile.location_country,
     );
     const experienceCompleted = experienceEntries.length > 0;
-    const cvCompleted = Boolean(
-      candidateDocuments.cv?.url ||
-      candidateDocuments.documents.some((document) => Boolean(document.url)),
-    );
 
     return {
       personalInfoCompleted,
       experienceCompleted,
-      cvCompleted,
     };
-  }, [profile, experienceEntries, candidateDocuments]);
+  }, [profile, experienceEntries]);
 
   const profileCompletion = useMemo(() => {
     const checks = [
       profileChecks.personalInfoCompleted,
       profileChecks.experienceCompleted,
-      profileChecks.cvCompleted,
     ];
     const completedCount = checks.filter(Boolean).length;
     return Math.round((completedCount / checks.length) * 100);
@@ -323,7 +306,7 @@ export function CandidateDashboardPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <Progress value={profileCompletion} className="h-3" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div
               className={`p-3 rounded-lg border ${profileChecks.personalInfoCompleted ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}`}
             >
@@ -352,20 +335,6 @@ export function CandidateDashboardPage() {
                 Expériences professionnelles
               </p>
             </div>
-            <div
-              className={`p-3 rounded-lg border ${profileChecks.cvCompleted ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}`}
-            >
-              <p
-                className={`text-sm font-medium ${profileChecks.cvCompleted ? "text-green-900" : "text-yellow-900"}`}
-              >
-                {profileChecks.cvCompleted ? "Complété ✓" : "À compléter"}
-              </p>
-              <p
-                className={`text-xs ${profileChecks.cvCompleted ? "text-green-700" : "text-yellow-700"}`}
-              >
-                CV et certifications
-              </p>
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -373,7 +342,7 @@ export function CandidateDashboardPage() {
       {/* Quick Actions */}
       <div>
         <h2 className="text-2xl font-bold text-foreground mb-4">Actions rapides</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (

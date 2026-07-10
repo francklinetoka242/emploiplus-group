@@ -7,6 +7,8 @@ export { CandidateLayout } from "./CandidateLayout";
 export { CandidateDashboardPage } from "./CandidateDashboardPage";
 export { CandidateProfilePage } from "./CandidateProfilePage";
 export { CandidateCVPage } from "./CandidateCVPage";
+export { CandidateCreateCVPage } from "./CandidateCreateCVPage";
+export { CandidateCreateMotivationPage } from "./CandidateCreateMotivationPage";
 export { CandidateExperiencePage } from "./CandidateExperiencePage";
 export { CandidateEducationPage } from "./CandidateEducationPage";
 export { CandidateSkillsPage } from "./CandidateSkillsPage";

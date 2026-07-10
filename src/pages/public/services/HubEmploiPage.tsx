@@ -55,9 +55,16 @@ export default function HubEmploiPage() {
                       <h3 className="mt-4 text-2xl font-semibold text-foreground">
                         Optimisation de CV & lettres
                       </h3>
-                      <p className="mt-3 text-base leading-7 text-muted-foreground">
+                      <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                         Des documents clairs, impactants et adaptés aux attentes des recruteurs.
                       </p>
+                      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                        <Link to="/candidate/creation-motivation" className="w-full sm:w-auto">
+                          <Button variant="outline" size="sm" className="w-full border-brand text-brand hover:bg-brand/5">
+                            Créer ma lettre de motivation
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </section>

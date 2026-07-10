@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { usePageSEO } from "@/lib/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -86,8 +87,10 @@ const formatDate = (value: string) => {
 export function CandidateCVPage() {
   const { t } = useI18n();
   const { profile, loading } = useCandidate();
+  const location = useLocation();
   const cvInputRef = useRef<HTMLInputElement | null>(null);
   const documentInputRef = useRef<HTMLInputElement | null>(null);
+  const cvSectionRef = useRef<HTMLDivElement | null>(null);
   const [cv, setCv] = useState<CandidateCVState | null>(null);
   const [documents, setDocuments] = useState<CandidateDocument[]>([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -119,6 +122,21 @@ export function CandidateCVPage() {
       console.error("Unable to restore candidate documents", error);
     }
   }, [profile?.id]);
+
+  useEffect(() => {
+    if (location.hash === "#cv") {
+      cvSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      cvInputRef.current?.focus();
+      return;
+    }
+
+    const searchParams = new URLSearchParams(location.search);
+    const type = searchParams.get("type");
+    if (type === "motivation") {
+      setSelectedType("motivation");
+      setAddDialogOpen(true);
+    }
+  }, [location.hash, location.search]);
 
   useEffect(() => {
     if (!profile?.id) return;
@@ -258,7 +276,7 @@ export function CandidateCVPage() {
         </Alert>
       )}
 
-      <Card className="border-2 border-cyan-200 bg-gradient-to-br from-cyan-50 to-blue-50">
+      <Card className="border-2 border-cyan-200 bg-gradient-to-br from-cyan-50 to-blue-50" ref={cvSectionRef}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-cyan-600" />

@@ -107,8 +107,24 @@ const CandidateProfilePage = lazy(() =>
     default: m.CandidateProfilePage,
   })),
 );
+const CandidateCreationPage = lazy(() =>
+  import("@/pages/candidate/CandidateCreationPage").then((m) => ({
+    default: m.CandidateCreationPage,
+  })),
+);
 const CandidateCVPage = lazy(() =>
   import("@/pages/candidate/CandidateCVPage").then((m) => ({ default: m.CandidateCVPage })),
+);
+const CandidateCreateCVPage = lazy(() =>
+  import("@/pages/candidate/CandidateCreateCVPage").then((m) => ({ default: m.CandidateCreateCVPage })),
+);
+const CandidateCreateCVEditorPage = lazy(() =>
+  import("@/pages/candidate/CandidateCreateCVEditorPage").then((m) => ({ default: m.CandidateCreateCVEditorPage })),
+);
+const CandidateCreateMotivationPage = lazy(() =>
+  import("@/pages/candidate/CandidateCreateMotivationPage").then((m) => ({
+    default: m.CandidateCreateMotivationPage,
+  })),
 );
 const CandidateExperiencePage = lazy(() =>
   import("@/pages/candidate/CandidateExperiencePage").then((m) => ({
@@ -261,7 +277,8 @@ export default function App() {
         <Route path="public/about" element={<AboutPage />} />
         <Route path="public/contact" element={<ContactPage />} />
         <Route path="profile" element={<CandidateProfilePage />} />
-        <Route path="Mes-Documents" element={<CandidateCVPage />} />
+        <Route path="creation" element={<CandidateCreateMotivationPage />} />
+        <Route path="creation-motivation" element={<CandidateCreateMotivationPage />} />
         <Route path="experience" element={<CandidateExperiencePage />} />
         <Route path="education" element={<CandidateEducationPage />} />
         <Route path="skills" element={<CandidateSkillsPage />} />
