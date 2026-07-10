@@ -1,4 +1,5 @@
 import React from "react";
+import { Handshake, Settings2, TrendingUp } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
@@ -12,17 +13,17 @@ export function AboutPage() {
 
   const values = [
     {
-      icon: "🤝",
+      icon: <Handshake className="h-7 w-7 text-brand" aria-hidden="true" />,
       title: t("about.values.item1.title"),
       description: t("about.values.item1.description"),
     },
     {
-      icon: "⚙️",
+      icon: <Settings2 className="h-7 w-7 text-brand" aria-hidden="true" />,
       title: t("about.values.item2.title"),
       description: t("about.values.item2.description"),
     },
     {
-      icon: "📈",
+      icon: <TrendingUp className="h-7 w-7 text-brand" aria-hidden="true" />,
       title: t("about.values.item3.title"),
       description: t("about.values.item3.description"),
     },
@@ -79,7 +80,7 @@ export function AboutPage() {
                   key={item.title}
                   className="rounded-3xl border border-border bg-card p-6 text-left md:text-center"
                 >
-                  <div className="text-3xl">{item.icon}</div>
+                  <div className="flex justify-start md:justify-center">{item.icon}</div>
                   <h4 className="mt-4 text-lg font-semibold text-foreground">{item.title}</h4>
                   <p className="mt-2 text-muted-foreground leading-relaxed">{item.description}</p>
                 </div>
@@ -87,7 +88,7 @@ export function AboutPage() {
             </div>
           </div>
 
-          <div className="w-full">
+          <div className="hidden" aria-hidden="true">
             <h3 className="font-display text-2xl font-bold text-foreground">
               {t("about.team.title")}
             </h3>
@@ -148,6 +149,7 @@ export function AboutPage() {
               </article>
             </div>
           </div>
+
         </div>
       </section>
 
