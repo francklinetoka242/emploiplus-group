@@ -4,7 +4,6 @@ import { useI18n } from "@/lib/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
-import { SectionHeader } from "@/components/page/SectionHeader";
 import { SERVICES } from "@/lib/constants";
 import hubImage from "@/assets/IMG_Page-Services/2147626421.jpg";
 import rhImage from "@/assets/IMG_Page-Services/groupe-hommes-affaires-afro-americains_926199-3049393.jpg";
@@ -34,7 +33,6 @@ export function ServicesPage() {
           { name: t("services.title"), url: `${BASE_URL}/services` },
         ]}
       />
-      <SectionHeader title={t("services.title")} subtitle={t("services.subtitle")} />
       <section className="container-page pb-12 md:pb-16">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-6 md:grid-cols-2 items-stretch">

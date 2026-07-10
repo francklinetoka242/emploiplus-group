@@ -88,7 +88,7 @@ export function JobsPage() {
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6 text-foreground/90 leading-relaxed">
-            <div className="rounded-3xl p-[1px] gradient-brand">
+            <div className="rounded-3xl p-[1px] gradient-brand lg:sticky lg:top-24 lg:z-20 lg:self-start">
               <div className="rounded-3xl bg-card p-6 md:p-8">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <h3 className="font-display text-lg font-bold text-foreground">
