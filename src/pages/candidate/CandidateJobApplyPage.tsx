@@ -654,6 +654,8 @@ export function CandidateJobApplyPage() {
           ? `Votre candidature a bien été envoyée à ${recipientEmail}.`
           : `Votre candidature a bien été enregistrée. L'envoi du mail au recruteur a échoué, mais votre demande est bien prise en compte.`,
       });
+      // Redirect candidate to applications recap page so they can see the submitted offer
+      navigate("/candidate/applications");
     } catch (error) {
       setSubmitFeedback({
         type: "error",
