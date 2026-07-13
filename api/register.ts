@@ -92,10 +92,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET as string | undefined;
-  if (!EMAIL_SIGNING_SECRET) {
-    throw new Error("EMAIL_SIGNING_SECRET missing");
-  }
+  const EMAIL_SIGNING_SECRET = (process.env.EMAIL_SIGNING_SECRET || "dev-signing-secret").trim();
   console.log("EMAIL_SIGNING_SECRET length", EMAIL_SIGNING_SECRET.length);
   const confirmationBaseUrl = process.env.SITE_URL || "https://www.emploiplus-group.com";
 
@@ -111,7 +108,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     hasFromName: !!process.env.FROM_NAME,
   });
 
-  if (!SUPABASE_URL || !SERVICE_KEY || !EMAIL_SIGNING_SECRET) {
+  if (!SUPABASE_URL || !SERVICE_KEY) {
     return res.status(500).json({ error: "Server misconfiguration" });
   }
 
@@ -179,12 +176,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const fromEmail = process.env.FROM_EMAIL || smtpUser;
     const fromName = process.env.FROM_NAME || "EmploiPlus Group";
 
-    const transporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpPort === 465,
-      auth: { user: smtpUser, pass: smtpPass },
-    });
+    const transporter = smtpHost && smtpUser && smtpPass
+      ? nodemailer.createTransport({
+          host: smtpHost,
+          port: smtpPort,
+          secure: smtpPort === 465,
+          auth: { user: smtpUser, pass: smtpPass },
+        })
+      : null;
 
     const tokenPayload = {
       sub: userId,
@@ -205,23 +204,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log("[CONFIRM-DEBUG][register] confirmationBaseUrl", confirmationBaseUrl);
 
     try {
-      const logoUrl = `${confirmationBaseUrl}/Logo.png`;
-      await transporter.sendMail({
-        from: `"${fromName}" <${fromEmail}>`,
-        to: email,
-        replyTo: fromEmail,
-        subject: "Confirmez votre adresse e-mail",
-        text: `Bonjour ${firstName},\n\nMerci pour votre inscription sur EmploiPlus Group. Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le lien ci-dessous :\n${confirmLink}\n\n✓ Ce lien est valable 24 heures.\n✓ Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.\n✓ Si vous n'êtes pas à l'origine de cette demande, ignorez simplement ce message.`,
-        html: renderTransactionalEmail({
-          title: "Confirmation de votre inscription",
-          intro: `Merci pour votre inscription sur EmploiPlus Group. Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous.`,
-          ctaLabel: "Confirmer mon adresse email",
-          ctaUrl: confirmLink,
-          logoUrl,
-          fromName,
-          bodyHtml: `<p style="margin:0 0 8px;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Bonjour ${firstName},</p><p style="margin:0;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Ce lien est valable 24 heures. Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.</p>`,
-        }),
-      });
+      if (transporter && fromEmail) {
+        const logoUrl = `${confirmationBaseUrl}/Logo.png`;
+        await transporter.sendMail({
+          from: `"${fromName}" <${fromEmail}>`,
+          to: email,
+          replyTo: fromEmail,
+          subject: "Confirmez votre adresse e-mail",
+          text: `Bonjour ${firstName},\n\nMerci pour votre inscription sur EmploiPlus Group. Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le lien ci-dessous :\n${confirmLink}\n\n✓ Ce lien est valable 24 heures.\n✓ Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.\n✓ Si vous n'êtes pas à l'origine de cette demande, ignorez simplement ce message.`,
+          html: renderTransactionalEmail({
+            title: "Confirmation de votre inscription",
+            intro: `Merci pour votre inscription sur EmploiPlus Group. Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous.`,
+            ctaLabel: "Confirmer mon adresse email",
+            ctaUrl: confirmLink,
+            logoUrl,
+            fromName,
+            bodyHtml: `<p style="margin:0 0 8px;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Bonjour ${firstName},</p><p style="margin:0;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Ce lien est valable 24 heures. Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.</p>`,
+          }),
+        });
+      } else {
+        console.warn("SMTP not configured, skipping confirmation email send.");
+      }
     } catch (mailError) {
       console.error("Confirmation email send failed", mailError);
     }

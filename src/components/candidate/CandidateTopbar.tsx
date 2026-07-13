@@ -50,12 +50,12 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
   }, [profile, userName]);
 
   const publicLinks = [
-    { to: "/candidate/public", label: "Accueil" },
-    { to: "/candidate/public/services", label: "Services" },
-    { to: "/candidate/public/jobs", label: "Emplois" },
-    { to: "/candidate/public/blog", label: "Blog" },
-    { to: "/candidate/public/about", label: "À propos" },
-    { to: "/candidate/public/contact", label: "Contact" },
+    { to: "/", label: "Accueil" },
+    { to: "/services", label: "Services" },
+    { to: "/jobs", label: "Emplois" },
+    { to: "/blog", label: "Blog" },
+    { to: "/about", label: "À propos" },
+    { to: "/contact", label: "Contact" },
   ];
 
   const handleLogout = async () => {
@@ -78,7 +78,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
               <NavLink
                 key={link.to}
                 to={link.to}
-                end={link.to === "/candidate/public"}
+                end={link.to === "/"}
                 className={({ isActive }) =>
                   cn(
                     "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",

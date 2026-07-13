@@ -2,6 +2,7 @@ import { useCandidate } from "@/hooks/useCandidate";
 import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
 import { Navigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProtectedRoute } from "@/features/authentication/guards";
 
 interface ProtectedCandidateRouteProps {
   children: React.ReactNode;
@@ -26,5 +27,9 @@ export function ProtectedCandidateRoute({ children }: ProtectedCandidateRoutePro
     return <Navigate to="/candidate/login" replace />;
   }
 
-  return <CandidateSidebarProvider>{children}</CandidateSidebarProvider>;
+  return (
+    <ProtectedRoute fallbackPath="/candidate/login" requiredPermissions={["dashboard.candidate"]}>
+      <CandidateSidebarProvider>{children}</CandidateSidebarProvider>
+    </ProtectedRoute>
+  );
 }

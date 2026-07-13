@@ -1,21 +1,19 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { usePageSEO } from "@/lib/seo";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import favicon from "@/assets/favicon.ico";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { resetPasswordSchema, type ResetPasswordFormValues } from "@/features/forms/schemas/auth.schemas";
 
 export function CandidateResetPasswordPage() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    password: "",
-    confirmPassword: "",
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -23,6 +21,13 @@ export function CandidateResetPasswordPage() {
   const [checkingToken, setCheckingToken] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
+  const form = useForm<ResetPasswordFormValues>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
   usePageSEO({
     title: "Réinitialiser mot de passe - EmploiPlus Group",
@@ -76,39 +81,8 @@ export function CandidateResetPasswordPage() {
   }, [validateToken]);
 
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.currentTarget;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    if (!formData.password) newErrors.password = "Le mot de passe est requis";
-    else if (formData.password.length < 8)
-      newErrors.password = "Le mot de passe doit contenir au moins 8 caractères";
-    if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = "Les mots de passe ne correspondent pas";
-    return newErrors;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: ResetPasswordFormValues) => {
     setErrorMessage("");
-
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
 
     const token = searchParams.get("token");
     if (!token) {
@@ -121,7 +95,7 @@ export function CandidateResetPasswordPage() {
       const response = await fetch("/api/password-reset-confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password: formData.password }),
+        body: JSON.stringify({ token, password: values.password }),
       });
 
       const body = await parseResponseBody(response);
@@ -204,61 +178,52 @@ export function CandidateResetPasswordPage() {
               </CardHeader>
 
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {errorMessage && (
-                    <Alert className="border-red-200 bg-red-50">
-                      <AlertCircle className="h-4 w-4 text-red-600" />
-                      <AlertDescription className="text-red-800">{errorMessage}</AlertDescription>
-                    </Alert>
-                  )}
-
-                  {/* Password */}
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-slate-700">
-                      Nouveau mot de passe
-                    </Label>
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={handleChange}
-                      disabled={loading}
-                      className={errors.password ? "border-red-500" : ""}
-                    />
-                    {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
-                  </div>
-
-                  {/* Confirm Password */}
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-slate-700">
-                      Confirmer le mot de passe
-                    </Label>
-                    <Input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      placeholder="••••••••"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      disabled={loading}
-                      className={errors.confirmPassword ? "border-red-500" : ""}
-                    />
-                    {errors.confirmPassword && (
-                      <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4" noValidate>
+                    {errorMessage && (
+                      <Alert className="border-red-200 bg-red-50">
+                        <AlertCircle className="h-4 w-4 text-red-600" />
+                        <AlertDescription className="text-red-800">{errorMessage}</AlertDescription>
+                      </Alert>
                     )}
-                  </div>
 
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-brand text-brand-foreground hover:bg-brand/90 font-medium"
-                  >
-                    {loading ? "Réinitialisation en cours..." : "Réinitialiser"}
-                  </Button>
-                </form>
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-slate-700">Nouveau mot de passe</FormLabel>
+                          <FormControl>
+                            <Input {...field} id="password" type="password" placeholder="••••••••" disabled={loading} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-slate-700">Confirmer le mot de passe</FormLabel>
+                          <FormControl>
+                            <Input {...field} id="confirmPassword" type="password" placeholder="••••••••" disabled={loading} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-brand text-brand-foreground hover:bg-brand/90 font-medium"
+                    >
+                      {loading ? "Réinitialisation en cours..." : "Réinitialiser"}
+                    </Button>
+                  </form>
+                </Form>
               </CardContent>
             </>
           ) : (

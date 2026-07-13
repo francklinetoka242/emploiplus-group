@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { usePageSEO } from "@/lib/seo";
+import { usePageSEO } from "@/features/seo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

@@ -1,8 +1,8 @@
 import React from "react";
 import { Handshake, Settings2, TrendingUp } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
-import { BASE_URL } from "@/lib/seo";
+import { BASE_URL } from "@/features/seo";
 import francklinImage from "@/assets/Equipe_Experte/Ing_Francklin_ETOKA.jpeg";
 import destineeImage from "@/assets/Equipe_Experte/Ing_Destinée_MOUISSOU.jpeg";
 import claudeImage from "@/assets/Equipe_Experte/Claude_OMVOULET.jpeg";
@@ -88,7 +88,7 @@ export function AboutPage() {
             </div>
           </div>
 
-          <div className="hidden" aria-hidden="true">
+          <div className="w-full">
             <h3 className="font-display text-2xl font-bold text-foreground">
               {t("about.team.title")}
             </h3>

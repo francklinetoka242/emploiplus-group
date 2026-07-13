@@ -1,21 +1,28 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { usePageSEO } from "@/lib/seo";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
-import { CandidateAuthService } from "@/integrations/supabase/candidate-auth";
+import { parseAuthErrorMessage, requestPasswordReset } from "@/features/authentication/api/authApi";
 import favicon from "@/assets/favicon.ico";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { forgotPasswordSchema, type ForgotPasswordFormValues } from "@/features/forms/schemas/auth.schemas";
 
 export function CandidateForgotPasswordPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
   const [errors, setErrors] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const form = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: { email: "" },
+  });
 
   usePageSEO({
     title: "Mot de passe oublié - EmploiPlus Group",
@@ -23,30 +30,15 @@ export function CandidateForgotPasswordPage() {
     canonical: "https://emploiplus.group/#/candidate/forgot-password",
   });
 
-  const validateEmail = () => {
-    if (!email) {
-      setErrors("L'email est requis");
-      return false;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setErrors("Email invalide");
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: ForgotPasswordFormValues) => {
     setErrors("");
-
-    if (!validateEmail()) return;
 
     setLoading(true);
     try {
-      await CandidateAuthService.requestPasswordReset(email);
+      await requestPasswordReset(values.email);
       setSubmitted(true);
     } catch (error: unknown) {
-      const errorMsg = CandidateAuthService.parseErrorMessage(error);
+      const errorMsg = parseAuthErrorMessage(error);
       setErrors(errorMsg);
       console.error("Password reset request error:", error);
     } finally {
@@ -71,45 +63,42 @@ export function CandidateForgotPasswordPage() {
               </CardHeader>
 
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {errors && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{errors}</AlertDescription>
-                    </Alert>
-                  )}
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4" noValidate>
+                    {errors && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{errors}</AlertDescription>
+                      </Alert>
+                    )}
 
-                  {/* Email */}
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-slate-700">
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="votre@email.com"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        setErrors("");
-                      }}
-                      disabled={loading}
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-slate-700">Email</FormLabel>
+                          <FormControl>
+                            <Input {...field} id="email" type="email" placeholder="votre@email.com" disabled={loading} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
 
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-brand text-brand-foreground hover:bg-brand/90 font-medium"
-                  >
-                    {loading ? "Envoi en cours..." : "Envoyer le lien"}
-                  </Button>
-                </form>
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-brand text-brand-foreground hover:bg-brand/90 font-medium"
+                    >
+                      {loading ? "Envoi en cours..." : "Envoyer le lien"}
+                    </Button>
+                  </form>
+                </Form>
 
                 {/* Back to Login */}
                 <div className="mt-6">
-                  <Link to="/candidate/login">
+                  <Link to="/candidate/login" className="block">
                     <Button type="button" variant="outline" className="w-full">
                       <ArrowLeft className="w-4 h-4 mr-2" />
                       Retour à la connexion
@@ -129,7 +118,7 @@ export function CandidateForgotPasswordPage() {
                   <p className="text-sm text-slate-600">
                     Un lien de réinitialisation a été envoyé à:
                   </p>
-                  <p className="font-medium text-slate-900 mt-1">{email}</p>
+                  <p className="font-medium text-slate-900 mt-1">{form.getValues("email")}</p>
                 </div>
                 <p className="text-sm text-slate-600">
                   Vérifiez votre boîte de réception et suivez les instructions pour réinitialiser
@@ -137,8 +126,8 @@ export function CandidateForgotPasswordPage() {
                 </p>
 
                 <div className="pt-4 space-y-2">
-                  <Link to="/candidate/login">
-                    <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-medium">
+                  <Link to="/candidate/login" className="block">
+                    <Button type="button" className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-medium">
                       Retour à la connexion
                     </Button>
                   </Link>
@@ -148,7 +137,7 @@ export function CandidateForgotPasswordPage() {
                     className="w-full"
                     onClick={() => {
                       setSubmitted(false);
-                      setEmail("");
+                      form.reset({ email: "" });
                     }}
                   >
                     Essayer un autre email

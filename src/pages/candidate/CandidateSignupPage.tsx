@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { usePageSEO } from "@/lib/seo";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,23 +10,28 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
-import { CandidateAuthService } from "@/integrations/supabase/candidate-auth";
+import { parseAuthErrorMessage } from "@/features/authentication/api/authApi";
 import favicon from "@/assets/favicon.ico";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { signupSchema, type SignupFormValues } from "@/features/forms/schemas/auth.schemas";
 
 export function CandidateSignupPage() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreeTerms: false,
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const form = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      agreeTerms: false,
+    },
+  });
 
   usePageSEO({
     title: "Inscription Candidat - EmploiPlus Group",
@@ -32,58 +39,9 @@ export function CandidateSignupPage() {
     canonical: "https://emploiplus.group/#/candidate/signup",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.currentTarget;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
-  };
-
-  const handleCheckboxChange = (checked: boolean | "indeterminate") => {
-    setFormData((prev) => ({
-      ...prev,
-      agreeTerms: checked === true,
-    }));
-    if (errors.agreeTerms) {
-      setErrors((prev) => ({
-        ...prev,
-        agreeTerms: "",
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    if (!formData.firstName.trim()) newErrors.firstName = "Le prénom est requis";
-    if (!formData.lastName.trim()) newErrors.lastName = "Le nom est requis";
-    if (!formData.email) newErrors.email = "L'email est requis";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Email invalide";
-    if (!formData.password) newErrors.password = "Le mot de passe est requis";
-    else if (formData.password.length < 8)
-      newErrors.password = "Le mot de passe doit contenir au moins 8 caractères";
-    if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = "Les mots de passe ne correspondent pas";
-    if (!formData.agreeTerms) newErrors.agreeTerms = "Vous devez accepter les conditions";
-    return newErrors;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: SignupFormValues) => {
     setErrorMessage("");
     setSuccessMessage("");
-
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
 
     setLoading(true);
     try {
@@ -91,10 +49,10 @@ export function CandidateSignupPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          email: values.email,
+          password: values.password,
+          firstName: values.firstName,
+          lastName: values.lastName,
         }),
       });
 
@@ -122,13 +80,13 @@ export function CandidateSignupPage() {
           state: {
             notification:
               "Inscription réussie ! Un email de confirmation a été envoyé. Vérifiez votre boîte de réception (le lien expire au bout de 24 heures). Si vous ne le recevez pas, demandez un renvoi sur la page de connexion.",
-            pendingEmail: formData.email,
+            pendingEmail: values.email,
           },
         });
       }
     } catch (error: unknown) {
-      const errorMsg = CandidateAuthService.parseErrorMessage(error);
-      setErrorMessage(typeof errorMsg === "string" ? errorMsg : String(errorMsg));
+      const errorMsg = parseAuthErrorMessage(error);
+      setErrorMessage(errorMsg);
       console.error("Signup error:", error);
     } finally {
       setLoading(false);
@@ -168,126 +126,117 @@ export function CandidateSignupPage() {
               </Alert>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* First and Last Name */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-slate-700">
-                    Prénom
-                  </Label>
-                  <Input
-                    id="firstName"
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4" noValidate>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
                     name="firstName"
-                    type="text"
-                    placeholder="prenom"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className={errors.firstName ? "border-red-500" : ""}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700">Prénom</FormLabel>
+                        <FormControl>
+                          <Input {...field} id="firstName" type="text" placeholder="prenom" disabled={loading} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  {errors.firstName && <p className="text-sm text-red-500">{errors.firstName}</p>}
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-slate-700">
-                    Nom
-                  </Label>
-                  <Input
-                    id="lastName"
+                  <FormField
+                    control={form.control}
                     name="lastName"
-                    type="text"
-                    placeholder="nom"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className={errors.lastName ? "border-red-500" : ""}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700">Nom</FormLabel>
+                        <FormControl>
+                          <Input {...field} id="lastName" type="text" placeholder="nom" disabled={loading} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                  {errors.lastName && <p className="text-sm text-red-500">{errors.lastName}</p>}
                 </div>
-              </div>
 
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700">
-                  Email
-                </Label>
-                <Input
-                  id="email"
+                <FormField
+                  control={form.control}
                   name="email"
-                  type="email"
-                  placeholder="votre@email.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className={errors.email ? "border-red-500" : ""}
-                />
-                {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
-              </div>
-
-              {/* Password and Confirm */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-slate-700">
-                    Mot de passe
-                  </Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className={errors.password ? "border-red-500" : ""}
-                  />
-                  {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-slate-700">
-                    Confirmer le mot de passe
-                  </Label>
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    placeholder="••••••••"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className={errors.confirmPassword ? "border-red-500" : ""}
-                  />
-                  {errors.confirmPassword && (
-                    <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-700">Email</FormLabel>
+                      <FormControl>
+                        <Input {...field} id="email" type="email" placeholder="votre@email.com" disabled={loading} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </div>
-              </div>
-
-              {/* Terms */}
-              <div className="flex items-start space-x-2">
-                <Checkbox
-                  id="agreeTerms"
-                  name="agreeTerms"
-                  checked={formData.agreeTerms}
-                  onCheckedChange={handleCheckboxChange}
-                  disabled={loading}
-                  className="mt-1"
                 />
-                <Label htmlFor="agreeTerms" className="text-sm cursor-pointer">
-                  J'accepte les conditions d'utilisation et la politique de confidentialité
-                </Label>
-              </div>
-              {errors.agreeTerms && <p className="text-sm text-red-500">{errors.agreeTerms}</p>}
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-brand text-brand-foreground hover:bg-brand/90 font-medium"
-              >
-                {loading ? "Inscription en cours..." : "S'inscrire"}
-              </Button>
-            </form>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700">Mot de passe</FormLabel>
+                        <FormControl>
+                          <Input {...field} id="password" type="password" placeholder="••••••••" disabled={loading} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-slate-700">Confirmer le mot de passe</FormLabel>
+                        <FormControl>
+                          <Input {...field} id="confirmPassword" type="password" placeholder="••••••••" disabled={loading} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="agreeTerms"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <div className="flex items-start space-x-2">
+                        <FormControl>
+                          <Checkbox
+                            id="agreeTerms"
+                            checked={field.value === true}
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked === true);
+                            }}
+                            disabled={loading}
+                            className="mt-1"
+                          />
+                        </FormControl>
+                        <FormLabel htmlFor="agreeTerms" className="text-sm cursor-pointer">
+                          J'accepte les conditions d'utilisation et la politique de confidentialité
+                        </FormLabel>
+                      </div>
+                      <FormMessage className="ml-6" />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-brand text-brand-foreground hover:bg-brand/90 font-medium"
+                >
+                  {loading ? "Inscription en cours..." : "S'inscrire"}
+                </Button>
+              </form>
+            </Form>
 
             {/* Divider */}
             <div className="relative my-6">

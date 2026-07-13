@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { usePageSEO } from "@/lib/seo";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usePageSEO } from "@/features/seo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,45 +17,39 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Edit2, Trash2, Briefcase } from "lucide-react";
-import { CandidateAuthService, CandidateExperience } from "@/integrations/supabase/candidate-auth";
-import { useCandidate } from "@/hooks/useCandidate";
+import type { CandidateExperience } from "@/features/candidates/api/types";
+import { useCandidate } from "@/features/candidates/hooks/useCandidate";
+import { useCandidateExperiences } from "@/features/candidates/hooks/useCandidateExperiences";
+import { experienceSchema, type ExperienceFormValues } from "@/features/forms/schemas/candidate-profile-entities.schemas";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 export function CandidateExperiencePage() {
   const { profile } = useCandidate();
+  const {
+    experiences,
+    loading,
+    error: hookError,
+    createExperience,
+    updateExperience,
+    deleteExperience,
+  } = useCandidateExperiences(profile?.id);
   const [showForm, setShowForm] = useState(false);
-  const [experiences, setExperiences] = useState<CandidateExperience[]>([]);
-  const [currentExperience, setCurrentExperience] = useState<Partial<CandidateExperience>>({
-    job_title: "",
-    company: "",
-    start_date: "",
-    end_date: null,
-    is_current: false,
-    description: "",
-  });
   const [editingExperienceId, setEditingExperienceId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const displayError = error ?? hookError;
 
-  useEffect(() => {
-    if (!profile) {
-      return;
-    }
-
-    const loadExperiences = async () => {
-      try {
-        setLoading(true);
-        const data = await CandidateAuthService.getCandidateExperiences(profile.id);
-        setExperiences(data || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Impossible de charger les expériences.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadExperiences();
-  }, [profile]);
+  const form = useForm<ExperienceFormValues>({
+    resolver: zodResolver(experienceSchema),
+    defaultValues: {
+      job_title: "",
+      company: "",
+      start_date: "",
+      end_date: null,
+      is_current: false,
+      description: "",
+    },
+  });
 
   usePageSEO({
     title: "Expériences Professionnelles - EmploiPlus Group",
@@ -62,7 +58,7 @@ export function CandidateExperiencePage() {
   });
 
   const resetForm = () => {
-    setCurrentExperience({
+    form.reset({
       job_title: "",
       company: "",
       start_date: "",
@@ -87,7 +83,14 @@ export function CandidateExperiencePage() {
   };
 
   const handleEditExperience = (experience: CandidateExperience) => {
-    setCurrentExperience(experience);
+    form.reset({
+      job_title: experience.job_title ?? "",
+      company: experience.company ?? "",
+      start_date: experience.start_date ?? "",
+      end_date: experience.end_date ?? null,
+      is_current: experience.is_current ?? false,
+      description: experience.description ?? "",
+    });
     setEditingExperienceId(experience.id);
     setShowForm(true);
   };
@@ -99,17 +102,14 @@ export function CandidateExperiencePage() {
     }
 
     try {
-      await CandidateAuthService.deleteCandidateExperience(experienceId);
-      setExperiences((prev) => prev.filter((exp) => exp.id !== experienceId));
+      await deleteExperience(experienceId);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Impossible de supprimer l'expérience.");
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!currentExperience.job_title?.trim() || !currentExperience.company?.trim() || !profile) {
+  const handleSubmit = async (values: ExperienceFormValues) => {
+    if (!profile) {
       return;
     }
 
@@ -123,14 +123,12 @@ export function CandidateExperiencePage() {
     };
 
     const experienceData = {
-      job_title: currentExperience.job_title.trim(),
-      company: currentExperience.company.trim(),
-      description: currentExperience.description?.trim() || null,
-      start_date: normalizeMonth(currentExperience.start_date) || "",
-      end_date: currentExperience.is_current
-        ? null
-        : normalizeMonth(currentExperience.end_date) || null,
-      is_current: currentExperience.is_current ?? false,
+      job_title: values.job_title.trim(),
+      company: values.company.trim(),
+      description: values.description?.trim() || null,
+      start_date: normalizeMonth(values.start_date) || "",
+      end_date: values.is_current ? null : normalizeMonth(values.end_date) || null,
+      is_current: values.is_current ?? false,
     };
 
     setSaving(true);
@@ -138,19 +136,9 @@ export function CandidateExperiencePage() {
 
     try {
       if (editingExperienceId) {
-        const updated = await CandidateAuthService.updateCandidateExperience(
-          editingExperienceId,
-          experienceData,
-        );
-        setExperiences((prev) =>
-          prev.map((exp) => (exp.id === editingExperienceId ? updated : exp)),
-        );
+        await updateExperience(editingExperienceId, experienceData);
       } else {
-        const created = await CandidateAuthService.createCandidateExperience(
-          profile.id,
-          experienceData,
-        );
-        setExperiences((prev) => [created, ...prev]);
+        await createExperience(experienceData);
       }
       setShowForm(false);
       resetForm();
@@ -189,107 +177,133 @@ export function CandidateExperiencePage() {
               </DialogTitle>
               <DialogDescription>Remplissez les informations de votre expérience</DialogDescription>
             </DialogHeader>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Poste</Label>
-                  <Input
-                    id="title"
-                    value={currentExperience.job_title || ""}
-                    onChange={(event) =>
-                      setCurrentExperience({ ...currentExperience, job_title: event.target.value })
-                    }
-                    placeholder="Développeur Senior"
+            <Form {...form}>
+              <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="job_title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Poste</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Développeur Senior" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="company"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Entreprise</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="TechCorp" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="company">Entreprise</Label>
-                  <Input
-                    id="company"
-                    value={currentExperience.company || ""}
-                    onChange={(event) =>
-                      setCurrentExperience({ ...currentExperience, company: event.target.value })
-                    }
-                    placeholder="TechCorp"
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="startDate">Date de début</Label>
-                  <Input
-                    id="startDate"
-                    type="month"
-                    value={currentExperience.start_date || ""}
-                    onChange={(event) =>
-                      setCurrentExperience({ ...currentExperience, start_date: event.target.value })
-                    }
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="start_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date de début</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="month" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="end_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date de fin</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="month"
+                            value={field.value ?? ""}
+                            disabled={Boolean(form.watch("is_current"))}
+                            onChange={(event) => field.onChange(event.target.value || null)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="endDate">Date de fin</Label>
-                  <Input
-                    id="endDate"
-                    type="month"
-                    disabled={Boolean(currentExperience.is_current)}
-                    value={currentExperience.end_date ?? ""}
-                    onChange={(event) =>
-                      setCurrentExperience({ ...currentExperience, end_date: event.target.value })
-                    }
-                  />
-                </div>
-              </div>
 
-              <div className="flex items-end gap-2">
-                <Checkbox
-                  id="isCurrent"
-                  checked={Boolean(currentExperience.is_current)}
-                  onCheckedChange={(checked) =>
-                    setCurrentExperience({
-                      ...currentExperience,
-                      is_current: Boolean(checked),
-                      end_date: checked ? null : currentExperience.end_date,
-                    })
-                  }
+                <FormField
+                  control={form.control}
+                  name="is_current"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center gap-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={Boolean(field.value)}
+                          onCheckedChange={(checked) => {
+                            field.onChange(Boolean(checked));
+                            if (checked) {
+                              form.setValue("end_date", null);
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="cursor-pointer">Poste actuel</FormLabel>
+                    </FormItem>
+                  )}
                 />
-                <Label htmlFor="isCurrent" className="cursor-pointer">
-                  Poste actuel
-                </Label>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={currentExperience.description || ""}
-                  onChange={(event) =>
-                    setCurrentExperience({ ...currentExperience, description: event.target.value })
-                  }
-                  placeholder="Décrivez vos responsabilités et accomplissements..."
-                  rows={4}
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          value={field.value ?? ""}
+                          placeholder="Décrivez vos responsabilités et accomplissements..."
+                          rows={4}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="flex gap-2 justify-end pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setShowForm(false);
-                    resetForm();
-                  }}
-                >
-                  Annuler
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
-                >
-                  {editingExperienceId ? "Mettre à jour" : "Ajouter"}
-                </Button>
-              </div>
-            </form>
+                <div className="flex gap-2 justify-end pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowForm(false);
+                      resetForm();
+                    }}
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
+                    disabled={saving}
+                  >
+                    {editingExperienceId ? "Mettre à jour" : "Ajouter"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>

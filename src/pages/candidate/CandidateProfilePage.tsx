@@ -1,5 +1,5 @@
-﻿import { CandidateProfilePageModern } from "./CandidateProfilePageModern";
+﻿import { CandidateProfileCenter } from "@/features/profile/components/CandidateProfileCenter";
 
 export function CandidateProfilePage() {
-  return <CandidateProfilePageModern />;
+  return <CandidateProfileCenter />;
 }

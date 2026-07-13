@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { usePageSEO } from "@/lib/seo";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,8 +27,8 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCandidate } from "@/hooks/useCandidate";
-import { CandidateProfile } from "@/integrations/supabase/candidate-auth";
-import { centralAfricaCityGroups } from "@/lib/centralAfricaCities";
+import type { CandidateProfile } from "@/features/candidates/api/types";
+import { centralAfricaCityGroups } from "@/data/locations";
 import {
   SaasCard,
   SaasCardHeader,
@@ -34,19 +36,8 @@ import {
   SaasCardFooter,
 } from "@/components/candidate/SaasCard";
 import { SaasGrid } from "@/components/candidate/SaasLayout";
-
-interface ProfileFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  headline: string;
-  dateOfBirth: string;
-  nationality: string;
-  city: string;
-  about: string;
-  avatar: string | null;
-}
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { candidateProfileSchema, type CandidateProfileFormValues } from "@/features/forms/schemas/profile.schemas";
 
 const countryOptions = centralAfricaCityGroups.map((group) => group.country);
 
@@ -77,17 +68,21 @@ export function CandidateProfilePageModern() {
   const [saveLoading, setSaveLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<ProfileFormData>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    headline: "",
-    dateOfBirth: "",
-    nationality: "",
-    city: "",
-    about: "",
-    avatar: null,
+
+  const form = useForm<CandidateProfileFormValues>({
+    resolver: zodResolver(candidateProfileSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      headline: "",
+      dateOfBirth: "",
+      nationality: "",
+      city: "",
+      about: "",
+      avatar: null,
+    },
   });
 
   usePageSEO({
@@ -104,7 +99,7 @@ export function CandidateProfilePageModern() {
     const city = cities.includes(profile.location_city ?? "") ? (profile.location_city ?? "") : "";
     const phoneCode = getCountryPhoneCode(nationality);
 
-    setFormData({
+    form.reset({
       firstName: profile.first_name ?? "",
       lastName: profile.last_name ?? "",
       email: profile.email ?? "",
@@ -116,30 +111,26 @@ export function CandidateProfilePageModern() {
       about: profile.bio ?? "",
       avatar: profile.avatar_url ?? null,
     });
-  }, [profile]);
-
-  const handleInputChange = (field: keyof ProfileFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  }, [form, profile]);
 
   const handlePhoneNumberChange = (value: string) => {
     const normalized = value.replace(/\D/g, "");
-    setFormData((prev) => ({
-      ...prev,
-      phone: `${getCountryPhoneCode(prev.nationality)}${normalized}`,
-    }));
+    const currentNationality = form.getValues("nationality");
+    const nextCode = getCountryPhoneCode(currentNationality);
+    form.setValue("phone", `${nextCode}${normalized}`);
   };
 
   const handleNationalityChange = (value: string) => {
-    handleInputChange("nationality", value);
-    handleInputChange("city", "");
+    form.setValue("nationality", value);
+    form.setValue("city", "");
     const nextCode = getCountryPhoneCode(value);
-    setFormData((prev) => ({
-      ...prev,
-      phone: nextCode
-        ? `${nextCode}${prev.phone ? prev.phone.replace(new RegExp(`^\\+?${nextCode}`), "") : ""}`
-        : prev.phone,
-    }));
+    const currentPhone = form.getValues("phone");
+    form.setValue(
+      "phone",
+      nextCode
+        ? `${nextCode}${currentPhone ? currentPhone.replace(new RegExp(`^\\+?${nextCode}`), "") : ""}`
+        : currentPhone,
+    );
   };
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,12 +140,12 @@ export function CandidateProfilePageModern() {
     const reader = new FileReader();
     reader.onload = (event) => {
       const dataUrl = event.target?.result as string;
-      setFormData((prev) => ({ ...prev, avatar: dataUrl }));
+      form.setValue("avatar", dataUrl);
     };
     reader.readAsDataURL(file);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (values: CandidateProfileFormValues) => {
     if (!profile) {
       setSaveError("Impossible de sauvegarder : profil non chargé.");
       return;
@@ -166,15 +157,15 @@ export function CandidateProfilePageModern() {
 
     try {
       const updates: Partial<CandidateProfile> = {
-        first_name: formData.firstName || null,
-        last_name: formData.lastName || null,
-        phone: formData.phone || null,
-        headline: formData.headline || null,
-        date_of_birth: formData.dateOfBirth || null,
-        location_country: formData.nationality || null,
-        location_city: formData.city || null,
-        bio: formData.about || null,
-        avatar_url: formData.avatar || null,
+        first_name: values.firstName || null,
+        last_name: values.lastName || null,
+        phone: values.phone || null,
+        headline: values.headline || null,
+        date_of_birth: values.dateOfBirth || null,
+        location_country: values.nationality || null,
+        location_city: values.city || null,
+        bio: values.about || null,
+        avatar_url: values.avatar || null,
       };
 
       await updateProfile(updates);
@@ -188,9 +179,9 @@ export function CandidateProfilePageModern() {
     }
   };
 
-  const availableCities = getCitiesForCountry(formData.nationality);
+  const availableCities = getCitiesForCountry(form.watch("nationality"));
 
-  const initials = `${formData.firstName?.[0] || ""}${formData.lastName?.[0] || ""}`.toUpperCase();
+  const initials = `${form.watch("firstName")?.[0] || ""}${form.watch("lastName")?.[0] || ""}`.toUpperCase();
 
   return (
     <div className="space-y-6">
@@ -223,7 +214,7 @@ export function CandidateProfilePageModern() {
             <div className="relative">
               <Avatar className="w-16 h-16 border border-slate-200">
                 {profile?.avatar_url && (
-                  <AvatarImage src={profile.avatar_url} alt={formData.firstName} />
+                  <AvatarImage src={profile.avatar_url} alt={form.watch("firstName")} />
                 )}
                 <AvatarFallback className="bg-slate-200 text-slate-500 text-xs font-semibold flex items-center justify-center">
                   {initials || "C"}
@@ -262,82 +253,88 @@ export function CandidateProfilePageModern() {
         />
         <SaasCardContent>
           <SaasGrid columns="2" gap="4">
-            {/* First Name */}
-            <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Prénom</Label>
-              <Input
-                type="text"
-                placeholder="Jean"
-                value={formData.firstName}
-                onChange={(e) => handleInputChange("firstName", e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-slate-700 mb-2 block">Prénom</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="text" placeholder="Jean" className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            {/* Last Name */}
-            <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Nom</Label>
-              <Input
-                type="text"
-                placeholder="Dupont"
-                value={formData.lastName}
-                onChange={(e) => handleInputChange("lastName", e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-slate-700 mb-2 block">Nom</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="text" placeholder="Dupont" className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            {/* Email */}
-            <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Email</Label>
-              <Input
-                type="email"
-                value={formData.email}
-                disabled
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-500 cursor-not-allowed"
-              />
-              <p className="text-xs text-slate-500 mt-1">Email non modifiable</p>
-            </div>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-slate-700 mb-2 block">Email</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="email" disabled className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-500 cursor-not-allowed" />
+                  </FormControl>
+                  <p className="text-xs text-slate-500 mt-1">Email non modifiable</p>
+                </FormItem>
+              )}
+            />
 
-            {/* Phone */}
-            <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Téléphone</Label>
-              <div className="flex items-center rounded-lg border border-slate-200 bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
-                <span className="px-3 py-2.5 text-sm font-medium text-slate-600 border-r border-slate-200">
-                  +{getCountryPhoneCode(formData.nationality) || ""}
-                </span>
-                <Input
-                  type="tel"
-                  placeholder="numero"
-                  value={
-                    formData.phone
-                      ? formData.phone.replace(
-                          new RegExp(`^\\+?${getCountryPhoneCode(formData.nationality)}`),
-                          "",
-                        )
-                      : ""
-                  }
-                  onChange={(e) => handlePhoneNumberChange(e.target.value)}
-                  className="w-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
-                />
-              </div>
-              <p className="text-xs text-slate-500 mt-1">
-                Le code du pays est défini automatiquement selon votre pays.
-              </p>
-            </div>
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-slate-700 mb-2 block">Téléphone</FormLabel>
+                  <div className="flex items-center rounded-lg border border-slate-200 bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20">
+                    <span className="px-3 py-2.5 text-sm font-medium text-slate-600 border-r border-slate-200">
+                      +{getCountryPhoneCode(form.watch("nationality")) || ""}
+                    </span>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="tel"
+                        placeholder="numero"
+                        value={field.value?.replace(new RegExp(`^\\+?${getCountryPhoneCode(form.watch("nationality"))}`), "") || ""}
+                        onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                        className="w-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
+                      />
+                    </FormControl>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">Le code du pays est défini automatiquement selon votre pays.</p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            {/* Professional Title */}
-            <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">
-                Titre professionnel
-              </Label>
-              <Input
-                type="text"
-                placeholder="Chef de projet junior"
-                value={formData.headline}
-                onChange={(e) => handleInputChange("headline", e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="headline"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-slate-700 mb-2 block">Titre professionnel</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="text" placeholder="Chef de projet junior" className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </SaasGrid>
         </SaasCardContent>
       </SaasCard>
@@ -352,17 +349,19 @@ export function CandidateProfilePageModern() {
         <SaasCardContent>
           <SaasGrid columns="2" gap="4">
             {/* Date of Birth */}
-            <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">
-                Date de naissance
-              </Label>
-              <Input
-                type="date"
-                value={formData.dateOfBirth}
-                onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors"
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="dateOfBirth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-slate-700 mb-2 block">Date de naissance</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="date" className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </SaasGrid>
         </SaasCardContent>
       </SaasCard>
@@ -377,41 +376,55 @@ export function CandidateProfilePageModern() {
         <SaasCardContent>
           <SaasGrid columns="2" gap="4">
             {/* Nationality */}
-            <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Pays</Label>
-              <Select value={formData.nationality} onValueChange={handleNationalityChange}>
-                <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
-                  <SelectValue placeholder="Sélectionner..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {countryOptions.map((country) => (
-                    <SelectItem key={country} value={country}>
-                      {country}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <FormField
+              control={form.control}
+              name="nationality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-slate-700 mb-2 block">Pays</FormLabel>
+                  <Select value={field.value} onValueChange={handleNationalityChange}>
+                    <FormControl>
+                      <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                        <SelectValue placeholder="Sélectionner..." />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {countryOptions.map((country) => (
+                        <SelectItem key={country} value={country}>
+                          {country}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            {/* City */}
-            <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">Ville</Label>
-              <Select
-                value={formData.city}
-                onValueChange={(value) => handleInputChange("city", value)}
-              >
-                <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
-                  <SelectValue placeholder="Sélectionner..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableCities.map((city) => (
-                    <SelectItem key={city} value={city}>
-                      {city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-slate-700 mb-2 block">Ville</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                        <SelectValue placeholder="Sélectionner..." />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {availableCities.map((city) => (
+                        <SelectItem key={city} value={city}>
+                          {city}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </SaasGrid>
         </SaasCardContent>
       </SaasCard>
@@ -424,34 +437,41 @@ export function CandidateProfilePageModern() {
           icon={<User className="w-5 h-5" />}
         />
         <SaasCardContent>
-          <div>
-            <Label className="text-sm font-medium text-slate-700 mb-2 block">Votre profil</Label>
-            <Textarea
-              placeholder="Décrivez votre parcours professionnel, vos compétences clés et vos objectifs..."
-              value={formData.about}
-              onChange={(e) => handleInputChange("about", e.target.value)}
-              rows={5}
-              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors resize-none"
-            />
-            <p className="text-xs text-slate-500 mt-2">
-              Partagez une brève description de votre profil professionnel.
-            </p>
-          </div>
+          <FormField
+            control={form.control}
+            name="about"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium text-slate-700 mb-2 block">Votre profil</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    placeholder="Décrivez votre parcours professionnel, vos compétences clés et vos objectifs..."
+                    rows={5}
+                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-colors resize-none"
+                  />
+                </FormControl>
+                <p className="text-xs text-slate-500 mt-2">Partagez une brève description de votre profil professionnel.</p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </SaasCardContent>
       </SaasCard>
 
       {/* Save Button */}
-      <div className="flex gap-3 justify-end sticky bottom-4 z-10">
-        <Button
-          type="button"
-          onClick={handleSave}
-          disabled={!profile || saveLoading}
-          className="gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-6 py-2.5 font-medium transition-colors"
-        >
-          <Save className="w-4 h-4" />
-          {saveLoading ? "Enregistrement..." : "Enregistrer les modifications"}
-        </Button>
-      </div>
+      <form onSubmit={form.handleSubmit(handleSave)}>
+        <div className="flex gap-3 justify-end sticky bottom-4 z-10">
+          <Button
+            type="submit"
+            disabled={!profile || saveLoading}
+            className="gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-6 py-2.5 font-medium transition-colors"
+          >
+            <Save className="w-4 h-4" />
+            {saveLoading ? "Enregistrement..." : "Enregistrer les modifications"}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

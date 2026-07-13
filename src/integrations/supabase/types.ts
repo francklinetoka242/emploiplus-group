@@ -529,6 +529,7 @@ export type Database = {
           job_offer_id: string;
           status: Database["public"]["Enums"]["application_status"];
           cover_letter: string | null;
+          subject: string | null;
           applied_at: string;
           updated_at: string;
         };
@@ -538,6 +539,7 @@ export type Database = {
           job_offer_id: string;
           status?: Database["public"]["Enums"]["application_status"];
           cover_letter?: string | null;
+          subject?: string | null;
           applied_at?: string;
           updated_at?: string;
         };

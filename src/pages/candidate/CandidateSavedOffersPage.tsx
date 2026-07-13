@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useI18n } from "@/lib/i18n";
-import { usePageSEO } from "@/lib/seo";
+import { useI18n } from "@/i18n";
+import { usePageSEO } from "@/features/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,6 @@ import {
 import { Trash2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCandidate } from "@/hooks/useCandidate";
-import { CandidateAuthService } from "@/integrations/supabase/candidate-auth";
 
 interface SavedOffer {
   id: string;

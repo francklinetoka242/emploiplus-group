@@ -15,10 +15,11 @@ import {
   Send,
   Sparkles,
 } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
-import { BASE_URL } from "@/lib/seo";
-import { useJobOfferBySlug } from "@/hooks/usePublishedOffers";
+import { BASE_URL } from "@/features/seo";
+import { jobService } from "@/features/jobs/api";
+import type { JobOffer } from "@/features/jobs/types";
 import { ShareButtons } from "@/components/site/ShareButtons";
 
 function NotFoundPage() {
@@ -49,7 +50,29 @@ function NotFoundPage() {
 export function JobOfferDetailPage() {
   const { t } = useI18n();
   const { slug } = useParams<{ slug: string }>();
-  const { job, loading } = useJobOfferBySlug(slug);
+  const [job, setJob] = React.useState<JobOffer | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    if (!slug) {
+      setLoading(false);
+      return;
+    }
+
+    let mounted = true;
+    const loadOffer = async () => {
+      setLoading(true);
+      const foundJob = await jobService.getOfferBySlug(slug);
+      if (!mounted) return;
+      setJob(foundJob);
+      setLoading(false);
+    };
+
+    void loadOffer();
+    return () => {
+      mounted = false;
+    };
+  }, [slug]);
 
   if (loading) {
     return (

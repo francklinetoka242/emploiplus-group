@@ -18,11 +18,12 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
-import { usePageSEO } from "@/lib/seo";
-import { useJobOfferBySlug } from "@/hooks/usePublishedOffers";
+import { useI18n } from "@/i18n";
+import { usePageSEO } from "@/features/seo";
+import { useJobOfferBySlug } from "@/features/jobs/hooks";
 import { useCandidate } from "@/hooks/useCandidate";
-import { CandidateAuthService } from "@/integrations/supabase/candidate-auth";
+import { getCandidateSession } from "@/features/authentication/api/authApi";
+import { applyToJob } from "@/features/candidates/api/applicationsApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -30,7 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES } from "@/lib/supabase-storage";
+import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES } from "@/services/storageService";
 import {
   getCandidateDocumentsList,
   loadCandidateDocuments,
@@ -135,6 +136,7 @@ function FormSectionSkeleton() {
 }
 
 type JobApplyHeroJob = {
+  id?: string | null;
   location_city?: string | null;
   location_country?: string | null;
   contract_type?: string | null;
@@ -378,12 +380,13 @@ export function CandidateJobApplyPage() {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const { job, loading: jobLoading } = useJobOfferBySlug(slug);
-  const { profile, loading: profileLoading, updateProfile } = useCandidate();
+  const { profile, loading: profileLoading, updateProfile, refetch: refetchCandidateProfile } = useCandidate();
 
   const [savedDocuments, setSavedDocuments] = useState<CandidateDocument[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set());
   const [temporaryDocuments, setTemporaryDocuments] = useState<TemporaryDocument[]>([]);
   const [message, setMessage] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [consent, setConsent] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -500,12 +503,25 @@ export function CandidateJobApplyPage() {
     setProfileFeedback(null);
 
     try {
-      await updateProfile({
+      const updatedProfile = await updateProfile({
         first_name: profileForm.first_name || null,
         last_name: profileForm.last_name || null,
         phone: profileForm.phone || null,
         headline: profileForm.headline || null,
       });
+
+      const refreshedProfile = await refetchCandidateProfile();
+      const profileData = refreshedProfile ?? updatedProfile;
+
+      if (profileData) {
+        setProfileForm({
+          first_name: profileData.first_name || "",
+          last_name: profileData.last_name || "",
+          phone: profileData.phone || "",
+          headline: profileData.headline || "",
+        });
+      }
+
       setProfileFeedback("Vos informations ont été mises à jour.");
       setIsEditingProfile(false);
     } catch (error) {
@@ -546,7 +562,7 @@ export function CandidateJobApplyPage() {
     setSubmitFeedback(null);
 
     try {
-      const session = await CandidateAuthService.getSession();
+      const session = await getCandidateSession();
       const candidateEmail = session?.user?.email?.trim() || profile?.email?.trim();
 
       if (!candidateEmail) {
@@ -599,6 +615,17 @@ export function CandidateJobApplyPage() {
 
       const candidateMessage = (message || "").replace(/\r\n/g, "\n");
       const htmlMessage = escapeHtml(candidateMessage).replace(/\n/g, "<br />");
+      const outgoingSubject = emailSubject.trim() || `Nouvelle candidature - ${job?.title ?? "Offre"}`;
+
+      if (!profile?.id) {
+        throw new Error("Impossible d'identifier votre profil candidat.");
+      }
+
+      if (!job?.id) {
+        throw new Error("Impossible d'identifier l'offre sélectionnée.");
+      }
+
+      await applyToJob(profile.id, job.id, candidateMessage || null, outgoingSubject);
 
       const response = await fetch("/api/send-email", {
         method: "POST",
@@ -608,7 +635,7 @@ export function CandidateJobApplyPage() {
         body: JSON.stringify({
           recipient: recipientEmail,
           replyTo: candidateEmail,
-          subject: `Nouvelle candidature - ${job?.title ?? "Offre"}`,
+          subject: outgoingSubject,
           html: htmlMessage,
           text: candidateMessage,
           attachments: selectedAttachments.filter((attachment) => attachment.path || attachment.content),
@@ -618,14 +645,14 @@ export function CandidateJobApplyPage() {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(
-          data?.error || "Une erreur est survenue lors de l'envoi de la candidature.",
-        );
+        console.error("Email dispatch failed", data);
       }
 
       setSubmitFeedback({
         type: "success",
-        message: `Votre candidature a bien été envoyée à ${recipientEmail}.`,
+        message: response.ok
+          ? `Votre candidature a bien été envoyée à ${recipientEmail}.`
+          : `Votre candidature a bien été enregistrée. L'envoi du mail au recruteur a échoué, mais votre demande est bien prise en compte.`,
       });
     } catch (error) {
       setSubmitFeedback({
@@ -948,13 +975,31 @@ export function CandidateJobApplyPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="space-y-3">
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value.slice(0, 2000))}
-                  placeholder="Dites-nous ce qui vous motive à postuler pour cette offre..."
-                  className="w-full h-32 p-4 rounded-2xl border border-border/60 bg-background text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-transparent resize-none transition-all"
-                />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="application-subject" className="text-sm font-medium">
+                    Objet
+                  </Label>
+                  <Input
+                    id="application-subject"
+                    value={emailSubject}
+                    onChange={(e) => setEmailSubject(e.target.value.slice(0, 200))}
+                    placeholder="Objet de votre candidature"
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="application-message" className="text-sm font-medium">
+                    Message au recruteur
+                  </Label>
+                  <textarea
+                    id="application-message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value.slice(0, 2000))}
+                    placeholder="Dites-nous ce qui vous motive à postuler pour cette offre..."
+                    className="w-full h-32 p-4 rounded-2xl border border-border/60 bg-background text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-transparent resize-none transition-all"
+                  />
+                </div>
                 <div className="flex justify-end text-xs text-muted-foreground">
                   {message.length} / 2000 caractères
                 </div>
@@ -981,7 +1026,7 @@ export function CandidateJobApplyPage() {
                     Vous n'avez pas encore enregistré de documents.
                     <br />
                     <button
-                      onClick={() => navigate("/candidate/Mes-Documents")}
+                      onClick={() => navigate("/candidate/documents")}
                       className="font-semibold text-brand hover:underline mt-1 inline-block"
                     >
                       Ajouter des documents →

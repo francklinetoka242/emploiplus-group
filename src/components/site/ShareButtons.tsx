@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link2, Check, Facebook, Linkedin, Share2, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { buildShareUrls } from "@/lib/utils-ext";
-import { BASE_URL } from "@/lib/seo";
-import { useI18n } from "@/lib/i18n";
+import { buildShareUrls } from "@/utils/share";
+import { BASE_URL } from "@/features/seo";
+import { useI18n } from "@/i18n";
 
 type ShareJobData = {
   company?: string | null;

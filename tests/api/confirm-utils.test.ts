@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { updateSupabaseUserConfirmation } from "../../src/lib/confirm-utils.ts";
+import { updateSupabaseUserConfirmation } from "../../src/api/utils/confirm-utils.ts";
 
 test("retries with PATCH when PUT is rejected as unsupported", async () => {
   const calls: Array<{ method?: string }> = [];

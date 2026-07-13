@@ -27,6 +27,10 @@ import {
   Search,
   ChevronDown,
   PlusCircle,
+  Moon,
+  Sun,
+  ToggleLeft,
+  ToggleRight,
 } from "lucide-react";
 
 interface CandidateSidebarProps {
@@ -37,38 +41,48 @@ interface CandidateSidebarProps {
 }
 
 const publicMenuItems = [
-  { id: "public-home", label: "Accueil", icon: Home, href: "/candidate/public" },
-  { id: "public-services", label: "Services", icon: BriefcaseBusiness, href: "/candidate/public/services" },
-  { id: "public-jobs", label: "Emplois", icon: Search, href: "/candidate/public/jobs" },
-  { id: "public-blog", label: "Blog", icon: BookOpen, href: "/candidate/public/blog" },
-  { id: "public-about", label: "À propos", icon: Info, href: "/candidate/public/about" },
-  { id: "public-contact", label: "Contact", icon: Mail, href: "/candidate/public/contact" },
+  { id: "public-home", label: "Accueil", icon: Home, href: "/" },
+  { id: "public-services", label: "Services", icon: BriefcaseBusiness, href: "/services" },
+  { id: "public-jobs", label: "Emplois", icon: Search, href: "/jobs" },
+  { id: "public-blog", label: "Blog", icon: BookOpen, href: "/blog" },
+  { id: "public-about", label: "À propos", icon: Info, href: "/about" },
+  { id: "public-contact", label: "Contact", icon: Mail, href: "/contact" },
 ];
 
 const menuItems = [
   { id: "dashboard", label: "Tableau de bord", icon: Home, href: "/candidate/dashboard" },
   { id: "profile", label: "Mon profil", icon: User, href: "/candidate/profile" },
-  { id: "creation", label: "Creation", icon: PlusCircle, href: "/candidate/creation" },
-  {
-    id: "experience",
-    label: "Expériences professionnelles",
-    icon: Briefcase,
-    href: "/candidate/experience",
-  },
-  { id: "education", label: "Formations", icon: GraduationCap, href: "/candidate/education" },
-  { id: "skills", label: "Compétences", icon: Star, href: "/candidate/skills" },
-  { id: "languages", label: "Langues", icon: Globe, href: "/candidate/languages" },
-  {
-    id: "preferences",
-    label: "Préférences d'emploi",
-    icon: Target,
-    href: "/candidate/preferences",
-  },
+  { id: "documents", label: "Documents", icon: PlusCircle, href: "/candidate/documents" },
   { id: "applications", label: "Mes candidatures", icon: Send, href: "/candidate/applications" },
   { id: "saved", label: "Offres enregistrées", icon: Heart, href: "/candidate/saved-offers" },
   { id: "notifications", label: "Notifications", icon: Bell, href: "/candidate/notifications" },
   { id: "settings", label: "Paramètres", icon: Settings, href: "/candidate/settings" },
 ];
+
+const getInitialDarkMode = () => {
+  if (typeof window === "undefined") return false;
+
+  try {
+    const stored = window.localStorage.getItem("theme");
+    if (stored === "dark") return true;
+    if (stored === "light") return false;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  } catch {
+    return false;
+  }
+};
+
+const applyTheme = (darkMode: boolean) => {
+  if (typeof document === "undefined") return;
+
+  document.documentElement.classList.toggle("dark", darkMode);
+
+  try {
+    window.localStorage.setItem("theme", darkMode ? "dark" : "light");
+  } catch {
+    // ignore storage errors
+  }
+};
 
 export function CandidateSidebar({
   open = true,
@@ -78,6 +92,7 @@ export function CandidateSidebar({
 }: CandidateSidebarProps) {
   const location = useLocation();
   const { profile } = useCandidate();
+  const [isDarkMode, setIsDarkMode] = useState(getInitialDarkMode);
 
   // Fermer le drawer avec Échap
   useEffect(() => {
@@ -100,52 +115,32 @@ export function CandidateSidebar({
       return true;
     }
 
-    if (href === "/candidate/public") {
-      return false;
+    if (href === "/") {
+      return pathname === "/";
     }
 
-    if (href === "/candidate/public/services") {
-      return pathname === "/candidate/public/services" || pathname.startsWith("/candidate/public/services/");
+    if (href === "/services") {
+      return pathname === "/services" || pathname.startsWith("/services/");
     }
 
-    if (href === "/candidate/public/jobs") {
-      return pathname === "/candidate/public/jobs" || pathname.startsWith("/candidate/public/jobs/") || pathname.startsWith("/candidate/jobs/");
+    if (href === "/jobs") {
+      return pathname === "/jobs" || pathname.startsWith("/jobs/") || pathname.startsWith("/candidate/jobs/");
     }
 
-    if (href === "/candidate/public/blog") {
-      return pathname === "/candidate/public/blog" || pathname.startsWith("/candidate/public/blog/");
+    if (href === "/blog") {
+      return pathname === "/blog" || pathname.startsWith("/blog/");
     }
 
-    if (href === "/candidate/public/about") {
-      return pathname === "/candidate/public/about" || pathname.startsWith("/candidate/public/about/");
+    if (href === "/about") {
+      return pathname === "/about" || pathname.startsWith("/about/");
     }
 
-    if (href === "/candidate/public/contact") {
-      return pathname === "/candidate/public/contact" || pathname.startsWith("/candidate/public/contact/");
+    if (href === "/contact") {
+      return pathname === "/contact" || pathname.startsWith("/contact/");
     }
 
-    if (href === "/candidate/creation") {
-      return pathname === "/candidate/creation" || pathname === "/candidate/creation-cv" || pathname.startsWith("/candidate/creation-cv/") || pathname === "/candidate/creation-motivation";
-    }
-
-    if (href === "/candidate/experience") {
-      return pathname === "/candidate/experience" || pathname.startsWith("/candidate/experience/");
-    }
-
-    if (href === "/candidate/education") {
-      return pathname === "/candidate/education" || pathname.startsWith("/candidate/education/");
-    }
-
-    if (href === "/candidate/skills") {
-      return pathname === "/candidate/skills" || pathname.startsWith("/candidate/skills/");
-    }
-
-    if (href === "/candidate/languages") {
-      return pathname === "/candidate/languages" || pathname.startsWith("/candidate/languages/");
-    }
-
-    if (href === "/candidate/preferences") {
-      return pathname === "/candidate/preferences" || pathname.startsWith("/candidate/preferences/");
+    if (href === "/candidate/documents") {
+      return pathname === "/candidate/documents" || pathname.startsWith("/candidate/documents/");
     }
 
     if (href === "/candidate/applications") {
@@ -164,9 +159,7 @@ export function CandidateSidebar({
       return pathname === "/candidate/settings" || pathname.startsWith("/candidate/settings/");
     }
 
-    if (href === "/candidate/Mes-Documents") {
-      return pathname === "/candidate/Mes-Documents" || pathname.startsWith("/candidate/Mes-Documents/");
-    }
+    
 
     return pathname === href || pathname.startsWith(`${href}/`);
   };
@@ -178,6 +171,10 @@ export function CandidateSidebar({
   };
 
   const [publicOpen, setPublicOpen] = useState(false);
+
+  useEffect(() => {
+    applyTheme(isDarkMode);
+  }, [isDarkMode]);
 
   // Rendu du Drawer mobile
   if (isDrawer) {
@@ -332,25 +329,24 @@ export function CandidateSidebar({
                   })}
                 </div>
               </div>
-              {/* Preferences link (mobile) - placed after Mon espace */}
-              <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-2 mt-2">
-                <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
-                  Préférences
-                </p>
-                <div className="space-y-1">
-                  <Link
-                    to="/candidate/preferences"
-                    onClick={handleMenuClick}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-250 border border-transparent bg-slate-950/90 text-slate-200 hover:bg-slate-900/90",
-                    )}
-                  >
-                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-slate-950/90 text-white">
-                      <Settings className="h-5 w-5" />
-                    </div>
-                    <span className="truncate text-sm font-medium text-slate-300">Préférences</span>
-                  </Link>
-                </div>
+
+              <div className="mt-3 rounded-2xl border border-white/10 bg-slate-950/60 p-2">
+                <button
+                  type="button"
+                  onClick={() => setIsDarkMode((value) => !value)}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all duration-250 hover:bg-white/10"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-slate-950/90 text-slate-200">
+                    {isDarkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-slate-200">Mode sombre</p>
+                    <p className="text-xs text-slate-400">{isDarkMode ? "Activé" : "Désactivé"}</p>
+                  </div>
+                  <div className={cn("flex h-6 w-11 items-center rounded-full p-1 transition-colors", isDarkMode ? "bg-secondary" : "bg-slate-700") }>
+                    {isDarkMode ? <ToggleRight className="h-4 w-4 text-white" /> : <ToggleLeft className="h-4 w-4 text-slate-200" />}
+                  </div>
+                </button>
               </div>
             </div>
           </nav>

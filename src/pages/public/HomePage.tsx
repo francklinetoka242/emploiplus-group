@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 import logoMonago from "@/assets/logo-monago.jpg";
 import { Button } from "@/components/ui/button";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
-import { DEFAULT_SEO, BASE_URL } from "@/lib/seo";
+import { DEFAULT_SEO, BASE_URL } from "@/features/seo";
 import { SectionHeader } from "@/components/page/SectionHeader";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
-import { usePublishedJobOffers, usePublishedBlogPosts } from "@/hooks/usePublishedOffers";
+import { usePublishedJobOffers, usePublishedBlogPosts } from "@/features/jobs/hooks";
 import {
   BadgeDollarSign,
   BriefcaseBusiness,
@@ -20,7 +20,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ShareButtons } from "@/components/site/ShareButtons";
-import JobCard from "@/components/site/JobCard";
+import { JobCard } from "@/features/jobs/components";
 
 function AnimatedStat({
   value,

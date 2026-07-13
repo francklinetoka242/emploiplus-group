@@ -9,12 +9,12 @@ import {
   Trash2,
   UploadCloud,
 } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
-import { BASE_URL } from "@/lib/seo";
+import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadFileToStorage } from "@/lib/supabase-storage";
+import { uploadFileToStorage } from "@/services/storageService";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";

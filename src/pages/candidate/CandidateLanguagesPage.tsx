@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useI18n } from "@/lib/i18n";
-import { usePageSEO } from "@/lib/seo";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useI18n } from "@/i18n";
+import { usePageSEO } from "@/features/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,8 +24,11 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Edit2, Trash2, Globe, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useCandidate } from "@/hooks/useCandidate";
-import { CandidateAuthService, CandidateLanguage } from "@/integrations/supabase/candidate-auth";
+import { useCandidate } from "@/features/candidates/hooks/useCandidate";
+import type { CandidateLanguage } from "@/features/candidates/api/types";
+import { useCandidateLanguages } from "@/features/candidates/hooks/useCandidateLanguages";
+import { languageSchema, type LanguageFormValues } from "@/features/forms/schemas/candidate-portfolio.schemas";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const proficiencyLevels = [
   { value: "beginner", label: "Débutant" },
@@ -36,12 +41,20 @@ const proficiencyLevels = [
 export function CandidateLanguagesPage() {
   const { t } = useI18n();
   const { profile, loading: profileLoading } = useCandidate();
+  const { languages, loading, error: hookError, createLanguage, updateLanguage, deleteLanguage } =
+    useCandidateLanguages(profile?.id);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [languages, setLanguages] = useState<CandidateLanguage[]>([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [newLanguage, setNewLanguage] = useState({ name: "", level: "beginner" });
+  const displayError = error ?? hookError;
+
+  const form = useForm<LanguageFormValues>({
+    resolver: zodResolver(languageSchema),
+    defaultValues: {
+      name: "",
+      level: "beginner",
+    },
+  });
 
   usePageSEO({
     title: "Langues - EmploiPlus Group",
@@ -49,38 +62,23 @@ export function CandidateLanguagesPage() {
     robots: "noindex,nofollow",
   });
 
-  useEffect(() => {
-    if (!profile?.id || profileLoading) return;
 
-    const loadLanguages = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await CandidateAuthService.getCandidateLanguages(profile.id);
-        setLanguages(data || []);
-      } catch (err) {
-        console.error("Error loading languages:", err);
-        setError("Impossible de charger vos langues. Veuillez réessayer.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const resetForm = () => {
+    form.reset({ name: "", level: "beginner" });
+    setEditingId(null);
+    setError(null);
+  };
 
-    void loadLanguages();
-  }, [profile?.id, profileLoading]);
-
-  const handleAddLanguage = async () => {
-    if (!profile?.id || !newLanguage.name.trim()) return;
+  const handleAddLanguage = async (values: LanguageFormValues) => {
+    if (!profile?.id) return;
 
     try {
-      await CandidateAuthService.createCandidateLanguage(profile.id, {
-        language_name: newLanguage.name,
-        proficiency_level: newLanguage.level,
+      await createLanguage({
+        language_name: values.name.trim(),
+        proficiency_level: values.level,
       });
 
-      const updatedLanguages = await CandidateAuthService.getCandidateLanguages(profile.id);
-      setLanguages(updatedLanguages || []);
-      setNewLanguage({ name: "", level: "beginner" });
+      resetForm();
       setShowForm(false);
     } catch (err) {
       console.error("Error adding language:", err);
@@ -88,19 +86,14 @@ export function CandidateLanguagesPage() {
     }
   };
 
-  const handleUpdateLanguage = async (languageId: string) => {
-    if (!newLanguage.name.trim()) return;
-
+  const handleUpdateLanguage = async (languageId: string, values: LanguageFormValues) => {
     try {
-      await CandidateAuthService.updateCandidateLanguage(languageId, {
-        language_name: newLanguage.name,
-        proficiency_level: newLanguage.level,
+      await updateLanguage(languageId, {
+        language_name: values.name.trim(),
+        proficiency_level: values.level,
       });
 
-      const updatedLanguages = await CandidateAuthService.getCandidateLanguages(profile!.id);
-      setLanguages(updatedLanguages || []);
-      setNewLanguage({ name: "", level: "beginner" });
-      setEditingId(null);
+      resetForm();
       setShowForm(false);
     } catch (err) {
       console.error("Error updating language:", err);
@@ -112,8 +105,7 @@ export function CandidateLanguagesPage() {
     if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette langue ?")) return;
 
     try {
-      await CandidateAuthService.deleteCandidateLanguage(id);
-      setLanguages(languages.filter((lang) => lang.id !== id));
+      await deleteLanguage(id);
     } catch (err) {
       console.error("Error deleting language:", err);
       setError("Impossible de supprimer la langue. Veuillez réessayer.");
@@ -121,7 +113,7 @@ export function CandidateLanguagesPage() {
   };
 
   const handleEditLanguage = (language: CandidateLanguage) => {
-    setNewLanguage({ name: language.language_name, level: language.proficiency_level });
+    form.reset({ name: language.language_name, level: language.proficiency_level });
     setEditingId(language.id);
     setShowForm(true);
   };
@@ -157,8 +149,7 @@ export function CandidateLanguagesPage() {
             <Button
               className="bg-brand text-brand-foreground hover:bg-brand/90 text-white gap-2"
               onClick={() => {
-                setEditingId(null);
-                setNewLanguage({ name: "", level: "beginner" });
+                resetForm();
               }}
             >
               <Plus className="w-4 h-4" />
@@ -170,60 +161,74 @@ export function CandidateLanguagesPage() {
               <DialogTitle>{editingId ? "Modifier une langue" : "Ajouter une langue"}</DialogTitle>
               <DialogDescription>Entrez la langue et votre niveau de maîtrise</DialogDescription>
             </DialogHeader>
-            <form className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="language">Langue</Label>
-                <Input
-                  id="language"
-                  placeholder="Ex: Lingala"
-                  value={newLanguage.name}
-                  onChange={(e) => setNewLanguage({ ...newLanguage, name: e.target.value })}
+            <Form {...form}>
+              <form
+                className="space-y-4"
+                onSubmit={form.handleSubmit((values) => {
+                  if (editingId) {
+                    handleUpdateLanguage(editingId, values);
+                  } else {
+                    handleAddLanguage(values);
+                  }
+                })}
+              >
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Langue</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Ex: Lingala" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="level">Niveau</Label>
-                <Select
-                  value={newLanguage.level}
-                  onValueChange={(value) => setNewLanguage({ ...newLanguage, level: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {proficiencyLevels.map((level) => (
-                      <SelectItem key={level.value} value={level.value}>
-                        {level.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex gap-2 justify-end pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setShowForm(false);
-                    setEditingId(null);
-                    setNewLanguage({ name: "", level: "beginner" });
-                  }}
-                >
-                  Annuler
-                </Button>
-                <Button
-                  onClick={() => {
-                    if (editingId) {
-                      handleUpdateLanguage(editingId);
-                    } else {
-                      handleAddLanguage();
-                    }
-                  }}
-                  className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
-                >
-                  {editingId ? "Modifier" : "Ajouter"}
-                </Button>
-              </div>
-            </form>
+                <FormField
+                  control={form.control}
+                  name="level"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Niveau</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {proficiencyLevels.map((level) => (
+                            <SelectItem key={level.value} value={level.value}>
+                              {level.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex gap-2 justify-end pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowForm(false);
+                      resetForm();
+                    }}
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
+                  >
+                    {editingId ? "Modifier" : "Ajouter"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>

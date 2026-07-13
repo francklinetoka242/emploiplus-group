@@ -8,18 +8,18 @@ import {
   MapPin,
   Sparkles,
 } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "@/i18n";
 import { useNavigate } from "react-router-dom";
 import { ShareButtons } from "@/components/site/ShareButtons";
-import JobCard from "@/components/site/JobCard";
+import { JobCard } from "@/features/jobs/components";
 import SEO from "@/components/SEO";
-import { BASE_URL } from "@/lib/seo";
-import { usePublishedJobOffers } from "@/hooks/usePublishedOffers";
+import { BASE_URL } from "@/features/seo";
+import { useJobs } from "@/features/jobs/hooks";
 
 export function JobsPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
-  const { offers, loading } = usePublishedJobOffers(100);
+  const { offers, loading } = useJobs({ status: "published", limit: 100 });
   const [query, setQuery] = React.useState("");
   const [companyQuery, setCompanyQuery] = React.useState("");
   const [locationQuery, setLocationQuery] = React.useState("");
@@ -88,8 +88,11 @@ export function JobsPage() {
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6 text-foreground/90 leading-relaxed">
-            <div className="rounded-3xl p-[1px] gradient-brand lg:sticky lg:top-24 lg:z-20 lg:self-start">
-              <div className="rounded-3xl bg-card p-6 md:p-8">
+            <div
+              className="self-start w-full"
+              style={{ position: "sticky", top: 0, zIndex: 30, alignSelf: "flex-start" }}
+            >
+              <div className="rounded-3xl border border-border/60 bg-card/95 p-5 shadow-lg shadow-black/5 backdrop-blur supports-[backdrop-filter]:bg-card/80 sm:p-6 md:p-8">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <h3 className="font-display text-lg font-bold text-foreground">
                     {t("jobs.search.title")}
@@ -261,7 +264,7 @@ export function JobsPage() {
             </div>
           </div>
           <aside
-            className="rounded-3xl border border-border bg-card p-8 shadow-soft fade-up"
+            className="rounded-3xl border border-border bg-card p-8 shadow-soft fade-up self-start lg:sticky lg:top-24 lg:z-20"
             style={{ animationDelay: "240ms" }}
           >
             <div className="text-sm uppercase tracking-[0.25em] text-muted-foreground">

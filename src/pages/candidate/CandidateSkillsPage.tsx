@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { usePageSEO } from "@/lib/seo";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usePageSEO } from "@/features/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,38 +15,28 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus, X, Trash2 } from "lucide-react";
-import { CandidateAuthService, CandidateSkill } from "@/integrations/supabase/candidate-auth";
-import { useCandidate } from "@/hooks/useCandidate";
+import type { CandidateSkill } from "@/features/candidates/api/types";
+import { useCandidate } from "@/features/candidates/hooks/useCandidate";
+import { useCandidateSkills } from "@/features/candidates/hooks/useCandidateSkills";
+import { skillSchema, type SkillFormValues } from "@/features/forms/schemas/candidate-portfolio.schemas";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 export function CandidateSkillsPage() {
   const { profile } = useCandidate();
+  const { skills, loading, error: hookError, createSkill, deleteSkill } = useCandidateSkills(
+    profile?.id,
+  );
   const [showForm, setShowForm] = useState(false);
-  const [skills, setSkills] = useState<CandidateSkill[]>([]);
-  const [newSkill, setNewSkill] = useState("");
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const displayError = error ?? hookError;
 
-  useEffect(() => {
-    if (!profile) {
-      return;
-    }
-
-    const loadSkills = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await CandidateAuthService.getCandidateSkills(profile.id);
-        setSkills(data || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Impossible de charger les compétences.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSkills();
-  }, [profile]);
+  const form = useForm<SkillFormValues>({
+    resolver: zodResolver(skillSchema),
+    defaultValues: {
+      skill_name: "",
+    },
+  });
 
   usePageSEO({
     title: "Compétences - EmploiPlus Group",
@@ -52,13 +44,18 @@ export function CandidateSkillsPage() {
     robots: "noindex,nofollow",
   });
 
-  const handleAddSkill = async () => {
-    if (!newSkill.trim() || !profile) {
+  const resetForm = () => {
+    form.reset({ skill_name: "" });
+    setError(null);
+  };
+
+  const handleAddSkill = async (values: SkillFormValues) => {
+    if (!profile) {
       return;
     }
 
     // Check if skill already exists
-    if (skills.some((s) => s.skill_name.toLowerCase() === newSkill.toLowerCase())) {
+    if (skills.some((s) => s.skill_name.toLowerCase() === values.skill_name.trim().toLowerCase())) {
       setError("Cette compétence est déjà ajoutée.");
       return;
     }
@@ -67,12 +64,11 @@ export function CandidateSkillsPage() {
     setError(null);
 
     try {
-      const created = await CandidateAuthService.createCandidateSkill(profile.id, {
-        skill_name: newSkill.trim(),
+      await createSkill({
+        skill_name: values.skill_name.trim(),
       });
 
-      setSkills([created, ...skills]);
-      setNewSkill("");
+      resetForm();
       setShowForm(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Impossible d'ajouter la compétence.");
@@ -83,8 +79,7 @@ export function CandidateSkillsPage() {
 
   const handleRemoveSkill = async (skillId: string) => {
     try {
-      await CandidateAuthService.deleteCandidateSkill(skillId);
-      setSkills(skills.filter((s) => s.id !== skillId));
+      await deleteSkill(skillId);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Impossible de supprimer la compétence.");
     }
@@ -107,42 +102,50 @@ export function CandidateSkillsPage() {
                 Entrez le nom de la compétence que vous souhaitez ajouter
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="skillName">Compétence</Label>
-                <Input
-                  id="skillName"
-                  placeholder="Ex: Python, Leadership, Design UI, etc."
-                  value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
+            <Form {...form}>
+              <form className="space-y-4" onSubmit={form.handleSubmit(handleAddSkill)}>
+                <FormField
+                  control={form.control}
+                  name="skill_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Compétence</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Ex: Python, Leadership, Design UI, etc."
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              {error && (
-                <div className="rounded-3xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                  {error}
+                {error && (
+                  <div className="rounded-3xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                    {error}
+                  </div>
+                )}
+                <div className="flex gap-2 justify-end pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowForm(false);
+                      resetForm();
+                    }}
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
+                    disabled={saving}
+                  >
+                    Ajouter
+                  </Button>
                 </div>
-              )}
-              <div className="flex gap-2 justify-end pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowForm(false);
-                    setNewSkill("");
-                    setError(null);
-                  }}
-                >
-                  Annuler
-                </Button>
-                <Button
-                  onClick={handleAddSkill}
-                  className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
-                  disabled={saving}
-                >
-                  Ajouter
-                </Button>
-              </div>
-            </div>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>

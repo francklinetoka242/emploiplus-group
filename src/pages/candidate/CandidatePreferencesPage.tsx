@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from "react";
-import { usePageSEO } from "@/lib/seo";
+import { usePageSEO } from "@/features/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Settings } from "lucide-react";
 import { Switch } from "@/components/ui/switch";

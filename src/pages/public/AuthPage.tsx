@@ -1,8 +1,8 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useI18n } from "@/lib/i18n";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
-import { BASE_URL } from "@/lib/seo";
+import { BASE_URL } from "@/features/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import favicon from "@/assets/favicon.ico";
@@ -10,21 +10,68 @@ import favicon from "@/assets/favicon.ico";
 export function AuthPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
+  const [authDetail, setAuthDetail] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const state = location.state as
+      | {
+          authError?: string;
+          authReason?: string;
+          authCurrentRoles?: string;
+          authCurrentPermissions?: string;
+        }
+      | null;
+
+    if (state?.authError === "unauthorized") {
+      setError(
+        `${
+          t("auth.error.unauthorized") ?? "Accès refusé : vous n'avez pas les permissions nécessaires pour accéder à cette page."
+        } ${state.authReason ?? ""}`.trim(),
+      );
+      setAuthDetail(
+        state.authCurrentRoles
+          ? `Rôles détectés : ${state.authCurrentRoles}`
+          : state.authCurrentPermissions
+          ? `Permissions détectées : ${state.authCurrentPermissions}`
+          : null,
+      );
+    }
+  }, [location.state, t]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
     setMessage(null);
+
+    const normalizedEmail = email.trim();
+    const normalizedPassword = password.trim();
+
+    if (!normalizedEmail) {
+      setError(t("auth.error.emailRequired") ?? "Veuillez saisir votre adresse email.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setError(t("auth.error.invalidEmail") ?? "Veuillez saisir une adresse email valide.");
+      return;
+    }
+
+    if (!normalizedPassword) {
+      setError(t("auth.error.passwordRequired") ?? "Veuillez saisir votre mot de passe.");
+      return;
+    }
+
     setLoading(true);
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: normalizedEmail,
+      password: normalizedPassword,
     });
 
     setLoading(false);
@@ -33,10 +80,41 @@ export function AuthPage() {
       setError(error.message);
       return;
     }
-    if (data.user) {
-      setMessage(t("auth.successRedirect"));
-      navigate("/admin");
+
+    const user = data.user ?? data.session?.user;
+    if (user) {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData.session) {
+        const userId = sessionData.session.user.id;
+        console.info("[AuthPage] sessionUserId:", userId);
+        const { data: rolesData, error: rolesError } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", userId);
+
+        console.info("[AuthPage] user_roles query:", { rolesData, rolesError });
+
+        if (rolesError) {
+          setError(t("auth.error.rolesLoadFailed") ?? "Impossible de vérifier les droits.");
+          setAuthDetail(`Session user id: ${userId}`);
+          return;
+        }
+
+        if (!rolesData || rolesData.length === 0) {
+          setError(t("auth.error.notAdmin") ?? "Votre compte n'a pas les droits administrateur.");
+          setAuthDetail(`Session user id: ${userId} — rôles détectés: aucune`);
+          return;
+        }
+
+        setAuthDetail(`Session user id: ${userId} — rôles détectés: ${rolesData.map((r: any) => r.role).join(", ")}`);
+
+        setMessage(t("auth.successRedirect"));
+        navigate("/admin", { replace: true });
+        return;
+      }
     }
+
+    setError(t("auth.error.unableToSignIn") ?? "Impossible de se connecter.");
   };
 
   return (
@@ -105,6 +183,12 @@ export function AuthPage() {
             {message ? (
               <div className="rounded-2xl bg-success/10 border border-success px-4 py-3 text-sm text-success">
                 {message}
+              </div>
+            ) : null}
+
+            {authDetail ? (
+              <div className="rounded-2xl bg-muted/10 border border-slate-200 px-4 py-3 text-sm text-slate-700">
+                {authDetail}
               </div>
             ) : null}
 

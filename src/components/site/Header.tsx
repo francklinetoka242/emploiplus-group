@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Menu, X, Globe } from "lucide-react";
-import { useI18n, type Locale } from "@/lib/i18n";
+import { useI18n, type Locale } from "@/i18n";
 import { useCandidate } from "@/hooks/useCandidate";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";

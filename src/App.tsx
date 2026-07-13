@@ -1,13 +1,12 @@
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { lazy, Suspense, useEffect } from "react";
-import { I18nProvider } from "@/lib/i18n";
-import { SiteFooter } from "@/components/site/Footer";
-import { SiteHeader } from "@/components/site/Header";
+import { I18nProvider } from "@/i18n";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useCandidate } from "@/hooks/useCandidate";
 import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
-import { CandidateAppShell } from "@/pages/candidate/CandidateLayout";
+import { PublicLayout } from "@/components/site/PublicLayout";
+import { useCandidate } from "@/hooks/useCandidate";
+import { ProtectedRoute } from "@/features/authentication/guards";
 
 // Immediately loaded pages (critical path)
 import { HomePage, AuthPage, NotFoundPage } from "@/pages";
@@ -97,19 +96,9 @@ const CandidateDashboardPage = lazy(() =>
     default: m.CandidateDashboardPage,
   })),
 );
-const ProtectedCandidateRoute = lazy(() =>
-  import("@/components/candidate/ProtectedCandidateRoute").then((m) => ({
-    default: m.ProtectedCandidateRoute,
-  })),
-);
 const CandidateProfilePage = lazy(() =>
   import("@/pages/candidate/CandidateProfilePage").then((m) => ({
     default: m.CandidateProfilePage,
-  })),
-);
-const CandidateCreationPage = lazy(() =>
-  import("@/pages/candidate/CandidateCreationPage").then((m) => ({
-    default: m.CandidateCreationPage,
   })),
 );
 const CandidateCVPage = lazy(() =>
@@ -121,10 +110,17 @@ const CandidateCreateCVPage = lazy(() =>
 const CandidateCreateCVEditorPage = lazy(() =>
   import("@/pages/candidate/CandidateCreateCVEditorPage").then((m) => ({ default: m.CandidateCreateCVEditorPage })),
 );
-const CandidateCreateMotivationPage = lazy(() =>
-  import("@/pages/candidate/CandidateCreateMotivationPage").then((m) => ({
-    default: m.CandidateCreateMotivationPage,
-  })),
+const CreationMotivationRedirect = lazy(() =>
+  import("@/pages/candidate/CreationMotivationRedirect").then((m) => ({ default: m.default })),
+);
+const CandidateDocumentsPage = lazy(() =>
+  import("@/pages/candidate/CandidateCVPage").then((m) => ({ default: m.CandidateCVPage })),
+);
+const CandidateProfileEditPage = lazy(() =>
+  import("@/pages/candidate/CandidateProfileEditPage").then((m) => ({ default: m.default })),
+);
+const CandidateApplicationDetailPage = lazy(() =>
+  import("@/pages/candidate/CandidateApplicationDetailPage").then((m) => ({ default: m.default })),
 );
 const CandidateExperiencePage = lazy(() =>
   import("@/pages/candidate/CandidateExperiencePage").then((m) => ({
@@ -187,30 +183,26 @@ const PageLoadingFallback = () => (
   </div>
 );
 
+function SharedPublicRouteShell() {
+  const { profile, loading } = useCandidate();
+  const content = <Outlet />;
+
+  if (loading) {
+    return <PublicLayout>{content}</PublicLayout>;
+  }
+
+  if (profile) {
+    return (
+      <ProtectedRoute fallbackPath="/candidate/login" requiredPermissions={["dashboard.candidate"]}>
+        <CandidateLayout>{content}</CandidateLayout>
+      </ProtectedRoute>
+    );
+  }
+
+  return <PublicLayout>{content}</PublicLayout>;
+}
+
 export default function App() {
-  const location = useLocation();
-  const { profile, loading: candidateLoading } = useCandidate();
-  const isCandidateAwareRoute =
-    location.pathname === "/" ||
-    location.pathname.startsWith("/services") ||
-    location.pathname.startsWith("/jobs") ||
-    location.pathname.startsWith("/blog") ||
-    location.pathname.startsWith("/contact") ||
-    location.pathname.startsWith("/about");
-
-  const shouldShowCandidateShell =
-    !candidateLoading &&
-    !!profile &&
-    location.pathname !== "/auth" &&
-    !location.pathname.startsWith("/admin") &&
-    !location.pathname.startsWith("/candidate") &&
-    isCandidateAwareRoute;
-  const hideShell =
-    location.pathname === "/auth" ||
-    location.pathname.startsWith("/admin") ||
-    location.pathname.startsWith("/candidate") ||
-    shouldShowCandidateShell;
-
   // CRITICAL: On app startup, verify that any restored candidate session has a confirmed email
   // This prevents Supabase from silently restoring an unconfirmed session from localStorage
   useEffect(() => {
@@ -242,16 +234,19 @@ export default function App() {
 
   const routes = (
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/services" element={<ServicesPage />} />
-      <Route path="/services/:slug" element={<ServiceDetailPage />} />
-      <Route path="/services/hub-emploi-recrutement/landing" element={<HubEmploiPage />} />
-      <Route path="/jobs" element={<JobsPage />} />
-      <Route path="/jobs/:slug" element={<JobOfferDetailPage />} />
-      <Route path="/blog" element={<BlogPage />} />
-      <Route path="/blog/:slug" element={<BlogPostDetailPage />} />
-      <Route path="/contact" element={<ContactPage />} />
+      <Route element={<SharedPublicRouteShell />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/services" element={<ServicesPage />} />
+        <Route path="/services/:slug" element={<ServiceDetailPage />} />
+        <Route path="/services/hub-emploi-recrutement/landing" element={<HubEmploiPage />} />
+        <Route path="/jobs" element={<JobsPage />} />
+        <Route path="/jobs/:slug" element={<JobOfferDetailPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<BlogPostDetailPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+      </Route>
+
       <Route path="/auth" element={<AuthPage />} />
 
       {/* Candidate pages */}
@@ -263,9 +258,9 @@ export default function App() {
       <Route
         path="/candidate"
         element={
-          <ProtectedCandidateRoute>
+          <ProtectedRoute fallbackPath="/candidate/login" requiredPermissions={["dashboard.candidate"]}>
             <CandidateLayout />
-          </ProtectedCandidateRoute>
+          </ProtectedRoute>
         }
       >
         <Route index element={<Navigate to="/candidate/dashboard" replace />} />
@@ -277,30 +272,140 @@ export default function App() {
         <Route path="public/about" element={<AboutPage />} />
         <Route path="public/contact" element={<ContactPage />} />
         <Route path="profile" element={<CandidateProfilePage />} />
-        <Route path="creation" element={<CandidateCreateMotivationPage />} />
-        <Route path="creation-motivation" element={<CandidateCreateMotivationPage />} />
-        <Route path="experience" element={<CandidateExperiencePage />} />
-        <Route path="education" element={<CandidateEducationPage />} />
-        <Route path="skills" element={<CandidateSkillsPage />} />
-        <Route path="languages" element={<CandidateLanguagesPage />} />
-        <Route path="preferences" element={<CandidatePreferencesPage />} />
+        <Route path="profile/edit" element={<CandidateProfileEditPage />} />
+        <Route path="documents" element={<CandidateDocumentsPage />} />
+        {/* Backwards-compatible redirects */}
+        <Route path="creation" element={<Navigate to="/candidate/documents" replace />} />
+        <Route path="creation-motivation" element={<CreationMotivationRedirect />} />
+        <Route path="experience" element={<Navigate to="/candidate/profile?tab=experience" replace />} />
+        <Route path="education" element={<Navigate to="/candidate/profile?tab=education" replace />} />
+        <Route path="skills" element={<Navigate to="/candidate/profile?tab=skills" replace />} />
+        <Route path="languages" element={<Navigate to="/candidate/profile?tab=languages" replace />} />
+        <Route path="preferences" element={<Navigate to="/candidate/profile?tab=preferences" replace />} />
         <Route path="applications" element={<CandidateApplicationsPage />} />
+        <Route path="applications/:id" element={<CandidateApplicationDetailPage />} />
         <Route path="saved-offers" element={<CandidateSavedOffersPage />} />
         <Route path="notifications" element={<CandidateNotificationsPage />} />
         <Route path="settings" element={<CandidateSettingsPage />} />
         <Route path="jobs/:slug/apply" element={<CandidateJobApplyPage />} />
       </Route>
 
-      <Route path="/admin" element={<AdminPage />}>
-        <Route index element={<AdminHomePage />} />
-        <Route path="jobs" element={<AdminJobsPage />} />
-        <Route path="jobs/new" element={<AdminJobCreatePage />} />
-        <Route path="blog" element={<AdminBlogPage />} />
-        <Route path="blog/new" element={<AdminBlogCreatePage />} />
-        <Route path="candidates" element={<AdminCandidatesPage />} />
-        <Route path="notifications" element={<AdminNotificationsPage />} />
-        <Route path="seo" element={<AdminSEOPage />} />
-        <Route path="team" element={<AdminTeamPage />} />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute fallbackPath="/auth" allowedRoles={["super_admin", "admin", "editor"]}>
+            <AdminPage />
+          </ProtectedRoute>
+        }
+      >
+        <Route
+          index
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["dashboard.admin"]}
+            >
+              <AdminHomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="jobs"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["jobs.read"]}
+            >
+              <AdminJobsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="jobs/new"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["jobs.create"]}
+            >
+              <AdminJobCreatePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="blog"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin", "editor"]}
+              requiredPermissions={["blog.read"]}
+            >
+              <AdminBlogPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="blog/new"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin", "editor"]}
+              requiredPermissions={["blog.write"]}
+            >
+              <AdminBlogCreatePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="candidates"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["candidate.read"]}
+            >
+              <AdminCandidatesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="notifications"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["notifications.manage"]}
+            >
+              <AdminNotificationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="seo"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["seo.manage"]}
+            >
+              <AdminSEOPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="team"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin"]}
+              requiredPermissions={["team.manage"]}
+            >
+              <AdminTeamPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
@@ -309,20 +414,8 @@ export default function App() {
   return (
     <I18nProvider>
       <CandidateSidebarProvider>
-        <div className="min-h-screen flex flex-col bg-background text-foreground">
-          {!hideShell && <SiteHeader />}
-          <main className="flex-1">
-            <Suspense fallback={<PageLoadingFallback />}>
-              {shouldShowCandidateShell ? (
-                <CandidateAppShell pageTitle="Mon Espace">{routes}</CandidateAppShell>
-              ) : (
-                routes
-              )}
-            </Suspense>
-          </main>
-          {!hideShell && <SiteFooter />}
-          <Toaster richColors position="top-right" />
-        </div>
+        <Suspense fallback={<PageLoadingFallback />}>{routes}</Suspense>
+        <Toaster richColors position="top-right" />
       </CandidateSidebarProvider>
     </I18nProvider>
   );

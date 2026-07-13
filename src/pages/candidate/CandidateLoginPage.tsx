@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { usePageSEO } from "@/lib/seo";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,28 +11,36 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
-import { CandidateAuthService } from "@/integrations/supabase/candidate-auth";
+import { parseAuthErrorMessage, resendConfirmationEmail } from "@/features/authentication/api/authApi";
+import { useAuth } from "@/features/authentication/hooks/useAuth";
 import favicon from "@/assets/favicon.ico";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { loginSchema, type LoginFormValues } from "@/features/forms/schemas/auth.schemas";
 
 export function CandidateLoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const state = location.state as { notification?: string; pendingEmail?: string } | null;
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const state = location.state as { notification?: string; pendingEmail?: string } | null;
   const [successMessage, setSuccessMessage] = useState(state?.notification || "");
   const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
   const [pendingEmail, setPendingEmail] = useState(state?.pendingEmail || "");
   const [showPendingResend, setShowPendingResend] = useState(Boolean(state?.pendingEmail));
   const [emailConfirmed, setEmailConfirmed] = useState(false);
+
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
+
+  const { login } = useAuth();
 
   useEffect(() => {
     if (searchParams.get("confirmed") === "true") {
@@ -46,54 +56,14 @@ export function CandidateLoginPage() {
     canonical: "https://emploiplus.group/#/candidate/login",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.currentTarget;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // Clear error for this field
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
-  };
-
-  const handleRememberMeChange = (checked: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      rememberMe: checked,
-    }));
-  };
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    if (!formData.email) newErrors.email = "L'email est requis";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Email invalide";
-    if (!formData.password) newErrors.password = "Le mot de passe est requis";
-    return newErrors;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: LoginFormValues) => {
     setErrorMessage("");
     setSuccessMessage("");
     setEmailNotConfirmed(false);
 
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
     setLoading(true);
     try {
-      await CandidateAuthService.login({
-        email: formData.email,
-        password: formData.password,
-      });
+      await login(values.email, values.password);
 
       setSuccessMessage("Connexion réussie! Redirection en cours...");
       navigate("/candidate/dashboard", { replace: true });
@@ -105,10 +75,10 @@ export function CandidateLoginPage() {
         (error as { code?: string }).code === "EMAIL_NOT_CONFIRMED"
       ) {
         setEmailNotConfirmed(true);
-        setPendingEmail((error as { userEmail?: string }).userEmail || formData.email);
+        setPendingEmail((error as { userEmail?: string }).userEmail || values.email);
         setErrorMessage("Veuillez confirmer votre email avant de vous connecter");
       } else {
-        const errorMsg = CandidateAuthService.parseErrorMessage(error);
+        const errorMsg = parseAuthErrorMessage(error);
         setErrorMessage(errorMsg);
       }
       console.error("Login error:", error);
@@ -120,11 +90,11 @@ export function CandidateLoginPage() {
   const handleResendEmail = async () => {
     setResending(true);
     try {
-      await CandidateAuthService.resendConfirmationEmail(pendingEmail);
+      await resendConfirmationEmail(pendingEmail);
       setSuccessMessage("Email de confirmation renvoyé! Vérifiez votre boîte de réception.");
       setEmailNotConfirmed(false);
     } catch (error: unknown) {
-      const errorMsg = CandidateAuthService.parseErrorMessage(error);
+      const errorMsg = parseAuthErrorMessage(error);
       setErrorMessage(errorMsg);
     } finally {
       setResending(false);
@@ -216,65 +186,82 @@ export function CandidateLoginPage() {
               </Alert>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700">
-                  Email
-                </Label>
-                <Input
-                  id="email"
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4" noValidate>
+                <FormField
+                  control={form.control}
                   name="email"
-                  type="email"
-                  placeholder="votre@email.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className={errors.email ? "border-red-500" : ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-700">Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          id="email"
+                          type="email"
+                          placeholder="votre@email.com"
+                          disabled={loading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
-              </div>
 
-              {/* Password */}
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-700">
-                  Mot de passe
-                </Label>
-                <Input
-                  id="password"
+                <FormField
+                  control={form.control}
                   name="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className={errors.password ? "border-red-500" : ""}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-700">Mot de passe</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          id="password"
+                          type="password"
+                          placeholder="••••••••"
+                          disabled={loading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
-              </div>
 
-              {/* Remember Me */}
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="rememberMe"
-                  checked={formData.rememberMe}
-                  onCheckedChange={handleRememberMeChange}
-                  disabled={loading}
+                <FormField
+                  control={form.control}
+                  name="rememberMe"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <FormControl>
+                          <Checkbox
+                            id="rememberMe"
+                            checked={field.value === true}
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked === true);
+                            }}
+                            disabled={loading}
+                          />
+                        </FormControl>
+                        <FormLabel htmlFor="rememberMe" className="text-sm cursor-pointer">
+                          Se souvenir de moi
+                        </FormLabel>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                <Label htmlFor="rememberMe" className="text-sm cursor-pointer">
-                  Se souvenir de moi
-                </Label>
-              </div>
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-brand text-brand-foreground hover:bg-brand/90 font-medium"
-              >
-                {loading ? "Connexion en cours..." : "Se connecter"}
-              </Button>
-            </form>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-brand text-brand-foreground hover:bg-brand/90 font-medium"
+                >
+                  {loading ? "Connexion en cours..." : "Se connecter"}
+                </Button>
+              </form>
+            </Form>
 
             {/* Divider */}
             <div className="relative my-6">
@@ -288,7 +275,7 @@ export function CandidateLoginPage() {
 
             {/* Links */}
             <div className="space-y-3">
-              <Link to="/candidate/forgot-password">
+              <Link to="/candidate/forgot-password" className="block">
                 <Button
                   type="button"
                   variant="ghost"
@@ -303,7 +290,7 @@ export function CandidateLoginPage() {
                   Pas encore de compte?{" "}
                   <Link
                     to="/candidate/signup"
-                    className="text-brand font-semibold hover:text-brand/80"
+                    className="text-brand font-semibold hover:text-brand/80 inline-block"
                   >
                     S'inscrire
                   </Link>

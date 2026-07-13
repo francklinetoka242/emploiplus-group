@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
-import { BASE_URL } from "@/lib/seo";
+import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
-import { SERVICES } from "@/lib/constants";
+import { SERVICES } from "@/constants/services";
 import hubImage from "@/assets/IMG_Page-Services/2147626421.jpg";
 import rhImage from "@/assets/IMG_Page-Services/groupe-hommes-affaires-afro-americains_926199-3049393.jpg";
 import conseilImage from "@/assets/IMG_Page-Services/ingenieurs-equipe-discutant-dans-salle-serveurs-train-faire-du-brainstorming_482257-118150(1).jpg";

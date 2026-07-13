@@ -9,12 +9,12 @@ import {
   Trash2,
   UploadCloud,
 } from "lucide-react";
-import { uploadFileToStorage } from "@/lib/supabase-storage";
-import { useI18n } from "@/lib/i18n";
+import { uploadFileToStorage } from "@/services/storageService";
+import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
-import { BASE_URL } from "@/lib/seo";
+import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { jobService } from "@/features/jobs/api";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -28,10 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { centralAfricaCityGroups } from "@/lib/centralAfricaCities";
-import type { Database } from "@/integrations/supabase/types";
-
-type JobOffer = Database["public"]["Tables"]["job_offers"]["Row"];
+import { centralAfricaCityGroups } from "@/data/locations";
+import type { JobOffer, JobOfferUpdate, JobOfferInsert } from "@/features/jobs/types";
 
 type JobFormState = {
   title: string;
@@ -100,16 +98,18 @@ export function AdminJobsPage() {
 
   const loadJobs = React.useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("job_offers")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setLoading(false);
-    if (!error) {
-      setJobs(data ?? []);
-      return;
+    try {
+      const data = await jobService.searchOffers({
+        orderBy: "created_at",
+        order: "desc",
+        limit: 1000,
+      });
+      setJobs(data);
+    } catch (error) {
+      setMessage({ type: "error", text: error instanceof Error ? error.message : "Erreur de chargement des offres." });
+    } finally {
+      setLoading(false);
     }
-    setMessage({ type: "error", text: error.message });
   }, []);
 
   React.useEffect(() => {
@@ -256,11 +256,18 @@ export function AdminJobsPage() {
     };
 
     try {
-      const query = editingId
-        ? supabase.from("job_offers").update(updatePayload).eq("id", editingId)
-        : supabase.from("job_offers").insert([insertPayload]).select("id").single();
-
-      const { error } = await query;
+try {
+      if (editingId) {
+        await jobService.updateOffer(editingId, updatePayload);
+      } else {
+        await jobService.createOffer(insertPayload);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur de sauvegarde de l'offre.";
+      setMessage({ type: "error", text: message });
+      console.error("Job save error", error);
+      return;
+    }
 
       if (error) {
         setMessage({ type: "error", text: error.message });
@@ -292,15 +299,19 @@ export function AdminJobsPage() {
     nextStatus: Database["public"]["Enums"]["job_status"],
   ) => {
     setActionLoadingId(job.id);
-    const { error } = await supabase
-      .from("job_offers")
-      .update({
+    try {
+      await jobService.updateOffer(job.id, {
         status: nextStatus,
         publish_at:
           nextStatus === "published" ? (job.publish_at ?? new Date().toISOString()) : null,
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", job.id);
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur de mise à jour du statut.";
+      setMessage({ type: "error", text: message });
+      setActionLoadingId(null);
+      return;
+    }
     setActionLoadingId(null);
     if (error) {
       setMessage({ type: "error", text: error.message });
@@ -316,12 +327,15 @@ export function AdminJobsPage() {
   const deleteJob = async (job: JobOffer) => {
     if (!window.confirm(`Supprimer définitivement l'offre « ${job.title} » ?`)) return;
     setActionLoadingId(job.id);
-    const { error } = await supabase.from("job_offers").delete().eq("id", job.id);
-    setActionLoadingId(null);
-    if (error) {
-      setMessage({ type: "error", text: error.message });
+    try {
+      await jobService.deleteOffer(job.id);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erreur de suppression de l'offre.";
+      setMessage({ type: "error", text: message });
+      setActionLoadingId(null);
       return;
     }
+    setActionLoadingId(null);
     setMessage({ type: "success", text: "Offre supprimée." });
     await loadJobs();
   };

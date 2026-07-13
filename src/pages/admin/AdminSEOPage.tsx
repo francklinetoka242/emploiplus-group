@@ -9,7 +9,7 @@ import {
   getSiteSeoSettings,
   saveSiteSeoSettings,
   type SiteSEOSettings,
-} from "@/lib/seo";
+} from "@/features/seo";
 import { RotateCcw, Save, Sparkles } from "lucide-react";
 
 export function AdminSEOPage() {

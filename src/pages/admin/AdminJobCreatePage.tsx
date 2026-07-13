@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
-import { BASE_URL } from "@/lib/seo";
-import { supabase } from "@/integrations/supabase/client";
+import { BASE_URL } from "@/features/seo";
+import { jobService } from "@/features/jobs/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,8 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { centralAfricaCityGroups } from "@/lib/centralAfricaCities";
-import type { Database } from "@/integrations/supabase/types";
+import { centralAfricaCityGroups } from "@/data/locations";
+import type { JobOfferInsert } from "@/features/jobs/types";
 
 function createSlug(value: string) {
   return (
@@ -118,23 +118,12 @@ export function AdminJobCreatePage() {
     };
 
     try {
-      const { data, error } = savedOfferId
-        ? await supabase.from("job_offers").update(payload).eq("id", savedOfferId)
-        : await supabase.from("job_offers").insert([payload]).select("id").single();
-
-      if (error) {
-        setError(error.message);
-        return;
+      if (savedOfferId) {
+        await jobService.updateOffer(savedOfferId, payload as JobOfferInsert);
+      } else {
+        const created = await jobService.createOffer(payload as JobOfferInsert);
+        setSavedOfferId(created.id);
       }
-
-      // Publish immediately on creation
-      if (!savedOfferId) {
-        setSavedOfferId(data?.id || null);
-        setSuccess(t("admin.jobs.create.publishedMessage"));
-        navigate("/admin/jobs");
-        return;
-      }
-
       setSuccess(t("admin.jobs.create.publishedMessage"));
       navigate("/admin/jobs");
     } catch (err) {

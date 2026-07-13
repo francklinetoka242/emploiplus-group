@@ -1,4 +1,4 @@
-import { usePageSEO } from "@/lib/seo";
+import { usePageSEO } from "@/features/seo";
 
 interface PageHeadingProps {
   title: string;

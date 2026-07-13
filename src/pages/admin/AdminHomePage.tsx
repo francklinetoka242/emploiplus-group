@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
-import { BASE_URL } from "@/lib/seo";
+import { BASE_URL } from "@/features/seo";
+import { jobService } from "@/features/jobs/api";
 import {
   BadgeCheck,
   BriefcaseBusiness,
@@ -119,147 +120,147 @@ function AdminDashboardView() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="overflow-hidden rounded-[2rem] border border-border bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-8 text-white shadow-soft">
-        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-3">
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-300">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="overflow-hidden rounded-xl sm:rounded-[2rem] border border-border bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-4 sm:p-8 text-white shadow-soft">
+        <div className="flex flex-col gap-4 sm:gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div className="space-y-2 sm:space-y-3 min-w-0">
+            <p className="text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] text-slate-300">
               {t("admin.dashboard.overview")}
             </p>
-            <h1 className="text-3xl font-semibold">{t("admin.dashboard.title")}</h1>
-            <p className="max-w-2xl text-sm leading-6 text-slate-300">
+            <h1 className="text-2xl sm:text-3xl font-semibold truncate">{t("admin.dashboard.title")}</h1>
+            <p className="max-w-2xl text-xs sm:text-sm leading-6 text-slate-300 line-clamp-3">
               {t("admin.dashboard.description")}
             </p>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-3xl border border-white/10 bg-white/10 px-5 py-3 text-sm text-slate-100 backdrop-blur">
-            <Sparkles className="h-4 w-4 text-cyan-300" />
-            <span>{t("admin.dashboard.premium")}</span>
+          <div className="inline-flex items-center gap-2 rounded-2xl sm:rounded-3xl border border-white/10 bg-white/10 px-3 sm:px-5 py-2 sm:py-3 text-xs sm:text-sm text-slate-100 backdrop-blur flex-shrink-0">
+            <Sparkles className="h-3 sm:h-4 w-3 sm:w-4 text-cyan-300" />
+            <span className="whitespace-nowrap">{t("admin.dashboard.premium")}</span>
           </div>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
         {metrics.map((metric) => {
           const Icon = metric.icon;
           return (
             <div
               key={metric.label}
-              className="rounded-[1.5rem] border border-border bg-background p-6 shadow-soft transition hover:-translate-y-0.5 hover:border-slate-300"
+              className="rounded-xl sm:rounded-[1.5rem] border border-border bg-background p-3 sm:p-6 shadow-soft transition hover:-translate-y-0.5 hover:border-slate-300"
             >
-              <div className={`inline-flex rounded-2xl bg-gradient-to-br ${metric.tone} p-3`}>
-                <Icon className="h-5 w-5" />
+              <div className={`inline-flex rounded-lg sm:rounded-2xl bg-gradient-to-br ${metric.tone} p-2 sm:p-3`}>
+                <Icon className="h-4 sm:h-5 w-4 sm:w-5" />
               </div>
-              <p className="mt-5 text-sm uppercase tracking-[0.2em] text-slate-500">
+              <p className="mt-3 sm:mt-5 text-xs sm:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em] text-slate-500 line-clamp-2">
                 {metric.label}
               </p>
-              <p className="mt-4 text-3xl font-semibold text-foreground">{metric.value}</p>
+              <p className="mt-2 sm:mt-4 text-xl sm:text-3xl font-semibold text-foreground">{metric.value}</p>
             </div>
           );
         })}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-3">
-        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
+        <div className="rounded-xl sm:rounded-[2rem] border border-border bg-card p-4 sm:p-8 shadow-soft">
+          <div className="flex items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em] text-slate-500">
                 {t("admin.dashboard.jobs.title")}
               </p>
-              <h3 className="mt-2 text-xl font-semibold text-foreground">
+              <h3 className="mt-1 sm:mt-2 text-sm sm:text-xl font-semibold text-foreground truncate">
                 {t("admin.dashboard.jobs.subtitle")}
               </h3>
             </div>
-            <div className="rounded-3xl bg-emerald-500/10 px-3 py-2 text-emerald-500">Stable</div>
+            <div className="rounded-2xl sm:rounded-3xl bg-emerald-500/10 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm text-emerald-500 whitespace-nowrap flex-shrink-0">Stable</div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">
+          <p className="mt-3 sm:mt-4 text-xs sm:text-sm leading-6 text-muted-foreground line-clamp-2">
             {t("admin.dashboard.jobs.description")}
           </p>
-          <div className="mt-6 rounded-2xl border border-border bg-background/70 p-4">
-            <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-              <BadgeCheck className="h-4 w-4 text-emerald-500" />
-              <span>Vos offres sont visibles et prêtes à être gérées.</span>
+          <div className="mt-4 sm:mt-6 rounded-lg sm:rounded-2xl border border-border bg-background/70 p-3 sm:p-4">
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-foreground">
+              <BadgeCheck className="h-3 sm:h-4 w-3 sm:w-4 text-emerald-500 flex-shrink-0" />
+              <span className="line-clamp-2">Vos offres sont visibles et prêtes à être gérées.</span>
             </div>
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
+        <div className="rounded-xl sm:rounded-[2rem] border border-border bg-card p-4 sm:p-8 shadow-soft">
+          <div className="flex items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em] text-slate-500">
                 {t("admin.dashboard.blog.title")}
               </p>
-              <h3 className="mt-2 text-xl font-semibold text-foreground">
+              <h3 className="mt-1 sm:mt-2 text-sm sm:text-xl font-semibold text-foreground truncate">
                 {t("admin.dashboard.blog.subtitle")}
               </h3>
             </div>
-            <div className="rounded-3xl bg-cyan-500/10 px-3 py-2 text-cyan-500">À la une</div>
+            <div className="rounded-2xl sm:rounded-3xl bg-cyan-500/10 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm text-cyan-500 whitespace-nowrap flex-shrink-0">À la une</div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">
+          <p className="mt-3 sm:mt-4 text-xs sm:text-sm leading-6 text-muted-foreground line-clamp-2">
             {t("admin.dashboard.blog.description")}
           </p>
-          <div className="mt-6 rounded-2xl border border-border bg-background/70 p-4">
-            <div className="flex items-center justify-between text-sm font-medium text-foreground">
+          <div className="mt-4 sm:mt-6 rounded-lg sm:rounded-2xl border border-border bg-background/70 p-3 sm:p-4">
+            <div className="flex items-center justify-between text-xs sm:text-sm font-medium text-foreground mb-3">
               <span>{t("admin.dashboard.blog.featuredCount")}</span>
               <span className="font-semibold">{counts.featuredPosts}</span>
             </div>
             <Link
               to="/admin/blog"
-              className="mt-4 inline-flex items-center rounded-2xl border border-border bg-background/80 px-4 py-2 text-sm text-foreground transition hover:border-slate-300 hover:bg-background"
+              className="inline-flex items-center rounded-lg sm:rounded-2xl border border-border bg-background/80 px-3 sm:px-4 py-2 text-xs sm:text-sm text-foreground transition hover:border-slate-300 hover:bg-background"
             >
               {t("admin.dashboard.action.viewBlog")}
             </Link>
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
+        <div className="rounded-xl sm:rounded-[2rem] border border-border bg-card p-4 sm:p-8 shadow-soft">
+          <div className="flex items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em] text-slate-500">
                 {t("admin.dashboard.admin.title")}
               </p>
-              <h3 className="mt-2 text-xl font-semibold text-foreground">
+              <h3 className="mt-1 sm:mt-2 text-sm sm:text-xl font-semibold text-foreground truncate">
                 {t("admin.dashboard.admin.subtitle")}
               </h3>
             </div>
-            <div className="rounded-3xl bg-slate-900/80 px-3 py-2 text-slate-100">
-              {adminStats.total} comptes
+            <div className="rounded-2xl sm:rounded-3xl bg-slate-900/80 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm text-slate-100 whitespace-nowrap flex-shrink-0">
+              {adminStats.total}
             </div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">
+          <p className="mt-3 sm:mt-4 text-xs sm:text-sm leading-6 text-muted-foreground line-clamp-2">
             {t("admin.dashboard.admin.description")}
           </p>
-          <div className="mt-6 space-y-3 rounded-2xl border border-border bg-background/70 p-4 text-sm text-foreground">
+          <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3 rounded-lg sm:rounded-2xl border border-border bg-background/70 p-3 sm:p-4 text-xs sm:text-sm text-foreground">
             <div className="flex items-center justify-between">
-              <span>{t("admin.dashboard.admin.active")}</span>
-              <span>{adminStats.active}</span>
+              <span className="truncate">{t("admin.dashboard.admin.active")}</span>
+              <span className="font-semibold">{adminStats.active}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>{t("admin.dashboard.admin.blocked")}</span>
-              <span>{adminStats.blocked}</span>
+              <span className="truncate">{t("admin.dashboard.admin.blocked")}</span>
+              <span className="font-semibold">{adminStats.blocked}</span>
             </div>
-            <div className="border-t border-border pt-3">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+            <div className="border-t border-border pt-2 sm:pt-3">
+              <p className="text-xs uppercase tracking-[0.15em] text-slate-500 mb-2">
                 {t("admin.dashboard.admin.roles")}
               </p>
-              <div className="mt-3 space-y-2 text-sm">
+              <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                 <div className="flex items-center justify-between text-foreground">
-                  <span>{t("admin.team.role.superAdmin")}</span>
-                  <span>{adminStats.roles.super_admin}</span>
+                  <span className="truncate">{t("admin.team.role.superAdmin")}</span>
+                  <span className="font-semibold">{adminStats.roles.super_admin}</span>
                 </div>
                 <div className="flex items-center justify-between text-foreground">
-                  <span>{t("admin.team.role.admin")}</span>
-                  <span>{adminStats.roles.admin}</span>
+                  <span className="truncate">{t("admin.team.role.admin")}</span>
+                  <span className="font-semibold">{adminStats.roles.admin}</span>
                 </div>
                 <div className="flex items-center justify-between text-foreground">
-                  <span>{t("admin.team.role.editor")}</span>
-                  <span>{adminStats.roles.editor}</span>
+                  <span className="truncate">{t("admin.team.role.editor")}</span>
+                  <span className="font-semibold">{adminStats.roles.editor}</span>
                 </div>
               </div>
             </div>
           </div>
           <Link
             to="/admin/team"
-            className="mt-5 inline-flex items-center rounded-2xl border border-border bg-background/80 px-4 py-2 text-sm text-foreground transition hover:border-slate-300 hover:bg-background"
+            className="mt-4 sm:mt-5 inline-flex items-center rounded-lg sm:rounded-2xl border border-border bg-background/80 px-3 sm:px-4 py-2 text-xs sm:text-sm text-foreground transition hover:border-slate-300 hover:bg-background"
           >
             {t("admin.dashboard.action.viewTeam")}
           </Link>

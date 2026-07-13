@@ -5,7 +5,7 @@ import { CandidateMobileHeader } from "@/components/candidate/CandidateMobileHea
 import { CandidateTopbar } from "@/components/candidate/CandidateTopbar";
 import { useCandidate } from "@/hooks/useCandidate";
 import { useCandidateSidebar } from "@/contexts/CandidateSidebarContext";
-import { usePageSEO } from "@/lib/seo";
+import { usePageSEO } from "@/features/seo";
 import { cn } from "@/lib/utils";
 
 interface CandidateAppShellProps {
@@ -13,17 +13,20 @@ interface CandidateAppShellProps {
   pageTitle?: string;
 }
 
+interface CandidateLayoutProps {
+  children?: React.ReactNode;
+}
+
 // Map des titres de page
 const pageToTitle: Record<string, string> = {
   "/candidate/dashboard": "Tableau de bord",
   "/candidate/profile": "Mon profil",
-  "/candidate/creation": "Creation",
-  "/candidate/Mes-Documents": "Mes Documents",
-  "/candidate/experience": "Expériences professionnelles",
-  "/candidate/education": "Formations",
-  "/candidate/skills": "Compétences",
-  "/candidate/languages": "Langues",
-  "/candidate/preferences": "Préférences d'emploi",
+  "/candidate/documents": "Mes Documents",
+  "/candidate/experience": "Profil",
+  "/candidate/education": "Profil",
+  "/candidate/skills": "Profil",
+  "/candidate/languages": "Profil",
+  "/candidate/preferences": "Profil",
   "/candidate/applications": "Mes candidatures",
   "/candidate/saved-offers": "Offres enregistrées",
   "/candidate/notifications": "",
@@ -35,7 +38,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   const { logout } = useCandidate();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="h-screen min-h-screen flex flex-col bg-background text-foreground">
       {/* Mobile Header (visible uniquement sur mobile) */}
       <CandidateMobileHeader title={pageTitle} onMenuOpen={() => setOpen(true)} onLogout={logout} />
 
@@ -50,7 +53,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
         {/* Contenu principal */}
         <div
           className={cn(
-            "flex flex-1 flex-col transition-all duration-300 ease-in-out",
+            "flex flex-1 min-h-0 flex-col transition-all duration-300 ease-in-out",
             open ? "md:ml-72" : "md:ml-20",
           )}
         >
@@ -58,7 +61,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
           <CandidateTopbar onMenuToggle={() => setOpen(!open)} onLogout={logout} />
 
           {/* Contenu avec scroll */}
-          <main className="flex-1 overflow-y-auto overflow-x-hidden">
+          <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
             <div className="w-full">
               <div className="mx-auto w-full px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10 max-w-7xl">
                 {children}
@@ -71,7 +74,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   );
 }
 
-export function CandidateLayout() {
+export function CandidateLayout({ children }: CandidateLayoutProps) {
   const location = useLocation();
 
   // Déterminer le titre basé sur la route actuelle
@@ -86,8 +89,6 @@ export function CandidateLayout() {
   });
 
   return (
-    <CandidateAppShell pageTitle={pageTitle}>
-      <Outlet />
-    </CandidateAppShell>
+    <CandidateAppShell pageTitle={pageTitle}>{children ?? <Outlet />}</CandidateAppShell>
   );
 }

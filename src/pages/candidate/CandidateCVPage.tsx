@@ -1,69 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useI18n } from "@/lib/i18n";
-import { usePageSEO } from "@/lib/seo";
+import { usePageSEO } from "@/features/seo";
+import { useCandidate } from "@/features/candidates/hooks/useCandidate";
+import { CandidateDocumentsPanel } from "@/features/candidates/components/documents/CandidateDocumentsPanel";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Upload,
-  Download,
-  Eye,
-  Trash2,
-  FileText,
-  Award,
-  ClipboardList,
-  Briefcase,
-  Plus,
-  AlertCircle,
-} from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCandidate } from "@/hooks/useCandidate";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Upload, Download, Eye, Trash2, FileText, Plus, AlertCircle } from "lucide-react";
 import {
   ALLOWED_DOCUMENT_MIME_TYPES,
   MAX_DOCUMENT_SIZE_BYTES,
-  uploadFileToStorage,
-  CANDIDATE_DOCUMENTS_BUCKET,
-} from "@/lib/supabase-storage";
-
-interface CandidateDocument {
-  id: string;
-  type:
-    "motivation" | "diploma" | "certificate" | "attestation" | "portfolio" | "other" | "recepisse";
-  name: string;
-  displayName: string;
-  date: string;
-  size?: string;
-  url: string;
-  customType?: string;
-}
-
-interface CandidateCVState {
-  id: string;
-  name: string;
-  displayName: string;
-  date: string;
-  size?: string;
-  url: string;
-}
+} from "@/services/storageService";
+import { deleteCandidateDocument, getCandidateDocuments, saveCandidateDocuments, uploadCandidateCV, uploadCandidateDocument, type CandidateCVState, type CandidateDocument } from "@/features/candidates/api/documentsApi";
 
 const documentTypes = {
-  motivation: { label: "Lettre de motivation", icon: FileText, color: "text-blue-600" },
-  diploma: { label: "Diplôme", icon: Award, color: "text-purple-600" },
-  certificate: { label: "Certificat", icon: ClipboardList, color: "text-green-600" },
-  attestation: { label: "Attestation", icon: Briefcase, color: "text-orange-600" },
-  portfolio: { label: "Portfolio", icon: FileText, color: "text-cyan-600" },
-  other: { label: "Autre", icon: FileText, color: "text-slate-600" },
-  recepisse: { label: "Récépissé ACPE", icon: ClipboardList, color: "text-emerald-600" },
+  motivation: { label: "Lettre de motivation" },
+  diploma: { label: "Diplôme" },
+  certificate: { label: "Certificat" },
+  attestation: { label: "Attestation" },
+  portfolio: { label: "Portfolio" },
+  other: { label: "Autre" },
+  recepisse: { label: "Récépissé ACPE" },
 };
 
 const formatFileSize = (size: number) => {
@@ -74,22 +34,16 @@ const formatFileSize = (size: number) => {
 
 const formatDate = (value: string) => {
   try {
-    return new Date(value).toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
+    return new Date(value).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
   } catch {
     return value;
   }
 };
 
 export function CandidateCVPage() {
-  const { t } = useI18n();
   const { profile, loading } = useCandidate();
   const location = useLocation();
   const cvInputRef = useRef<HTMLInputElement | null>(null);
-  const documentInputRef = useRef<HTMLInputElement | null>(null);
   const cvSectionRef = useRef<HTMLDivElement | null>(null);
   const [cv, setCv] = useState<CandidateCVState | null>(null);
   const [documents, setDocuments] = useState<CandidateDocument[]>([]);
@@ -111,16 +65,12 @@ export function CandidateCVPage() {
   useEffect(() => {
     if (!profile?.id) return;
 
-    try {
-      const raw = localStorage.getItem(`emploiplus-candidate-documents-${profile.id}`);
-      if (!raw) return;
-
-      const parsed = JSON.parse(raw) as { cv?: CandidateCVState; documents?: CandidateDocument[] };
-      setCv(parsed.cv ?? null);
-      setDocuments(parsed.documents ?? []);
-    } catch (error) {
+    void getCandidateDocuments(profile.id).then((data) => {
+      setCv(data.cv ?? null);
+      setDocuments(data.documents ?? []);
+    }).catch((error) => {
       console.error("Unable to restore candidate documents", error);
-    }
+    });
   }, [profile?.id]);
 
   useEffect(() => {
@@ -140,11 +90,7 @@ export function CandidateCVPage() {
 
   useEffect(() => {
     if (!profile?.id) return;
-
-    localStorage.setItem(
-      `emploiplus-candidate-documents-${profile.id}`,
-      JSON.stringify({ cv, documents }),
-    );
+    void saveCandidateDocuments(profile.id, { cv, documents });
   }, [profile?.id, cv, documents]);
 
   const resetDocumentDialog = () => {
@@ -173,11 +119,7 @@ export function CandidateCVPage() {
     setFeedbackMessage("");
 
     try {
-      const url = await uploadFileToStorage(
-        file,
-        `candidates/${profile.id}/cv`,
-        CANDIDATE_DOCUMENTS_BUCKET,
-      );
+      const url = await uploadCandidateCV(profile.id, file);
       setCv({
         id: `cv-${Date.now()}`,
         name: file.name,
@@ -213,25 +155,12 @@ export function CandidateCVPage() {
     setFeedbackMessage("");
 
     try {
-      const url = await uploadFileToStorage(
+      const newDocument = await uploadCandidateDocument(
+        profile.id,
         selectedDocumentFile,
-        `candidates/${profile.id}/documents`,
-        CANDIDATE_DOCUMENTS_BUCKET,
+        selectedType as CandidateDocument["type"],
+        otherLabel,
       );
-      const newDocument: CandidateDocument = {
-        id: `doc-${Date.now()}`,
-        type: selectedType as CandidateDocument["type"],
-        name: selectedDocumentFile.name,
-        displayName:
-          selectedType === "other" && otherLabel.trim()
-            ? otherLabel.trim()
-            : selectedDocumentFile.name,
-        date: new Date().toISOString(),
-        size: formatFileSize(selectedDocumentFile.size),
-        url,
-        customType: selectedType === "other" ? otherLabel.trim() : undefined,
-      };
-
       setDocuments((prev) => [newDocument, ...prev]);
       setFeedbackMessage("Le document a été ajouté avec succès.");
       resetDocumentDialog();
@@ -244,8 +173,14 @@ export function CandidateCVPage() {
     }
   };
 
-  const handleDeleteDocument = (id: string) => {
-    setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+  const handleDeleteDocument = async (id: string) => {
+    if (!profile?.id) return;
+    try {
+      await deleteCandidateDocument(profile.id, id);
+      setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+    } catch (error) {
+      setFeedbackError(error instanceof Error ? error.message : "Impossible de supprimer le document.");
+    }
   };
 
   if (loading) {
@@ -496,20 +431,6 @@ export function CandidateCVPage() {
         </CardContent>
       </Card>
 
-      <Card className="bg-blue-50 border-blue-200">
-        <CardContent className="pt-6">
-          <div className="flex gap-3">
-            <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-blue-900">
-              <p className="font-medium mb-1">💡 Conseil</p>
-              <p>
-                Les documents complémentaires augmentent significativement vos chances de recevoir
-                une réponse positive.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

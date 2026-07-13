@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { usePageSEO } from "@/lib/seo";
+import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
-import { CandidateAuthService, CandidateExperience } from "@/integrations/supabase/candidate-auth";
+import { CandidateExperience } from "@/features/candidates/api/types";
+import { getCandidateExperiences } from "@/features/candidates/api/experiencesApi";
 import { useCandidate } from "@/hooks/useCandidate";
+import { useJobs } from "@/features/jobs/hooks";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { SaasCard, SaasCardHeader, SaasCardContent } from "@/components/candidate/SaasCard";
@@ -22,7 +23,7 @@ import {
   MapPin,
   DollarSign,
 } from "lucide-react";
-import JobCard from "@/components/site/JobCard";
+import { JobCard } from "@/features/jobs/components";
 
 type DashboardOffer = {
   id: string;
@@ -74,6 +75,12 @@ export function CandidateDashboardPage() {
   const { profile, loading: profileLoading } = useCandidate();
   const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [offersLoading, setOffersLoading] = useState(true);
+  const { offers: publishedOffers, loading: publishedOffersLoading } = useJobs({
+    status: "published",
+    limit: 3,
+    orderBy: "published_at",
+    order: "desc",
+  });
   const [experienceEntries, setExperienceEntries] = useState<CandidateExperience[]>([]);
   const [candidateDocuments, setCandidateDocuments] = useState<{
     cv: { url?: string | null } | null;
@@ -87,44 +94,28 @@ export function CandidateDashboardPage() {
   });
 
   useEffect(() => {
-    const loadOffers = async () => {
-      setOffersLoading(true);
-      const { data, error } = await supabase
-        .from("job_offers")
-        .select(
-          "id, slug, title, company, location_city, location_country, contract_type, salary, published_at, status, description, requirements, tags, deadline, expires_at, application_email, external_link",
-        )
-        .eq("status", "published")
-        .order("published_at", { ascending: false })
-        .limit(3);
-
-      if (!error && data) {
-        setOffers(
-          data.map((offer) => ({
-            id: offer.id,
-            slug: offer.slug ?? offer.id,
-            title: offer.title ?? "Offre à découvrir",
-            company: offer.company ?? "Entreprise",
-            location: offer.location_city ?? "À distance",
-            postedDate: offer.published_at
-              ? new Date(offer.published_at).toLocaleDateString("fr-FR")
-              : "—",
-            type: offer.contract_type ?? "CDI",
-            salary: offer.salary ?? "Salaire à négocier",
-            description: offer.description ?? null,
-            requirements: offer.requirements ?? null,
-            tags: offer.tags ?? [],
-            deadline: offer.deadline ?? offer.expires_at ?? null,
-            application_email: offer.application_email ?? null,
-            external_link: offer.external_link ?? null,
-          })),
-        );
-      }
-      setOffersLoading(false);
-    };
-
-    void loadOffers();
-  }, []);
+    setOffersLoading(publishedOffersLoading);
+    setOffers(
+      publishedOffers.map((offer) => ({
+        id: offer.id,
+        slug: offer.slug ?? offer.id,
+        title: offer.title ?? "Offre à découvrir",
+        company: offer.company ?? "Entreprise",
+        location: offer.location_city ?? "À distance",
+        postedDate: offer.publish_at
+          ? new Date(offer.publish_at).toLocaleDateString("fr-FR")
+          : "—",
+        type: offer.contract_type ?? "CDI",
+        salary: offer.salary ?? "Salaire à négocier",
+        description: offer.description ?? null,
+        requirements: offer.requirements ?? null,
+        tags: offer.tags ?? [],
+        deadline: offer.deadline ?? offer.expires_at ?? null,
+        application_email: offer.application_email ?? null,
+        external_link: offer.external_link ?? null,
+      })),
+    );
+  }, [publishedOffers, publishedOffersLoading]);
 
   useEffect(() => {
     if (!profile?.id) {
@@ -134,7 +125,7 @@ export function CandidateDashboardPage() {
 
     const loadExperiences = async () => {
       try {
-        const data = await CandidateAuthService.getCandidateExperiences(profile.id);
+        const data = await getCandidateExperiences(profile.id);
         setExperienceEntries(data || []);
       } catch (error) {
         console.error("Unable to load candidate experiences for dashboard", error);

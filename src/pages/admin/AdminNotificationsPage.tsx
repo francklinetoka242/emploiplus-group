@@ -1,6 +1,6 @@
 import React from "react";
-import { useI18n } from "@/lib/i18n";
-import { BASE_URL } from "@/lib/seo";
+import { useI18n } from "@/i18n";
+import { BASE_URL } from "@/features/seo";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

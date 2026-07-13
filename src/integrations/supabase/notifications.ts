@@ -99,7 +99,9 @@ function buildUpdatePayload(payload: NotificationUpdate): NotificationUpdatePayl
 export async function fetchNotifications(): Promise<NotificationListResult> {
   const { data, error } = await supabase
     .from("notifications")
-    .select("*")
+    .select(
+      "id, user_id, type, title, body, is_read, status, created_at, link, read_at",
+    )
     .order("created_at", { ascending: false });
 
   return {
@@ -124,7 +126,9 @@ export async function createNotification(
     const { data, error } = await supabase
       .from("notifications")
       .insert([primaryPayload])
-      .select("*")
+      .select(
+        "id, user_id, type, title, body, is_read, status, created_at, link, read_at",
+      )
       .single();
 
     if (error) {
@@ -132,7 +136,7 @@ export async function createNotification(
         const fallback = await supabase
           .from("notifications")
           .insert([legacyPayload])
-          .select("*")
+          .select("id, user_id, type, title, body, is_read, status, created_at, link, read_at")
           .single();
         return {
           data: fallback.data
@@ -179,7 +183,7 @@ export async function updateNotification(
       .from("notifications")
       .update(primaryPayload)
       .eq("id", id)
-      .select("*")
+      .select("id, user_id, type, title, body, is_read, status, created_at, link, read_at")
       .single();
 
     if (error) {
@@ -188,7 +192,7 @@ export async function updateNotification(
           .from("notifications")
           .update(legacyPayload)
           .eq("id", id)
-          .select("*")
+          .select("id, user_id, type, title, body, is_read, status, created_at, link, read_at")
           .single();
         return {
           data: fallback.data
@@ -227,7 +231,7 @@ export async function toggleNotificationVisibility(
       .from("notifications")
       .update({ status })
       .eq("id", id)
-      .select("*")
+      .select("id, user_id, type, title, body, is_read, status, created_at, link, read_at")
       .single();
 
     if (error) {
@@ -236,7 +240,7 @@ export async function toggleNotificationVisibility(
           .from("notifications")
           .update({ title: "" })
           .eq("id", id)
-          .select("*")
+          .select("id, user_id, type, title, body, is_read, status, created_at, link, read_at")
           .single();
         return {
           data: fallback.data

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
-import { BASE_URL } from "@/lib/seo";
+import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { Megaphone, Users, Database, Search } from "lucide-react";
 import hubImage from "@/assets/IMG_Page-Services/2147626421.jpg";
@@ -58,13 +58,6 @@ export default function HubEmploiPage() {
                       <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                         Des documents clairs, impactants et adaptés aux attentes des recruteurs.
                       </p>
-                      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                        <Link to="/candidate/creation-motivation" className="w-full sm:w-auto">
-                          <Button variant="outline" size="sm" className="w-full border-brand text-brand hover:bg-brand/5">
-                            Créer ma lettre de motivation
-                          </Button>
-                        </Link>
-                      </div>
                     </div>
                   </div>
                 </section>

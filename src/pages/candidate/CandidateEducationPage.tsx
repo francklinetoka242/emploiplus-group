@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { usePageSEO } from "@/lib/seo";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { usePageSEO } from "@/features/seo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +16,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus, Edit2, Trash2, GraduationCap } from "lucide-react";
-import { CandidateAuthService, CandidateEducation } from "@/integrations/supabase/candidate-auth";
-import { useCandidate } from "@/hooks/useCandidate";
+import type { CandidateEducation } from "@/features/candidates/api/types";
+import { useCandidate } from "@/features/candidates/hooks/useCandidate";
+import { useCandidateEducation } from "@/features/candidates/hooks/useCandidateEducation";
+import { educationSchema, type EducationFormValues } from "@/features/forms/schemas/candidate-profile-entities.schemas";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const emptyEducation: Partial<CandidateEducation> = {
   school: "",
@@ -42,35 +47,32 @@ function formatMonth(value: string | null | undefined) {
 
 export function CandidateEducationPage() {
   const { profile } = useCandidate();
+  const {
+    educations,
+    loading,
+    error: hookError,
+    createEducation,
+    updateEducation,
+    deleteEducation,
+  } = useCandidateEducation(profile?.id);
   const [showForm, setShowForm] = useState(false);
-  const [educations, setEducations] = useState<CandidateEducation[]>([]);
-  const [currentEducation, setCurrentEducation] =
-    useState<Partial<CandidateEducation>>(emptyEducation);
   const [editingEducationId, setEditingEducationId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const displayError = error ?? hookError;
 
-  useEffect(() => {
-    if (!profile) {
-      return;
-    }
-
-    const loadEducations = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await CandidateAuthService.getCandidateEducations(profile.id);
-        setEducations(data || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Impossible de charger les formations.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadEducations();
-  }, [profile]);
+  const form = useForm<EducationFormValues>({
+    resolver: zodResolver(educationSchema),
+    defaultValues: {
+      school: "",
+      degree: "",
+      field_of_study: "",
+      start_date: "",
+      end_date: null,
+      is_current: false,
+      description: "",
+    },
+  });
 
   usePageSEO({
     title: "Formations - EmploiPlus Group",
@@ -79,13 +81,14 @@ export function CandidateEducationPage() {
   });
 
   const resetForm = () => {
-    setCurrentEducation({
+    form.reset({
       school: "",
       degree: "",
       field_of_study: "",
       start_date: "",
       end_date: null,
       is_current: false,
+      description: "",
     });
     setEditingEducationId(null);
   };
@@ -96,7 +99,15 @@ export function CandidateEducationPage() {
   };
 
   const handleEditEducation = (education: CandidateEducation) => {
-    setCurrentEducation(education);
+    form.reset({
+      school: education.school ?? "",
+      degree: education.degree ?? "",
+      field_of_study: education.field_of_study ?? "",
+      start_date: education.start_date ?? "",
+      end_date: education.end_date ?? null,
+      is_current: education.is_current ?? false,
+      description: education.description ?? "",
+    });
     setEditingEducationId(education.id);
     setShowForm(true);
   };
@@ -108,17 +119,14 @@ export function CandidateEducationPage() {
     }
 
     try {
-      await CandidateAuthService.deleteCandidateEducation(educationId);
-      setEducations((prev) => prev.filter((education) => education.id !== educationId));
+      await deleteEducation(educationId);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Impossible de supprimer la formation.");
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!currentEducation.school?.trim() || !currentEducation.degree?.trim() || !profile) {
+  const handleSubmit = async (values: EducationFormValues) => {
+    if (!profile) {
       return;
     }
 
@@ -130,14 +138,12 @@ export function CandidateEducationPage() {
     };
 
     const educationData = {
-      school: currentEducation.school.trim(),
-      degree: currentEducation.degree.trim(),
-      field_of_study: currentEducation.field_of_study?.trim() || null,
-      start_date: normalizeMonth(currentEducation.start_date) || null,
-      end_date: currentEducation.is_current
-        ? null
-        : normalizeMonth(currentEducation.end_date) || null,
-      is_current: currentEducation.is_current ?? false,
+      school: values.school.trim(),
+      degree: values.degree.trim(),
+      field_of_study: values.field_of_study?.trim() || null,
+      start_date: normalizeMonth(values.start_date) || null,
+      end_date: values.is_current ? null : normalizeMonth(values.end_date) || null,
+      is_current: values.is_current ?? false,
     };
 
     setSaving(true);
@@ -145,19 +151,9 @@ export function CandidateEducationPage() {
 
     try {
       if (editingEducationId) {
-        const updated = await CandidateAuthService.updateCandidateEducation(
-          editingEducationId,
-          educationData,
-        );
-        setEducations((prev) =>
-          prev.map((education) => (education.id === editingEducationId ? updated : education)),
-        );
+        await updateEducation(editingEducationId, educationData);
       } else {
-        const created = await CandidateAuthService.createCandidateEducation(
-          profile.id,
-          educationData,
-        );
-        setEducations((prev) => [created, ...prev]);
+        await createEducation(educationData);
       }
 
       setShowForm(false);
@@ -195,133 +191,155 @@ export function CandidateEducationPage() {
               </DialogTitle>
               <DialogDescription>Remplissez les détails de votre formation</DialogDescription>
             </DialogHeader>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="space-y-2">
-                <Label htmlFor="school">École/Université</Label>
-                <Input
-                  id="school"
-                  value={currentEducation.school || ""}
-                  onChange={(event) =>
-                    setCurrentEducation({ ...currentEducation, school: event.target.value })
-                  }
-                  placeholder="Université Marien Ngouabi"
+            <Form {...form}>
+              <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)}>
+                <FormField
+                  control={form.control}
+                  name="school"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>École/Université</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Université Marien Ngouabi" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="degree">Diplôme</Label>
-                  <Input
-                    id="degree"
-                    value={currentEducation.degree || ""}
-                    onChange={(event) =>
-                      setCurrentEducation({ ...currentEducation, degree: event.target.value })
-                    }
-                    placeholder="Master, Licence, etc."
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="degree"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Diplôme</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Master, Licence, etc." />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="field_of_study"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Domaine</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Informatique" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="field">Domaine</Label>
-                  <Input
-                    id="field"
-                    value={currentEducation.field_of_study || ""}
-                    onChange={(event) =>
-                      setCurrentEducation({
-                        ...currentEducation,
-                        field_of_study: event.target.value,
-                      })
-                    }
-                    placeholder="Informatique"
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="startDate">Date de début</Label>
-                  <Input
-                    id="startDate"
-                    type="month"
-                    value={currentEducation.start_date || ""}
-                    onChange={(event) =>
-                      setCurrentEducation({ ...currentEducation, start_date: event.target.value })
-                    }
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="start_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date de début</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="month" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="end_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date de fin</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="month"
+                            value={field.value ?? ""}
+                            disabled={Boolean(form.watch("is_current"))}
+                            onChange={(event) => field.onChange(event.target.value || null)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="endDate">Date de fin</Label>
-                  <Input
-                    id="endDate"
-                    type="month"
-                    disabled={Boolean(currentEducation.is_current)}
-                    value={currentEducation.end_date || ""}
-                    onChange={(event) =>
-                      setCurrentEducation({ ...currentEducation, end_date: event.target.value })
-                    }
-                  />
-                </div>
-              </div>
 
-              <div className="flex items-end gap-2">
-                <div className="flex items-center gap-2">
-                  <input
-                    id="isCurrent"
-                    type="checkbox"
-                    checked={Boolean(currentEducation.is_current)}
-                    onChange={(event) =>
-                      setCurrentEducation({
-                        ...currentEducation,
-                        is_current: event.target.checked,
-                        end_date: event.target.checked ? null : currentEducation.end_date,
-                      })
-                    }
-                    className="h-4 w-4 rounded border border-slate-300 text-brand focus:ring-brand"
-                  />
-                  <Label htmlFor="isCurrent" className="cursor-pointer">
-                    Formation en cours
-                  </Label>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={currentEducation.description || ""}
-                  onChange={(event) =>
-                    setCurrentEducation({ ...currentEducation, description: event.target.value })
-                  }
-                  placeholder="Décrivez votre programme, vos projets ou vos résultats..."
-                  rows={3}
+                <FormField
+                  control={form.control}
+                  name="is_current"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center gap-2">
+                      <FormControl>
+                        <input
+                          type="checkbox"
+                          checked={Boolean(field.value)}
+                          onChange={(event) => {
+                            field.onChange(event.target.checked);
+                            if (event.target.checked) {
+                              form.setValue("end_date", null);
+                            }
+                          }}
+                          className="h-4 w-4 rounded border border-slate-300 text-brand focus:ring-brand"
+                        />
+                      </FormControl>
+                      <FormLabel className="cursor-pointer">Formation en cours</FormLabel>
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              {error && (
-                <div className="rounded-3xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-                  {error}
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          value={field.value ?? ""}
+                          placeholder="Décrivez votre programme, vos projets ou vos résultats..."
+                          rows={3}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {error && (
+                  <div className="rounded-3xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                    {error}
+                  </div>
+                )}
+
+                <div className="flex gap-2 justify-end pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowForm(false);
+                      resetForm();
+                    }}
+                  >
+                    Annuler
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
+                    disabled={saving}
+                  >
+                    {editingEducationId ? "Mettre à jour" : "Ajouter"}
+                  </Button>
                 </div>
-              )}
-
-              <div className="flex gap-2 justify-end pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setShowForm(false);
-                    resetForm();
-                  }}
-                >
-                  Annuler
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
-                  disabled={saving}
-                >
-                  {editingEducationId ? "Mettre à jour" : "Ajouter"}
-                </Button>
-              </div>
-            </form>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>

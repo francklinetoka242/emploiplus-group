@@ -1,6 +1,6 @@
 import React from "react";
-import { usePageSEO } from "@/lib/seo";
-import type { SEOMetadata } from "@/lib/seo";
+import { usePageSEO } from "@/features/seo";
+import type { SEOMetadata } from "@/features/seo";
 
 export default function SEO(props: SEOMetadata) {
   return usePageSEO(props);

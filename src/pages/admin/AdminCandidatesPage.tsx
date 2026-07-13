@@ -1,9 +1,9 @@
 import React from "react";
 import { Eye, Ban, CheckCircle2, Trash2 } from "lucide-react";
 
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
-import { BASE_URL } from "@/lib/seo";
+import { BASE_URL } from "@/features/seo";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import {
@@ -62,7 +62,9 @@ export function AdminCandidatesPage() {
 
     const { data, error } = await supabase
       .from("candidates")
-      .select("*")
+      .select(
+        "id, user_id, first_name, last_name, email, phone, avatar_url, headline, location_city, location_country, date_of_birth, status, created_at, updated_at",
+      )
       .order("created_at", { ascending: false });
 
     setLoading(false);

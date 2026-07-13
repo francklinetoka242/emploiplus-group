@@ -1,10 +1,10 @@
 import React from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useI18n } from "@/lib/i18n";
+import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
-import { BASE_URL } from "@/lib/seo";
+import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
-import { SERVICES } from "@/lib/constants";
+import { SERVICES } from "@/constants/services";
 import hubImage from "@/assets/services/hub-emploi.svg";
 import rhImage from "@/assets/services/rh-gestion.svg";
 import conseilImage from "@/assets/services/conseil-training.svg";
