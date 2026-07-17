@@ -673,7 +673,14 @@ export type Database = {
     Enums: {
       app_role: "super_admin" | "admin" | "editor";
       contract_type:
-        "cdi" | "cdd" | "stage" | "freelance" | "consultance" | "temps_partiel" | "interim";
+        | "cdi"
+        | "cdd"
+        | "stage"
+        | "freelance"
+        | "prestation_de_services"
+        | "consultance"
+        | "temps_partiel"
+        | "interim";
       job_status: "draft" | "scheduled" | "published" | "archived" | "expired";
       message_status: "new" | "read" | "archived";
       notification_status: "active" | "masked";
@@ -810,6 +817,7 @@ export const Constants = {
         "cdd",
         "stage",
         "freelance",
+        "prestation_de_services",
         "consultance",
         "temps_partiel",
         "interim",

@@ -462,6 +462,9 @@ export function AdminJobsPage() {
                       <SelectItem value="freelance">
                         {t("admin.jobs.field.contractTypeOption.freelance")}
                       </SelectItem>
+                      <SelectItem value="prestation_de_services">
+                        {t("admin.jobs.field.contractTypeOption.prestation_de_services")}
+                      </SelectItem>
                       <SelectItem value="temps_partiel">
                         {t("admin.jobs.field.contractTypeOption.temps_partiel")}
                       </SelectItem>

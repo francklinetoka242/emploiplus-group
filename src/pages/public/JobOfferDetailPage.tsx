@@ -105,6 +105,7 @@ export function JobOfferDetailPage() {
       cdd: "CDD",
       stage: "Stage",
       freelance: "Freelance",
+      prestation_de_services: "Prestation de services",
       consultance: "Consultance",
       temps_partiel: "Temps partiel",
       interim: "Intérim",

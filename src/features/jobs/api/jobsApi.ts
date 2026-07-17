@@ -88,18 +88,38 @@ export const jobService = {
   },
 
   async createOffer(data: JobOfferInsert): Promise<JobOffer> {
-    const { data: result, error } = await supabase.from("job_offers").insert([data]).select("*").single();
+    // Try insert and on unique conflict (409) retry with a modified slug suffix
+    const maxAttempts = 3;
+    let attempt = 0;
+    let lastError: any = null;
 
-    if (error) {
-      // Provide a clearer message for common conflicts (unique constraint)
-      if ((error as any).status === 409 || /duplicate key|unique constraint|already exists/i.test(error.message || "")) {
-        throw new Error("Conflit lors de la création : un enregistrement existe déjà (vérifiez l'intitulé/slug).");
+    while (attempt < maxAttempts) {
+      const payload = attempt === 0 ? data : { ...data, slug: `${data.slug}-${Date.now().toString().slice(-6)}` };
+      const { data: result, error } = await supabase.from("job_offers").insert([payload]).select("*").single();
+
+      if (!error) {
+        return result as JobOffer;
       }
-      // Propagate other errors with their message
+
+      lastError = error;
+
+      if ((error as any).status === 409 || /duplicate key|unique constraint|already exists/i.test(error.message || "")) {
+        // try again with a new slug
+        attempt += 1;
+        continue;
+      }
+
+      // Non-conflict error -> stop immediately
       throw new Error(error.message || "Erreur lors de la création de l'offre.");
     }
 
-    return result as JobOffer;
+    // If we exhausted attempts, throw a friendly conflict message or the last error message
+    if (lastError) {
+      throw new Error("Conflit lors de la création : le slug est déjà utilisé. Réessayez avec un titre différent.");
+    }
+
+    // Fallback
+    throw new Error("Erreur lors de la création de l'offre.");
   },
 
   async updateOffer(id: string, data: JobOfferUpdate): Promise<JobOffer> {

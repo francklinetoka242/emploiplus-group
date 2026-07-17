@@ -40,6 +40,7 @@ export function JobsPage() {
       cdd: "CDD",
       stage: "Stage",
       freelance: "Freelance",
+      prestation_de_services: "Prestation de services",
       consultance: "Consultance",
       temps_partiel: "Temps partiel",
       interim: "Intérim",
@@ -157,6 +158,7 @@ export function JobsPage() {
                         <option value="cdd">{t("jobs.search.type.cdd")}</option>
                         <option value="stage">{t("jobs.search.type.stage")}</option>
                         <option value="freelance">{t("jobs.search.type.freelance")}</option>
+                        <option value="prestation_de_services">{t("jobs.search.type.prestation_de_services")}</option>
                         <option value="temps_partiel">{t("jobs.search.type.temps_partiel")}</option>
                         <option value="interim">{t("jobs.search.type.interim")}</option>
                       </select>
