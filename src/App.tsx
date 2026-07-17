@@ -37,6 +37,13 @@ const ServicesPage = lazy(() =>
   import("@/pages/public/ServicesPage").then((m) => ({ default: m.ServicesPage })),
 );
 const HubEmploiPage = lazy(() => import("@/pages/public/services/HubEmploiPage"));
+const PrivacyPolicyPage = lazy(() =>
+  import("@/pages/public/PrivacyPolicyPage").then((m) => ({ default: m.PrivacyPolicyPage })),
+);
+const LegalDocumentsPage = lazy(() =>
+  import("@/pages/public/LegalDocumentsPage").then((m) => ({ default: m.LegalDocumentsPage })),
+);
+const CguPage = lazy(() => import("@/pages/public/CguPage").then((m) => ({ default: m.CguPage })));
 
 // Lazy load admin pages (heavy feature area)
 const AdminPage = lazy(() => import("@/pages/admin").then((m) => ({ default: m.AdminPage })));
@@ -59,6 +66,13 @@ const AdminBlogCreatePage = lazy(() =>
   import("@/pages/admin").then((m) => ({ default: m.AdminBlogCreatePage })),
 );
 const AdminSEOPage = lazy(() => import("@/pages/admin").then((m) => ({ default: m.AdminSEOPage })));
+const AdminPrivacyPolicyPage = lazy(() =>
+  import("@/pages/admin").then((m) => ({ default: m.AdminPrivacyPolicyPage })),
+);
+const AdminLegalDocumentsPage = lazy(() =>
+  import("@/pages/admin").then((m) => ({ default: m.AdminLegalDocumentsPage })),
+);
+const AdminCguPage = lazy(() => import("@/pages/admin").then((m) => ({ default: m.AdminCguPage })));
 const AdminNotificationsPage = lazy(() =>
   import("@/pages/admin").then((m) => ({ default: m.AdminNotificationsPage })),
 );
@@ -245,6 +259,9 @@ export default function App() {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<BlogPostDetailPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/politique-de-confidentialite" element={<PrivacyPolicyPage />} />
+        <Route path="/mentions-legales" element={<LegalDocumentsPage />} />
+        <Route path="/cgu" element={<CguPage />} />
       </Route>
 
       <Route path="/auth" element={<AuthPage />} />
@@ -391,6 +408,42 @@ export default function App() {
               requiredPermissions={["seo.manage"]}
             >
               <AdminSEOPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="privacy"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["dashboard.admin"]}
+            >
+              <AdminPrivacyPolicyPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="legal"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["dashboard.admin"]}
+            >
+              <AdminLegalDocumentsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="cgu"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["dashboard.admin"]}
+            >
+              <AdminCguPage />
             </ProtectedRoute>
           }
         />

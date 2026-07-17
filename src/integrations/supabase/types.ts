@@ -114,6 +114,48 @@ export type Database = {
         };
         Relationships: [];
       };
+      privacy_policy: {
+        Row: {
+          id: string;
+          content: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          content: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          content?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      cgu: {
+        Row: {
+          id: string;
+          content: string;
+          version: string | null;
+          is_active: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          content: string;
+          version?: string | null;
+          is_active?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          content?: string;
+          version?: string | null;
+          is_active?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       contacts_messages: {
         Row: {
           created_at: string;

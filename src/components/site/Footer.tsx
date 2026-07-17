@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Facebook, Linkedin, MessageSquare } from "lucide-react";
 import { useI18n } from "@/i18n";
+import { openCookieBanner } from "@/components/site/CookieConsentBanner";
 
 export function SiteFooter() {
   const { t } = useI18n();
@@ -51,6 +52,30 @@ export function SiteFooter() {
               <Link to="/contact" className="hover:text-foreground">
                 {t("nav.contact")}
               </Link>
+            </li>
+            <li>
+              <Link to="/politique-de-confidentialite" className="hover:text-foreground">
+                Politique de Confidentialité
+              </Link>
+            </li>
+            <li>
+              <Link to="/mentions-legales" className="hover:text-foreground">
+                Mentions Légales
+              </Link>
+            </li>
+            <li>
+              <Link to="/cgu" className="hover:text-foreground">
+                Conditions Générales d'Utilisation
+              </Link>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => openCookieBanner()}
+                className="text-left hover:text-foreground"
+              >
+                Gestion des cookies
+              </button>
             </li>
           </ul>
         </div>

@@ -12,6 +12,8 @@ import {
   LayoutDashboard,
   LogOut,
   PanelLeftOpen,
+  ScrollText,
+  ShieldCheck,
   Sparkles,
   Users,
   Moon,
@@ -20,7 +22,7 @@ import {
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
-type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "candidates";
+type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "privacy" | "legal" | "cgu" | "candidates";
 
 interface AdminSidebarProps {
   open: boolean;
@@ -83,6 +85,9 @@ export function AdminSidebar({
     { id: "blog", label: t("admin.sidebar.blog") || "Blog", icon: FileText },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "seo", label: t("admin.sidebar.seo") || "SEO", icon: Sparkles },
+    { id: "privacy", label: "Politique-Conf", icon: ShieldCheck },
+    { id: "legal", label: "Mentions Légales", icon: ScrollText },
+    { id: "cgu", label: "CGU", icon: FileText },
     { id: "team", label: t("admin.sidebar.team") || "Équipe", icon: Users },
   ];
 

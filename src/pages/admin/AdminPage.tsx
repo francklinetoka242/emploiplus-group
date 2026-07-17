@@ -11,7 +11,7 @@ import { Menu, X } from "lucide-react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
-type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "candidates";
+type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "privacy" | "legal" | "cgu" | "candidates";
 
 export function AdminPage() {
   const [session, setSession] = React.useState<Session | null>(null);
@@ -70,6 +70,9 @@ export function AdminPage() {
     else if (path === "notifications") setActiveView("notifications");
     else if (path === "team") setActiveView("team");
     else if (path === "seo") setActiveView("seo");
+    else if (path === "privacy") setActiveView("privacy");
+    else if (path === "legal") setActiveView("legal");
+    else if (path === "cgu") setActiveView("cgu");
     else setActiveView("dashboard");
 
     // Close mobile sidebar when navigating

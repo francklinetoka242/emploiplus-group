@@ -220,7 +220,7 @@ export function CandidateSignupPage() {
                           />
                         </FormControl>
                         <FormLabel htmlFor="agreeTerms" className="text-sm cursor-pointer">
-                          J'accepte les conditions d'utilisation et la politique de confidentialité
+                          J'accepte les <Link to="/cgu" className="font-medium text-brand hover:underline">Conditions Générales d'Utilisation</Link> et la <Link to="/politique-de-confidentialite" className="font-medium text-brand hover:underline">politique de confidentialité</Link>
                         </FormLabel>
                       </div>
                       <FormMessage className="ml-6" />
