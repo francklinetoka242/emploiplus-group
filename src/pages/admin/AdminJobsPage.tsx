@@ -256,30 +256,15 @@ export function AdminJobsPage() {
     };
 
     try {
-try {
       if (editingId) {
         await jobService.updateOffer(editingId, updatePayload);
       } else {
         await jobService.createOffer(insertPayload);
       }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erreur de sauvegarde de l'offre.";
-      setMessage({ type: "error", text: message });
-      console.error("Job save error", error);
-      return;
-    }
-
-      if (error) {
-        setMessage({ type: "error", text: error.message });
-        console.error("Job save error", error);
-        return;
-      }
 
       setMessage({
         type: "success",
-        text: editingId
-          ? "Offre mise à jour avec succès."
-          : t("admin.jobs.create.publishedMessage"),
+        text: editingId ? "Offre mise à jour avec succès." : t("admin.jobs.create.publishedMessage"),
       });
       resetForm();
       await loadJobs();
@@ -313,10 +298,6 @@ try {
       return;
     }
     setActionLoadingId(null);
-    if (error) {
-      setMessage({ type: "error", text: error.message });
-      return;
-    }
     setMessage({
       type: "success",
       text: nextStatus === "published" ? "Offre publiée." : "Visibilité masquée.",
