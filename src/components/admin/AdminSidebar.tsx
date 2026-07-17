@@ -1,4 +1,5 @@
 import type { Session } from "@supabase/supabase-js";
+import React from "react";
 import favicon from "@/assets/favicon.ico";
 import { useI18n } from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -13,8 +14,11 @@ import {
   PanelLeftOpen,
   Sparkles,
   Users,
+  Moon,
+  Sun,
   type LucideIcon,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "candidates";
 
@@ -36,6 +40,30 @@ export function AdminSidebar({
   session,
 }: AdminSidebarProps) {
   const { t } = useI18n();
+  const [darkMode, setDarkMode] = React.useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem("theme");
+      if (stored === "dark") return true;
+      if (stored === "light") return false;
+      return true;
+    } catch (e) {
+      return true;
+    }
+  });
+
+  React.useEffect(() => {
+    try {
+      if (darkMode) {
+        document.documentElement.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [darkMode]);
   // eslint-disable-next-line no-console
   console.info("[AdminSidebar] render", { open, activeView, hasSession: !!session });
   const name =
@@ -61,7 +89,7 @@ export function AdminSidebar({
   return (
     <aside
       className={cn(
-        "flex min-h-screen lg:min-h-[calc(100vh-48px)] flex-col gap-4 sm:gap-6 rounded-none lg:rounded-[2rem] border-0 lg:border border-border bg-card p-3 sm:p-4 text-foreground shadow-none lg:shadow-soft transition-all duration-300",
+        "flex min-h-[calc(100vh-57px)] lg:min-h-[calc(100vh-48px)] flex-col gap-4 sm:gap-6 rounded-none lg:rounded-[2rem] border-0 lg:border border-border bg-card p-3 sm:p-4 text-foreground shadow-none lg:shadow-soft transition-all duration-300",
         open ? "w-full lg:w-72" : "w-20",
       )}
     >
@@ -154,19 +182,37 @@ export function AdminSidebar({
       </nav>
 
       <div className="mt-auto rounded-2xl sm:rounded-3xl border border-border bg-background/80 p-2 sm:p-4">
-        <button
-          type="button"
-          onClick={onLogout}
-          className={cn(
-            "group inline-flex w-full items-center rounded-2xl sm:rounded-3xl px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-slate-100 transition hover:bg-white/10",
-            open ? "gap-2 sm:gap-3 justify-start" : "justify-center gap-0",
-          )}
-        >
-          <LogOut className="h-4 sm:h-5 w-4 sm:w-5 text-red-400 flex-shrink-0" />
-          <span className={cn("transition-all duration-300", open ? "opacity-100" : "opacity-0 lg:opacity-0")}>
-            {t("common.signOut")}
-          </span>
-        </button>
+        <div className={cn("flex flex-col gap-2")}> 
+          <div className={cn(
+            "flex items-center justify-between px-2 py-1 rounded-md",
+            open ? "" : "justify-center"
+          )}>
+            <div className={cn("flex items-center gap-3 min-w-0", open ? "" : "hidden")}>
+              <Sun className="h-4 w-4 text-yellow-400" />
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-foreground">Mode sombre</p>
+                <p className="text-[10px] text-muted-foreground truncate">Basculer le thème clair/sombre</p>
+              </div>
+            </div>
+            <div className={cn(open ? "" : "mx-auto")}> 
+              <Switch checked={darkMode} onCheckedChange={(value) => setDarkMode(Boolean(value))} />
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onLogout}
+            className={cn(
+              "group inline-flex w-full items-center rounded-2xl sm:rounded-3xl px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-slate-100 transition hover:bg-white/10",
+              open ? "gap-2 sm:gap-3 justify-start" : "justify-center gap-0",
+            )}
+          >
+            <LogOut className="h-4 sm:h-5 w-4 sm:w-5 text-red-400 flex-shrink-0" />
+            <span className={cn("transition-all duration-300", open ? "opacity-100" : "opacity-0 lg:opacity-0")}>
+              {t("common.signOut")}
+            </span>
+          </button>
+        </div>
       </div>
     </aside>
   );

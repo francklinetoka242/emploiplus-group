@@ -9,7 +9,6 @@ import { Menu, X } from "lucide-react";
 
 // Import sub-components from here
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import AdminTopbar from "@/components/admin/AdminTopbar";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "candidates";
@@ -169,10 +168,11 @@ export function AdminPage() {
           <div
             className={cn(
               "lg:sticky lg:top-6 lg:self-start lg:shrink-0 transition-all duration-300",
-              isMobile && mobileSidebarOpen
-                ? "fixed inset-y-[57px] left-0 z-40 w-72 overflow-y-auto"
-                : isMobile
-                ? "-translate-x-full"
+              isMobile
+                ? cn(
+                    "fixed inset-y-[57px] left-0 z-40 w-72 overflow-y-auto transform transition-transform duration-300",
+                    mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                  )
                 : ""
             )}
           >
@@ -197,7 +197,7 @@ export function AdminPage() {
             "flex flex-1 flex-col gap-4 sm:gap-6",
             isMobile ? "px-4 pb-6 pt-0" : "min-w-0"
           )}>
-            <AdminTopbar session={session} />
+            {/* AdminTopbar removed as requested */}
             <main className="flex-1 overflow-y-auto rounded-[1.5rem] sm:rounded-[2rem] border border-border bg-background p-4 sm:p-6 shadow-soft transition-all duration-300">
               <Outlet />
             </main>
