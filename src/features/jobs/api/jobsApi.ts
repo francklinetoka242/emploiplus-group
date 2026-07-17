@@ -91,7 +91,12 @@ export const jobService = {
     const { data: result, error } = await supabase.from("job_offers").insert([data]).select("*").single();
 
     if (error) {
-      throw error;
+      // Provide a clearer message for common conflicts (unique constraint)
+      if ((error as any).status === 409 || /duplicate key|unique constraint|already exists/i.test(error.message || "")) {
+        throw new Error("Conflit lors de la création : un enregistrement existe déjà (vérifiez l'intitulé/slug).");
+      }
+      // Propagate other errors with their message
+      throw new Error(error.message || "Erreur lors de la création de l'offre.");
     }
 
     return result as JobOffer;
@@ -101,7 +106,10 @@ export const jobService = {
     const { data: result, error } = await supabase.from("job_offers").update(data).eq("id", id).select("*").single();
 
     if (error) {
-      throw error;
+      if ((error as any).status === 409 || /duplicate key|unique constraint|already exists/i.test(error.message || "")) {
+        throw new Error("Conflit lors de la mise à jour : un enregistrement similaire existe déjà (vérifiez le slug).");
+      }
+      throw new Error(error.message || "Erreur lors de la mise à jour de l'offre.");
     }
 
     return result as JobOffer;
