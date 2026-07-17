@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 import logoMonago from "@/assets/logo-monago.jpg";
 import { Button } from "@/components/ui/button";
@@ -47,6 +47,7 @@ function AnimatedStat({
 
 export function HomePage() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const { offers: homeJobs, loading: jobsLoading } = usePublishedJobOffers(2);
   const { posts: homePosts, loading: postsLoading } = usePublishedBlogPosts(3);
 
@@ -235,6 +236,8 @@ export function HomePage() {
                     isExpired={isExpired}
                     t={t}
                     index={i}
+                    hideRequirementsSection
+                    onApplyClick={() => navigate(`/candidate/jobs/${job.slug}/apply`)}
                   />
                 );
               })

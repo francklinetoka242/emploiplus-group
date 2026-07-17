@@ -21,7 +21,7 @@ export function CandidateLoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const state = location.state as { notification?: string; pendingEmail?: string } | null;
+  const state = location.state as { notification?: string; pendingEmail?: string; from?: string } | null;
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -66,7 +66,7 @@ export function CandidateLoginPage() {
       await login(values.email, values.password);
 
       setSuccessMessage("Connexion réussie! Redirection en cours...");
-      navigate("/candidate/dashboard", { replace: true });
+      navigate(state?.from || "/candidate/dashboard", { replace: true });
     } catch (error: unknown) {
       if (
         typeof error === "object" &&
@@ -289,7 +289,7 @@ export function CandidateLoginPage() {
                 <p className="text-muted-foreground">
                   Pas encore de compte?{" "}
                   <Link
-                    to="/candidate/signup"
+                    to={{ pathname: "/candidate/signup", state: { from: state?.from } }}
                     className="text-brand font-semibold hover:text-brand/80 inline-block"
                   >
                     S'inscrire

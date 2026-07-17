@@ -37,6 +37,7 @@ type JobFormState = {
   location_city: string;
   contract_type: Database["public"]["Enums"]["contract_type"] | "";
   description: string;
+  requirements: string;
   salary: string;
   company_logo: string;
   cover_image: string;
@@ -183,6 +184,7 @@ export function AdminJobsPage() {
       auto_share: job.auto_share ?? false,
       deadline: formatDateInput(job.deadline),
       seo_description: job.meta_description ?? "",
+      requirements: job.requirements ?? "",
       application_email: job.application_email ?? "",
       application_whatsapp: job.application_whatsapp ?? "",
       external_link: job.external_link ?? "",
@@ -222,6 +224,7 @@ export function AdminJobsPage() {
       application_email: form.application_email || null,
       application_whatsapp: form.application_whatsapp || null,
       external_link: form.external_link || null,
+      requirements: form.requirements || null,
       meta_description: form.seo_description || null,
       auto_share: form.auto_share,
       updated_at: new Date().toISOString(),
@@ -234,6 +237,7 @@ export function AdminJobsPage() {
       location_city: form.location_city || null,
       contract_type: contractType,
       description: form.description,
+      requirements: form.requirements || null,
       salary: form.salary || null,
       company_logo: form.company_logo || null,
       cover_image: form.cover_image || null,
@@ -503,6 +507,21 @@ export function AdminJobsPage() {
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-foreground">
+                    {t("admin.jobs.field.profileSearch")}
+                  </label>
+                  <Textarea
+                    name="requirements"
+                    value={form.requirements}
+                    onChange={handleChange}
+                    rows={6}
+                    placeholder={t("admin.jobs.field.profileSearchPlaceholder")}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-foreground">
                     {t("admin.jobs.field.seoDescription")}
                   </label>
                   <Textarea
@@ -513,9 +532,6 @@ export function AdminJobsPage() {
                     placeholder={t("admin.jobs.field.seoDescriptionPlaceholder")}
                   />
                 </div>
-              </div>
-
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-foreground">
                     Email de réception

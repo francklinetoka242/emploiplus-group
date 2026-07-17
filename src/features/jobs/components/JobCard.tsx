@@ -20,6 +20,7 @@ type JobCardJob = {
   salary?: string | null;
   title: string;
   company: string;
+  requirements?: string | null;
 };
 
 export type JobCardProps = {
@@ -33,6 +34,7 @@ export type JobCardProps = {
   t?: (key: string) => string;
   index?: number;
   onApplyClick?: () => void;
+  hideRequirementsSection?: boolean;
 };
 
 export function JobCard({
@@ -46,6 +48,7 @@ export function JobCard({
   t = (k: string) => k,
   index = 0,
   onApplyClick,
+  hideRequirementsSection = false,
 }: JobCardProps) {
   const [isApplyOpen, setIsApplyOpen] = React.useState(false);
   const detailUrl = `/jobs/${job.slug}`;
@@ -119,6 +122,13 @@ export function JobCard({
         <p className="mt-3 rounded-2xl border border-border/60 bg-background/60 p-3 text-sm text-foreground/80 leading-relaxed">
           {previewText.length > 180 ? `${previewText.slice(0, 177)}...` : previewText}
         </p>
+      ) : null}
+
+      {!hideRequirementsSection && job.requirements ? (
+        <div className="mt-3 rounded-2xl border border-border/60 bg-background/60 p-3 text-sm text-foreground/80 leading-relaxed">
+          <div className="mb-2 text-sm font-semibold text-foreground">Profil recherché</div>
+          <p className="whitespace-pre-line">{job.requirements}</p>
+        </div>
       ) : null}
 
       {tags.length > 0 ? (

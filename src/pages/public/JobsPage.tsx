@@ -89,10 +89,7 @@ export function JobsPage() {
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6 text-foreground/90 leading-relaxed">
-            <div
-              className="self-start w-full"
-              style={{ position: "sticky", top: 0, zIndex: 30, alignSelf: "flex-start" }}
-            >
+            <div className="self-start w-full sticky top-24 z-30">
               <div className="rounded-3xl border border-border/60 bg-card/95 p-5 shadow-lg shadow-black/5 backdrop-blur supports-[backdrop-filter]:bg-card/80 sm:p-6 md:p-8">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <h3 className="font-display text-lg font-bold text-foreground">

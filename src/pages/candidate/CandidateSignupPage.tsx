@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePageSEO } from "@/features/seo";
@@ -17,6 +17,8 @@ import { signupSchema, type SignupFormValues } from "@/features/forms/schemas/au
 
 export function CandidateSignupPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as { from?: string } | null;
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -81,6 +83,7 @@ export function CandidateSignupPage() {
             notification:
               "Inscription réussie ! Un email de confirmation a été envoyé. Vérifiez votre boîte de réception (le lien expire au bout de 24 heures). Si vous ne le recevez pas, demandez un renvoi sur la page de connexion.",
             pendingEmail: values.email,
+            from: state?.from,
           },
         });
       }
@@ -253,7 +256,7 @@ export function CandidateSignupPage() {
               <p className="text-muted-foreground">
                 Vous avez déjà un compte?{" "}
                 <Link
-                  to="/candidate/login"
+                  to={{ pathname: "/candidate/login", state: { from: state?.from } }}
                   className="text-brand font-semibold hover:text-brand/80"
                 >
                   Se connecter

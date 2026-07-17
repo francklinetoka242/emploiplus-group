@@ -74,12 +74,6 @@ export function AdminJobCreatePage() {
     setSaving(true);
 
     const slug = createSlug(form.title || `${form.company}-${Date.now()}`);
-    const requirementParts = [
-      form.requirements,
-      form.salary ? `Salaire : ${form.salary}` : "",
-      form.keywords ? `Mots-clés : ${form.keywords}` : "",
-    ].filter(Boolean);
-
     const nextStatus: Database["public"]["Enums"]["job_status"] = "published";
     const payload = {
       slug,
@@ -90,7 +84,7 @@ export function AdminJobCreatePage() {
       location_country: form.location_country || null,
       contract_type: form.contract_type as Database["public"]["Enums"]["contract_type"],
       description: form.description,
-      requirements: requirementParts.length > 0 ? requirementParts.join("\n\n") : null,
+      requirements: form.requirements || null,
       application_email: form.application_email || null,
       application_whatsapp: form.application_whatsapp || null,
       external_link: form.external_link || null,

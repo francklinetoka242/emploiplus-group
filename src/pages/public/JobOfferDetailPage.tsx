@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -21,6 +21,7 @@ import { BASE_URL } from "@/features/seo";
 import { jobService } from "@/features/jobs/api";
 import type { JobOffer } from "@/features/jobs/types";
 import { ShareButtons } from "@/components/site/ShareButtons";
+import { useAuth } from "@/features/authentication/hooks/useAuth";
 
 function NotFoundPage() {
   return (
@@ -49,6 +50,8 @@ function NotFoundPage() {
 
 export function JobOfferDetailPage() {
   const { t } = useI18n();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { slug } = useParams<{ slug: string }>();
   const [job, setJob] = React.useState<JobOffer | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -134,6 +137,12 @@ export function JobOfferDetailPage() {
     .split(/\n+/)
     .map((item) => item.trim())
     .filter(Boolean);
+  const handlePostulerClick = () => {
+    navigate(`/candidate/login`, {
+      state: { from: `/jobs/${job.slug}` },
+    });
+  };
+
   const overviewItems = [
     {
       icon: Building2,
@@ -335,13 +344,24 @@ export function JobOfferDetailPage() {
               <p className="mt-2 text-sm leading-7 text-muted-foreground">{applyDescription}</p>
               <div className="mt-6 space-y-3">
                 {job.application_email ? (
-                  <a
-                    href={`mailto:${job.application_email}`}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90"
-                  >
-                    <Send className="size-4" />
-                    {applyByEmailLabel}
-                  </a>
+                  isAuthenticated ? (
+                    <a
+                      href={`mailto:${job.application_email}`}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90"
+                    >
+                      <Send className="size-4" />
+                      {applyByEmailLabel}
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handlePostulerClick}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90"
+                    >
+                      <Send className="size-4" />
+                      {applyTitle}
+                    </button>
+                  )
                 ) : null}
                 {job.application_whatsapp ? (
                   <a
