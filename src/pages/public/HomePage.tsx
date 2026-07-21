@@ -25,6 +25,7 @@ import { JobCard } from "@/features/jobs/components";
 
 function HeroSection() {
   const { isEcoMode } = useEcoMode();
+  const { t } = useI18n();
 
   if (isEcoMode) {
     return (
@@ -33,13 +34,13 @@ function HeroSection() {
           <div className="grid gap-12 lg:grid-cols-[1fr_320px] items-center">
             <div>
               <p className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-primary/10">
-                {""}
+                {t("home.hero.eyebrow")}
               </p>
               <h1 className="mt-8 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
-                {""}
+                {t("home.hero.title")}
               </h1>
               <p className="mt-6 max-w-2xl text-base text-slate-700 leading-relaxed">
-                {""}
+                {t("home.hero.subtitle")}
               </p>
               <div className="mt-10 flex flex-wrap gap-3">
                 <div className="h-12 w-36 rounded-lg bg-slate-200" />
@@ -67,29 +68,29 @@ function HeroSection() {
               className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-primary/10 fade-up"
               style={{ animationDelay: "80ms" }}
             >
-              {""}
+              {t("home.hero.eyebrow")}
             </p>
             <h1
               className="mt-8 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white fade-up"
               style={{ animationDelay: "180ms" }}
             >
-              {""}
+              {t("home.hero.title")}
             </h1>
             <p
               className="mt-6 max-w-2xl text-base text-white/90 leading-relaxed fade-up"
               style={{ animationDelay: "260ms" }}
             >
-              {""}
+              {t("home.hero.subtitle")}
             </p>
             <div
               className="mt-10 flex flex-wrap gap-3 fade-up"
               style={{ animationDelay: "340ms" }}
             >
               <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand">
-                <Link to="/jobs">{""}</Link>
+                <Link to="/jobs">{t("home.hero.cta.jobs")}</Link>
               </Button>
               <Button asChild size="lg" className="bg-accent text-white hover:bg-accent/90 shadow-lg">
-                <Link to="/services">{""}</Link>
+                <Link to="/services">{t("home.hero.cta.services")}</Link>
               </Button>
             </div>
           </div>
