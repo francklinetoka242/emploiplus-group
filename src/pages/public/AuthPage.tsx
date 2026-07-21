@@ -48,6 +48,7 @@ export function AuthPage() {
     event.preventDefault();
     setError(null);
     setMessage(null);
+    setAuthDetail(null);
 
     const normalizedEmail = email.trim();
     const normalizedPassword = password.trim();
@@ -68,62 +69,41 @@ export function AuthPage() {
     }
 
     setLoading(true);
+    setMessage("Vérification en cours…");
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: normalizedEmail,
-      password: normalizedPassword,
-    });
+    try {
+      const signInRequest = supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password: normalizedPassword,
+      });
 
-    setLoading(false);
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        window.setTimeout(() => {
+          reject(new Error(t("auth.error.timeout") ?? "La connexion met trop de temps à répondre. Veuillez réessayer."));
+        }, 15000);
+      });
 
-    if (error) {
-      setError(error.message);
-      return;
-    }
+      const { data, error } = await Promise.race([signInRequest, timeoutPromise]);
 
-    const authUser = data.user ?? data.session?.user;
-
-    if (authUser) {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const resolvedSessionUser = sessionData.session?.user ?? authUser;
-      const userId = resolvedSessionUser.id;
-
-      console.info("[AuthPage] resolvedUserId:", userId);
-
-      const { data: rolesData, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId);
-
-      console.info("[AuthPage] user_roles query:", { rolesData, rolesError });
-
-      const claimRoles = Array.isArray(resolvedSessionUser.app_metadata?.roles)
-        ? resolvedSessionUser.app_metadata.roles.filter((value): value is string => typeof value === "string")
-        : [];
-
-      const effectiveRoles = (rolesData ?? []).map((row: { role?: string | null }) => row.role).filter(Boolean) as string[];
-      const mergedRoles = Array.from(new Set([...effectiveRoles, ...claimRoles]));
-
-      if (rolesError) {
-        setError(t("auth.error.rolesLoadFailed") ?? "Impossible de vérifier les droits.");
-        setAuthDetail(`Session user id: ${userId}`);
+      if (error) {
+        setError(error.message);
         return;
       }
 
-      if (!mergedRoles.length) {
-        setError(t("auth.error.notAdmin") ?? "Votre compte n'a pas les droits administrateur.");
-        setAuthDetail(`Session user id: ${userId} — rôles détectés: aucune`);
+      const authUser = data.user ?? data.session?.user;
+      if (!authUser) {
+        setError(t("auth.error.unableToSignIn") ?? "Impossible de se connecter.");
         return;
       }
 
-      setAuthDetail(`Session user id: ${userId} — rôles détectés: ${mergedRoles.join(", ")}`);
-
-      setMessage(t("auth.successRedirect"));
+      setMessage(t("auth.successRedirect") ?? "Redirection…");
       navigate("/admin", { replace: true });
-      return;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : (t("auth.error.unableToSignIn") ?? "Impossible de se connecter.");
+      setError(message);
+    } finally {
+      setLoading(false);
     }
-
-    setError(t("auth.error.unableToSignIn") ?? "Impossible de se connecter.");
   };
 
   return (
