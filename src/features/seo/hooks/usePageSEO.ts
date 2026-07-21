@@ -75,7 +75,10 @@ export function usePageSEO(metadata: SEOMetadata) {
     React.createElement("meta", { name: "twitter:description", content: resolvedDescription }),
     React.createElement("meta", { name: "twitter:image", content: resolvedOgImage }),
     React.createElement("meta", { name: "twitter:image:alt", content: resolvedTitle }),
-    React.createElement("script", { type: "application/ld+json" }, JSON.stringify(schema)),
+    React.createElement("script", {
+      type: "application/ld+json",
+      dangerouslySetInnerHTML: { __html: JSON.stringify(schema) },
+    }),
   );
 
   return React.createElement(Helmet, null, ...children);

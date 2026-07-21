@@ -27,6 +27,7 @@ export function SiteHeader() {
     { to: "/services", label: t("nav.services") },
     { to: "/jobs", label: t("nav.jobs") },
     { to: "/blog", label: t("nav.blog") },
+    { to: "/faq", label: t("nav.faq") },
     { to: "/about", label: t("nav.about") },
     { to: "/contact", label: t("nav.contact") },
   ];

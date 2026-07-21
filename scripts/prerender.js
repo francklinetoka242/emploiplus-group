@@ -1,58 +1,140 @@
-import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
-import { join, dirname } from "node:path";
+import "dotenv/config";
+import express from "express";
+import puppeteer from "puppeteer";
+import { createClient } from "@supabase/supabase-js";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const rootDir = join(__dirname, "..");
+const rootDir = resolve(__dirname, "..");
+const staticRoutes = ["/", "/about", "/services", "/jobs", "/blog", "/contact"];
+const buildTimeoutMs = 60000;
 
-const defaultRoutes = ["/", "/about", "/services", "/jobs", "/blog", "/contact"];
+function getSupabaseCredentials() {
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "";
+  const supabaseKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_PUBLISHABLE_KEY ||
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_ANON_KEY ||
+    "";
 
-function buildStaticShell(route) {
-  return `<!doctype html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EmploiPlus Group</title>
-    <meta name="description" content="Trouvez votre prochain emploi ou stage en République du Congo. Découvrez les meilleures opportunités de recrutement à Brazzaville et Pointe-Noire sur Emploi+." />
-    <meta name="robots" content="index,follow" />
-    <link rel="canonical" href="https://emploiplus-group.com${route}" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>`;
-}
-
-export async function prerenderRoutes({ outputDir = "dist", routes = defaultRoutes } = {}) {
-  const resolvedOutputDir = join(rootDir, outputDir);
-  mkdirSync(resolvedOutputDir, { recursive: true });
-
-  const indexPath = join(resolvedOutputDir, "index.html");
-  if (!existsSync(indexPath)) {
-    throw new Error("Vite build output not found. Run vite build first.");
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error(
+      "Supabase credentials are required for prerendering. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY or a publishable/anon key.",
+    );
   }
 
-  const baseHtml = readFileSync(indexPath, "utf8");
+  return { supabaseUrl, supabaseKey };
+}
 
-  for (const route of routes) {
-    const targetPath = join(resolvedOutputDir, route === "/" ? "index.html" : `${route.replace(/^\//, "")}/index.html`);
-    mkdirSync(dirname(targetPath), { recursive: true });
+function createSupabaseClient() {
+  const { supabaseUrl, supabaseKey } = getSupabaseCredentials();
+  return createClient(supabaseUrl, supabaseKey);
+}
 
-    const htmlWithShell = baseHtml
-      .replace(/<title>.*?<\/title>/s, "<title>EmploiPlus Group</title>")
-      .replace(/<meta name=\"description\" content=\".*?\"/s, '<meta name="description" content="Trouvez votre prochain emploi ou stage en République du Congo. Découvrez les meilleures opportunités de recrutement à Brazzaville et Pointe-Noire sur Emploi+."')
-      .replace(/<meta name=\"robots\" content=\".*?\"/s, '<meta name="robots" content="index,follow"')
-      .replace(/<link rel=\"canonical\" href=\".*?\"/s, `<link rel="canonical" href="https://emploiplus-group.com${route}" />`);
+async function fetchDynamicRoutes() {
+  const supabase = createSupabaseClient();
 
-    writeFileSync(targetPath, htmlWithShell, "utf8");
-    console.log(`Prerendered ${route} -> ${targetPath}`);
+  const [{ data: jobOffers, error: jobsError }, { data: blogPosts, error: postsError }] =
+    await Promise.all([
+      supabase
+        .from("job_offers")
+        .select("slug")
+        .eq("status", "published")
+        .order("publish_at", { ascending: false }),
+      supabase
+        .from("blog_posts")
+        .select("slug")
+        .eq("status", "published")
+        .order("publish_at", { ascending: false }),
+    ]);
+
+  if (jobsError) {
+    throw new Error(`Supabase job_offers query failed: ${jobsError.message}`);
+  }
+  if (postsError) {
+    throw new Error(`Supabase blog_posts query failed: ${postsError.message}`);
+  }
+
+  const jobRoutes = Array.isArray(jobOffers)
+    ? jobOffers
+        .map((job) => (typeof job.slug === "string" ? `/jobs/${job.slug}` : undefined))
+        .filter(Boolean)
+    : [];
+  const postRoutes = Array.isArray(blogPosts)
+    ? blogPosts
+        .map((post) => (typeof post.slug === "string" ? `/blog/${post.slug}` : undefined))
+        .filter(Boolean)
+    : [];
+
+  return [...jobRoutes, ...postRoutes];
+}
+
+function createServer(outputDir) {
+  const app = express();
+  app.use(express.static(outputDir));
+  app.get("*", (_req, res) => res.sendFile(join(outputDir, "index.html")));
+
+  return new Promise((resolve, reject) => {
+    const server = app.listen(0, () => {
+      const address = server.address();
+      if (!address || typeof address === "string") {
+        reject(new Error("Failed to start prerender server."));
+        return;
+      }
+      resolve({ server, port: address.port });
+    });
+    server.on("error", reject);
+  });
+}
+
+async function renderRoute(page, baseUrl, route, outputDir) {
+  const url = `${baseUrl}${route}`;
+  await page.goto(url, { waitUntil: "networkidle2", timeout: buildTimeoutMs });
+
+  await page.waitForFunction(
+    () => document.readyState === "complete" && document.querySelector("#root") !== null,
+    { timeout: buildTimeoutMs },
+  );
+
+  const html = await page.content();
+  const targetPath = join(outputDir, route === "/" ? "index.html" : `${route.replace(/^\//, "")}/index.html`);
+  mkdirSync(dirname(targetPath), { recursive: true });
+  writeFileSync(targetPath, html, "utf8");
+
+  console.log(`Prerendered ${route} -> ${targetPath}`);
+}
+
+export async function prerenderRoutes({ outputDir = "dist", routes = undefined } = {}) {
+  const resolvedOutputDir = resolve(rootDir, outputDir);
+  if (!existsSync(resolvedOutputDir)) {
+    throw new Error(`Vite build output not found at ${resolvedOutputDir}. Run vite build first.`);
+  }
+
+  const dynamicRoutes = await fetchDynamicRoutes();
+  const routeList = Array.from(new Set([...(routes ?? staticRoutes), ...dynamicRoutes]));
+
+  const { server, port } = await createServer(resolvedOutputDir);
+  const browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
+
+  try {
+    const page = await browser.newPage();
+    const baseUrl = `http://127.0.0.1:${port}`;
+
+    for (const route of routeList) {
+      await renderRoute(page, baseUrl, route, resolvedOutputDir);
+    }
+  } finally {
+    await browser.close();
+    server.close();
   }
 }
 
-if (process.argv[1] && process.argv[1].includes("prerender.js")) {
+if (process.argv[1] && process.argv[1].endsWith("prerender.js")) {
   const outputDir = process.argv[2] || "dist";
-  const routes = process.argv.slice(3);
-  await prerenderRoutes({ outputDir, routes: routes.length > 0 ? routes : defaultRoutes });
+  const extraRoutes = process.argv.slice(3);
+  await prerenderRoutes({ outputDir, routes: extraRoutes.length > 0 ? [...staticRoutes, ...extraRoutes] : undefined });
 }

@@ -50,6 +50,7 @@ const LegalDocumentsPage = lazy(() =>
   import("@/pages/public/LegalDocumentsPage").then((m) => ({ default: m.LegalDocumentsPage })),
 );
 const CguPage = lazy(() => import("@/pages/public/CguPage").then((m) => ({ default: m.CguPage })));
+const FAQPage = lazy(() => import("@/pages/public/FAQPage").then((m) => ({ default: m.FAQPage })));
 
 // Lazy load admin pages (heavy feature area)
 const AdminPage = lazy(() => import("@/pages/admin/AdminPage").then((m) => ({ default: m.AdminPage })));
@@ -268,6 +269,7 @@ function AppContent() {
         <Route path="/jobs/:slug" element={<JobOfferDetailPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<BlogPostDetailPage />} />
+        <Route path="/faq" element={<FAQPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/politique-de-confidentialite" element={<PrivacyPolicyPage />} />
         <Route path="/mentions-legales" element={<LegalDocumentsPage />} />

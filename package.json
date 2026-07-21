@@ -9,7 +9,9 @@
   },
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build && node scripts/prerender.js",
+    "build:vite": "vite build",
+    "prerender": "node scripts/prerender.js",
+    "build": "npm run build:vite && npm run prerender",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",

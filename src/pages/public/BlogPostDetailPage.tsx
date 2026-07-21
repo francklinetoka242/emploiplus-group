@@ -37,13 +37,51 @@ export function BlogPostDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { post, loading } = useBlogPostBySlug(slug);
 
+  const canonical = slug ? `${BASE_URL}/blog/${slug}` : `${BASE_URL}/blog`;
+  const title = post?.meta_title || post?.title || "Blog - EmploiPlus Group";
+  const description = post?.meta_description || post?.excerpt || t("blog.subtitle");
+  const ogImage = post?.og_image || post?.image || `${BASE_URL}/og-default.svg`;
+  const blogPostingStructuredData = post
+    ? {
+        "@type": "BlogPosting",
+        headline: post.title,
+        description,
+        image: post.image || post.og_image || ogImage,
+        datePublished: post.publish_at || undefined,
+        author: {
+          "@type": "Organization",
+          name: "EmploiPlus Group",
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "EmploiPlus Group",
+          logo: {
+            "@type": "ImageObject",
+            url: `${BASE_URL}/logo.png`,
+          },
+        },
+        mainEntityOfPage: canonical,
+      }
+    : undefined;
+
   if (loading) {
     return (
-      <div className="container-page py-20 md:py-28">
-        <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-          <p className="text-muted-foreground">{t("blog.loading")}</p>
+      <>
+        <SEO
+          title={title}
+          description={description}
+          canonical={canonical}
+          robots="index,follow"
+          ogImage={ogImage}
+          ogType="article"
+          structuredData={blogPostingStructuredData}
+        />
+        <div className="container-page py-20 md:py-28">
+          <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
+            <p className="text-muted-foreground">{t("blog.loading")}</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -51,11 +89,8 @@ export function BlogPostDetailPage() {
     return <NotFoundPage />;
   }
 
-  const title = post.meta_title || post.title;
-  const description = post.meta_description || post.excerpt || t("blog.subtitle");
-  const ogImage = post.og_image || post.image || `${BASE_URL}/og-default.svg`;
-  const canonical = `${BASE_URL}/blog/${post.slug}`;
-  const blogPostingStructuredData = {
+  const canonicalPost = `${BASE_URL}/blog/${post.slug}`;
+  const blogPostingStructuredDataPost = {
     "@type": "BlogPosting",
     headline: post.title,
     description,
@@ -73,7 +108,7 @@ export function BlogPostDetailPage() {
         url: `${BASE_URL}/logo.png`,
       },
     },
-    mainEntityOfPage: canonical,
+    mainEntityOfPage: canonicalPost,
   };
 
   return (

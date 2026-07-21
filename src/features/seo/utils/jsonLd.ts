@@ -7,10 +7,11 @@ export function buildJsonLd(metadata: SEOMetadata) {
     "@type": "Organization",
     name: "EmploiPlus Group",
     url: BASE_URL,
-    logo: `${BASE_URL}/Logo.png`,
+    logo: `${BASE_URL}/logo.png`,
     sameAs: [
       "https://www.facebook.com/EmploiplusConsulting",
       "https://www.linkedin.com/company/emploiplus-consulting/",
+      "https://www.instagram.com/emploiplus/",
     ],
   };
 

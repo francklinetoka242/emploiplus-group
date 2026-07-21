@@ -5,7 +5,6 @@ import { writeFileSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { ResolvedConfig } from "vite";
-import { prerenderRoutes } from "./scripts/prerender.js";
 
 function devApiHandlerPlugin() {
   return {
@@ -201,23 +200,11 @@ function sitemapGeneratorPlugin(env: Record<string, string>) {
   };
 }
 
-function prerenderRoutesPlugin() {
-  return {
-    name: "prerender-routes",
-    async closeBundle() {
-      await prerenderRoutes({
-        outputDir: "dist",
-        routes: ["/", "/about", "/services", "/jobs", "/blog", "/contact"],
-      });
-    },
-  };
-}
-
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
-    plugins: [react(), tailwindcss(), devApiHandlerPlugin(), sitemapGeneratorPlugin(env), prerenderRoutesPlugin()],
+    plugins: [react(), tailwindcss(), devApiHandlerPlugin(), sitemapGeneratorPlugin(env)],
 
     resolve: {
       alias: {

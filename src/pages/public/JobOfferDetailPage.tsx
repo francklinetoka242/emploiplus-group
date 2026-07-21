@@ -77,28 +77,18 @@ export function JobOfferDetailPage() {
     };
   }, [slug]);
 
-  if (loading) {
-    return (
-      <div className="container-page py-20 md:py-28">
-        <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-          <p className="text-muted-foreground">{t("jobs.loading")}</p>
-        </div>
-      </div>
-    );
-  }
+  const canonical = slug ? `${BASE_URL}/jobs/${slug}` : `${BASE_URL}/jobs`;
+  const title = job ? job.meta_title || `${job.title} | ${job.company}` : "Offre d'emploi | EmploiPlus Group";
+  const description = job
+    ? job.meta_description || job.description?.slice(0, 160) || t("jobs.page.description")
+    : t("jobs.loading");
+  const ogImage = job ? job.og_image || job.cover_image || `${BASE_URL}/og-default.svg` : `${BASE_URL}/og-default.svg`;
 
-  if (!job) {
-    return <NotFoundPage />;
-  }
+  const getLabel = (key: string, fallback: string) => {
+    const translated = t(key);
+    return translated && translated !== key ? translated : fallback;
+  };
 
-  const title = job.meta_title || `${job.title} | ${job.company}`;
-  const description =
-    job.meta_description || job.description?.slice(0, 160) || t("jobs.page.description");
-  const ogImage = job.og_image || job.cover_image || `${BASE_URL}/og-default.svg`;
-  const canonical = `${BASE_URL}/jobs/${job.slug}`;
-  const location =
-    [job.location_city, job.location_country].filter(Boolean).join(", ") ||
-    t("jobs.location.remote");
   const getContractLabel = (contractType?: string | null) => {
     if (!contractType) return null;
     const translated = t(`jobs.contract.${contractType}`);
@@ -115,28 +105,7 @@ export function JobOfferDetailPage() {
     };
     return fallbackMap[contractType] || contractType;
   };
-  const getLabel = (key: string, fallback: string) => {
-    const translated = t(key);
-    return translated && translated !== key ? translated : fallback;
-  };
-  const applyTitle = getLabel("jobs.detail.applyTitle", "Postuler");
-  const applyDescription = getLabel(
-    "jobs.detail.applyDescription",
-    "Choisissez le canal qui vous convient pour transmettre votre candidature.",
-  );
-  const applyByEmailLabel = getLabel("jobs.detail.applyByEmail", "Envoyer par email");
-  const applyByWhatsappLabel = getLabel("jobs.detail.applyByWhatsapp", "Contacter via WhatsApp");
-  const applyExternalLabel = getLabel("jobs.detail.applyExternal", "Postuler sur le site");
-  const formatDate = (value?: string | null) => {
-    if (!value) return null;
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("fr-FR");
-  };
-  const tags = (job.tags || []).filter(Boolean);
-  const requirementItems = (job.requirements || "")
-    .split(/\n+/)
-    .map((item) => item.trim())
-    .filter(Boolean);
+
   const cleanText = (value?: string | null) => {
     if (!value) return "";
     return value
@@ -145,8 +114,15 @@ export function JobOfferDetailPage() {
       .replace(/\s+/g, " ")
       .trim();
   };
-  const employmentType = (() => {
-    const raw = (job.contract_type || "").toLowerCase();
+
+  const location = job
+    ? [job.location_city, job.location_country].filter(Boolean).join(", ") || t("jobs.location.remote")
+    : t("jobs.location.remote");
+
+  const locationLocality = job?.location_city?.trim() || "Brazzaville";
+
+  const normalizeEmploymentType = (contractType?: string | null) => {
+    const raw = (contractType || "").toLowerCase();
     switch (raw) {
       case "cdi":
         return "FULL_TIME";
@@ -164,38 +140,117 @@ export function JobOfferDetailPage() {
       default:
         return "FULL_TIME";
     }
-  })();
-  const salaryValue = (() => {
-    if (!job.salary) return undefined;
-    const match = `${job.salary}`.match(/(\d[\d\s.,]*)/);
-    if (!match) return undefined;
-    const numericValue = Number(match[1].replace(/[^\d.]/g, ""));
-    return Number.isFinite(numericValue) ? numericValue : undefined;
-  })();
-  const validThrough = job.expires_at || job.deadline || (() => {
-    const baseDate = new Date(job.publish_at || new Date().toISOString());
-    baseDate.setDate(baseDate.getDate() + 60);
-    return baseDate.toISOString();
-  })();
-  const baseSalary = job.salary
+  };
+
+  const employmentType = job ? normalizeEmploymentType(job.contract_type) : undefined;
+
+  const salaryValue = job
+    ? (() => {
+        if (!job.salary) return undefined;
+        const match = `${job.salary}`.match(/(\d[\d\s.,]*)/);
+        if (!match) return undefined;
+        const numericValue = Number(match[1].replace(/[^\d.]/g, ""));
+        return Number.isFinite(numericValue) ? numericValue : undefined;
+      })()
+    : undefined;
+
+  const validThrough = job
+    ? job.expires_at || job.deadline || (() => {
+        const baseDate = new Date(job.publish_at || job.created_at || new Date().toISOString());
+        baseDate.setDate(baseDate.getDate() + 60);
+        return baseDate.toISOString();
+      })()
+    : undefined;
+
+  const seoStructuredData = job
     ? {
-        "@type": "MonetaryAmount",
-        currency: "XAF",
-        value: salaryValue
-          ? {
-              "@type": "QuantitativeValue",
-              value: salaryValue,
-              unitText: "annuel",
-            }
-          : undefined,
-        description: job.salary,
+        "@type": "JobPosting",
+        title: job.title,
+        description: cleanText(job.description || job.meta_description || ""),
+        datePosted: job.publish_at || job.created_at || undefined,
+        validThrough,
+        employmentType,
+        hiringOrganization: {
+          "@type": "Organization",
+          name: job.company || "EmploiPlus Group",
+          sameAs: BASE_URL,
+        },
+        jobLocation: {
+          "@type": "Place",
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: job.location_city?.trim() || "Brazzaville",
+            addressCountry: "CG",
+          },
+        },
+        baseSalary:
+          salaryValue != null
+            ? {
+                "@type": "MonetaryAmount",
+                currency: "XAF",
+                value: {
+                  "@type": "QuantitativeValue",
+                  value: salaryValue,
+                  unitText: "MONTH",
+                },
+              }
+            : undefined,
       }
     : undefined;
+
+  const applyTitle = getLabel("jobs.detail.applyTitle", "Postuler");
+  const applyDescription = getLabel(
+    "jobs.detail.applyDescription",
+    "Choisissez le canal qui vous convient pour transmettre votre candidature.",
+  );
+  const applyByEmailLabel = getLabel("jobs.detail.applyByEmail", "Envoyer par email");
+  const applyByWhatsappLabel = getLabel("jobs.detail.applyByWhatsapp", "Contacter via WhatsApp");
+  const applyExternalLabel = getLabel("jobs.detail.applyExternal", "Postuler sur le site");
+
+  const formatDate = (value?: string | null) => {
+    if (!value) return null;
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("fr-FR");
+  };
+
+  const tags = (job?.tags || []).filter(Boolean);
+  const requirementItems = (job?.requirements || "")
+    .split(/\n+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
   const handlePostulerClick = () => {
     navigate(`/candidate/login`, {
-      state: { from: `/jobs/${job.slug}` },
+      state: { from: `/jobs/${job?.slug || ""}` },
     });
   };
+
+  if (loading) {
+    return (
+      <>
+        <SEO
+          title={title}
+          description={description}
+          canonical={canonical}
+          robots="index,follow"
+          ogImage={ogImage}
+          ogType="article"
+          publishedTime={job?.publish_at || undefined}
+          modifiedTime={job?.updated_at || undefined}
+          structuredData={seoStructuredData}
+        />
+        <div className="container-page py-20 md:py-28">
+          <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
+            <p className="text-muted-foreground">{t("jobs.loading")}</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (!job) {
+    return <NotFoundPage />;
+  }
 
   const overviewItems = [
     {
@@ -246,28 +301,7 @@ export function JobOfferDetailPage() {
           { name: t("jobs.page.title"), url: `${BASE_URL}/jobs` },
           { name: job.title, url: canonical },
         ]}
-        structuredData={{
-          "@type": "JobPosting",
-          title: job.title,
-          description: cleanText(job.description || job.meta_description || ""),
-          datePosted: job.publish_at || undefined,
-          validThrough,
-          employmentType,
-          baseSalary,
-          hiringOrganization: {
-            "@type": "Organization",
-            name: job.company,
-            sameAs: BASE_URL,
-          },
-          jobLocation: {
-            "@type": "Place",
-            address: {
-              "@type": "PostalAddress",
-              addressLocality: job.location_city || undefined,
-              addressCountry: job.location_country || undefined,
-            },
-          },
-        }}
+        structuredData={seoStructuredData}
       />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr]">

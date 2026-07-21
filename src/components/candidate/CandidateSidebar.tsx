@@ -41,6 +41,7 @@ const publicMenuItems = [
   { id: "public-services", label: "Services", icon: BriefcaseBusiness, href: "/services" },
   { id: "public-jobs", label: "Emplois", icon: Search, href: "/jobs" },
   { id: "public-blog", label: "Blog", icon: BookOpen, href: "/blog" },
+  { id: "public-faq", label: "FAQ", icon: Info, href: "/faq" },
   { id: "public-about", label: "À propos", icon: Info, href: "/about" },
   { id: "public-contact", label: "Contact", icon: Mail, href: "/contact" },
 ];
