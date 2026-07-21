@@ -78,7 +78,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     passwordPresent: !!password,
   });
 
-  if (!email || !password || !firstName || !lastName) {
+  if (!email || !password) {
     console.error("Register request missing fields", {
       headers: req.headers,
       body: requestBody,
@@ -229,9 +229,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error("Confirmation email send failed", mailError);
     }
 
-    return res
-      .status(201)
-      .json({ success: true, message: "User created. Confirmation email sent." });
+    return res.status(201).json({
+      success: true,
+      message: "User created. Confirmation email sent.",
+      user: { id: userId },
+    });
   } catch (error) {
     console.error("REGISTER FATAL ERROR");
     console.error(error);

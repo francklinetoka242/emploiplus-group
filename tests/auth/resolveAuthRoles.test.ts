@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { resolveAuthRoles } from "../../src/features/authentication/utils/resolveAuthRoles";
+import { resolveAuthRoles } from "../../src/features/authentication/utils/resolveAuthRoles.ts";
 
 test("merge roles from claims and database rows", () => {
   assert.deepEqual(resolveAuthRoles(["admin"], ["super_admin", "editor"]), ["admin", "super_admin", "editor"]);

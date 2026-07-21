@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { AlertCircle, Ban, CheckCircle2, Pencil, PlusCircle, Trash2, Users } from "lucide-react";
+import { buildAdminCreateUserPayload } from "@/features/authentication/utils/adminCreateUserPayload";
 
 type AdminRole = "super_admin" | "admin" | "editor";
 
@@ -206,22 +207,29 @@ export function AdminTeamPage() {
           throw new Error(t("admin.team.form.required"));
         }
 
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email: formState.email.trim(),
-          password: formState.password,
-          options: {
-            data: {
-              full_name: formState.name.trim(),
-              specialty: formState.specialty.trim(),
-            },
-          },
+        const signUpPayload = buildAdminCreateUserPayload(formState.email.trim(), formState.password, {
+          full_name: formState.name.trim(),
+          specialty: formState.specialty.trim(),
+          source: "admin-team",
         });
 
-        if (signUpError) {
-          throw signUpError;
+        const response = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: signUpPayload.email,
+            password: signUpPayload.password,
+            firstName: formState.name.trim().split(" ")[0] || "",
+            lastName: formState.name.trim().split(/\s+/).slice(1).join(" ") || "",
+          }),
+        });
+
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(typeof body?.error === "string" ? body.error : t("admin.team.form.userCreateError"));
         }
 
-        const userId = signUpData.user?.id || signUpData.session?.user?.id;
+        const userId = typeof body?.user?.id === "string" ? body.user.id : null;
         if (!userId) {
           throw new Error(t("admin.team.form.userCreateError"));
         }
