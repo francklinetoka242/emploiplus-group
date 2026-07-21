@@ -7,6 +7,7 @@ import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
 import { PublicLayout } from "@/components/site/PublicLayout";
 import { useCandidate } from "@/hooks/useCandidate";
 import { ProtectedRoute } from "@/features/authentication/guards";
+import { DashboardLayoutSkeleton } from "@/components/ui/skeletons";
 
 // Immediately loaded pages (critical path)
 import { HomePage, AuthPage, NotFoundPage } from "@/pages";
@@ -78,6 +79,9 @@ const AdminNotificationsPage = lazy(() =>
 );
 const AdminCandidatesPage = lazy(() =>
   import("@/pages/admin").then((m) => ({ default: m.AdminCandidatesPage })),
+);
+const AdminLocalGuidesPage = lazy(() =>
+  import("@/pages/admin/AdminLocalGuidesPage").then((m) => ({ default: m.AdminLocalGuidesPage })),
 );
 
 // Lazy load candidate pages
@@ -179,6 +183,11 @@ const CandidateSettingsPage = lazy(() =>
     default: m.CandidateSettingsPage,
   })),
 );
+const CandidateLocalGuidesPage = lazy(() =>
+  import("@/pages/candidate/CandidateLocalGuidesPage").then((m) => ({
+    default: m.CandidateLocalGuidesPage,
+  })),
+);
 const CandidateJobApplyPage = lazy(() =>
   import("@/pages/candidate/CandidateJobApplyPage").then((m) => ({
     default: m.CandidateJobApplyPage,
@@ -275,7 +284,11 @@ export default function App() {
       <Route
         path="/candidate"
         element={
-          <ProtectedRoute fallbackPath="/candidate/login" requiredPermissions={["dashboard.candidate"]}>
+          <ProtectedRoute
+            fallbackPath="/candidate/login"
+            requiredPermissions={["dashboard.candidate"]}
+            loadingSkeleton={<DashboardLayoutSkeleton />}
+          >
             <CandidateLayout />
           </ProtectedRoute>
         }
@@ -291,6 +304,7 @@ export default function App() {
         <Route path="profile" element={<CandidateProfilePage />} />
         <Route path="profile/edit" element={<CandidateProfileEditPage />} />
         <Route path="documents" element={<CandidateDocumentsPage />} />
+        <Route path="guides" element={<CandidateLocalGuidesPage />} />
         {/* Backwards-compatible redirects */}
         <Route path="creation" element={<Navigate to="/candidate/documents" replace />} />
         <Route path="creation-motivation" element={<CreationMotivationRedirect />} />
@@ -384,6 +398,18 @@ export default function App() {
               requiredPermissions={["candidate.read"]}
             >
               <AdminCandidatesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="guides"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["dashboard.admin"]}
+            >
+              <AdminLocalGuidesPage />
             </ProtectedRoute>
           }
         />

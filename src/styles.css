@@ -2,6 +2,9 @@
 @source ".";
 @import "tw-animate-css";
 
+/* Styles pour le Mode Économie de Données */
+@import "./styles/eco-mode.css";
+
 @custom-variant dark (&:is(.dark *));
 
 /*

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
+import { useEcoMode } from '@/contexts/EcoModeContext';
 import logoMonago from "@/assets/logo-monago.jpg";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
@@ -21,6 +22,83 @@ import {
 } from "lucide-react";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { JobCard } from "@/features/jobs/components";
+
+function HeroSection() {
+  const { isEcoMode } = useEcoMode();
+
+  if (isEcoMode) {
+    return (
+      <section className="relative overflow-hidden min-h-[400px] md:min-h-[420px] bg-slate-100">
+        <div className="relative z-10 container-page py-20 md:py-28">
+          <div className="grid gap-12 lg:grid-cols-[1fr_320px] items-center">
+            <div>
+              <p className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-primary/10">
+                {""}
+              </p>
+              <h1 className="mt-8 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
+                {""}
+              </h1>
+              <p className="mt-6 max-w-2xl text-base text-slate-700 leading-relaxed">
+                {""}
+              </p>
+              <div className="mt-10 flex flex-wrap gap-3">
+                <div className="h-12 w-36 rounded-lg bg-slate-200" />
+                <div className="h-12 w-36 rounded-lg bg-slate-200" />
+              </div>
+            </div>
+            <div className="hidden lg:block" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section
+      className="relative overflow-hidden min-h-[600px] md:min-h-[700px] bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${heroBg})` }}
+    >
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.65),rgba(2,6,23,0.9))]" />
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="relative z-10 container-page py-20 md:py-28">
+        <div className="grid gap-12 lg:grid-cols-[1fr_320px] items-center">
+          <div>
+            <p
+              className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-primary/10 fade-up"
+              style={{ animationDelay: "80ms" }}
+            >
+              {""}
+            </p>
+            <h1
+              className="mt-8 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white fade-up"
+              style={{ animationDelay: "180ms" }}
+            >
+              {""}
+            </h1>
+            <p
+              className="mt-6 max-w-2xl text-base text-white/90 leading-relaxed fade-up"
+              style={{ animationDelay: "260ms" }}
+            >
+              {""}
+            </p>
+            <div
+              className="mt-10 flex flex-wrap gap-3 fade-up"
+              style={{ animationDelay: "340ms" }}
+            >
+              <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand">
+                <Link to="/jobs">{""}</Link>
+              </Button>
+              <Button asChild size="lg" className="bg-accent text-white hover:bg-accent/90 shadow-lg">
+                <Link to="/services">{""}</Link>
+              </Button>
+            </div>
+          </div>
+          <div className="hidden lg:block" />
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function AnimatedStat({
   value,
@@ -100,57 +178,7 @@ export function HomePage() {
   return (
     <div className="bg-background">
       <SEO {...DEFAULT_SEO} />
-      <section
-        className="relative overflow-hidden min-h-[600px] md:min-h-[700px] bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroBg})` }}
-      >
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.65),rgba(2,6,23,0.9))]" />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="relative z-10 container-page py-20 md:py-28">
-          <div className="grid gap-12 lg:grid-cols-[1fr_320px] items-center">
-            <div>
-              <p
-                className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-primary/10 fade-up"
-                style={{ animationDelay: "80ms" }}
-              >
-                {t("home.hero.eyebrow")}
-              </p>
-              <h1
-                className="mt-8 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white fade-up"
-                style={{ animationDelay: "180ms" }}
-              >
-                {t("home.hero.title")}
-              </h1>
-              <p
-                className="mt-6 max-w-2xl text-base text-white/90 leading-relaxed fade-up"
-                style={{ animationDelay: "260ms" }}
-              >
-                {t("home.hero.subtitle")}
-              </p>
-              <div
-                className="mt-10 flex flex-wrap gap-3 fade-up"
-                style={{ animationDelay: "340ms" }}
-              >
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand"
-                >
-                  <Link to="/jobs">{t("home.hero.cta.jobs")}</Link>
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  className="bg-accent text-white hover:bg-accent/90 shadow-lg"
-                >
-                  <Link to="/services">{t("home.hero.cta.services")}</Link>
-                </Button>
-              </div>
-            </div>
-            <div className="hidden lg:block" />
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       <section className="container-page py-16 md:py-20">
         <div className="grid gap-6 md:grid-cols-3">
@@ -176,77 +204,12 @@ export function HomePage() {
             >
               <div className="p-[1px] rounded-3xl gradient-brand">
                 <div className="rounded-3xl bg-card p-6 h-full">
-                  <h2 className="font-display text-lg font-bold text-foreground">
-                    {t(item.title)}
-                  </h2>
-                  <p className="mt-3 text-muted-foreground leading-relaxed">
-                    {t(item.description)}
-                  </p>
+                  <h2 className="font-display text-lg font-bold text-foreground">{t(item.title)}</h2>
+                  <p className="mt-3 text-muted-foreground leading-relaxed">{t(item.description)}</p>
                 </div>
               </div>
             </article>
           ))}
-        </div>
-      </section>
-
-      <section className="bg-secondary/10 border-y border-border">
-        <div className="container-page py-20 md:py-24">
-          <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
-            <div>
-              <h2 className="font-display text-3xl md:text-4xl font-extrabold">
-                {t("home.jobs.title")}
-              </h2>
-              <p className="mt-2 text-muted-foreground">{t("home.jobs.subtitle")}</p>
-            </div>
-            <Button asChild variant="ghost">
-              <Link to="/jobs">{t("home.jobs.viewAll")}</Link>
-            </Button>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {jobsLoading ? (
-              <div className="rounded-3xl border border-border bg-card p-6 shadow-soft">
-                <div className="h-5 w-1/3 rounded-full bg-muted-foreground/20 animate-pulse" />
-                <div className="mt-4 h-4 w-2/3 rounded-full bg-muted-foreground/20 animate-pulse" />
-                <div className="mt-3 h-4 w-1/2 rounded-full bg-muted-foreground/20 animate-pulse" />
-              </div>
-            ) : homeJobs.length > 0 ? (
-              homeJobs.map((job, i) => {
-                const location =
-                  [job.location_city, job.location_country].filter(Boolean).join(", ") ||
-                  t("jobs.location.remote");
-                const previewText = (job.description || job.requirements || "")
-                  .replace(/\s+/g, " ")
-                  .trim();
-                const contractLabel = getContractLabel(job.contract_type);
-                const tags = (job.tags || []).filter(Boolean).slice(0, 3);
-                const deadlineValue = job.deadline || null;
-                const isExpired = Boolean(
-                  deadlineValue && new Date(deadlineValue).getTime() < Date.now(),
-                );
-
-                return (
-                  <JobCard
-                    key={job.id}
-                    job={job}
-                    location={location}
-                    previewText={previewText}
-                    contractLabel={contractLabel}
-                    tags={tags}
-                    deadlineValue={deadlineValue}
-                    isExpired={isExpired}
-                    t={t}
-                    index={i}
-                    hideRequirementsSection
-                    onApplyClick={() => navigate(`/candidate/jobs/${job.slug}/apply`)}
-                  />
-                );
-              })
-            ) : (
-              <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">
-                {t("jobs.none")}
-              </div>
-            )}
-          </div>
         </div>
       </section>
 

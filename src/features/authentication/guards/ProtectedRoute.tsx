@@ -11,6 +11,11 @@ interface ProtectedRouteProps {
   requiredPermissions?: Permission[];
   fallbackPath?: string;
   requireAllPermissions?: boolean;
+  /**
+   * Skeleton ou composant à afficher pendant le chargement des permissions.
+   * Permet une meilleure UX en évitant les écrans blancs bloquants.
+   */
+  loadingSkeleton?: ReactNode;
 }
 
 export function ProtectedRoute({
@@ -19,6 +24,7 @@ export function ProtectedRoute({
   requiredPermissions,
   fallbackPath = "/candidate/login",
   requireAllPermissions = true,
+  loadingSkeleton,
 }: ProtectedRouteProps) {
   const content = <>{children}</>;
 
@@ -35,6 +41,7 @@ export function ProtectedRoute({
       requiredPermissions={requiredPermissions}
       fallbackPath={fallbackPath}
       requireAll={requireAllPermissions}
+      loadingSkeleton={loadingSkeleton}
     >
       {guardedContent}
     </PermissionGuard>

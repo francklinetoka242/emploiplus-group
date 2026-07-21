@@ -22,12 +22,14 @@ export function ShareButtons({
   text,
   variant = "full",
   className = "",
+  showCopyLink = true,
   shareData,
 }: {
   url: string;
   text: string;
   variant?: "full" | "compact";
   className?: string;
+  showCopyLink?: boolean;
   shareData?: ShareJobData;
 }) {
   const { t } = useI18n();
@@ -115,16 +117,18 @@ export function ShareButtons({
             >
               <Linkedin className="size-3.5" /> LinkedIn
             </a>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={copy}
-              className="justify-start gap-2"
-            >
-              {copied ? <Check className="size-3.5" /> : <Link2 className="size-3.5" />}
-              {copied ? t("common.copied") : t("cta.copyLink")}
-            </Button>
+            {showCopyLink ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={copy}
+                className="justify-start gap-2"
+              >
+                {copied ? <Check className="size-3.5" /> : <Link2 className="size-3.5" />}
+                {copied ? t("common.copied") : t("cta.copyLink")}
+              </Button>
+            ) : null}
           </div>
         ) : null}
       </div>

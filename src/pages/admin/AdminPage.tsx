@@ -11,7 +11,7 @@ import { Menu, X } from "lucide-react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
-type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "privacy" | "legal" | "cgu" | "candidates";
+type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "privacy" | "legal" | "cgu" | "candidates" | "guides";
 
 export function AdminPage() {
   const [session, setSession] = React.useState<Session | null>(null);
@@ -67,6 +67,7 @@ export function AdminPage() {
     if (path === "jobs") setActiveView("jobs");
     else if (path === "blog") setActiveView("blog");
     else if (path === "candidates") setActiveView("candidates");
+    else if (path === "guides") setActiveView("guides");
     else if (path === "notifications") setActiveView("notifications");
     else if (path === "team") setActiveView("team");
     else if (path === "seo") setActiveView("seo");

@@ -17,4 +17,5 @@ export { CandidateApplicationsPage } from "./CandidateApplicationsPage";
 export { CandidateSavedOffersPage } from "./CandidateSavedOffersPage";
 export { CandidateNotificationsPage } from "./CandidateNotificationsPage";
 export { CandidateSettingsPage } from "./CandidateSettingsPage";
+export { CandidateLocalGuidesPage } from "./CandidateLocalGuidesPage";
 export { CandidateJobApplyPage } from "./CandidateJobApplyPage";

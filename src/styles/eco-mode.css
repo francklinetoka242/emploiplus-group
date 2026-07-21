@@ -1,0 +1,96 @@
+/**
+ * Styles CSS pour le Mode Économie de Données
+ * 
+ * À importer dans votre fichier de styles global (styles.css)
+ * ou en tant que module CSS
+ * 
+ * Usage:
+ * - Ajouter la classe `eco-mode-no-animations` à <html> ou <body>
+ * - Tous les éléments avec transition/animation seront affectés
+ */
+
+/* ─────────────────────────────────────────────────────────────────── */
+/* Désactivation globale des animations et transitions                  */
+/* ─────────────────────────────────────────────────────────────────── */
+
+html.eco-mode-no-animations,
+html.eco-mode-no-animations * {
+  animation: none !important;
+  animation-duration: 0 !important;
+  animation-delay: 0 !important;
+  transition: none !important;
+  transition-duration: 0 !important;
+  transition-delay: 0 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/* Préférence système pour réduction de mouvement (accessibilité)       */
+/* ─────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/* Placeholders et skeletons en Mode Économie                           */
+/* ─────────────────────────────────────────────────────────────────── */
+
+.eco-mode-placeholder {
+  background-color: #e5e7eb;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+  position: relative;
+}
+
+.eco-mode-placeholder svg {
+  margin-bottom: 0.5rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/* Variables CSS pour Mode Économie (utilisation optionnelle)           */
+/* ─────────────────────────────────────────────────────────────────── */
+
+:root {
+  --eco-mode-enabled: false;
+  --eco-placeholder-bg: #e5e7eb;
+  --eco-placeholder-text: #6b7280;
+  --eco-placeholder-text-sm: 0.875rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/* Exemple : Désactiver les hover effects en Mode Économie              */
+/* ─────────────────────────────────────────────────────────────────── */
+
+html.eco-mode-no-animations button:hover,
+html.eco-mode-no-animations a:hover {
+  /* Les états hover ne sont pas désactivés par défaut */
+  /* Ajouter une règle ici si nécessaire */
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/* Responsive et Performance                                            */
+/* ─────────────────────────────────────────────────────────────────── */
+
+/* Sur les appareils mobiles en Mode Économie, réduire davantage */
+@media (max-width: 768px) {
+  html.eco-mode-no-animations {
+    /* Optimisations mobiles additionnelles */
+  }
+}
+
+/* Optimiser pour les connexions lentes (prefers-reduced-data hypothétique) */
+/* Note: Pas encore supporté partout, mais prévoir pour l'avenir */
+/* @media (prefers-reduced-data: reduce) { */
+/*   / Implémentations futures */
+/* } */

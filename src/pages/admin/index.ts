@@ -13,4 +13,5 @@ export { AdminPrivacyPolicyPage } from "@/pages/admin/AdminPrivacyPolicyPage";
 export { AdminLegalDocumentsPage } from "@/pages/admin/AdminLegalDocumentsPage";
 export { AdminCguPage } from "@/pages/admin/AdminCguPage";
 export { AdminCandidatesPage } from "@/pages/admin/AdminCandidatesPage";
+export { AdminLocalGuidesPage } from "@/pages/admin/AdminLocalGuidesPage";
 export { AdminNotificationsPage } from "@/pages/admin/AdminNotificationsPage";

@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
+import { EcoImage } from '@/components/EcoImage';
 import { BASE_URL } from "@/features/seo";
 import { useBlogPostBySlug } from "@/hooks/usePublishedOffers";
 import { ShareButtons } from "@/components/site/ShareButtons";
@@ -77,7 +78,7 @@ export function BlogPostDetailPage() {
             <article className="overflow-hidden rounded-3xl border border-border bg-card shadow-soft">
               {post.image ? (
                 <div className="h-72 w-full overflow-hidden bg-slate-100 md:h-[420px]">
-                  <img src={post.image} alt={post.title} className="h-full w-full object-cover" />
+                  <EcoImage src={post.image} alt={post.title} className="h-full w-full object-cover" />
                 </div>
               ) : null}
               <div className="p-8">

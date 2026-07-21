@@ -7,6 +7,12 @@ interface PermissionGuardProps {
   requiredPermissions: Permission[];
   fallbackPath?: string;
   requireAll?: boolean;
+  /**
+   * Composant optionnel à afficher pendant le chargement des permissions.
+   * Si non fourni, affiche une page blanche avec le texte "Vérification des permissions..."
+   * Si fourni, permet d'afficher un skeleton ou un composant d'App Shell.
+   */
+  loadingSkeleton?: React.ReactNode;
 }
 
 export function PermissionGuard({
@@ -14,17 +20,22 @@ export function PermissionGuard({
   requiredPermissions,
   fallbackPath = "/candidate/login",
   requireAll = true,
+  loadingSkeleton,
 }: PermissionGuardProps) {
-  const { hasPermission, hasAllPermissions, hasAnyPermission, loading } = usePermissions();
+  const { hasPermission, hasAllPermissions, hasAnyPermission, loading, permissions } = usePermissions();
 
+  // État de chargement : affiche le skeleton ou un écran de loading
   if (loading) {
-    return (
+    return loadingSkeleton ? (
+      <>{loadingSkeleton}</>
+    ) : (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-sm text-muted-foreground">Vérification des permissions...</div>
       </div>
     );
   }
 
+  // État d'accès : vérifie les permissions
   const hasAccess = requireAll
     ? hasAllPermissions(requiredPermissions)
     : hasAnyPermission(requiredPermissions);

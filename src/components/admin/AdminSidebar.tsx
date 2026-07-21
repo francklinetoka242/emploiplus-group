@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
-type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "privacy" | "legal" | "cgu" | "candidates";
+type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "privacy" | "legal" | "cgu" | "candidates" | "guides";
 
 interface AdminSidebarProps {
   open: boolean;
@@ -82,6 +82,7 @@ export function AdminSidebar({
     },
     { id: "jobs", label: t("admin.sidebar.jobs") || "Offres", icon: Briefcase },
     { id: "candidates", label: t("admin.sidebar.candidates") || "Utilisateur", icon: Users },
+    { id: "guides", label: "Fiches-doc", icon: FileText },
     { id: "blog", label: t("admin.sidebar.blog") || "Blog", icon: FileText },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "seo", label: t("admin.sidebar.seo") || "SEO", icon: Sparkles },

@@ -22,6 +22,7 @@ import {
   Calendar,
   MapPin,
   DollarSign,
+  BookOpen,
 } from "lucide-react";
 import { JobCard } from "@/features/jobs/components";
 
@@ -67,6 +68,15 @@ const quickActions = [
     href: "/candidate/profile",
     borderColor: "border-orange-500",
     bgGradient: "from-orange-50 to-orange-100",
+  },
+  {
+    id: 4,
+    title: "Consulter les guides",
+    description: "Découvrez les fiches conseils utiles pour vos démarches",
+    icon: BookOpen,
+    href: "/candidate/guides",
+    borderColor: "border-emerald-500",
+    bgGradient: "from-emerald-50 to-emerald-100",
   },
 ];
 
