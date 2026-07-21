@@ -81,37 +81,46 @@ export function AuthPage() {
       return;
     }
 
-    const user = data.user ?? data.session?.user;
-    if (user) {
+    const authUser = data.user ?? data.session?.user;
+
+    if (authUser) {
       const { data: sessionData } = await supabase.auth.getSession();
-      if (sessionData.session) {
-        const userId = sessionData.session.user.id;
-        console.info("[AuthPage] sessionUserId:", userId);
-        const { data: rolesData, error: rolesError } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", userId);
+      const resolvedSessionUser = sessionData.session?.user ?? authUser;
+      const userId = resolvedSessionUser.id;
 
-        console.info("[AuthPage] user_roles query:", { rolesData, rolesError });
+      console.info("[AuthPage] resolvedUserId:", userId);
 
-        if (rolesError) {
-          setError(t("auth.error.rolesLoadFailed") ?? "Impossible de vérifier les droits.");
-          setAuthDetail(`Session user id: ${userId}`);
-          return;
-        }
+      const { data: rolesData, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId);
 
-        if (!rolesData || rolesData.length === 0) {
-          setError(t("auth.error.notAdmin") ?? "Votre compte n'a pas les droits administrateur.");
-          setAuthDetail(`Session user id: ${userId} — rôles détectés: aucune`);
-          return;
-        }
+      console.info("[AuthPage] user_roles query:", { rolesData, rolesError });
 
-        setAuthDetail(`Session user id: ${userId} — rôles détectés: ${rolesData.map((r: any) => r.role).join(", ")}`);
+      const claimRoles = Array.isArray(resolvedSessionUser.app_metadata?.roles)
+        ? resolvedSessionUser.app_metadata.roles.filter((value): value is string => typeof value === "string")
+        : [];
 
-        setMessage(t("auth.successRedirect"));
-        navigate("/admin", { replace: true });
+      const effectiveRoles = (rolesData ?? []).map((row: { role?: string | null }) => row.role).filter(Boolean) as string[];
+      const mergedRoles = Array.from(new Set([...effectiveRoles, ...claimRoles]));
+
+      if (rolesError) {
+        setError(t("auth.error.rolesLoadFailed") ?? "Impossible de vérifier les droits.");
+        setAuthDetail(`Session user id: ${userId}`);
         return;
       }
+
+      if (!mergedRoles.length) {
+        setError(t("auth.error.notAdmin") ?? "Votre compte n'a pas les droits administrateur.");
+        setAuthDetail(`Session user id: ${userId} — rôles détectés: aucune`);
+        return;
+      }
+
+      setAuthDetail(`Session user id: ${userId} — rôles détectés: ${mergedRoles.join(", ")}`);
+
+      setMessage(t("auth.successRedirect"));
+      navigate("/admin", { replace: true });
+      return;
     }
 
     setError(t("auth.error.unableToSignIn") ?? "Impossible de se connecter.");

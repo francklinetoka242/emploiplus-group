@@ -142,23 +142,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session?.user?.id]);
 
   useEffect(() => {
-    const authListener = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const authListener = supabase.auth.onAuthStateChange((event, nextSession) => {
       setError(null);
+
+      if (!nextSession) {
+        setSession(null);
+        setProfile(null);
+        setIsProfileLoading(false);
+        return;
+      }
+
       setSession((previousSession) => {
         const previousUserId = previousSession?.user?.id ?? null;
         const nextUserId = nextSession?.user?.id ?? null;
 
-        if (previousUserId === nextUserId && previousUserId !== null && nextSession) {
-          return previousSession;
+        if (
+          event === "SIGNED_IN" ||
+          event === "TOKEN_REFRESHED" ||
+          event === "USER_UPDATED" ||
+          previousUserId !== nextUserId
+        ) {
+          return nextSession;
         }
 
-        return nextSession;
+        return previousSession ?? nextSession;
       });
-
-      if (!nextSession) {
-        setProfile(null);
-        setIsProfileLoading(false);
-      }
     });
 
     return () => {
