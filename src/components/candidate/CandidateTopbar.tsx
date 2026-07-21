@@ -54,9 +54,9 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
     { to: "/services", label: "Services" },
     { to: "/jobs", label: "Emplois" },
     { to: "/blog", label: "Blog" },
-    { to: "/faq", label: "FAQ" },
     { to: "/about", label: "À propos" },
     { to: "/contact", label: "Contact" },
+    { to: "/faq", label: "FAQ" },
   ];
 
   const handleLogout = async () => {
