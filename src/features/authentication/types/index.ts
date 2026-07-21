@@ -1,6 +1,7 @@
 import type { Session } from "@supabase/supabase-js";
 import type { Permission } from "@/features/authentication/permissions/permissions";
 import type { DatabaseAppRole } from "@/features/authentication/permissions/roles";
+import { resolveAuthRoles } from "@/features/authentication/utils/resolveAuthRoles";
 
 export interface AuthenticatedAppMetadata {
   roles?: string[];
@@ -35,7 +36,7 @@ export function getAuthMetadataFromSession(session: Session | null | undefined):
     : [];
 
   return {
-    roles: rawRoles.filter((role): role is DatabaseAppRole => ["super_admin", "admin", "editor"].includes(role as DatabaseAppRole)),
+    roles: resolveAuthRoles(rawRoles, []),
     permissions: rawPermissions.filter((permission): permission is Permission =>
       ["jobs.read", "jobs.create", "jobs.edit", "jobs.delete", "candidate.read", "candidate.update", "candidate.apply", "blog.read", "blog.write", "notifications.read", "notifications.manage", "services.manage", "dashboard.admin", "dashboard.candidate", "seo.manage", "team.manage"].includes(permission as Permission),
     ),

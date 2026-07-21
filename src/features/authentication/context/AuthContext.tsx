@@ -7,6 +7,7 @@ import { getCandidateProfileByUserId } from "@/features/candidates/api/profileAp
 import type { CandidateProfile } from "@/features/candidates/types";
 import type { DatabaseAppRole } from "@/features/authentication/permissions/roles";
 import type { Permission } from "@/features/authentication/permissions/permissions";
+import { resolveAuthRoles } from "@/features/authentication/utils/resolveAuthRoles";
 
 interface AuthContextValue {
   session: Session | null;
@@ -40,9 +41,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAuthenticated = useMemo(() => Boolean(session), [session]);
 
   const roles = useMemo<DatabaseAppRole[]>(() => {
-    const allowedRoles: DatabaseAppRole[] = ["super_admin", "admin", "editor"];
-    return authMetadata.roles.filter((role): role is DatabaseAppRole => allowedRoles.includes(role));
-  }, [authMetadata.roles]);
+    if (!session?.user?.id) {
+      return authMetadata.roles;
+    }
+
+    return authMetadata.roles;
+  }, [authMetadata.roles, session?.user?.id]);
 
   const permissions = useMemo<Permission[]>(() => authMetadata.permissions, [authMetadata.permissions]);
 
@@ -142,7 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session?.user?.id]);
 
   useEffect(() => {
-    const authListener = supabase.auth.onAuthStateChange((event, nextSession) => {
+    const authListener = supabase.auth.onAuthStateChange(async (event, nextSession) => {
       setError(null);
 
       if (!nextSession) {
@@ -152,21 +156,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setSession((previousSession) => {
-        const previousUserId = previousSession?.user?.id ?? null;
-        const nextUserId = nextSession?.user?.id ?? null;
+      try {
+        const { data: rolesData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", nextSession.user.id)
+          .eq("is_active", true);
 
-        if (
-          event === "SIGNED_IN" ||
-          event === "TOKEN_REFRESHED" ||
-          event === "USER_UPDATED" ||
-          previousUserId !== nextUserId
-        ) {
-          return nextSession;
-        }
+        const claimRoles = Array.isArray(nextSession.user.app_metadata?.roles)
+          ? nextSession.user.app_metadata.roles.filter((value): value is string => typeof value === "string")
+          : [];
 
-        return previousSession ?? nextSession;
-      });
+        const dbRoles = (rolesData ?? []).map((row: { role?: string | null }) => row.role).filter(Boolean) as string[];
+        const resolvedRoles = resolveAuthRoles(claimRoles, dbRoles);
+
+        const nextSessionWithResolvedRoles = {
+          ...nextSession,
+          user: {
+            ...nextSession.user,
+            app_metadata: {
+              ...nextSession.user.app_metadata,
+              roles: resolvedRoles,
+            },
+          },
+        } as Session;
+
+        setSession((previousSession) => {
+          const previousUserId = previousSession?.user?.id ?? null;
+          const nextUserId = nextSessionWithResolvedRoles.user.id ?? null;
+
+          if (
+            event === "SIGNED_IN" ||
+            event === "TOKEN_REFRESHED" ||
+            event === "USER_UPDATED" ||
+            previousUserId !== nextUserId
+          ) {
+            return nextSessionWithResolvedRoles;
+          }
+
+          return previousSession ?? nextSessionWithResolvedRoles;
+        });
+      } catch {
+        setSession(nextSession);
+      }
     });
 
     return () => {

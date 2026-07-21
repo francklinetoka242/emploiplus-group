@@ -7,10 +7,7 @@ export function useRoles() {
   const { session, loading: authLoading, error: authError } = useAuth();
   const authMetadata = useMemo(() => getAuthMetadataFromSession(session), [session]);
 
-  const roles = useMemo<DatabaseAppRole[]>(() => {
-    const allowedRoles: DatabaseAppRole[] = ["super_admin", "admin", "editor"];
-    return authMetadata.roles.filter((role): role is DatabaseAppRole => allowedRoles.includes(role as DatabaseAppRole));
-  }, [authMetadata.roles]);
+  const roles = useMemo<DatabaseAppRole[]>(() => authMetadata.roles, [authMetadata.roles]);
 
   const hasRole = useMemo(
     () => (role: string) => roles.includes(role as DatabaseAppRole),
