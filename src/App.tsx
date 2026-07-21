@@ -8,7 +8,14 @@ import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
 import { PublicLayout } from "@/components/site/PublicLayout";
 import { useAuthContext } from "@/features/authentication/context/AuthContext";
 import { ProtectedRoute } from "@/features/authentication/guards";
-import { DashboardLayoutSkeleton } from "@/components/ui/skeletons";
+import {
+  DashboardLayoutSkeleton,
+  CandidateDashboardSkeleton,
+  PublicPageSkeleton,
+  JobsPageSkeleton,
+  JobOfferDetailSkeleton,
+  BlogPageSkeleton,
+} from "@/components/ui/skeletons";
 
 // Immediately loaded pages (critical path)
 import { HomePage } from "@/pages/public/HomePage";
@@ -200,8 +207,12 @@ const CandidateJobApplyPage = lazy(() =>
   })),
 );
 
-// Loading fallback component
-const PageLoadingFallback = () => <DashboardLayoutSkeleton />;
+// Loading fallback component for generic public routes
+const PageLoadingFallback = () => <PublicPageSkeleton />;
+
+function withSuspense(element: React.ReactNode, fallback: React.ReactNode) {
+  return <Suspense fallback={fallback}>{element}</Suspense>;
+}
 
 function SharedPublicRouteShell() {
   const { profile, isLoading, isProfileLoading } = useAuthContext();
@@ -260,20 +271,20 @@ function AppContent() {
   const routes = (
     <Routes>
       <Route element={<SharedPublicRouteShell />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/services" element={<ServicesPage />} />
-        <Route path="/services/:slug" element={<ServiceDetailPage />} />
-        <Route path="/services/hub-emploi-recrutement/landing" element={<HubEmploiPage />} />
-        <Route path="/jobs" element={<JobsPage />} />
-        <Route path="/jobs/:slug" element={<JobOfferDetailPage />} />
-        <Route path="/blog" element={<BlogPage />} />
-        <Route path="/blog/:slug" element={<BlogPostDetailPage />} />
-        <Route path="/faq" element={<FAQPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/politique-de-confidentialite" element={<PrivacyPolicyPage />} />
-        <Route path="/mentions-legales" element={<LegalDocumentsPage />} />
-        <Route path="/cgu" element={<CguPage />} />
+        <Route path="/" element={withSuspense(<HomePage />, <PublicPageSkeleton />)} />
+        <Route path="/about" element={withSuspense(<AboutPage />, <PublicPageSkeleton />)} />
+        <Route path="/services" element={withSuspense(<ServicesPage />, <PublicPageSkeleton />)} />
+        <Route path="/services/:slug" element={withSuspense(<ServiceDetailPage />, <PublicPageSkeleton />)} />
+        <Route path="/services/hub-emploi-recrutement/landing" element={withSuspense(<HubEmploiPage />, <PublicPageSkeleton />)} />
+        <Route path="/jobs" element={withSuspense(<JobsPage />, <JobsPageSkeleton />)} />
+        <Route path="/jobs/:slug" element={withSuspense(<JobOfferDetailPage />, <JobOfferDetailSkeleton />)} />
+        <Route path="/blog" element={withSuspense(<BlogPage />, <BlogPageSkeleton />)} />
+        <Route path="/blog/:slug" element={withSuspense(<BlogPostDetailPage />, <BlogPageSkeleton />)} />
+        <Route path="/faq" element={withSuspense(<FAQPage />, <PublicPageSkeleton />)} />
+        <Route path="/contact" element={withSuspense(<ContactPage />, <PublicPageSkeleton />)} />
+        <Route path="/politique-de-confidentialite" element={withSuspense(<PrivacyPolicyPage />, <PublicPageSkeleton />)} />
+        <Route path="/mentions-legales" element={withSuspense(<LegalDocumentsPage />, <PublicPageSkeleton />)} />
+        <Route path="/cgu" element={withSuspense(<CguPage />, <PublicPageSkeleton />)} />
       </Route>
 
       <Route path="/auth" element={<AuthPage />} />
@@ -290,24 +301,24 @@ function AppContent() {
           <ProtectedRoute
             fallbackPath="/candidate/login"
             requiredPermissions={["dashboard.candidate"]}
-            loadingSkeleton={<DashboardLayoutSkeleton />}
+            loadingSkeleton={<CandidateDashboardSkeleton />}
           >
-            <CandidateLayout />
+            {withSuspense(<CandidateLayout />, <CandidateDashboardSkeleton />)}
           </ProtectedRoute>
         }
       >
         <Route index element={<Navigate to="/candidate/dashboard" replace />} />
-        <Route path="dashboard" element={<CandidateDashboardPage />} />
-        <Route path="public" element={<HomePage />} />
-        <Route path="public/services" element={<ServicesPage />} />
-        <Route path="public/jobs" element={<JobsPage />} />
-        <Route path="public/blog" element={<BlogPage />} />
-        <Route path="public/about" element={<AboutPage />} />
-        <Route path="public/contact" element={<ContactPage />} />
-        <Route path="profile" element={<CandidateProfilePage />} />
-        <Route path="profile/edit" element={<CandidateProfileEditPage />} />
-        <Route path="documents" element={<CandidateDocumentsPage />} />
-        <Route path="guides" element={<CandidateLocalGuidesPage />} />
+        <Route path="dashboard" element={withSuspense(<CandidateDashboardPage />, <CandidateDashboardSkeleton />)} />
+        <Route path="public" element={withSuspense(<HomePage />, <PublicPageSkeleton />)} />
+        <Route path="public/services" element={withSuspense(<ServicesPage />, <PublicPageSkeleton />)} />
+        <Route path="public/jobs" element={withSuspense(<JobsPage />, <JobsPageSkeleton />)} />
+        <Route path="public/blog" element={withSuspense(<BlogPage />, <BlogPageSkeleton />)} />
+        <Route path="public/about" element={withSuspense(<AboutPage />, <PublicPageSkeleton />)} />
+        <Route path="public/contact" element={withSuspense(<ContactPage />, <PublicPageSkeleton />)} />
+        <Route path="profile" element={withSuspense(<CandidateProfilePage />, <CandidateDashboardSkeleton />)} />
+        <Route path="profile/edit" element={withSuspense(<CandidateProfileEditPage />, <CandidateDashboardSkeleton />)} />
+        <Route path="documents" element={withSuspense(<CandidateDocumentsPage />, <CandidateDashboardSkeleton />)} />
+        <Route path="guides" element={withSuspense(<CandidateLocalGuidesPage />, <CandidateDashboardSkeleton />)} />
         {/* Backwards-compatible redirects */}
         <Route path="creation" element={<Navigate to="/candidate/documents" replace />} />
         <Route path="creation-motivation" element={<CreationMotivationRedirect />} />
@@ -316,12 +327,12 @@ function AppContent() {
         <Route path="skills" element={<Navigate to="/candidate/profile?tab=skills" replace />} />
         <Route path="languages" element={<Navigate to="/candidate/profile?tab=languages" replace />} />
         <Route path="preferences" element={<Navigate to="/candidate/profile?tab=preferences" replace />} />
-        <Route path="applications" element={<CandidateApplicationsPage />} />
-        <Route path="applications/:id" element={<CandidateApplicationDetailPage />} />
-        <Route path="saved-offers" element={<CandidateSavedOffersPage />} />
-        <Route path="notifications" element={<CandidateNotificationsPage />} />
-        <Route path="settings" element={<CandidateSettingsPage />} />
-        <Route path="jobs/:slug/apply" element={<CandidateJobApplyPage />} />
+        <Route path="applications" element={withSuspense(<CandidateApplicationsPage />, <CandidateDashboardSkeleton />)} />
+        <Route path="applications/:id" element={withSuspense(<CandidateApplicationDetailPage />, <CandidateDashboardSkeleton />)} />
+        <Route path="saved-offers" element={withSuspense(<CandidateSavedOffersPage />, <CandidateDashboardSkeleton />)} />
+        <Route path="notifications" element={withSuspense(<CandidateNotificationsPage />, <CandidateDashboardSkeleton />)} />
+        <Route path="settings" element={withSuspense(<CandidateSettingsPage />, <CandidateDashboardSkeleton />)} />
+        <Route path="jobs/:slug/apply" element={withSuspense(<CandidateJobApplyPage />, <CandidateDashboardSkeleton />)} />
       </Route>
 
       <Route
