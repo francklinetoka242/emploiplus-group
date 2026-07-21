@@ -92,11 +92,32 @@ function createServer(outputDir) {
 }
 
 function getLocalBrowserExecutable() {
+  if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+    return process.env.PUPPETEER_EXECUTABLE_PATH;
+  }
+
+  try {
+    const executable = puppeteer.executablePath();
+    if (typeof executable === "string" && executable.length > 0) {
+      return executable;
+    }
+  } catch (error) {
+    // ignore if Puppeteer did not download a browser yet
+  }
+
   const candidates = [
+    // Windows
     "C:/Program Files/Google/Chrome/Application/chrome.exe",
     "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
     "C:/Program Files/Microsoft/Edge/Application/msedge.exe",
     "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+    // Linux
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/google-chrome",
+    "/usr/bin/chromium-browser",
+    "/usr/bin/chromium",
+    "/usr/bin/msedge",
+    "/usr/bin/brave-browser",
   ];
 
   for (const path of candidates) {

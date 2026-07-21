@@ -17,6 +17,7 @@
     "lint": "eslint .",
     "format": "prettier --write ."
   },
+  "postinstall": "npx puppeteer install chrome",
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
     "@fontsource/plus-jakarta-sans": "^5.2.8",
