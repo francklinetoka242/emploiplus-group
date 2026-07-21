@@ -1,19 +1,20 @@
 import { useMemo } from "react";
-import { useCandidate } from "@/features/candidates/hooks/useCandidate";
+import { ALL_PERMISSIONS, type Permission } from "@/features/authentication/permissions/permissions";
 import { getPermissionsForRole } from "@/features/authentication/permissions/rolePermissions";
-import type { Permission } from "@/features/authentication/permissions/permissions";
-import { useRoles } from "./useRoles";
+import { useAuthContext } from "@/features/authentication/context/AuthContext";
 
 export function usePermissions() {
-  const { roles, loading: rolesLoading, error: rolesError, isStaff } = useRoles();
-  const { profile, loading: profileLoading } = useCandidate();
+  const { roles, permissions: claimedPermissions, profile, isLoading, isProfileLoading, error } = useAuthContext();
 
   const permissions = useMemo(() => {
+    const normalizedClaims = claimedPermissions.filter((permission): permission is Permission =>
+      ALL_PERMISSIONS.includes(permission as Permission),
+    );
     const rolePermissions = roles.flatMap((role) => getPermissionsForRole(role));
     const candidatePermissions = profile ? getPermissionsForRole("candidate") : [];
 
-    return Array.from(new Set([...rolePermissions, ...candidatePermissions])) as Permission[];
-  }, [profile, roles]);
+    return Array.from(new Set([...normalizedClaims, ...rolePermissions, ...candidatePermissions])) as Permission[];
+  }, [claimedPermissions, profile, roles]);
 
   const hasPermission = useMemo(
     () => (permission: Permission) => permissions.includes(permission),
@@ -32,12 +33,12 @@ export function usePermissions() {
 
   return {
     permissions,
-    loading: rolesLoading || profileLoading,
-    error: rolesError,
+    loading: isLoading || isProfileLoading,
+    error,
     profile,
     hasPermission,
     hasAllPermissions,
     hasAnyPermission,
-    isStaff,
+    isStaff: roles.length > 0,
   };
 }

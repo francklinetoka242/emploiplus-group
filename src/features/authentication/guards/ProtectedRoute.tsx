@@ -29,7 +29,7 @@ export function ProtectedRoute({
   const content = <>{children}</>;
 
   const guardedContent = allowedRoles?.length ? (
-    <RoleGuard allowedRoles={allowedRoles} fallbackPath={fallbackPath}>
+    <RoleGuard allowedRoles={allowedRoles} fallbackPath={fallbackPath} loadingSkeleton={loadingSkeleton}>
       {content}
     </RoleGuard>
   ) : (
@@ -49,5 +49,9 @@ export function ProtectedRoute({
     guardedContent
   );
 
-  return <AuthenticationGuard fallbackPath={fallbackPath}>{permissionGuardedContent}</AuthenticationGuard>;
+  return (
+    <AuthenticationGuard fallbackPath={fallbackPath} loadingSkeleton={loadingSkeleton}>
+      {permissionGuardedContent}
+    </AuthenticationGuard>
+  );
 }

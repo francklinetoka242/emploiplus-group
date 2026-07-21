@@ -3,9 +3,10 @@ import { lazy, Suspense, useEffect } from "react";
 import { I18nProvider } from "@/i18n";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthProvider } from "@/features/authentication/context/AuthContext";
 import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
 import { PublicLayout } from "@/components/site/PublicLayout";
-import { useCandidate } from "@/hooks/useCandidate";
+import { useAuthContext } from "@/features/authentication/context/AuthContext";
 import { ProtectedRoute } from "@/features/authentication/guards";
 import { DashboardLayoutSkeleton } from "@/components/ui/skeletons";
 
@@ -195,22 +196,13 @@ const CandidateJobApplyPage = lazy(() =>
 );
 
 // Loading fallback component
-const PageLoadingFallback = () => (
-  <div className="container-page py-20 md:py-28">
-    <div className="rounded-3xl border border-border bg-card p-10 text-center">
-      <div className="inline-flex items-center gap-2">
-        <div className="h-3 w-3 rounded-full bg-cyan-500 animate-pulse"></div>
-        <span className="text-sm text-muted-foreground animate-pulse">Chargement...</span>
-      </div>
-    </div>
-  </div>
-);
+const PageLoadingFallback = () => <DashboardLayoutSkeleton />;
 
 function SharedPublicRouteShell() {
-  const { profile, loading } = useCandidate();
+  const { profile, isLoading, isProfileLoading } = useAuthContext();
   const content = <Outlet />;
 
-  if (loading) {
+  if (isLoading || isProfileLoading) {
     return <PublicLayout>{content}</PublicLayout>;
   }
 
@@ -225,35 +217,40 @@ function SharedPublicRouteShell() {
   return <PublicLayout>{content}</PublicLayout>;
 }
 
-export default function App() {
+function AppContent() {
+  const { session } = useAuthContext();
+
   // CRITICAL: On app startup, verify that any restored candidate session has a confirmed email
   // This prevents Supabase from silently restoring an unconfirmed session from localStorage
   useEffect(() => {
     const validateCandidateSession = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (session && !session.user.email_confirmed_at) {
-          console.warn("[App] Restored session has unconfirmed email. Clearing session...");
-          await supabase.auth.signOut();
+      if (!session) {
+        return;
+      }
 
-          // Clear session storage
-          try {
-            localStorage.removeItem("sb-zhldgrvmmdhtlsnsxuys-auth-token");
-            localStorage.removeItem("sb-zhldgrvmmdhtlsnsxuys-auth-token-code-verifier");
-            sessionStorage.clear();
-          } catch (e) {
-            console.warn("Could not clear session storage:", e);
-          }
+      if (session.user.email_confirmed_at) {
+        return;
+      }
+
+      try {
+        console.warn("[App] Restored session has unconfirmed email. Clearing session...");
+        await supabase.auth.signOut();
+
+        // Clear session storage
+        try {
+          localStorage.removeItem("sb-zhldgrvmmdhtlsnsxuys-auth-token");
+          localStorage.removeItem("sb-zhldgrvmmdhtlsnsxuys-auth-token-code-verifier");
+          sessionStorage.clear();
+        } catch (e) {
+          console.warn("Could not clear session storage:", e);
         }
       } catch (error) {
         console.error("[App] Error validating session:", error);
       }
     };
 
-    validateCandidateSession();
-  }, []);
+    void validateCandidateSession();
+  }, [session]);
 
   const routes = (
     <Routes>
@@ -497,5 +494,13 @@ export default function App() {
         <Toaster richColors position="top-right" />
       </CandidateSidebarProvider>
     </I18nProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

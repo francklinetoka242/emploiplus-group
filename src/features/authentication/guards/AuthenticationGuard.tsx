@@ -1,20 +1,22 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/features/authentication/hooks/useAuth";
+import { DashboardLayoutSkeleton } from "@/components/ui/skeletons";
 
 interface AuthenticationGuardProps {
   children: React.ReactNode;
   fallbackPath?: string;
+  loadingSkeleton?: React.ReactNode;
 }
 
-export function AuthenticationGuard({ children, fallbackPath = "/candidate/login" }: AuthenticationGuardProps) {
-  const { session, loading } = useAuth();
+export function AuthenticationGuard({
+  children,
+  fallbackPath = "/candidate/login",
+  loadingSkeleton,
+}: AuthenticationGuardProps) {
+  const { session, isLoading } = useAuth();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-sm text-muted-foreground">Chargement de la session...</div>
-      </div>
-    );
+  if (isLoading) {
+    return <>{loadingSkeleton ?? <DashboardLayoutSkeleton />}</>;
   }
 
   if (!session) {

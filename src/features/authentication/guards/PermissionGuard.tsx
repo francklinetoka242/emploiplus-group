@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { usePermissions } from "@/features/authentication/hooks/usePermissions";
 import type { Permission } from "@/features/authentication/permissions/permissions";
+import { DashboardLayoutSkeleton } from "@/components/ui/skeletons";
 
 interface PermissionGuardProps {
   children: React.ReactNode;
@@ -24,15 +25,8 @@ export function PermissionGuard({
 }: PermissionGuardProps) {
   const { hasPermission, hasAllPermissions, hasAnyPermission, loading, permissions } = usePermissions();
 
-  // État de chargement : affiche le skeleton ou un écran de loading
   if (loading) {
-    return loadingSkeleton ? (
-      <>{loadingSkeleton}</>
-    ) : (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-sm text-muted-foreground">Vérification des permissions...</div>
-      </div>
-    );
+    return <>{loadingSkeleton ?? <DashboardLayoutSkeleton />}</>;
   }
 
   // État d'accès : vérifie les permissions
