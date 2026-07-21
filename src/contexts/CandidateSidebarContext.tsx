@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 interface CandidateSidebarContextType {
   open: boolean;
@@ -8,7 +8,7 @@ interface CandidateSidebarContextType {
 const CandidateSidebarContext = createContext<CandidateSidebarContextType | undefined>(undefined);
 
 export function CandidateSidebarProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(() => {
+  const [open, setOpenState] = useState(() => {
     // Persist sidebar state in localStorage
     try {
       const stored = localStorage.getItem("candidateSidebarOpen");
@@ -18,6 +18,10 @@ export function CandidateSidebarProvider({ children }: { children: React.ReactNo
     }
   });
 
+  const setOpen = useCallback((nextOpen: boolean) => {
+    setOpenState(nextOpen);
+  }, []);
+
   useEffect(() => {
     try {
       localStorage.setItem("candidateSidebarOpen", JSON.stringify(open));
@@ -26,8 +30,13 @@ export function CandidateSidebarProvider({ children }: { children: React.ReactNo
     }
   }, [open]);
 
+  const value = useMemo(
+    () => ({ open, setOpen }),
+    [open, setOpen],
+  );
+
   return (
-    <CandidateSidebarContext.Provider value={{ open, setOpen }}>
+    <CandidateSidebarContext.Provider value={value}>
       {children}
     </CandidateSidebarContext.Provider>
   );

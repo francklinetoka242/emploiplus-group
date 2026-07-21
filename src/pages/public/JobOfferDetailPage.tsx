@@ -137,6 +137,60 @@ export function JobOfferDetailPage() {
     .split(/\n+/)
     .map((item) => item.trim())
     .filter(Boolean);
+  const cleanText = (value?: string | null) => {
+    if (!value) return "";
+    return value
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+  const employmentType = (() => {
+    const raw = (job.contract_type || "").toLowerCase();
+    switch (raw) {
+      case "cdi":
+        return "FULL_TIME";
+      case "cdd":
+      case "consultance":
+      case "freelance":
+      case "prestation_de_services":
+      case "interim":
+        return "CONTRACTOR";
+      case "temps_partiel":
+      case "part_time":
+        return "PART_TIME";
+      case "stage":
+        return "INTERN";
+      default:
+        return "FULL_TIME";
+    }
+  })();
+  const salaryValue = (() => {
+    if (!job.salary) return undefined;
+    const match = `${job.salary}`.match(/(\d[\d\s.,]*)/);
+    if (!match) return undefined;
+    const numericValue = Number(match[1].replace(/[^\d.]/g, ""));
+    return Number.isFinite(numericValue) ? numericValue : undefined;
+  })();
+  const validThrough = job.expires_at || job.deadline || (() => {
+    const baseDate = new Date(job.publish_at || new Date().toISOString());
+    baseDate.setDate(baseDate.getDate() + 60);
+    return baseDate.toISOString();
+  })();
+  const baseSalary = job.salary
+    ? {
+        "@type": "MonetaryAmount",
+        currency: "XAF",
+        value: salaryValue
+          ? {
+              "@type": "QuantitativeValue",
+              value: salaryValue,
+              unitText: "annuel",
+            }
+          : undefined,
+        description: job.salary,
+      }
+    : undefined;
   const handlePostulerClick = () => {
     navigate(`/candidate/login`, {
       state: { from: `/jobs/${job.slug}` },
@@ -195,10 +249,11 @@ export function JobOfferDetailPage() {
         structuredData={{
           "@type": "JobPosting",
           title: job.title,
-          description: job.description,
+          description: cleanText(job.description || job.meta_description || ""),
           datePosted: job.publish_at || undefined,
-          validThrough: job.expires_at || undefined,
-          employmentType: job.contract_type,
+          validThrough,
+          employmentType,
+          baseSalary,
           hiringOrganization: {
             "@type": "Organization",
             name: job.company,

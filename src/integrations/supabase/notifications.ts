@@ -74,6 +74,8 @@ function toPostgrestError(error: unknown): PostgrestError | null {
   return null;
 }
 
+const NOTIFICATION_LIST_SELECT = "id, user_id, type, title, body, is_read, status, created_at, link, read_at";
+
 function buildInsertPayload(payload: NotificationInsert): NotificationInsertPayload {
   return {
     title: payload.title,
@@ -99,9 +101,7 @@ function buildUpdatePayload(payload: NotificationUpdate): NotificationUpdatePayl
 export async function fetchNotifications(): Promise<NotificationListResult> {
   const { data, error } = await supabase
     .from("notifications")
-    .select(
-      "id, user_id, type, title, body, is_read, status, created_at, link, read_at",
-    )
+    .select(NOTIFICATION_LIST_SELECT)
     .order("created_at", { ascending: false });
 
   return {
@@ -126,9 +126,7 @@ export async function createNotification(
     const { data, error } = await supabase
       .from("notifications")
       .insert([primaryPayload])
-      .select(
-        "id, user_id, type, title, body, is_read, status, created_at, link, read_at",
-      )
+      .select(NOTIFICATION_LIST_SELECT)
       .single();
 
     if (error) {
@@ -156,7 +154,7 @@ export async function createNotification(
     const fallback = await supabase
       .from("notifications")
       .insert([legacyPayload])
-      .select("*")
+      .select(NOTIFICATION_LIST_SELECT)
       .single();
     return {
       data: fallback.data ? normalizeNotification(fallback.data as Record<string, unknown>) : null,
@@ -213,7 +211,7 @@ export async function updateNotification(
       .from("notifications")
       .update(legacyPayload)
       .eq("id", id)
-      .select("*")
+      .select(NOTIFICATION_LIST_SELECT)
       .single();
     return {
       data: fallback.data ? normalizeNotification(fallback.data as Record<string, unknown>) : null,

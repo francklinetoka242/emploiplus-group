@@ -210,6 +210,8 @@ export const EcoImage = React.forwardRef<HTMLImageElement, EcoImageProps>(
         alt={alt}
         style={style}
         className={className}
+        loading="lazy"
+        decoding="async"
         onError={handleImageError}
         {...imgProps}
       />

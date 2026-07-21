@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 /**
  * Contexte pour le Mode Économie de Données (Eco Mode)
@@ -79,8 +79,13 @@ export function EcoModeProvider({ children }: { children: React.ReactNode }) {
     setIsEcoMode((prev) => !prev);
   }, []);
 
+  const value = useMemo<EcoModeContextType>(
+    () => ({ isEcoMode, toggleEcoMode }),
+    [isEcoMode, toggleEcoMode],
+  );
+
   return (
-    <EcoModeContext.Provider value={{ isEcoMode, toggleEcoMode }}>
+    <EcoModeContext.Provider value={value}>
       {children}
     </EcoModeContext.Provider>
   );

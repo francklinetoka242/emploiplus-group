@@ -11,7 +11,8 @@ import { ProtectedRoute } from "@/features/authentication/guards";
 import { DashboardLayoutSkeleton } from "@/components/ui/skeletons";
 
 // Immediately loaded pages (critical path)
-import { HomePage, AuthPage, NotFoundPage } from "@/pages";
+import { HomePage } from "@/pages/public/HomePage";
+import { AuthPage } from "@/pages/public/AuthPage";
 
 // Lazy load secondary pages
 const AboutPage = lazy(() =>
@@ -35,6 +36,9 @@ const JobsPage = lazy(() =>
 const ServiceDetailPage = lazy(() =>
   import("@/pages/public/UtilityPages").then((m) => ({ default: m.ServiceDetailPage })),
 );
+const NotFoundPage = lazy(() =>
+  import("@/pages/public/UtilityPages").then((m) => ({ default: m.NotFoundPage })),
+);
 const ServicesPage = lazy(() =>
   import("@/pages/public/ServicesPage").then((m) => ({ default: m.ServicesPage })),
 );
@@ -48,38 +52,38 @@ const LegalDocumentsPage = lazy(() =>
 const CguPage = lazy(() => import("@/pages/public/CguPage").then((m) => ({ default: m.CguPage })));
 
 // Lazy load admin pages (heavy feature area)
-const AdminPage = lazy(() => import("@/pages/admin").then((m) => ({ default: m.AdminPage })));
+const AdminPage = lazy(() => import("@/pages/admin/AdminPage").then((m) => ({ default: m.AdminPage })));
 const AdminHomePage = lazy(() =>
-  import("@/pages/admin").then((m) => ({ default: m.AdminHomePage })),
+  import("@/pages/admin/AdminHomePage").then((m) => ({ default: m.AdminHomePage })),
 );
 const AdminJobsPage = lazy(() =>
-  import("@/pages/admin").then((m) => ({ default: m.AdminJobsPage })),
+  import("@/pages/admin/AdminJobsPage").then((m) => ({ default: m.AdminJobsPage })),
 );
 const AdminBlogPage = lazy(() =>
-  import("@/pages/admin").then((m) => ({ default: m.AdminBlogPage })),
+  import("@/pages/admin/AdminBlogPage").then((m) => ({ default: m.AdminBlogPage })),
 );
 const AdminTeamPage = lazy(() =>
-  import("@/pages/admin").then((m) => ({ default: m.AdminTeamPage })),
+  import("@/pages/admin/AdminTeamPage").then((m) => ({ default: m.AdminTeamPage })),
 );
 const AdminJobCreatePage = lazy(() =>
-  import("@/pages/admin").then((m) => ({ default: m.AdminJobCreatePage })),
+  import("@/pages/admin/AdminJobCreatePage").then((m) => ({ default: m.AdminJobCreatePage })),
 );
 const AdminBlogCreatePage = lazy(() =>
-  import("@/pages/admin").then((m) => ({ default: m.AdminBlogCreatePage })),
+  import("@/pages/admin/AdminBlogCreatePage").then((m) => ({ default: m.AdminBlogCreatePage })),
 );
-const AdminSEOPage = lazy(() => import("@/pages/admin").then((m) => ({ default: m.AdminSEOPage })));
+const AdminSEOPage = lazy(() => import("@/pages/admin/AdminSEOPage").then((m) => ({ default: m.AdminSEOPage })));
 const AdminPrivacyPolicyPage = lazy(() =>
-  import("@/pages/admin").then((m) => ({ default: m.AdminPrivacyPolicyPage })),
+  import("@/pages/admin/AdminPrivacyPolicyPage").then((m) => ({ default: m.AdminPrivacyPolicyPage })),
 );
 const AdminLegalDocumentsPage = lazy(() =>
-  import("@/pages/admin").then((m) => ({ default: m.AdminLegalDocumentsPage })),
+  import("@/pages/admin/AdminLegalDocumentsPage").then((m) => ({ default: m.AdminLegalDocumentsPage })),
 );
-const AdminCguPage = lazy(() => import("@/pages/admin").then((m) => ({ default: m.AdminCguPage })));
+const AdminCguPage = lazy(() => import("@/pages/admin/AdminCguPage").then((m) => ({ default: m.AdminCguPage })));
 const AdminNotificationsPage = lazy(() =>
-  import("@/pages/admin").then((m) => ({ default: m.AdminNotificationsPage })),
+  import("@/pages/admin/AdminNotificationsPage").then((m) => ({ default: m.AdminNotificationsPage })),
 );
 const AdminCandidatesPage = lazy(() =>
-  import("@/pages/admin").then((m) => ({ default: m.AdminCandidatesPage })),
+  import("@/pages/admin/AdminCandidatesPage").then((m) => ({ default: m.AdminCandidatesPage })),
 );
 const AdminLocalGuidesPage = lazy(() =>
   import("@/pages/admin/AdminLocalGuidesPage").then((m) => ({ default: m.AdminLocalGuidesPage })),

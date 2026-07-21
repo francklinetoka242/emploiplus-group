@@ -55,6 +55,26 @@ export function BlogPostDetailPage() {
   const description = post.meta_description || post.excerpt || t("blog.subtitle");
   const ogImage = post.og_image || post.image || `${BASE_URL}/og-default.svg`;
   const canonical = `${BASE_URL}/blog/${post.slug}`;
+  const blogPostingStructuredData = {
+    "@type": "BlogPosting",
+    headline: post.title,
+    description,
+    image: post.image || post.og_image || ogImage,
+    datePublished: post.publish_at || undefined,
+    author: {
+      "@type": "Organization",
+      name: "EmploiPlus Group",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "EmploiPlus Group",
+      logo: {
+        "@type": "ImageObject",
+        url: `${BASE_URL}/logo.png`,
+      },
+    },
+    mainEntityOfPage: canonical,
+  };
 
   return (
     <>
@@ -71,6 +91,7 @@ export function BlogPostDetailPage() {
           { name: t("blog.title"), url: `${BASE_URL}/blog` },
           { name: post.title, url: canonical },
         ]}
+        structuredData={blogPostingStructuredData}
       />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
@@ -78,7 +99,13 @@ export function BlogPostDetailPage() {
             <article className="overflow-hidden rounded-3xl border border-border bg-card shadow-soft">
               {post.image ? (
                 <div className="h-72 w-full overflow-hidden bg-slate-100 md:h-[420px]">
-                  <EcoImage src={post.image} alt={post.title} className="h-full w-full object-cover" />
+                  <EcoImage
+                    src={post.image}
+                    alt={post.title}
+                    width={1200}
+                    height={720}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
               ) : null}
               <div className="p-8">

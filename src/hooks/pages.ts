@@ -19,7 +19,7 @@ type JobOfferPreview = Pick<
 
 type BlogPostPreview = Pick<
   Database["public"]["Tables"]["blog_posts"]["Row"],
-  "id" | "slug" | "title" | "excerpt" | "status" | "publish_at"
+  "id" | "slug" | "title" | "excerpt" | "status" | "publish_at" | "image"
 >;
 
 type JobOfferDetail = Pick<
@@ -71,6 +71,7 @@ export function usePublishedJobOffers(limit = 10) {
 
     async function loadOffers() {
       setLoading(true);
+      const safeLimit = Math.max(1, Math.min(limit, 15));
       const { data, error } = await supabase
         .from("job_offers")
         .select(
@@ -78,7 +79,8 @@ export function usePublishedJobOffers(limit = 10) {
         )
         .eq("status", "published")
         .order("publish_at", { ascending: false })
-        .limit(limit);
+        .range(0, safeLimit - 1)
+        .limit(safeLimit);
 
       if (!mounted) return;
       if (error) {
@@ -108,12 +110,14 @@ export function usePublishedBlogPosts(limit = 9) {
 
     async function loadPosts() {
       setLoading(true);
+      const safeLimit = Math.max(1, Math.min(limit, 15));
       const { data, error } = await supabase
         .from("blog_posts")
-        .select("id, slug, title, excerpt, status, publish_at")
+        .select("id, slug, title, excerpt, image, status, publish_at")
         .eq("status", "published")
         .order("publish_at", { ascending: false })
-        .limit(limit);
+        .range(0, safeLimit - 1)
+        .limit(safeLimit);
 
       if (!mounted) return;
       if (error) {

@@ -2,18 +2,22 @@ import { supabase } from "@/integrations/supabase/client";
 import type { JobOffer, JobOfferFilters, JobOfferInsert, JobOfferUpdate } from "@/features/jobs/types";
 
 const DEFAULT_ORDER_BY = "publish_at" as const;
+const JOB_LIST_SELECT = "id, slug, title, company, contract_type, location_city, location_country, salary, publish_at, deadline, expires_at, status, cover_image";
 
 export const jobService = {
-  async getPublishedOffers(limit = 10): Promise<JobOffer[]> {
+  async getPublishedOffers(limit = 10, offset = 0): Promise<JobOffer[]> {
     const now = new Date().toISOString();
+    const safeLimit = Math.max(1, Math.min(limit, 50));
+    const start = Math.max(0, offset);
+    const end = start + safeLimit - 1;
+
     const { data, error } = await supabase
       .from("job_offers")
-      .select(
-        "id, slug, title, company, contract_type, location_city, location_country, description, requirements, status, publish_at, salary, deadline, tags, application_email, application_whatsapp, external_link, cover_image",
-      )
+      .select(JOB_LIST_SELECT)
       .eq("status", "published")
       .order(DEFAULT_ORDER_BY, { ascending: false })
-      .limit(limit);
+      .range(start, end)
+      .limit(safeLimit);
 
     if (error) {
       throw error;
@@ -43,7 +47,7 @@ export const jobService = {
   },
 
   async searchOffers(filters: JobOfferFilters = {}): Promise<JobOffer[]> {
-    let query = supabase.from("job_offers").select("*");
+    let query = supabase.from("job_offers").select(JOB_LIST_SELECT);
 
     if (filters.status) {
       query = query.eq("status", filters.status);
@@ -75,9 +79,11 @@ export const jobService = {
     const order = filters.order !== "asc";
     query = query.order(orderBy, { ascending: !order });
 
-    if (typeof filters.limit === "number") {
-      query = query.limit(filters.limit);
-    }
+    const resolvedLimit = typeof filters.limit === "number" ? Math.max(1, Math.min(filters.limit, 50)) : 10;
+    const start = typeof filters.offset === "number" ? Math.max(0, filters.offset) : 0;
+    const end = start + resolvedLimit - 1;
+
+    query = query.range(start, end).limit(resolvedLimit);
 
     const { data, error } = await query;
     if (error) {
@@ -95,7 +101,7 @@ export const jobService = {
 
     while (attempt < maxAttempts) {
       const payload = attempt === 0 ? data : { ...data, slug: `${data.slug}-${Date.now().toString().slice(-6)}` };
-      const { data: result, error } = await supabase.from("job_offers").insert([payload]).select("*").single();
+      const { data: result, error } = await supabase.from("job_offers").insert([payload]).select(JOB_LIST_SELECT).single();
 
       if (!error) {
         return result as JobOffer;
@@ -123,7 +129,7 @@ export const jobService = {
   },
 
   async updateOffer(id: string, data: JobOfferUpdate): Promise<JobOffer> {
-    const { data: result, error } = await supabase.from("job_offers").update(data).eq("id", id).select("*").single();
+    const { data: result, error } = await supabase.from("job_offers").update(data).eq("id", id).select(JOB_LIST_SELECT).single();
 
     if (error) {
       if ((error as any).status === 409 || /duplicate key|unique constraint|already exists/i.test(error.message || "")) {

@@ -16,6 +16,9 @@ import {
   Briefcase,
   Heart,
   CheckCircle2,
+  Circle,
+  ChevronDown,
+  ChevronRight,
   Send,
   Eye,
   TrendingUp,
@@ -25,6 +28,11 @@ import {
   BookOpen,
 } from "lucide-react";
 import { JobCard } from "@/features/jobs/components";
+import { useProfileCompletion } from "@/features/profile/hooks/useProfileCompletion";
+import { useCandidateEducation } from "@/features/profile/hooks/useCandidateEducation";
+import { useCandidateLanguages } from "@/features/profile/hooks/useCandidateLanguages";
+import { useCandidatePreferences } from "@/features/profile/hooks/useCandidatePreferences";
+import { useCandidateSkills } from "@/features/profile/hooks/useCandidateSkills";
 
 type DashboardOffer = {
   id: string;
@@ -53,30 +61,21 @@ const quickActions = [
   },
   {
     id: 2,
-    title: "Voir mes candidatures",
-    description: "Suivez le statut de vos candidatures",
-    icon: Send,
-    href: "/candidate/applications",
-    borderColor: "border-purple-500",
-    bgGradient: "from-purple-50 to-purple-100",
-  },
-  {
-    id: 3,
-    title: "Modifier mon profil",
-    description: "Mettez à jour vos informations",
-    icon: Briefcase,
-    href: "/candidate/profile",
-    borderColor: "border-orange-500",
-    bgGradient: "from-orange-50 to-orange-100",
-  },
-  {
-    id: 4,
     title: "Consulter les guides",
     description: "Découvrez les fiches conseils utiles pour vos démarches",
     icon: BookOpen,
     href: "/candidate/guides",
     borderColor: "border-emerald-500",
     bgGradient: "from-emerald-50 to-emerald-100",
+  },
+  {
+    id: 3,
+    title: "Voir mes candidatures",
+    description: "Suivez le statut de vos candidatures",
+    icon: Send,
+    href: "/candidate/applications",
+    borderColor: "border-purple-500",
+    bgGradient: "from-purple-50 to-purple-100",
   },
 ];
 
@@ -85,6 +84,7 @@ export function CandidateDashboardPage() {
   const { profile, loading: profileLoading } = useCandidate();
   const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [offersLoading, setOffersLoading] = useState(true);
+  const [isCompletionCollapsed, setIsCompletionCollapsed] = useState(true);
   const { offers: publishedOffers, loading: publishedOffersLoading } = useJobs({
     status: "published",
     limit: 3,
@@ -92,6 +92,10 @@ export function CandidateDashboardPage() {
     order: "desc",
   });
   const [experienceEntries, setExperienceEntries] = useState<CandidateExperience[]>([]);
+  const { educations } = useCandidateEducation(profile?.id);
+  const { skills } = useCandidateSkills(profile?.id);
+  const { languages } = useCandidateLanguages(profile?.id);
+  const { preferences } = useCandidatePreferences(profile?.id);
   const [candidateDocuments, setCandidateDocuments] = useState<{
     cv: { url?: string | null } | null;
     documents: Array<{ url?: string | null }>;
@@ -174,38 +178,16 @@ export function CandidateDashboardPage() {
     }
   }, [profile?.id]);
 
-  const profileChecks = useMemo(() => {
-    if (!profile) {
-      return {
-        personalInfoCompleted: false,
-        experienceCompleted: false,
-      };
-    }
+  const completion = useProfileCompletion({
+    profile,
+    experiences: experienceEntries,
+    educations,
+    skills,
+    languages,
+    preferences,
+  });
 
-    const personalInfoCompleted = Boolean(
-      profile.first_name &&
-      profile.last_name &&
-      profile.email &&
-      profile.phone &&
-      profile.location_city &&
-      profile.location_country,
-    );
-    const experienceCompleted = experienceEntries.length > 0;
-
-    return {
-      personalInfoCompleted,
-      experienceCompleted,
-    };
-  }, [profile, experienceEntries]);
-
-  const profileCompletion = useMemo(() => {
-    const checks = [
-      profileChecks.personalInfoCompleted,
-      profileChecks.experienceCompleted,
-    ];
-    const completedCount = checks.filter(Boolean).length;
-    return Math.round((completedCount / checks.length) * 100);
-  }, [profileChecks]);
+  const profileCompletion = completion.completionPercentage;
 
   const stats = useMemo(
     () => [
@@ -295,49 +277,48 @@ export function CandidateDashboardPage() {
       {/* Profile Completion */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <button
+            type="button"
+            className="flex items-center justify-between gap-4 text-left"
+            onClick={() => setIsCompletionCollapsed((prev) => !prev)}
+            aria-expanded={!isCompletionCollapsed}
+          >
             <div>
               <CardTitle>Complétude de votre profil</CardTitle>
               <CardDescription>Complétez votre profil pour augmenter vos chances</CardDescription>
             </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-foreground">{profileCompletion}%</p>
+            <div className="flex items-center gap-3">
+              <div className="flex min-w-[120px] flex-col items-end gap-1">
+                <p className="text-2xl font-bold text-foreground">{profileCompletion}%</p>
+                <Progress value={profileCompletion} className="h-1.5 w-full" />
+              </div>
+              {isCompletionCollapsed ? (
+                <ChevronRight className="h-5 w-5 text-slate-500" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-slate-500" />
+              )}
             </div>
-          </div>
+          </button>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Progress value={profileCompletion} className="h-3" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div
-              className={`p-3 rounded-lg border ${profileChecks.personalInfoCompleted ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}`}
-            >
-              <p
-                className={`text-sm font-medium ${profileChecks.personalInfoCompleted ? "text-green-900" : "text-yellow-900"}`}
-              >
-                {profileChecks.personalInfoCompleted ? "Complété ✓" : "À compléter"}
-              </p>
-              <p
-                className={`text-xs ${profileChecks.personalInfoCompleted ? "text-green-700" : "text-yellow-700"}`}
-              >
-                Informations personnelles
-              </p>
+        {!isCompletionCollapsed ? (
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              {completion.completionItems.map((item) => (
+                <div
+                  key={item.label}
+                  className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${item.isCompleted ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-600"}`}
+                >
+                  {item.isCompleted ? (
+                    <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-emerald-600" />
+                  ) : (
+                    <Circle className="h-4 w-4 flex-shrink-0 text-slate-400" />
+                  )}
+                  <span>{item.label}</span>
+                </div>
+              ))}
             </div>
-            <div
-              className={`p-3 rounded-lg border ${profileChecks.experienceCompleted ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}`}
-            >
-              <p
-                className={`text-sm font-medium ${profileChecks.experienceCompleted ? "text-green-900" : "text-yellow-900"}`}
-              >
-                {profileChecks.experienceCompleted ? "Complété ✓" : "À compléter"}
-              </p>
-              <p
-                className={`text-xs ${profileChecks.experienceCompleted ? "text-green-700" : "text-yellow-700"}`}
-              >
-                Expériences professionnelles
-              </p>
-            </div>
-          </div>
-        </CardContent>
+          </CardContent>
+        ) : null}
       </Card>
 
       {/* Quick Actions */}

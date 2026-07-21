@@ -253,6 +253,10 @@ export function HomePage() {
                         <img
                           src={post.image}
                           alt={post.title}
+                          width={640}
+                          height={360}
+                          loading="lazy"
+                          decoding="async"
                           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                         />
                       </div>
@@ -309,6 +313,10 @@ export function HomePage() {
           <img
             src={logoMonago}
             alt={t("home.partners.title")}
+            width={180}
+            height={80}
+            loading="lazy"
+            decoding="async"
             className="h-16 md:h-20 rounded-lg bg-card border border-border p-2 shadow-soft hover:shadow-elev transition-all"
           />
         </div>

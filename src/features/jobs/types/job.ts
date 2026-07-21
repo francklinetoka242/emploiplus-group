@@ -12,6 +12,7 @@ export interface JobOfferFilters {
   contractType?: Database["public"]["Enums"]["contract_type"] | "";
   status?: Database["public"]["Enums"]["job_status"];
   limit?: number;
+  offset?: number;
   orderBy?: keyof Database["public"]["Tables"]["job_offers"]["Row"];
   order?: "asc" | "desc";
 }

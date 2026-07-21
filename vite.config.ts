@@ -5,6 +5,7 @@ import { writeFileSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { ResolvedConfig } from "vite";
+import { prerenderRoutes } from "./scripts/prerender.js";
 
 function devApiHandlerPlugin() {
   return {
@@ -200,24 +201,63 @@ function sitemapGeneratorPlugin(env: Record<string, string>) {
   };
 }
 
+function prerenderRoutesPlugin() {
+  return {
+    name: "prerender-routes",
+    async closeBundle() {
+      await prerenderRoutes({
+        outputDir: "dist",
+        routes: ["/", "/about", "/services", "/jobs", "/blog", "/contact"],
+      });
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
-    plugins: [react(), tailwindcss(), devApiHandlerPlugin(), sitemapGeneratorPlugin(env)],
+    plugins: [react(), tailwindcss(), devApiHandlerPlugin(), sitemapGeneratorPlugin(env), prerenderRoutesPlugin()],
 
-    // ✅ FIX COMPLET alias @ (Vite + TS + dev scan)
     resolve: {
-      // single, Windows-safe alias for `@` -> `src`
       alias: {
         "@": resolve(__dirname, "src").replace(/\\/g, "/") + "/",
       },
     },
 
-    // ✅ empêche crash dependency scan Vite (Windows safe)
     optimizeDeps: {
-      include: ["react", "react-dom"],
+      include: ["react", "react-dom", "react-router-dom"],
     },
 
+    build: {
+      target: "es2019",
+      sourcemap: false,
+      minify: "esbuild",
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("node_modules/react") || id.includes("node_modules/react-dom") || id.includes("node_modules/react-router-dom")) {
+              return "vendor-react";
+            }
+
+            if (id.includes("node_modules/@supabase")) {
+              return "vendor-supabase";
+            }
+
+            if (id.includes("node_modules/lucide-react") || id.includes("node_modules/@radix-ui") || id.includes("node_modules/sonner") || id.includes("node_modules/clsx") || id.includes("node_modules/tailwind-merge")) {
+              return "vendor-ui";
+            }
+
+            if (id.includes("/src/pages/candidate/")) {
+              return "feature-candidate";
+            }
+
+            if (id.includes("/src/pages/admin/")) {
+              return "feature-admin";
+            }
+          },
+        },
+      },
+    },
   };
 });

@@ -37,6 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const user = session?.user ?? null;
   const authMetadata = useMemo(() => getAuthMetadataFromSession(session), [session]);
+  const isAuthenticated = useMemo(() => Boolean(session), [session]);
 
   const roles = useMemo<DatabaseAppRole[]>(() => {
     const allowedRoles: DatabaseAppRole[] = ["super_admin", "admin", "editor"];
@@ -230,7 +231,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       isProfileLoading,
       error,
-      isAuthenticated: Boolean(session),
+      isAuthenticated,
       refreshSession,
       refetchProfile,
       login,
