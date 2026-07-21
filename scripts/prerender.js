@@ -91,6 +91,23 @@ function createServer(outputDir) {
   });
 }
 
+function getLocalBrowserExecutable() {
+  const candidates = [
+    "C:/Program Files/Google/Chrome/Application/chrome.exe",
+    "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+    "C:/Program Files/Microsoft/Edge/Application/msedge.exe",
+    "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+  ];
+
+  for (const path of candidates) {
+    if (existsSync(path)) {
+      return path;
+    }
+  }
+
+  return undefined;
+}
+
 async function renderRoute(page, baseUrl, route, outputDir) {
   const url = `${baseUrl}${route}`;
   await page.goto(url, { waitUntil: "networkidle2", timeout: buildTimeoutMs });
@@ -118,7 +135,12 @@ export async function prerenderRoutes({ outputDir = "dist", routes = undefined }
   const routeList = Array.from(new Set([...(routes ?? staticRoutes), ...dynamicRoutes]));
 
   const { server, port } = await createServer(resolvedOutputDir);
-  const browser = await puppeteer.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
+  const executablePath = getLocalBrowserExecutable();
+  const launchOptions = {
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    ...(executablePath ? { executablePath } : {}),
+  };
+  const browser = await puppeteer.launch(launchOptions);
 
   try {
     const page = await browser.newPage();
