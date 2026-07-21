@@ -69,7 +69,7 @@ export function AuthPage() {
     }
 
     setLoading(true);
-    setMessage("Vérification en cours…");
+    setMessage(null);
 
     try {
       const signInRequest = supabase.auth.signInWithPassword({
@@ -185,6 +185,7 @@ export function AuthPage() {
               type="submit"
               size="lg"
               className="w-full bg-brand text-brand-foreground hover:bg-brand/90"
+              disabled={loading}
             >
               {loading ? t("auth.submit.loading") : t("common.signIn")}
             </Button>
