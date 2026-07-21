@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import puppeteer from "puppeteer";
 import { createClient } from "@supabase/supabase-js";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -92,13 +92,14 @@ function createServer(outputDir) {
 }
 
 function getLocalBrowserExecutable() {
-  if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-    return process.env.PUPPETEER_EXECUTABLE_PATH;
+  const explicitPath = process.env.PUPPETEER_EXECUTABLE_PATH;
+  if (explicitPath && existsSync(explicitPath)) {
+    return explicitPath;
   }
 
   try {
     const executable = puppeteer.executablePath();
-    if (typeof executable === "string" && executable.length > 0) {
+    if (typeof executable === "string" && executable.length > 0 && existsSync(executable)) {
       return executable;
     }
   } catch (error) {
@@ -129,7 +130,36 @@ function getLocalBrowserExecutable() {
   return undefined;
 }
 
-async function renderRoute(page, baseUrl, route, outputDir) {
+function buildStaticHtml(route, baseHtml) {
+  const title = route === "/"
+    ? "EmploiPlus Group"
+    : route.startsWith("/jobs/")
+      ? `Offre d'emploi | EmploiPlus Group`
+      : route.startsWith("/blog/")
+        ? `Article de blog | EmploiPlus Group`
+        : "EmploiPlus Group";
+
+  const canonical = `https://emploiplus-group.com${route}`;
+  const description = "Trouvez votre prochain emploi ou stage en République du Congo. Découvrez les meilleures opportunités de recrutement à Brazzaville et Pointe-Noire sur Emploi+.";
+
+  return baseHtml
+    .replace(/<title>.*?<\/title>/s, `<title>${title}</title>`)
+    .replace(/<meta name="description" content=".*?"/s, `<meta name="description" content="${description}"`)
+    .replace(/<meta name="robots" content=".*?"/s, '<meta name="robots" content="index,follow"')
+    .replace(/<link rel="canonical" href=".*?"/s, `<link rel="canonical" href="${canonical}" />`);
+}
+
+async function renderRoute(page, baseUrl, route, outputDir, baseHtml, useBrowser) {
+  const targetPath = join(outputDir, route === "/" ? "index.html" : `${route.replace(/^\//, "")}/index.html`);
+  mkdirSync(dirname(targetPath), { recursive: true });
+
+  if (!useBrowser || !page) {
+    const html = buildStaticHtml(route, baseHtml);
+    writeFileSync(targetPath, html, "utf8");
+    console.log(`Prerendered ${route} -> ${targetPath} (static fallback)`);
+    return;
+  }
+
   const url = `${baseUrl}${route}`;
   await page.goto(url, { waitUntil: "networkidle2", timeout: buildTimeoutMs });
 
@@ -139,8 +169,6 @@ async function renderRoute(page, baseUrl, route, outputDir) {
   );
 
   const html = await page.content();
-  const targetPath = join(outputDir, route === "/" ? "index.html" : `${route.replace(/^\//, "")}/index.html`);
-  mkdirSync(dirname(targetPath), { recursive: true });
   writeFileSync(targetPath, html, "utf8");
 
   console.log(`Prerendered ${route} -> ${targetPath}`);
@@ -154,24 +182,40 @@ export async function prerenderRoutes({ outputDir = "dist", routes = undefined }
 
   const dynamicRoutes = await fetchDynamicRoutes();
   const routeList = Array.from(new Set([...(routes ?? staticRoutes), ...dynamicRoutes]));
+  const baseHtml = readFileSync(join(resolvedOutputDir, "index.html"), "utf8");
 
   const { server, port } = await createServer(resolvedOutputDir);
   const executablePath = getLocalBrowserExecutable();
-  const launchOptions = {
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    ...(executablePath ? { executablePath } : {}),
-  };
-  const browser = await puppeteer.launch(launchOptions);
+  let browser;
+  let page;
+  let useBrowser = false;
+
+  if (executablePath) {
+    try {
+      const launchOptions = {
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        executablePath,
+      };
+      browser = await puppeteer.launch(launchOptions);
+      page = await browser.newPage();
+      useBrowser = true;
+    } catch (error) {
+      console.warn(`Puppeteer browser unavailable (${error.message}). Falling back to static HTML.`);
+    }
+  } else {
+    console.warn("No browser executable found for Puppeteer. Falling back to static HTML.");
+  }
 
   try {
-    const page = await browser.newPage();
     const baseUrl = `http://127.0.0.1:${port}`;
 
     for (const route of routeList) {
-      await renderRoute(page, baseUrl, route, resolvedOutputDir);
+      await renderRoute(page, baseUrl, route, resolvedOutputDir, baseHtml, useBrowser);
     }
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
     server.close();
   }
 }
