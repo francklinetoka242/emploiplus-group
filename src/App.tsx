@@ -57,7 +57,7 @@ const LegalDocumentsPage = lazy(() =>
   import("@/pages/public/LegalDocumentsPage").then((m) => ({ default: m.LegalDocumentsPage })),
 );
 const CguPage = lazy(() => import("@/pages/public/CguPage").then((m) => ({ default: m.CguPage })));
-const FAQPage = lazy(() => import("@/pages/public/FAQPage").then((m) => ({ default: m.FAQPage })));
+const FAQPage = lazy(() => import("@/pages/public/FAQPage").then((m) => ({ default: m.default })));
 
 // Lazy load admin pages (heavy feature area)
 const AdminPage = lazy(() => import("@/pages/admin/AdminPage").then((m) => ({ default: m.AdminPage })));
@@ -72,6 +72,9 @@ const AdminBlogPage = lazy(() =>
 );
 const AdminTeamPage = lazy(() =>
   import("@/pages/admin/AdminTeamPage").then((m) => ({ default: m.AdminTeamPage })),
+);
+const AdminFAQPage = lazy(() =>
+  import("@/pages/admin/AdminFAQPage").then((m) => ({ default: m.default })),
 );
 const AdminJobCreatePage = lazy(() =>
   import("@/pages/admin/AdminJobCreatePage").then((m) => ({ default: m.AdminJobCreatePage })),
@@ -496,6 +499,18 @@ function AppContent() {
               requiredPermissions={["team.manage"]}
             >
               <AdminTeamPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="faq"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["dashboard.admin"]}
+            >
+              <AdminFAQPage />
             </ProtectedRoute>
           }
         />

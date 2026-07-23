@@ -258,6 +258,7 @@ export const FR: Dict = {
   "admin.dashboard.metric.activeJobs": "Offres actives",
   "admin.dashboard.metric.publishedPosts": "Articles publiés",
   "admin.dashboard.metric.receivedRequests": "Demandes reçues",
+  "admin.sidebar.faq": "FAQ",
   "admin.dashboard.jobs.title": "Offres d'emploi",
   "admin.dashboard.jobs.subtitle": "Suivi des offres",
   "admin.dashboard.jobs.description": "Gérez les annonces publiées et suivez leur performance.",
