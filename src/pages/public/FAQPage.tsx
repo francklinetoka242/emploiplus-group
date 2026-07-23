@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
-import { faqService } from "@/features/faq/api/faqService";
+import { faqService, type FAQ } from "@/features/faq/api/faqService";
 
 export default function FAQPage() {
   const { t } = useI18n();
-  const [faqs, setFaqs] = React.useState<any[]>([]);
+  const [faqs, setFaqs] = React.useState<FAQ[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -52,7 +52,7 @@ export default function FAQPage() {
             {loading ? (
               <p>Chargement…</p>
             ) : (
-              faqs.map((f) => (
+              faqs.map((f: FAQ) => (
                 <section key={f.id} className="rounded-3xl border border-border bg-card p-8 shadow-soft">
                   <h2 className="font-display text-2xl font-semibold text-foreground">{f.question}</h2>
                   <p className="mt-4 text-foreground/90 leading-7">{f.answer}</p>

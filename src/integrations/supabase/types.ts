@@ -132,6 +132,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      faqs: {
+        Row: {
+          id: string;
+          question: string;
+          answer: string;
+          category: Database["public"]["Enums"]["faq_category"];
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          question: string;
+          answer: string;
+          category?: Database["public"]["Enums"]["faq_category"];
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          question?: string;
+          answer?: string;
+          category?: Database["public"]["Enums"]["faq_category"];
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       cgu: {
         Row: {
           id: string;
@@ -732,6 +762,7 @@ export type Database = {
       application_status:
         "submitted" | "reviewed" | "shortlisted" | "rejected" | "accepted" | "withdrawn";
       post_status: "draft" | "published" | "archived";
+      faq_category: string;
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -867,6 +898,7 @@ export const Constants = {
       job_status: ["draft", "scheduled", "published", "archived", "expired"],
       message_status: ["new", "read", "archived"],
       post_status: ["draft", "published", "archived"],
+      faq_category: [],
     },
   },
 } as const;

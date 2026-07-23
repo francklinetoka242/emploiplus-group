@@ -52,18 +52,30 @@ DO $$ BEGIN
   END IF;
 END $$;
 
-CREATE POLICY IF NOT EXISTS "notif user read" ON public.notifications
-  FOR SELECT TO authenticated
-  USING (status = 'active' AND (user_id IS NULL OR user_id = auth.uid()));
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policy WHERE polname = 'notif user read' AND polrelid = 'public.notifications'::regclass) THEN
+    CREATE POLICY "notif user read" ON public.notifications
+      FOR SELECT TO authenticated
+      USING (status = 'active' AND (user_id IS NULL OR user_id = auth.uid()));
+  END IF;
+END $$;
 
-CREATE POLICY IF NOT EXISTS "notif user update own" ON public.notifications
-  FOR UPDATE TO authenticated
-  USING (user_id IS NULL OR user_id = auth.uid())
-  WITH CHECK (user_id IS NULL OR user_id = auth.uid());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policy WHERE polname = 'notif user update own' AND polrelid = 'public.notifications'::regclass) THEN
+    CREATE POLICY "notif user update own" ON public.notifications
+      FOR UPDATE TO authenticated
+      USING (user_id IS NULL OR user_id = auth.uid())
+      WITH CHECK (user_id IS NULL OR user_id = auth.uid());
+  END IF;
+END $$;
 
-CREATE POLICY IF NOT EXISTS "notif user delete own" ON public.notifications
-  FOR DELETE TO authenticated
-  USING (user_id IS NULL OR user_id = auth.uid());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policy WHERE polname = 'notif user delete own' AND polrelid = 'public.notifications'::regclass) THEN
+    CREATE POLICY "notif user delete own" ON public.notifications
+      FOR DELETE TO authenticated
+      USING (user_id IS NULL OR user_id = auth.uid());
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_notifications_status ON public.notifications (status);
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON public.notifications (user_id);

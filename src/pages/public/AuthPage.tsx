@@ -6,6 +6,7 @@ import { BASE_URL } from "@/features/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import favicon from "@/assets/favicon.ico";
+import { clearAuthStorage } from "@/features/authentication/utils/authStorage";
 
 export function AuthPage() {
   const { t } = useI18n();
@@ -17,6 +18,11 @@ export function AuthPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
   const [authDetail, setAuthDetail] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    clearAuthStorage();
+    void supabase.auth.signOut().catch(() => undefined);
+  }, []);
 
   React.useEffect(() => {
     const state = location.state as
@@ -70,6 +76,9 @@ export function AuthPage() {
 
     setLoading(true);
     setMessage(null);
+
+    clearAuthStorage();
+    await supabase.auth.signOut().catch(() => undefined);
 
     try {
       const signInRequest = supabase.auth.signInWithPassword({

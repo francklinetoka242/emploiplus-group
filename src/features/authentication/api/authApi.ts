@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import { clearAuthStorage } from "@/features/authentication/utils/authStorage";
 
 function assertEmailConfirmed(user: User | null | undefined) {
   if (user?.email_confirmed_at) {
@@ -109,6 +110,7 @@ export function parseAuthErrorMessage(error: unknown): string {
 }
 
 export async function loginCandidate(email: string, password: string) {
+  clearAuthStorage();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
 
@@ -146,21 +148,28 @@ export async function logoutCandidate() {
 }
 
 export async function getCandidateSession() {
-  const { data, error } = await supabase.auth.getSession();
-  if (error) throw error;
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
 
-  const session = data.session ?? null;
-  if (!session) {
-    return null;
+    const session = data.session ?? null;
+    if (!session) {
+      clearAuthStorage();
+      return null;
+    }
+
+    const user = session.user;
+    if (!user.email_confirmed_at) {
+      await supabase.auth.signOut();
+      clearAuthStorage();
+      return null;
+    }
+
+    return session;
+  } catch (error) {
+    clearAuthStorage();
+    throw error;
   }
-
-  const user = session.user;
-  if (!user.email_confirmed_at) {
-    await supabase.auth.signOut();
-    return null;
-  }
-
-  return session;
 }
 
 export async function resendConfirmationEmail(email: string) {

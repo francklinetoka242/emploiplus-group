@@ -4,15 +4,18 @@ export function clearAuthStorage(): void {
   }
 
   try {
-    Object.keys(localStorage).forEach((key) => {
-      if (typeof key !== "string") return;
+    const authLocalKeys = Object.keys(localStorage);
+    for (const key of authLocalKeys) {
+      if (typeof key !== "string") continue;
       if (
-        key.startsWith("sb-") &&
-        (key.includes("auth-token") ||
-          key.includes("auth-session") ||
-          key.includes("auth-token-code-verifier"))
+        key.startsWith("sb-") ||
+        key.startsWith("supabase.auth") ||
+        key.includes("auth-token") ||
+        key.includes("auth-session") ||
+        key.includes("auth-token-code-verifier")
       ) {
         localStorage.removeItem(key);
+        continue;
       }
       if (
         key === "sb-zhldgrvmmdhtlsnsxuys-auth-token" ||
@@ -20,16 +23,15 @@ export function clearAuthStorage(): void {
       ) {
         localStorage.removeItem(key);
       }
-    });
+    }
 
-    Object.keys(sessionStorage).forEach((key) => {
-      if (typeof key !== "string") return;
-      if (key.startsWith("sb-") || key.includes("auth")) {
+    const authSessionKeys = Object.keys(sessionStorage);
+    for (const key of authSessionKeys) {
+      if (typeof key !== "string") continue;
+      if (key.startsWith("sb-") || key.startsWith("supabase.auth") || key.includes("auth")) {
         sessionStorage.removeItem(key);
       }
-    });
-
-    sessionStorage.clear();
+    }
   } catch (error) {
     console.warn("[authStorage] clearAuthStorage failed", error);
   }
