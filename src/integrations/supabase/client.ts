@@ -8,23 +8,24 @@ function createSupabaseClient() {
   const SUPABASE_URL =
     import.meta.env.VITE_SUPABASE_URL ||
     (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined);
-  const SUPABASE_PUBLISHABLE_KEY =
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    (typeof process !== "undefined" ? process.env.SUPABASE_PUBLISHABLE_KEY : undefined) ||
-    import.meta.env.VITE_SUPABASE_ANON_KEY ||
-    (typeof process !== "undefined" ? process.env.SUPABASE_ANON_KEY : undefined);
 
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  const SUPABASE_ANON_KEY =
+    import.meta.env.VITE_SUPABASE_ANON_KEY ||
+    (typeof process !== "undefined" ? process.env.SUPABASE_ANON_KEY : undefined) ||
+    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+    (typeof process !== "undefined" ? process.env.SUPABASE_PUBLISHABLE_KEY : undefined);
+
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     const missing = [
       ...(!SUPABASE_URL ? ["SUPABASE_URL"] : []),
-      ...(!SUPABASE_PUBLISHABLE_KEY ? ["SUPABASE_PUBLISHABLE_KEY"] : []),
+      ...(!SUPABASE_ANON_KEY ? ["VITE_SUPABASE_ANON_KEY"] : []),
     ];
     const message = `Missing Supabase environment variable(s): ${missing.join(", ")}. Provide the required Supabase configuration.`;
     console.error(`[Supabase] ${message}`);
     throw new Error(message);
   }
 
-  return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  return createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
       storage: typeof window !== "undefined" ? localStorage : undefined,
       persistSession: true,
