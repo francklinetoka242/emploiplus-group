@@ -7,7 +7,7 @@ const SEO_SETTINGS_STORAGE_KEY = "emploiplus.site-seo";
 export const DEFAULT_SITE_SEO_SETTINGS: SiteSEOSettings = {
   title: "EmploiPlus Group",
   description:
-    "Solutions numériques, diffusion d'offres d'emploi et services médias pour les talents et les entreprises.",
+    "Diffusion d'offres d'emploi, Solutions numériques les entreprises.",
   keywords: "emploi, offres d'emploi, recrutement, diffusion d'annonces, Congo",
   canonical: BASE_URL,
   robots: "index,follow",
