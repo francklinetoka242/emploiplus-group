@@ -16,7 +16,7 @@ export interface AiAnalysisResult {
   experienceVerified?: string;
   strengths: string[];
   improvements: string[];
-  gaps?: string[];
+  gaps: string[];
   summary?: string;
   cover_letter_draft: string;
 }
@@ -116,12 +116,15 @@ function sanitizeAnalysisPayload(payload: unknown): AiAnalysisResult {
     : [];
 
   // Valider et normaliser improvements / gaps (tableau de chaînes, défaut [])
-  const improvements = Array.isArray(candidate.improvements)
+  const rawImprovements = Array.isArray(candidate.improvements)
     ? candidate.improvements.filter((item) => item != null && typeof item === "string").map((i) => String(i).trim()).filter(Boolean)
     : [];
-  const gaps = Array.isArray(candidate.gaps)
+  const rawGaps = Array.isArray(candidate.gaps)
     ? candidate.gaps.filter((item) => item != null && typeof item === "string").map((g) => String(g).trim()).filter(Boolean)
     : [];
+
+  const improvements = rawImprovements.length > 0 ? rawImprovements : rawGaps;
+  const gaps = rawGaps.length > 0 ? rawGaps : rawImprovements;
 
   // Valider et normaliser experienceVerified et summary
   const experienceVerified = typeof candidate.experienceVerified === "string"
@@ -190,6 +193,7 @@ async function fetchCachedAnalysis(candidateId: string, jobId: string): Promise<
       match_score: data.match_score,
       strengths: data.strengths ?? [],
       improvements: data.improvements ?? [],
+      gaps: [],
       cover_letter_draft: data.cover_letter_draft ?? "",
     };
   } catch (error) {

@@ -618,7 +618,7 @@ export function JobOfferDetailPage() {
                       <div className="rounded-2xl border border-orange-200 bg-orange-50/70 p-4">
                         <h4 className="text-sm font-semibold text-orange-700">Axes d’amélioration</h4>
                         <ul className="mt-3 space-y-2 text-sm text-orange-800">
-                          {analysis.improvements.map((item) => (
+                          {analysis.gaps.map((item) => (
                             <li key={item} className="flex gap-2">
                               <span className="mt-2 size-2 rounded-full bg-orange-500" />
                               <span>{item}</span>
