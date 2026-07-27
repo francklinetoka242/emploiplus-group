@@ -23,12 +23,12 @@ export const EcoModeToggle: React.FC<Props> = ({ className = '' }) => {
         role="switch"
         aria-checked={isEcoMode}
         aria-label={`Économie de données ${isEcoMode ? 'activée' : 'désactivée'}`}
-        className="w-full flex items-center justify-between gap-3 px-3 py-3 min-h-[44px] rounded-md hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+        className="w-full flex items-center justify-between gap-2 px-3 py-3 min-h-[44px] rounded-md hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
       >
-        <div className="flex items-center gap-2">
-          <div className="text-left">
-            <div className="text-sm font-medium text-slate-700 dark:text-slate-200">Économie de données (Mo)</div>
-            <div className="text-xs text-slate-500 dark:text-slate-400">Réduit le chargement des médias et animations</div>
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="min-w-0">
+            <div className="truncate text-sm font-medium text-slate-700 dark:text-slate-200">Économie de données (Mo)</div>
+            <div className="hidden text-xs text-slate-500 dark:text-slate-400 sm:block">Réduit le chargement des médias et animations</div>
           </div>
         </div>
 
