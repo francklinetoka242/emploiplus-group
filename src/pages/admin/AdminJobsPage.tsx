@@ -137,7 +137,7 @@ export function AdminJobsPage() {
     setMessage(null);
 
     try {
-      const publicUrl = await uploadFileToStorage(
+      const { url: publicUrl } = await uploadFileToStorage(
         file,
         "job-offers",
         import.meta.env.VITE_SUPABASE_OFFRES_BUCKET || undefined,

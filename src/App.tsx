@@ -148,7 +148,7 @@ const CreationMotivationRedirect = lazy(() =>
   import("@/pages/candidate/CreationMotivationRedirect").then((m) => ({ default: m.default })),
 );
 const CandidateDocumentsPage = lazy(() =>
-  import("@/pages/candidate/CandidateCVPage").then((m) => ({ default: m.CandidateCVPage })),
+  import("@/pages/candidate/CandidateDocumentsPage").then((m) => ({ default: m.CandidateDocumentsPage })),
 );
 const CandidateProfileEditPage = lazy(() =>
   import("@/pages/candidate/CandidateProfileEditPage").then((m) => ({ default: m.default })),
@@ -247,7 +247,7 @@ function AppContent() {
         return;
       }
 
-      if (session.user.email_confirmed_at) {
+      if (session.user.email_confirmed_at !== null) {
         return;
       }
 

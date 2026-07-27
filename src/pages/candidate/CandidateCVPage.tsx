@@ -13,8 +13,10 @@ import { Upload, Download, Eye, Trash2, FileText, Plus, AlertCircle } from "luci
 import {
   ALLOWED_DOCUMENT_MIME_TYPES,
   MAX_DOCUMENT_SIZE_BYTES,
+  CANDIDATE_DOCUMENTS_BUCKET,
 } from "@/services/storageService";
-import { deleteCandidateDocument, getCandidateDocuments, saveCandidateDocuments, uploadCandidateCV, uploadCandidateDocument, type CandidateCVState, type CandidateDocument } from "@/features/candidates/api/documentsApi";
+import { supabase } from "@/integrations/supabase/client";
+import { deleteCandidateCV, deleteCandidateDocument, getCandidateDocuments, saveCandidateDocuments, uploadAndProcessCandidateCV, uploadCandidateDocument, type CandidateCVState, type CandidateDocument } from "@/features/candidates/api/documentsApi";
 
 const documentTypes = {
   motivation: { label: "Lettre de motivation" },
@@ -41,16 +43,21 @@ const formatDate = (value: string) => {
 };
 
 export function CandidateCVPage() {
-  const { profile, loading } = useCandidate();
+  const { profile, loading, refetch } = useCandidate();
   const location = useLocation();
   const cvInputRef = useRef<HTMLInputElement | null>(null);
   const cvSectionRef = useRef<HTMLDivElement | null>(null);
   const [cv, setCv] = useState<CandidateCVState | null>(null);
   const [documents, setDocuments] = useState<CandidateDocument[]>([]);
+  const [isDocumentsLoaded, setIsDocumentsLoaded] = useState(false);
+  const [hasRestoredDocuments, setHasRestoredDocuments] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<keyof typeof documentTypes>("motivation");
   const [otherLabel, setOtherLabel] = useState("");
   const [isUploadingCv, setIsUploadingCv] = useState(false);
+  const [selectedCvFile, setSelectedCvFile] = useState<File | null>(null);
+  const [confirmDeleteCv, setConfirmDeleteCv] = useState(false);
+  const [confirmDeleteDocId, setConfirmDeleteDocId] = useState<string | null>(null);
   const [isUploadingDocument, setIsUploadingDocument] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [feedbackError, setFeedbackError] = useState("");
@@ -65,12 +72,41 @@ export function CandidateCVPage() {
   useEffect(() => {
     if (!profile?.id) return;
 
-    void getCandidateDocuments(profile.id).then((data) => {
-      setCv(data.cv ?? null);
-      setDocuments(data.documents ?? []);
-    }).catch((error) => {
-      console.error("Unable to restore candidate documents", error);
-    });
+    let isActive = true;
+    setHasRestoredDocuments(false);
+
+    void getCandidateDocuments(profile.id)
+      .then(async (data) => {
+        if (!isActive) return;
+        // If there is no client-side stored CV but the server has a cv_url (may be a storage path), prefer server value
+        const serverCvUrl = profile?.cv_url;
+        let resolvedServerUrl: string | undefined = serverCvUrl;
+        if (serverCvUrl && !serverCvUrl.startsWith("http")) {
+          try {
+            const { data: signed, error } = await supabase.storage.from(CANDIDATE_DOCUMENTS_BUCKET).createSignedUrl(serverCvUrl, 60 * 60);
+            if (!error && signed?.signedUrl) resolvedServerUrl = signed.signedUrl;
+          } catch (e) {
+            console.debug("Failed to generate signed URL for candidate CV", e);
+          }
+        }
+
+        const preferServerCv = !data.cv && resolvedServerUrl;
+        setCv((currentCv) => currentCv ?? (preferServerCv ? { id: `cv-server-${profile.id}`, name: "CV", displayName: "Mon CV", date: new Date().toISOString(), size: "", url: resolvedServerUrl } : data.cv) ?? null);
+        setDocuments((currentDocuments) => (currentDocuments.length > 0 ? currentDocuments : data.documents ?? []));
+      })
+      .catch((error) => {
+        if (!isActive) return;
+        console.error("Unable to restore candidate documents", error);
+      })
+      .finally(() => {
+        if (!isActive) return;
+        setIsDocumentsLoaded(true);
+        setHasRestoredDocuments(true);
+      });
+
+    return () => {
+      isActive = false;
+    };
   }, [profile?.id]);
 
   useEffect(() => {
@@ -89,9 +125,9 @@ export function CandidateCVPage() {
   }, [location.hash, location.search]);
 
   useEffect(() => {
-    if (!profile?.id) return;
+    if (!profile?.id || !hasRestoredDocuments) return;
     void saveCandidateDocuments(profile.id, { cv, documents });
-  }, [profile?.id, cv, documents]);
+  }, [profile?.id, cv, documents, hasRestoredDocuments]);
 
   const resetDocumentDialog = () => {
     setSelectedType("motivation");
@@ -100,41 +136,64 @@ export function CandidateCVPage() {
     setAddDialogOpen(false);
   };
 
-  const handleCvUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !profile?.id) return;
+  const handleCvInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    setFeedbackError("");
+    if (!file) {
+      setSelectedCvFile(null);
+      return;
+    }
 
     if (!ALLOWED_DOCUMENT_MIME_TYPES.includes(file.type)) {
       setFeedbackError("Seuls les fichiers PDF sont acceptés pour le CV.");
-      return;
+      return setSelectedCvFile(null);
     }
 
     if (file.size > MAX_DOCUMENT_SIZE_BYTES) {
       setFeedbackError("Le fichier dépasse la limite de 2 Mo pour le CV.");
-      return;
+      return setSelectedCvFile(null);
     }
+
+    setSelectedCvFile(file);
+  };
+
+  const handleConfirmCvUpload = async () => {
+    const file = selectedCvFile;
+    if (!file || !profile?.id) return;
 
     setIsUploadingCv(true);
     setFeedbackError("");
     setFeedbackMessage("");
 
     try {
-      const url = await uploadCandidateCV(profile.id, file);
-      setCv({
-        id: `cv-${Date.now()}`,
-        name: file.name,
-        displayName: file.name,
-        date: new Date().toISOString(),
-        size: formatFileSize(file.size),
-        url,
-      });
-      setFeedbackMessage("Votre CV a été téléchargé avec succès.");
+      const result = await uploadAndProcessCandidateCV(profile.id, file);
+      const newCv = result.cv;
+
+      setCv(newCv);
+      await saveCandidateDocuments(profile.id, { cv: newCv, documents });
+
+      if ((result as any).extraction) {
+        await refetch?.();
+        setFeedbackMessage("Votre CV a été téléchargé et son contenu a été extrait avec succès.");
+      } else if ((result as any).error) {
+        await refetch?.();
+        setFeedbackMessage("Votre CV a été ajouté, mais l’extraction du contenu a échoué.");
+        setFeedbackError((result as any).error);
+      } else {
+        await refetch?.();
+        setFeedbackMessage("Votre CV a été téléchargé.");
+      }
     } catch (error) {
       setFeedbackError(error instanceof Error ? error.message : "Impossible d’envoyer le CV.");
     } finally {
       setIsUploadingCv(false);
-      event.target.value = "";
+      setSelectedCvFile(null);
     }
+  };
+
+  const handleCancelCvSelection = () => {
+    setSelectedCvFile(null);
+    setFeedbackError("");
   };
 
   const handleAddDocument = async () => {
@@ -183,6 +242,22 @@ export function CandidateCVPage() {
     }
   };
 
+  const handleDeleteCv = async () => {
+    if (!profile?.id) return;
+    setFeedbackError("");
+    setFeedbackMessage("");
+
+    try {
+      await deleteCandidateCV(profile.id);
+      await clearCandidateCvText(profile.id);
+      await refetch?.();
+      setCv(null);
+      setFeedbackMessage("Votre CV a été supprimé et le texte du CV a été effacé de la base.");
+    } catch (error) {
+      setFeedbackError(error instanceof Error ? error.message : "Impossible de supprimer le CV.");
+    }
+  };
+
   if (loading) {
     return <div className="py-10 text-center text-slate-600">Chargement de votre espace CV...</div>;
   }
@@ -215,21 +290,23 @@ export function CandidateCVPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-cyan-600" />
-            CV Principal
+            Mon CV
           </CardTitle>
-          <CardDescription>Votre CV actuellement utilisé pour les candidatures</CardDescription>
+          <CardDescription>
+            Votre CV actuellement utilisé pour les candidatures — un seul Mon CV, un nouveau téléchargement remplace l’actuel.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {cv ? (
-              <div className="p-4 bg-white border border-slate-200 rounded-lg">
+              <div className="p-3 bg-white border border-slate-200 rounded-lg">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <p className="font-semibold text-slate-900">{cv.name}</p>
                     <p className="text-sm text-slate-600 mt-1">Taille: {cv.size || "—"}</p>
                     <p className="text-sm text-slate-600">Ajouté le: {formatDate(cv.date)}</p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Button
                       size="sm"
                       variant="outline"
@@ -248,6 +325,24 @@ export function CandidateCVPage() {
                       <Download className="w-4 h-4" />
                       Télécharger
                     </Button>
+                    {!confirmDeleteCv ? (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="gap-2"
+                        onClick={() => setConfirmDeleteCv(true)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Supprimer
+                      </Button>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="destructive" className="gap-2" onClick={async () => { await handleDeleteCv(); setConfirmDeleteCv(false); }}>
+                          Confirmer
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => setConfirmDeleteCv(false)}>Annuler</Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -257,26 +352,41 @@ export function CandidateCVPage() {
               </div>
             )}
 
-            <div className="border-2 border-dashed border-cyan-300 rounded-lg p-8 text-center hover:border-cyan-500 transition-colors bg-white">
-              <Upload className="w-10 h-10 text-cyan-400 mx-auto mb-3" />
+            <div className="border-2 border-dashed border-cyan-300 rounded-lg p-5 text-center hover:border-cyan-500 transition-colors bg-white">
+              <Upload className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
               <p className="font-medium text-slate-700 mb-1">Remplacer votre CV</p>
-              <p className="text-sm text-slate-600 mb-4">
-                Sélectionnez un PDF depuis votre appareil
+              <p className="text-sm text-slate-600 mb-3">
+                Sélectionnez un PDF pour remplacer Mon CV.
               </p>
               <input
                 ref={cvInputRef}
                 type="file"
                 accept="application/pdf"
                 className="hidden"
-                onChange={handleCvUpload}
+                onChange={handleCvInputChange}
               />
-              <Button
-                onClick={() => cvInputRef.current?.click()}
-                disabled={isUploadingCv}
-                className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
-              >
-                {isUploadingCv ? "Chargement..." : "Parcourir"}
-              </Button>
+              <div className="flex items-center justify-center gap-2">
+                <Button
+                  onClick={() => cvInputRef.current?.click()}
+                  disabled={isUploadingCv}
+                  className="bg-brand text-brand-foreground hover:bg-brand/90 text-white"
+                >
+                  Parcourir
+                </Button>
+                {selectedCvFile && (
+                  <>
+                    <div className="text-sm text-slate-600">{selectedCvFile.name}</div>
+                    <Button
+                      onClick={handleConfirmCvUpload}
+                      disabled={isUploadingCv}
+                      className="bg-green-600 text-white"
+                    >
+                      {isUploadingCv ? "Chargement..." : "Confirmer"}
+                    </Button>
+                    <Button variant="outline" onClick={handleCancelCvSelection}>Annuler</Button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </CardContent>
@@ -407,14 +517,23 @@ export function CandidateCVPage() {
                         <Download className="w-4 h-4" />
                         Télécharger
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-red-600 hover:text-red-700"
-                        onClick={() => handleDeleteDocument(doc.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      {!confirmDeleteDocId || confirmDeleteDocId !== doc.id ? (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-red-600 hover:text-red-700"
+                          onClick={() => setConfirmDeleteDocId(doc.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      ) : (
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="destructive" className="gap-2" onClick={async () => { await handleDeleteDocument(doc.id); setConfirmDeleteDocId(null); }}>
+                            Confirmer
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => setConfirmDeleteDocId(null)}>Annuler</Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );

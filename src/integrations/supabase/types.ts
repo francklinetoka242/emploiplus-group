@@ -248,6 +248,7 @@ export type Database = {
           status: Database["public"]["Enums"]["job_status"];
           tags: string[];
           title: string;
+          embedding_vector: string | null;
           updated_at: string;
           views_count: number;
         };
@@ -279,6 +280,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["job_status"];
           tags?: string[];
           title: string;
+          embedding_vector?: string | null;
           updated_at?: string;
           views_count?: number;
         };
@@ -310,6 +312,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["job_status"];
           tags?: string[];
           title?: string;
+          embedding_vector?: string | null;
           updated_at?: string;
           views_count?: number;
         };
@@ -369,6 +372,8 @@ export type Database = {
           location_country: string | null;
           date_of_birth: string | null;
           status: Database["public"]["Enums"]["candidate_status"];
+          cv_text: string | null;
+          embedding_vector: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -386,6 +391,8 @@ export type Database = {
           location_country?: string | null;
           date_of_birth?: string | null;
           status?: Database["public"]["Enums"]["candidate_status"];
+          cv_text?: string | null;
+          embedding_vector?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -403,6 +410,8 @@ export type Database = {
           location_country?: string | null;
           date_of_birth?: string | null;
           status?: Database["public"]["Enums"]["candidate_status"];
+          cv_text?: string | null;
+          embedding_vector?: string | null;
           created_at?: string;
           updated_at?: string;
         };

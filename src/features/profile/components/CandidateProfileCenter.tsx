@@ -58,7 +58,7 @@ export function CandidateProfileCenter() {
       case "completion":
         return <CompletionSection completion={completion} />;
       case "documents":
-        return <DocumentsSection cv={cv} documents={documents} loading={documentsLoading} candidateId={profile?.id} onDeleteDocument={deleteDocument} onAddDocument={addDocument} />;
+        return <DocumentsSection cv={cv} documents={documents} loading={documentsLoading} candidateId={profile?.id} serverCvUrl={profile?.cv_url} onDeleteDocument={deleteDocument} onAddDocument={addDocument} />;
         case "presentation":
           return <ProfessionalPresentationSection />;
       case "profile":

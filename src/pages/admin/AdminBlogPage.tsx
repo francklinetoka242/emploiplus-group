@@ -109,7 +109,7 @@ export function AdminBlogPage() {
     setMessage(null);
 
     try {
-      const publicUrl = await uploadFileToStorage(
+      const { url: publicUrl } = await uploadFileToStorage(
         file,
         "blog",
         import.meta.env.VITE_SUPABASE_BLOG_BUCKET || undefined,

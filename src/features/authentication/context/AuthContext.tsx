@@ -88,26 +88,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     setError(null);
 
-    try {
-      const nextSession = await authApi.getCandidateSession();
-      const resolvedSession = await resolveSessionRoles(nextSession);
-      setSession(resolvedSession);
-      if (!resolvedSession) {
-        setProfile(null);
-        setIsProfileLoading(false);
+    let retries = 0;
+    const maxRetries = 2;
+    let lastError: Error | null = null;
+
+    while (retries <= maxRetries) {
+      try {
+        const nextSession = await authApi.getCandidateSession();
+        const resolvedSession = await resolveSessionRoles(nextSession);
+        setSession(resolvedSession);
+        if (!resolvedSession) {
+          setProfile(null);
+          setIsProfileLoading(false);
+        }
+        setIsLoading(false);
+        return resolvedSession;
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error(String(err));
+        
+        // Ne pas retry sur certaines erreurs (email non confirmé)
+        if (lastError.message.includes("email") || lastError.message.includes("confirmed")) {
+          break;
+        }
+
+        retries++;
+        if (retries <= maxRetries) {
+          // Attendre avant le retry (exponential backoff)
+          await new Promise((resolve) => setTimeout(resolve, Math.pow(2, retries) * 500));
+        }
       }
-      return resolvedSession;
-    } catch (err) {
-      const nextError = err instanceof Error ? err.message : "Session inaccessible";
-      setError(nextError);
-      setSession(null);
-      setProfile(null);
-      setIsProfileLoading(false);
-      return null;
-    } finally {
-      setIsLoading(false);
     }
-  }, []);
+
+    // Si on arrive ici, tous les retries ont échoué
+    const nextError = lastError?.message ?? "Session inaccessible";
+    setError(nextError);
+    setSession(null);
+    setProfile(null);
+    setIsProfileLoading(false);
+    setIsLoading(false);
+    return null;
+  }, [resolveSessionRoles]);
 
   const refetchProfile = useCallback(async () => {
     if (!session?.user?.id) {

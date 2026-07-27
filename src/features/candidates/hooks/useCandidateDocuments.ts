@@ -24,6 +24,11 @@ export function useCandidateDocuments(profileId?: string | null) {
   const [cv, setCv] = useState<CandidateCVState | null>(null);
   const [documents, setDocuments] = useState<CandidateDocument[]>([]);
   const [loading, setLoading] = useState(false);
+  const [hasRestoredDocuments, setHasRestoredDocuments] = useState(false);
+
+  useEffect(() => {
+    setHasRestoredDocuments(false);
+  }, [profileId]);
 
   useEffect(() => {
     if (!profileId) return;
@@ -31,7 +36,11 @@ export function useCandidateDocuments(profileId?: string | null) {
     try {
       setLoading(true);
       const raw = localStorage.getItem(`emploiplus-candidate-documents-${profileId}`);
-      if (!raw) return;
+      if (!raw) {
+        setCv(null);
+        setDocuments([]);
+        return;
+      }
 
       const parsed = JSON.parse(raw) as { cv?: CandidateCVState; documents?: CandidateDocument[] };
       setCv(parsed.cv ?? null);
@@ -40,13 +49,14 @@ export function useCandidateDocuments(profileId?: string | null) {
       console.error("Unable to restore candidate documents", error);
     } finally {
       setLoading(false);
+      setHasRestoredDocuments(true);
     }
   }, [profileId]);
 
   useEffect(() => {
-    if (!profileId) return;
+    if (!profileId || !hasRestoredDocuments) return;
     localStorage.setItem(`emploiplus-candidate-documents-${profileId}`, JSON.stringify({ cv, documents }));
-  }, [profileId, cv, documents]);
+  }, [profileId, cv, documents, hasRestoredDocuments]);
 
   return { cv, documents, setCv, setDocuments, loading };
 }

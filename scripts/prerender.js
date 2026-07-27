@@ -22,21 +22,28 @@ function getSupabaseCredentials() {
     "";
 
   if (!supabaseUrl || !supabaseKey) {
-    throw new Error(
-      "Supabase credentials are required for prerendering. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY or a publishable/anon key.",
-    );
+    return null;
   }
 
   return { supabaseUrl, supabaseKey };
 }
 
 function createSupabaseClient() {
-  const { supabaseUrl, supabaseKey } = getSupabaseCredentials();
-  return createClient(supabaseUrl, supabaseKey);
+  const credentials = getSupabaseCredentials();
+  if (!credentials) {
+    return null;
+  }
+
+  return createClient(credentials.supabaseUrl, credentials.supabaseKey);
 }
 
 async function fetchDynamicRoutes() {
   const supabase = createSupabaseClient();
+
+  if (!supabase) {
+    console.warn("Supabase credentials not found. Skipping dynamic prerender routes.");
+    return [];
+  }
 
   const [{ data: jobOffers, error: jobsError }, { data: blogPosts, error: postsError }] =
     await Promise.all([

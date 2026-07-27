@@ -1,19 +1,25 @@
-import { useCallback, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Download, Trash2, CheckCircle2, Circle, Upload } from "lucide-react";
+import { FileText, Download, Trash2, Eye, CheckCircle2, Circle, Upload } from "lucide-react";
 import type { CandidateDocument, CandidateCVState } from "@/lib/candidate-documents";
 import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES } from "@/services/storageService";
-import { uploadCandidateDocument } from "@/features/candidates/api/documentsApi";
+import { uploadAndProcessCandidateCV, uploadCandidateDocument } from "@/features/candidates/api/documentsApi";
+import { supabase } from "@/integrations/supabase/client";
+import { CANDIDATE_DOCUMENTS_BUCKET } from "@/services/storageService";
+import { toast } from "sonner";
+
+type DocumentTypeOption = CandidateDocument["type"] | "cv";
 
 const DOCUMENT_TYPES = [
-  { value: "motivation", label: "Lettre de motivation" },
-  { value: "diploma", label: "Diplôme" },
-  { value: "certificate", label: "Certificat" },
-  { value: "attestation", label: "Attestation" },
-  { value: "portfolio", label: "Portfolio" },
-  { value: "recepisse", label: "Récépissé ACPE" },
-  { value: "other", label: "Autre" },
+  { value: "cv" as const, label: "Mon CV" },
+  { value: "motivation" as const, label: "Lettre de motivation" },
+  { value: "diploma" as const, label: "Diplôme" },
+  { value: "certificate" as const, label: "Certificat" },
+  { value: "attestation" as const, label: "Attestation" },
+  { value: "portfolio" as const, label: "Portfolio" },
+  { value: "recepisse" as const, label: "Récépissé ACPE" },
+  { value: "other" as const, label: "Autre" },
 ];
 
 interface DocumentsSectionProps {
@@ -21,8 +27,9 @@ interface DocumentsSectionProps {
   documents: CandidateDocument[];
   loading?: boolean;
   candidateId?: string | null;
+  serverCvUrl?: string | null;
   onDeleteDocument?: (id: string) => void;
-  onAddDocument?: (document: CandidateDocument) => void;
+  onAddDocument?: (document: CandidateDocument | CandidateCVState, isCV?: boolean) => void;
 }
 
 export function DocumentsSection({
@@ -30,40 +37,60 @@ export function DocumentsSection({
   documents,
   loading,
   candidateId,
+  serverCvUrl,
   onDeleteDocument,
   onAddDocument,
 }: DocumentsSectionProps) {
-  const [selectedType, setSelectedType] = useState<CandidateDocument["type"]>("motivation");
+  const [selectedType, setSelectedType] = useState<DocumentTypeOption>("motivation");
   const [otherLabel, setOtherLabel] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [feedbackError, setFeedbackError] = useState("");
+  const [resolvedServerCvUrl, setResolvedServerCvUrl] = useState<string | null>(null);
+  const [serverCvUrlError, setServerCvUrlError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const effectiveCv = useMemo(() => {
+    if (cv) {
+      return cv;
+    }
+    if (!resolvedServerCvUrl) {
+      return null;
+    }
+    return {
+      id: "cv-server",
+      name: "CV",
+      displayName: "Mon CV",
+      date: new Date().toISOString(),
+      size: "",
+      url: resolvedServerCvUrl,
+    } satisfies CandidateCVState;
+  }, [cv, resolvedServerCvUrl]);
 
   const allDocuments = useMemo(() => {
     const docs: CandidateDocument[] = [];
 
-    if (cv) {
+    if (effectiveCv) {
       docs.push({
-        id: cv.id,
-        type: "other",
-        name: cv.name,
-        displayName: cv.displayName || cv.name,
-        date: cv.date,
-        size: cv.size,
-        url: cv.url,
-        customType: "CV Principal",
+        id: effectiveCv.id,
+        type: "cv",
+        name: effectiveCv.name,
+        displayName: effectiveCv.displayName || effectiveCv.name,
+        date: effectiveCv.date,
+        size: effectiveCv.size,
+        url: effectiveCv.url,
+        customType: "Mon CV",
       });
     }
 
     return [...docs, ...documents];
-  }, [cv, documents]);
+  }, [effectiveCv, documents]);
 
   const documentsByType = useMemo(() => {
     const grouped = new Map<string, CandidateDocument[]>();
 
     allDocuments.forEach((doc) => {
-      const type = doc.customType || doc.type;
+      const type = doc.type || doc.customType || "other";
       if (!grouped.has(type)) {
         grouped.set(type, []);
       }
@@ -110,9 +137,29 @@ export function DocumentsSection({
     setFeedbackMessage("");
 
     try {
-      const newDocument = await uploadCandidateDocument(candidateId, file, selectedType, selectedType === "other" ? otherLabel : undefined);
-      onAddDocument(newDocument);
-      setFeedbackMessage("Le document a été ajouté avec succès.");
+      if (selectedType === "cv") {
+        const result = await uploadAndProcessCandidateCV(candidateId, file);
+        const newCv = result.cv;
+        onAddDocument(newCv, true);
+
+            // Notify user and fallback to local feedback messages
+            if ((result as any).extraction) {
+              setFeedbackMessage("Le CV a été ajouté et son contenu a été extrait pour l’IA.");
+              toast.success("Votre CV a été mis à jour avec succès. Vos scores de compatibilité avec les offres sont en cours de recalcul.");
+            } else if ((result as any).error) {
+              setFeedbackMessage("Votre CV a été ajouté, mais l’extraction du contenu a échoué.");
+              setFeedbackError((result as any).error);
+              toast.error("Votre CV a été ajouté mais l’extraction a échoué.");
+            } else {
+              setFeedbackMessage("Votre CV a été ajouté.");
+              toast.success("Votre CV a été mis à jour avec succès. Vos scores de compatibilité avec les offres sont en cours de recalcul.");
+            }
+      } else {
+        const newDocument = await uploadCandidateDocument(candidateId, file, selectedType as any, selectedType === "other" ? otherLabel : undefined);
+        onAddDocument(newDocument);
+        setFeedbackMessage("Le document a été ajouté avec succès.");
+      }
+
       setOtherLabel("");
       setSelectedType("motivation");
     } catch (error) {
@@ -131,6 +178,53 @@ export function DocumentsSection({
     return `${(num / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  useEffect(() => {
+    if (!serverCvUrl) {
+      setResolvedServerCvUrl(null);
+      setServerCvUrlError(null);
+      return;
+    }
+
+    let isMounted = true;
+    const resolveUrl = async () => {
+      if (serverCvUrl.startsWith("http")) {
+        if (isMounted) {
+          setResolvedServerCvUrl(serverCvUrl);
+          setServerCvUrlError(null);
+        }
+        return;
+      }
+
+      try {
+        const { data: signed, error } = await supabase.storage.from(CANDIDATE_DOCUMENTS_BUCKET).createSignedUrl(serverCvUrl, 60 * 60);
+        if (!isMounted) {
+          return;
+        }
+        if (error || !signed?.signedUrl) {
+          throw error ?? new Error("Unable to create signed URL for candidate CV");
+        }
+        setResolvedServerCvUrl(signed.signedUrl);
+        setServerCvUrlError(null);
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+        console.debug("[DocumentsSection] failed to resolve profile.cv_url", {
+          serverCvUrl,
+          error,
+        });
+        setResolvedServerCvUrl(null);
+        setServerCvUrlError(error instanceof Error ? error.message : String(error));
+      }
+    };
+
+    void resolveUrl();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [serverCvUrl]);
+
   const formatDate = (date: string) => {
     try {
       return new Date(date).toLocaleDateString("fr-FR", {
@@ -142,6 +236,15 @@ export function DocumentsSection({
       return date;
     }
   };
+
+  useEffect(() => {
+    console.debug("[DocumentsSection] effective CV state", {
+      hasLocalCv: Boolean(cv),
+      serverCvUrl,
+      resolvedServerCvUrl,
+      effectiveCv: effectiveCv ? { id: effectiveCv.id, url: effectiveCv.url } : null,
+    });
+  }, [cv, serverCvUrl, resolvedServerCvUrl, effectiveCv]);
 
   if (loading) {
     return (
@@ -171,15 +274,6 @@ export function DocumentsSection({
             </CardTitle>
             <CardDescription>Gérez vos documents importants pour votre candidature.</CardDescription>
           </div>
-          <Button
-            size="sm"
-            className="bg-cyan-600 hover:bg-cyan-700"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={!candidateId || !onAddDocument || isUploading}
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Ajouter
-          </Button>
         </div>
       </CardHeader>
       <CardContent>
@@ -239,11 +333,11 @@ export function DocumentsSection({
           <div>
             <p className="mb-3 text-sm font-medium text-slate-700">État des documents</p>
             <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-              {["CV Principal", ...DOCUMENT_TYPES.map((t) => t.label)].map((label) => {
-                const isCompleted = completedTypes.has(label);
+              {DOCUMENT_TYPES.map((type) => {
+                const isCompleted = completedTypes.has(type.value);
                 return (
                   <div
-                    key={label}
+                    key={type.value}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
                       isCompleted
                         ? "bg-emerald-50 text-emerald-700"
@@ -255,7 +349,7 @@ export function DocumentsSection({
                     ) : (
                       <Circle className="h-4 w-4 text-slate-400 flex-shrink-0" />
                     )}
-                    <span className="text-sm">{label}</span>
+                    <span className="text-sm">{type.label}</span>
                   </div>
                 );
               })}
@@ -289,16 +383,24 @@ export function DocumentsSection({
                       </div>
                     </div>
                     <div className="flex items-center gap-2 ml-2 flex-shrink-0">
-                      <a href={doc.url} target="_blank" rel="noopener noreferrer">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 w-8 p-0"
-                          title="Télécharger"
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </a>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        title="Aperçu"
+                        onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        title="Télécharger"
+                        onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -316,16 +418,7 @@ export function DocumentsSection({
           ) : (
             <div className="text-center py-8">
               <FileText className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-sm text-slate-500 mb-3">Aucun document ajouté.</p>
-              <Button
-                size="sm"
-                className="bg-cyan-600 hover:bg-cyan-700"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={!candidateId || !onAddDocument || isUploading}
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                Commencer à ajouter des documents
-              </Button>
+              <p className="text-sm text-slate-500">Aucun document ajouté.</p>
             </div>
           )}
         </div>

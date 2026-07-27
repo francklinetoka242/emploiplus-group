@@ -1,0 +1,40 @@
+import React from "react";
+import { useEcoMode } from "@/contexts/EcoModeContext";
+import { EcoModeMediaQuery, applyEcoModeToDocument } from "@/lib/eco-mode-utils";
+
+export function EcoModeRootWrapper({ children }: { children: React.ReactNode }) {
+  const { isEcoMode } = useEcoMode();
+
+  React.useEffect(() => {
+    applyEcoModeToDocument(isEcoMode);
+  }, [isEcoMode]);
+
+  return <>{children}</>;
+}
+
+export function useEcoAnimations(): boolean {
+  const { isEcoMode } = useEcoMode();
+  return EcoModeMediaQuery.shouldDisableAnimations(isEcoMode);
+}
+
+export function useConditionalAnimation(
+  animationName?: string,
+): React.CSSProperties {
+  const shouldDisable = useEcoAnimations();
+
+  if (!animationName || shouldDisable) {
+    return { animation: "none" };
+  }
+
+  return { animation: `${animationName} 0.3s ease-in-out` };
+}
+
+export function useConditionalTransition(
+  transitionValue: string = "all 0.3s ease",
+): React.CSSProperties {
+  const shouldDisable = useEcoAnimations();
+
+  return {
+    transition: shouldDisable ? "none" : transitionValue,
+  };
+}

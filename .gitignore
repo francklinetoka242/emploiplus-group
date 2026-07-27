@@ -27,6 +27,9 @@ dist-ssr
 .env.*.local
 env.md
 
+#fichiers de documentation
+.md
+
 # Sensitive files
 temp-smtp-test.mjs
 temp-send-email-hook-test.js

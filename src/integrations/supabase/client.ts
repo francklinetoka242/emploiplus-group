@@ -2,26 +2,37 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
+function getSupabaseEnvironment() {
+  return {
+    SUPABASE_URL:
+      import.meta.env.VITE_SUPABASE_URL ||
+      import.meta.env.SUPABASE_URL ||
+      (typeof process !== "undefined"
+        ? process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
+        : undefined),
+    SUPABASE_ANON_KEY:
+      import.meta.env.VITE_SUPABASE_ANON_KEY ||
+      import.meta.env.SUPABASE_ANON_KEY ||
+      (typeof process !== "undefined"
+        ? process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
+        : undefined),
+  };
+}
+
 function createSupabaseClient() {
-  // Use import.meta.env for client-side (Vite build-time replacement)
-  // Fall back to process.env for SSR (server-side rendering)
-  const SUPABASE_URL =
-    import.meta.env.VITE_SUPABASE_URL ||
-    (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined);
+  const { SUPABASE_URL, SUPABASE_ANON_KEY } = getSupabaseEnvironment();
 
-  const SUPABASE_ANON_KEY =
-    import.meta.env.VITE_SUPABASE_ANON_KEY ||
-    (typeof process !== "undefined" ? process.env.SUPABASE_ANON_KEY : undefined) ||
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    (typeof process !== "undefined" ? process.env.SUPABASE_PUBLISHABLE_KEY : undefined);
+  const missing = [
+    ...(!SUPABASE_URL ? ["VITE_SUPABASE_URL"] : []),
+    ...(!SUPABASE_ANON_KEY ? ["VITE_SUPABASE_ANON_KEY"] : []),
+  ];
 
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    const missing = [
-      ...(!SUPABASE_URL ? ["SUPABASE_URL"] : []),
-      ...(!SUPABASE_ANON_KEY ? ["VITE_SUPABASE_ANON_KEY"] : []),
-    ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(", ")}. Provide the required Supabase configuration.`;
-    console.error(`[Supabase] ${message}`);
+  if (missing.length > 0) {
+    const message = `Missing Supabase environment variable(s): ${missing.join(", ")}. Add ${missing.join(" and ")} to .env or .env.local and restart Vite.`;
+    console.error("[Supabase]", message, {
+      "import.meta.env.VITE_SUPABASE_URL": import.meta.env.VITE_SUPABASE_URL,
+      "import.meta.env.VITE_SUPABASE_ANON_KEY": import.meta.env.VITE_SUPABASE_ANON_KEY,
+    });
     throw new Error(message);
   }
 

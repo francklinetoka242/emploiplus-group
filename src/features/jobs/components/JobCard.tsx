@@ -35,6 +35,7 @@ export type JobCardProps = {
   index?: number;
   onApplyClick?: () => void;
   hideRequirementsSection?: boolean;
+  matchScore?: number;
 };
 
 export function JobCard({
@@ -49,6 +50,7 @@ export function JobCard({
   index = 0,
   onApplyClick,
   hideRequirementsSection = false,
+  matchScore,
 }: JobCardProps) {
   const [isApplyOpen, setIsApplyOpen] = React.useState(false);
   const detailUrl = `/jobs/${job.slug}`;
@@ -86,12 +88,19 @@ export function JobCard({
           </div>
           <h3 className="mt-2 font-display text-lg font-bold text-foreground">{job.title}</h3>
         </div>
-        {contractLabel ? (
-          <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
-            <BriefcaseBusiness className="size-3.5" />
-            {contractLabel}
-          </span>
-        ) : null}
+        <div className="flex items-center gap-2">
+          {typeof matchScore === "number" ? (
+            <span className="inline-flex items-center rounded-full bg-emerald-600/95 px-3 py-1 text-xs font-semibold text-emerald-50">
+              {Math.round(Math.max(0, Math.min(1, matchScore)) * 100)}% de match
+            </span>
+          ) : null}
+          {contractLabel ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
+              <BriefcaseBusiness className="size-3.5" />
+              {contractLabel}
+            </span>
+          ) : null}
+        </div>
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">

@@ -34,7 +34,6 @@ export function ProfileSection({ profile, onSave, loading, error }: ProfileSecti
     firstName: profile?.first_name ?? "",
     lastName: profile?.last_name ?? "",
     headline: profile?.headline ?? "",
-    bio: profile?.bio ?? "",
     phone: profile?.phone ?? "",
     city: profile?.location_city ?? "",
     country: normalizeCountryValue(profile?.location_country),
@@ -46,13 +45,12 @@ export function ProfileSection({ profile, onSave, loading, error }: ProfileSecti
       firstName: profile?.first_name ?? "",
       lastName: profile?.last_name ?? "",
       headline: profile?.headline ?? "",
-      bio: profile?.bio ?? "",
       phone: profile?.phone ?? "",
       city: profile?.location_city ?? "",
       country: normalizeCountryValue(profile?.location_country),
       dateOfBirth: profile?.date_of_birth ?? "",
     });
-  }, [profile?.first_name, profile?.last_name, profile?.headline, profile?.bio, profile?.phone, profile?.location_city, profile?.location_country, profile?.date_of_birth]);
+  }, [profile?.first_name, profile?.last_name, profile?.headline, profile?.phone, profile?.location_city, profile?.location_country, profile?.date_of_birth]);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -68,7 +66,6 @@ export function ProfileSection({ profile, onSave, loading, error }: ProfileSecti
         first_name: formData.firstName || null,
         last_name: formData.lastName || null,
         headline: formData.headline || null,
-        bio: formData.bio || null,
         phone: formData.phone || null,
         location_city: formData.city || null,
         location_country: formData.country || null,
@@ -149,10 +146,6 @@ export function ProfileSection({ profile, onSave, loading, error }: ProfileSecti
                 </option>
               ))}
             </select>
-          </div>
-          <div className="space-y-2 md:col-span-2">
-            <Label>Résumé professionnel</Label>
-            <Textarea rows={4} value={formData.bio} onChange={(e) => setFormData((prev) => ({ ...prev, bio: e.target.value }))} />
           </div>
         </div>
 

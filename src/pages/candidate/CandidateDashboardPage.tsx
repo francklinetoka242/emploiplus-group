@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   Circle,
   ChevronDown,
+  ChevronLeft,
   ChevronRight,
   Send,
   Eye,
@@ -26,8 +27,13 @@ import {
   MapPin,
   DollarSign,
   BookOpen,
+  Target,
 } from "lucide-react";
 import { JobCard } from "@/features/jobs/components";
+import { getRecommendedJobs, RecommendedJob } from "@/services/aiMatchingService";
+import { supabase } from "@/integrations/supabase/client";
+import { CANDIDATE_DOCUMENTS_BUCKET } from "@/services/storageService";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useProfileCompletion } from "@/features/profile/hooks/useProfileCompletion";
 import { useCandidateEducation } from "@/features/profile/hooks/useCandidateEducation";
 import { useCandidateLanguages } from "@/features/profile/hooks/useCandidateLanguages";
@@ -81,7 +87,7 @@ const quickActions = [
 
 export function CandidateDashboardPage() {
   const navigate = useNavigate();
-  const { profile, loading: profileLoading } = useCandidate();
+  const { profile, loading: profileLoading, refetch } = useCandidate();
   const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [offersLoading, setOffersLoading] = useState(true);
   const [isCompletionCollapsed, setIsCompletionCollapsed] = useState(true);
@@ -100,6 +106,11 @@ export function CandidateDashboardPage() {
     cv: { url?: string | null } | null;
     documents: Array<{ url?: string | null }>;
   }>({ cv: null, documents: [] });
+  const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([]);
+  const [recommendedLoading, setRecommendedLoading] = useState<boolean>(false);
+  const [recommendedPage, setRecommendedPage] = useState(1);
+  const [hasMoreRecommendedJobs, setHasMoreRecommendedJobs] = useState(false);
+  const RECOMMENDED_JOBS_PAGE_SIZE = 3;
 
   usePageSEO({
     title: "Tableau de bord - EmploiPlus Group",
@@ -150,7 +161,8 @@ export function CandidateDashboardPage() {
     void loadExperiences();
   }, [profile?.id]);
 
-  useEffect(() => {
+  // Fonction helper pour recharger les documents du localStorage
+  const reloadCandidateDocuments = useCallback(async () => {
     if (!profile?.id) {
       setCandidateDocuments({ cv: null, documents: [] });
       return;
@@ -159,6 +171,22 @@ export function CandidateDashboardPage() {
     try {
       const raw = localStorage.getItem(`emploiplus-candidate-documents-${profile.id}`);
       if (!raw) {
+        // Fallback: if server knows the cv_url, hydrate local state from profile
+        const serverCvUrl = (profile as any)?.cv_url as string | undefined;
+        if (serverCvUrl) {
+          let resolved = serverCvUrl;
+          if (!serverCvUrl.startsWith("http")) {
+            try {
+              const { data: signed, error } = await supabase.storage.from(CANDIDATE_DOCUMENTS_BUCKET).createSignedUrl(serverCvUrl, 60 * 60);
+              if (!error && signed?.signedUrl) resolved = signed.signedUrl;
+            } catch (e) {
+              console.debug("Failed to generate signed URL for dashboard CV", e);
+            }
+          }
+          setCandidateDocuments({ cv: { id: `cv-server-${profile.id}`, name: "CV", displayName: "Mon CV", date: new Date().toISOString(), size: "", url: resolved }, documents: [] });
+          return;
+        }
+
         setCandidateDocuments({ cv: null, documents: [] });
         return;
       }
@@ -177,6 +205,112 @@ export function CandidateDashboardPage() {
       setCandidateDocuments({ cv: null, documents: [] });
     }
   }, [profile?.id]);
+
+  // Charger les documents au démarrage
+  useEffect(() => {
+    reloadCandidateDocuments();
+  }, [reloadCandidateDocuments]);
+
+  // Écouter l'événement de téléversement de CV pour se re-synchroniser
+  useEffect(() => {
+    const handleCvUploaded = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      const { candidateId } = customEvent.detail || {};
+
+      // Vérifier que c'est pour ce candidat
+      if (candidateId === profile?.id) {
+        console.debug("[Dashboard] CV uploaded event detected, reloading documents and profile...");
+        // Re-charger les documents du localStorage
+        reloadCandidateDocuments();
+        // Forcer un refresh du profil pour récupérer cv_text mis à jour
+        if (refetch) {
+          void refetch();
+        }
+      }
+    };
+
+    window.addEventListener("cv-uploaded", handleCvUploaded);
+    return () => {
+      window.removeEventListener("cv-uploaded", handleCvUploaded);
+    };
+  }, [profile?.id, reloadCandidateDocuments, refetch]);
+
+  useEffect(() => {
+    if (!profile?.id) {
+      setRecommendedJobs([]);
+      setRecommendedLoading(false);
+      return;
+    }
+
+    const candidateCvText = profile?.cv_text;
+    const candidateEmbedding = profile?.embedding_vector;
+    const hasCvUploaded = Boolean(candidateDocuments.cv?.url || candidateCvText || candidateEmbedding);
+
+    console.debug("[Dashboard] Preparing recommended jobs", {
+      candidateId: profile.id,
+      hasCvUploaded,
+      candidateDocuments,
+      cv_text: candidateCvText,
+      embedding: candidateEmbedding ? "present" : "absent",
+    });
+
+    if (!hasCvUploaded) {
+      setRecommendedJobs([]);
+      setRecommendedLoading(false);
+      return;
+    }
+
+    let mounted = true;
+    const loadRecommended = async () => {
+      setRecommendedLoading(true);
+      try {
+        console.debug(
+          `[Dashboard] Calling getRecommendedJobs for candidate ${profile.id}, page ${recommendedPage}`,
+        );
+        const jobs = await getRecommendedJobs(
+          profile.id,
+          0.0,
+          RECOMMENDED_JOBS_PAGE_SIZE,
+          (recommendedPage - 1) * RECOMMENDED_JOBS_PAGE_SIZE,
+        );
+        console.debug(`[Dashboard] getRecommendedJobs returned ${Array.isArray(jobs) ? jobs.length : 0} jobs`, {
+          candidateId: profile.id,
+          requestedCount: RECOMMENDED_JOBS_PAGE_SIZE,
+          page: recommendedPage,
+          jobs,
+        });
+        if (!mounted) return;
+        setRecommendedJobs(jobs || []);
+        setHasMoreRecommendedJobs((jobs?.length ?? 0) === RECOMMENDED_JOBS_PAGE_SIZE);
+      } catch (error) {
+        console.error("Unable to load recommended jobs:", error, { candidateId: profile.id });
+        if (mounted) setRecommendedJobs([]);
+        if (mounted) setHasMoreRecommendedJobs(false);
+      } finally {
+        if (mounted) setRecommendedLoading(false);
+      }
+    };
+
+    void loadRecommended();
+    return () => {
+      mounted = false;
+    };
+  }, [
+    profile?.id,
+    candidateDocuments.cv?.url,
+    profile?.cv_text,
+    profile?.embedding_vector,
+    recommendedPage,
+  ]);
+
+  useEffect(() => {
+    setRecommendedPage(1);
+  }, [
+    profile?.id,
+    candidateDocuments.cv?.url,
+    profile?.cv_text,
+    profile?.embedding_vector,
+  ]);
 
   const completion = useProfileCompletion({
     profile,
@@ -197,6 +331,8 @@ export function CandidateDashboardPage() {
         icon: Send,
         color: "text-blue-600",
         bgColor: "bg-blue-50",
+        comingSoon: true,
+        description: "Bientôt disponible",
       },
       {
         label: "Offres enregistrées",
@@ -205,6 +341,7 @@ export function CandidateDashboardPage() {
         color: "text-red-600",
         bgColor: "bg-red-50",
         comingSoon: true,
+        description: "Bientôt disponible",
       },
       {
         label: "Vues de profil",
@@ -213,6 +350,7 @@ export function CandidateDashboardPage() {
         color: "text-green-600",
         bgColor: "bg-green-50",
         comingSoon: true,
+        description: "Bientôt disponible",
       },
       {
         label: "Entretiens",
@@ -221,6 +359,7 @@ export function CandidateDashboardPage() {
         color: "text-purple-600",
         bgColor: "bg-purple-50",
         comingSoon: true,
+        description: "Bientôt disponible",
       },
     ],
     [],
@@ -263,6 +402,9 @@ export function CandidateDashboardPage() {
                     <p className={`text-2xl font-bold text-foreground ${stat.comingSoon ? "text-base font-semibold" : ""}`}>
                       {stat.comingSoon ? "Fonctionnalite bientot disponible" : stat.value}
                     </p>
+                    {stat.description ? (
+                      <p className="mt-2 text-sm text-slate-500">{stat.description}</p>
+                    ) : null}
                   </div>
                   <div className={`${stat.bgColor} p-3 rounded-lg`}>
                     <Icon className={`${stat.color} w-6 h-6`} />
@@ -352,6 +494,100 @@ export function CandidateDashboardPage() {
       </div>
 
       {/* Recent Offers */}
+      {/* Recommended Jobs */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-foreground" />
+              <CardTitle>Offres recommandées pour votre profil</CardTitle>
+            </div>
+            <CardDescription>Suggestions automatiques basées sur votre CV et votre profil</CardDescription>
+          </div>
+          <Link to="/jobs">
+            <Button variant="outline" size="sm">
+              Voir toutes les offres
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {recommendedLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-28 w-full rounded-2xl" />
+                <Skeleton className="h-28 w-full rounded-2xl" />
+                <Skeleton className="h-28 w-full rounded-2xl" />
+              </div>
+            ) : (recommendedJobs.length > 0 ? (
+              <>
+                {recommendedJobs.map((offer, index) => {
+                  const location = [offer.location_city ?? "", offer.company ?? ""].filter(Boolean).join(" • ");
+                  const previewText = (offer.description || offer.requirements || "").replace(/\s+/g, " ").trim();
+                  const contractLabel = offer.contract_type ?? null;
+                  const tags = (offer.tags || []).filter(Boolean).slice(0, 3);
+                  const deadlineValue = offer.deadline ?? offer.expires_at ?? null;
+                  const isExpired = Boolean(deadlineValue && new Date(deadlineValue).getTime() < Date.now());
+
+                  return (
+                    <JobCard
+                      key={offer.id}
+                      job={{
+                        slug: offer.slug,
+                        title: offer.title,
+                        company: offer.company,
+                        application_email: offer.application_email ?? null,
+                        external_link: offer.external_link ?? null,
+                        salary: offer.salary ?? null,
+                      }}
+                      location={location}
+                      previewText={previewText}
+                      contractLabel={contractLabel}
+                      tags={tags}
+                      deadlineValue={deadlineValue}
+                      isExpired={isExpired}
+                      index={index}
+                      matchScore={typeof offer.score === 'number' ? offer.score : undefined}
+                      onApplyClick={() => navigate(`/candidate/jobs/${offer.slug}/apply`)}
+                    />
+                  );
+                })}
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="inline-flex items-center gap-2"
+                    disabled={recommendedPage <= 1}
+                    onClick={() => setRecommendedPage((prev) => Math.max(prev - 1, 1))}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Précédent
+                  </Button>
+                  <p className="text-sm text-slate-600">Page {recommendedPage}</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="inline-flex items-center gap-2"
+                    disabled={!hasMoreRecommendedJobs}
+                    onClick={() => setRecommendedPage((prev) => prev + 1)}
+                  >
+                    Suivant
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+                {profile?.id && !(candidateDocuments.cv?.url || (profile as any)?.cv_text) ? (
+                  <div>Vous n'avez pas encore téléversé de CV. Téléversez un CV pour obtenir des recommandations personnalisées.</div>
+                ) : (
+                  <div>Aucune recommandation disponible pour le moment.</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>

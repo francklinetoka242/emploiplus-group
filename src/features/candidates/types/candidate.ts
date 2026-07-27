@@ -12,6 +12,9 @@ export interface CandidateProfile {
   location_country: string | null;
   date_of_birth: string | null;
   status: string;
+  cv_text?: string | null;
+  embedding_vector?: string | null;
+  cv_url?: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -91,7 +91,7 @@ export function CandidateDocumentsPanel(props: CandidateDocumentsPanelProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-cyan-600" />
-            CV Principal
+            Mon CV
           </CardTitle>
           <CardDescription>Votre CV actuellement utilisé pour les candidatures</CardDescription>
         </CardHeader>

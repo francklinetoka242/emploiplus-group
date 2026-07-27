@@ -25,18 +25,34 @@ function getBucketCandidates(primaryBucket: string) {
   });
 }
 
-async function resolveStorageUrl(bucket: string, filename: string) {
+async function resolveStorageUrl(bucket: string, filename: string, forceSignedUrl = false) {
+  if (!forceSignedUrl) {
+    // Prefer a non-expiring public URL when available (public buckets).
+    try {
+      const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(filename);
+      if (publicData?.publicUrl) {
+        return publicData.publicUrl;
+      }
+    } catch (err) {
+      // ignore and fallback to signed URL
+    }
+  }
+
   const { data, error } = await supabase.storage.from(bucket).createSignedUrl(filename, 60 * 60);
 
   if (!error && data?.signedUrl) {
     return data.signedUrl;
   }
 
-  const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(filename);
-  return publicData.publicUrl || null;
+  return null;
 }
 
-export async function uploadFileToStorage(file: File, folder: string, bucketName = STORAGE_BUCKET) {
+export async function uploadFileToStorage(
+  file: File,
+  folder: string,
+  bucketName = STORAGE_BUCKET,
+  forceSignedUrl = false,
+) {
   const extension = file.name.split(".").pop() || "pdf";
   const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${extension}`;
 
@@ -59,9 +75,9 @@ export async function uploadFileToStorage(file: File, folder: string, bucketName
     });
 
     if (!error) {
-      const resolvedUrl = await resolveStorageUrl(bucket, filename);
+      const resolvedUrl = await resolveStorageUrl(bucket, filename, forceSignedUrl);
       if (resolvedUrl) {
-        return resolvedUrl;
+        return { url: resolvedUrl, path: filename };
       }
 
       throw new Error(

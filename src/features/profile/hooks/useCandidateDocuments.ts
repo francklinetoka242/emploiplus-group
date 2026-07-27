@@ -11,6 +11,12 @@ export function useCandidateDocuments(profileId?: string | null) {
   const [cv, setCv] = useState<CandidateCVState | null>(null);
   const [documents, setDocuments] = useState<CandidateDocument[]>([]);
   const [loading, setLoading] = useState(false);
+  const [hasRestoredDocuments, setHasRestoredDocuments] = useState(false);
+
+  // Reset the restore flag when the active profile changes
+  useEffect(() => {
+    setHasRestoredDocuments(false);
+  }, [profileId]);
 
   // Load documents from storage
   useEffect(() => {
@@ -19,24 +25,26 @@ export function useCandidateDocuments(profileId?: string | null) {
     try {
       setLoading(true);
       const state = loadCandidateDocuments(profileId);
+      console.debug("[useCandidateDocuments] loaded local documents", { profileId, state });
       setCv(state.cv ?? null);
       setDocuments(state.documents ?? []);
     } catch (error) {
       console.error("Unable to load candidate documents", error);
     } finally {
       setLoading(false);
+      setHasRestoredDocuments(true);
     }
   }, [profileId]);
 
-  // Save documents to storage whenever they change
+  // Save documents to storage whenever they change after restore completes
   useEffect(() => {
-    if (!profileId) return;
+    if (!profileId || !hasRestoredDocuments) return;
 
     saveCandidateDocuments(profileId, {
       cv,
       documents,
     });
-  }, [profileId, cv, documents]);
+  }, [profileId, cv, documents, hasRestoredDocuments]);
 
   const deleteDocument = useCallback((id: string) => {
     // If deleting CV

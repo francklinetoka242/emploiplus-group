@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { generateJobEmbeddingVector } from "@/services/aiMatchingService";
 import type { JobOffer, JobOfferFilters, JobOfferInsert, JobOfferUpdate } from "@/features/jobs/types";
 
 const DEFAULT_ORDER_BY = "publish_at" as const;
@@ -94,13 +95,29 @@ export const jobService = {
   },
 
   async createOffer(data: JobOfferInsert): Promise<JobOffer> {
+    const payloadBase: JobOfferInsert = {
+      ...data,
+      embedding_vector: generateJobEmbeddingVector({
+        title: data.title,
+        company: data.company ?? null,
+        description: data.description ?? null,
+        requirements: data.requirements ?? null,
+        location_city: data.location_city ?? null,
+        contract_type: data.contract_type ?? null,
+      }),
+    };
+
+    if (import.meta.env.DEV) {
+      console.log("[jobsApi] Embedding généré pour la création de l'offre");
+    }
+
     // Try insert and on unique conflict (409) retry with a modified slug suffix
     const maxAttempts = 3;
     let attempt = 0;
     let lastError: any = null;
 
     while (attempt < maxAttempts) {
-      const payload = attempt === 0 ? data : { ...data, slug: `${data.slug}-${Date.now().toString().slice(-6)}` };
+      const payload = attempt === 0 ? payloadBase : { ...payloadBase, slug: `${data.slug}-${Date.now().toString().slice(-6)}` };
       const { data: result, error } = await supabase.from("job_offers").insert([payload]).select(JOB_LIST_SELECT).single();
 
       if (!error) {
@@ -129,7 +146,46 @@ export const jobService = {
   },
 
   async updateOffer(id: string, data: JobOfferUpdate): Promise<JobOffer> {
-    const { data: result, error } = await supabase.from("job_offers").update(data).eq("id", id).select(JOB_LIST_SELECT).single();
+    const updateFields = ["title", "description", "requirements", "location_city", "company", "contract_type"] as const;
+    let updatePayload: JobOfferUpdate = data;
+
+    const shouldRecomputeEmbedding = updateFields.some((field) => Object.prototype.hasOwnProperty.call(data, field));
+
+    if (shouldRecomputeEmbedding) {
+      const { data: existing, error: existingError } = await supabase
+        .from("job_offers")
+        .select("title, company, description, requirements, location_city, contract_type")
+        .eq("id", id)
+        .single();
+
+      if (existingError) {
+        throw new Error(existingError.message || "Impossible de récupérer l'offre existante pour recalculer l'embedding.");
+      }
+
+      if (!existing) {
+        throw new Error("Offre introuvable pour le recalcul de l'embedding.");
+      }
+
+      const merged = {
+        title: data.title ?? existing.title,
+        company: data.company ?? existing.company,
+        description: data.description ?? existing.description,
+        requirements: data.requirements ?? existing.requirements,
+        location_city: data.location_city ?? existing.location_city,
+        contract_type: data.contract_type ?? existing.contract_type,
+      };
+
+      updatePayload = {
+        ...data,
+        embedding_vector: generateJobEmbeddingVector(merged),
+      };
+
+      if (import.meta.env.DEV) {
+        console.log("[jobsApi] Embedding généré pour la modification de l'offre");
+      }
+    }
+
+    const { data: result, error } = await supabase.from("job_offers").update(updatePayload).eq("id", id).select(JOB_LIST_SELECT).single();
 
     if (error) {
       if ((error as any).status === 409 || /duplicate key|unique constraint|already exists/i.test(error.message || "")) {

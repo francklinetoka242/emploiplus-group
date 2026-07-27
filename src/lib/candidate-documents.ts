@@ -33,13 +33,13 @@ export function getCandidateDocumentsList(state: CandidateDocumentsState): Candi
   return [
     {
       id: state.cv.id,
-      type: "other",
+      type: "cv",
       name: state.cv.name,
       displayName: state.cv.displayName || state.cv.name,
       date: state.cv.date,
       size: state.cv.size,
       url: state.cv.url,
-      customType: "CV Principal",
+      customType: "Mon CV",
     },
     ...documents,
   ];

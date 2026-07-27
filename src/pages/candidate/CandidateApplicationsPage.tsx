@@ -121,7 +121,13 @@ export function CandidateApplicationsPage() {
         <CardContent>
           {applications.length === 0 ? (
             <Alert>
-              <AlertDescription>Vous n'avez encore postulé à aucune offre.</AlertDescription>
+              <AlertDescription>
+                Fonctionnalité bientôt disponible
+                <br />
+                Cette section sera bientôt accessible depuis votre espace candidat.
+                <br />
+                Merci pour votre patience.
+              </AlertDescription>
             </Alert>
           ) : (
             <>

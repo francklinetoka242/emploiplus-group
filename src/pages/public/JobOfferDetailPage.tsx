@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -21,6 +21,10 @@ import { BASE_URL } from "@/features/seo";
 import { jobService } from "@/features/jobs/api";
 import type { JobOffer } from "@/features/jobs/types";
 import { ShareButtons } from "@/components/site/ShareButtons";
+import { analyzeCandidateForJob, type AiAnalysisResult } from "@/services/groqAnalysisService";
+import { useCandidate } from "@/hooks/useCandidate";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function NotFoundPage() {
   return (
@@ -50,9 +54,14 @@ function NotFoundPage() {
 export function JobOfferDetailPage() {
   const { t } = useI18n();
   const { slug } = useParams<{ slug: string }>();
+  const { profile } = useCandidate();
   const [job, setJob] = React.useState<JobOffer | null>(null);
   const [loading, setLoading] = React.useState(true);
-  const [isApplyOpen, setIsApplyOpen] = React.useState(false);
+  const navigate = useNavigate();
+  const [analysis, setAnalysis] = React.useState<AiAnalysisResult | null>(null);
+  const [analysisLoading, setAnalysisLoading] = React.useState(false);
+  const [analysisError, setAnalysisError] = React.useState<string | null>(null);
+  const [copiedLetter, setCopiedLetter] = React.useState(false);
 
   React.useEffect(() => {
     if (!slug) {
@@ -241,8 +250,42 @@ export function JobOfferDetailPage() {
       : null,
   ].filter(Boolean) as Array<{ label: string; href: string; icon: typeof Send }>;
 
+  // Navigate to the candidate apply flow (same behavior as the jobs listing)
   const handleApplyClick = () => {
-    setIsApplyOpen((value) => !value);
+    if (job?.slug) navigate(`/candidate/jobs/${job.slug}/apply`);
+  };
+
+  const handleAnalyzeClick = async () => {
+    if (!job?.id || !profile?.id) {
+      setAnalysisError("Vous devez être connecté pour lancer l’analyse IA.");
+      return;
+    }
+
+    setAnalysisLoading(true);
+    setAnalysisError(null);
+    setCopiedLetter(false);
+
+    try {
+      const result = await analyzeCandidateForJob(profile.id, job.id);
+      setAnalysis(result);
+    } catch (error) {
+      setAnalysisError(error instanceof Error ? error.message : "Une erreur est survenue pendant l’analyse.");
+      setAnalysis(null);
+    } finally {
+      setAnalysisLoading(false);
+    }
+  };
+
+  const handleCopyLetter = async () => {
+    if (!analysis?.cover_letter_draft) return;
+
+    try {
+      await navigator.clipboard.writeText(analysis.cover_letter_draft);
+      setCopiedLetter(true);
+      window.setTimeout(() => setCopiedLetter(false), 1800);
+    } catch {
+      setAnalysisError("Impossible de copier la lettre automatiquement.");
+    }
   };
 
   if (loading) {
@@ -453,7 +496,7 @@ export function JobOfferDetailPage() {
               <p className="mt-2 text-sm leading-7 text-muted-foreground">{applyDescription}</p>
               <div className="mt-6 space-y-3">
                 {applyOptions.length > 0 ? (
-                  <div className="relative">
+                  <div>
                     <button
                       type="button"
                       onClick={handleApplyClick}
@@ -462,25 +505,6 @@ export function JobOfferDetailPage() {
                       <Send className="size-4" />
                       {applyTitle}
                     </button>
-                    {isApplyOpen ? (
-                      <div className="mt-2 rounded-2xl border border-border bg-card p-2 shadow-lg">
-                        {applyOptions.map((option) => {
-                          const Icon = option.icon;
-                          return (
-                            <a
-                              key={option.label}
-                              href={option.href}
-                              target={option.href.startsWith("http") ? "_blank" : undefined}
-                              rel={option.href.startsWith("http") ? "noreferrer" : undefined}
-                              className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-foreground transition hover:bg-background/80"
-                            >
-                              <Icon className="size-4 text-brand" />
-                              <span>{option.label}</span>
-                            </a>
-                          );
-                        })}
-                      </div>
-                    ) : null}
                   </div>
                 ) : null}
                 {!job.application_email && !job.application_whatsapp && !job.external_link ? (
@@ -490,6 +514,135 @@ export function JobOfferDetailPage() {
                 ) : null}
               </div>
             </div>
+
+            {/* IA Evaluation: show disabled state for anonymous visitors */}
+            {!profile?.id ? (
+              <div className="rounded-[28px] border border-border/70 bg-background/60 p-7 shadow-soft text-center text-muted-foreground">
+                <div className="flex items-center gap-3 justify-center">
+                  <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
+                    <Sparkles className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-xl font-semibold text-muted-foreground">
+                      Évaluation IA de votre candidature
+                    </h3>
+                    <p className="text-sm mt-2 text-muted-foreground">
+                      Connectez-vous pour utiliser cette fonctionnalité gratuitement
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-6 flex items-center justify-center gap-3">
+                  <Link
+                    to="/candidate/login"
+                    className="inline-flex items-center justify-center rounded-2xl border border-border px-4 py-3 text-sm font-semibold text-foreground hover:bg-primary/5"
+                  >
+                    Se connecter
+                  </Link>
+                  <Link
+                    to="/candidate/signup"
+                    className="inline-flex items-center justify-center rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90"
+                  >
+                    Créer un compte
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-[28px] border border-border/70 bg-card p-7 shadow-soft">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
+                    <Sparkles className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-xl font-semibold text-foreground">
+                      Évaluation IA de votre candidature
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Recevez une lecture instantanée de votre compatibilité avec cette offre.
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  onClick={handleAnalyzeClick}
+                  disabled={analysisLoading || !profile?.id}
+                  className="mt-5 w-full rounded-2xl bg-brand text-brand-foreground hover:bg-brand/90"
+                >
+                  {analysisLoading ? "Analyse en cours…" : "Lancer l’analyse de ma compatibilité"}
+                </Button>
+
+                {analysisLoading ? (
+                  <div className="mt-5 space-y-3">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-24 w-full rounded-2xl" />
+                    <Skeleton className="h-24 w-full rounded-2xl" />
+                  </div>
+                ) : null}
+
+                {analysisError ? (
+                  <div className="mt-5 rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-700">
+                    {analysisError}
+                  </div>
+                ) : null}
+
+                {analysis ? (
+                  <div className="mt-5 space-y-4">
+                    <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-foreground">Score de compatibilité</span>
+                        <span className="text-2xl font-bold text-brand">{analysis.match_score}%</span>
+                      </div>
+                      <div className="mt-3 h-2 rounded-full bg-border">
+                        <div
+                          className="h-2 rounded-full bg-gradient-to-r from-emerald-500 to-brand"
+                          style={{ width: `${Math.max(4, Math.min(100, analysis.match_score))}%` }}
+                        />
+                      </div>
+                      {analysis.experienceVerified ? (
+                        <p className="mt-3 text-sm text-muted-foreground">{analysis.experienceVerified}</p>
+                      ) : null}
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4">
+                        <h4 className="text-sm font-semibold text-emerald-700">Points forts</h4>
+                        <ul className="mt-3 space-y-2 text-sm text-emerald-800">
+                          {analysis.strengths.map((item) => (
+                            <li key={item} className="flex gap-2">
+                              <span className="mt-2 size-2 rounded-full bg-emerald-500" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="rounded-2xl border border-orange-200 bg-orange-50/70 p-4">
+                        <h4 className="text-sm font-semibold text-orange-700">Axes d’amélioration</h4>
+                        <ul className="mt-3 space-y-2 text-sm text-orange-800">
+                          {analysis.improvements.map((item) => (
+                            <li key={item} className="flex gap-2">
+                              <span className="mt-2 size-2 rounded-full bg-orange-500" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <h4 className="text-sm font-semibold text-foreground">Brouillon de lettre de motivation</h4>
+                        <Button type="button" variant="outline" size="sm" onClick={handleCopyLetter}>
+                          {copiedLetter ? "Copié !" : "Copier la lettre"}
+                        </Button>
+                      </div>
+                      <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground">
+                        {analysis.cover_letter_draft}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            )}
 
             <div className="rounded-[28px] border border-border/70 bg-card p-7 shadow-soft">
               <h3 className="font-display text-xl font-semibold text-foreground">

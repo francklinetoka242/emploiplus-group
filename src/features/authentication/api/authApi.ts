@@ -3,7 +3,7 @@ import type { User } from "@supabase/supabase-js";
 import { clearAuthStorage } from "@/features/authentication/utils/authStorage";
 
 function assertEmailConfirmed(user: User | null | undefined) {
-  if (user?.email_confirmed_at) {
+  if (user?.email_confirmed_at !== null) {
     return;
   }
 
@@ -150,7 +150,15 @@ export async function logoutCandidate() {
 export async function getCandidateSession() {
   try {
     const { data, error } = await supabase.auth.getSession();
-    if (error) throw error;
+    
+    // Si erreur réseau ou autre erreur temporaire, ne pas clearAuthStorage
+    if (error) {
+      // Ne clearAuthStorage que pour les erreurs non-réseau
+      if (error.message && !error.message.includes("fetch") && !error.message.includes("network")) {
+        clearAuthStorage();
+      }
+      throw error;
+    }
 
     const session = data.session ?? null;
     if (!session) {
@@ -159,15 +167,20 @@ export async function getCandidateSession() {
     }
 
     const user = session.user;
-    if (!user.email_confirmed_at) {
-      await supabase.auth.signOut();
-      clearAuthStorage();
+    if (user.email_confirmed_at === null) {
+      // Ne pas vider le storage ici - la session est valide, juste l'email non confirmé
+      // clearAuthStorage();
+      // Retourner null pour forcer la redirection, mais le utilisateur peut toujours se reconnecter
       return null;
     }
 
     return session;
   } catch (error) {
-    clearAuthStorage();
+    // Ne clearAuthStorage que si c'est une vraie erreur d'authentification
+    if (error instanceof Error && error.message && 
+        (error.message.includes("Invalid") || error.message.includes("Unauthorized"))) {
+      clearAuthStorage();
+    }
     throw error;
   }
 }

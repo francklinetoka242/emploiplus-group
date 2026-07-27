@@ -23,7 +23,7 @@ export function JobsPageSkeleton() {
           </div>
 
           <div className="grid gap-4">
-            {Array.from({ length: 3 }).map((index) => (
+            {Array.from({ length: 3 }).map((_, index) => (
               <JobCardSkeleton key={index} />
             ))}
           </div>

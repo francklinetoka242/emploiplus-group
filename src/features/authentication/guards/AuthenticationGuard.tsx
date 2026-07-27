@@ -13,13 +13,19 @@ export function AuthenticationGuard({
   fallbackPath = "/candidate/login",
   loadingSkeleton,
 }: AuthenticationGuardProps) {
-  const { session, isLoading } = useAuth();
+  const { session, isLoading, error } = useAuth();
 
+  // Afficher le skeleton pendant le chargement
   if (isLoading) {
     return <>{loadingSkeleton ?? <DashboardLayoutSkeleton />}</>;
   }
 
+  // Si pas de session, rediriger vers la page de login
   if (!session) {
+    // Si erreur spécifique, on peut la logger mais on redirige quand même
+    if (error) {
+      console.debug("[AuthenticationGuard] Authentication error:", error);
+    }
     return <Navigate to={fallbackPath} replace />;
   }
 

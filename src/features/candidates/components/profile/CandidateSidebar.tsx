@@ -8,7 +8,7 @@ const links = [
   { to: "/candidate/education", label: "Formations", icon: BookOpen },
   { to: "/candidate/skills", label: "Compétences", icon: Sparkles },
   { to: "/candidate/languages", label: "Langues", icon: Languages },
-  { to: "/candidate/cv", label: "CV & documents", icon: FileText },
+  { to: "/candidate/profile?tab=documents", label: "", icon: FileText, title: "Mes documents" },
   { to: "/candidate/settings", label: "Paramètres", icon: Settings },
 ];
 
@@ -19,10 +19,11 @@ export function CandidateSidebar() {
         <h2 className="text-lg font-semibold text-slate-900">Mon espace</h2>
       </div>
       <nav className="flex-1 space-y-1 px-3">
-        {links.map(({ to, label, icon: Icon }) => (
+        {links.map(({ to, label, icon: Icon, title }) => (
           <NavLink
             key={to}
             to={to}
+            title={title}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
                 isActive ? "bg-brand text-white" : "text-slate-600 hover:bg-white hover:text-slate-900"
