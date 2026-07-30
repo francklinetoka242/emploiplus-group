@@ -401,24 +401,11 @@ export function ServicesPage() {
                 <div className="flex flex-wrap gap-3">
                   <Button
                     asChild
-                    size="default"
-                    className="bg-brand text-brand-foreground shadow-lg shadow-brand/10 transition hover:-translate-y-0.5 hover:bg-brand/90"
-                  >
-                    <Link to="/contact?subject=Service%20Candidat">Demander un service</Link>
-                  </Button>
-                  <Button
-                    asChild
                     variant="outline"
                     size="default"
                     className="border-secondary/30 bg-white/90 text-secondary transition hover:-translate-y-0.5 hover:bg-secondary/10"
                   >
-                    <a
-                      href="https://wa.me/229XXXXXXXXX?text=Bonjour%2C%20je%20souhaite%20en%20savoir%20plus%20sur%20les%20services%20candidats"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      En savoir plus
-                    </a>
+                    <Link to="/contact">En savoir plus</Link>
                   </Button>
                 </div>
               </div>
