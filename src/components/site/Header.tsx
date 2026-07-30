@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-const AVAILABLE_LOCALES: Locale[] = ["fr", "en", "ln", "es", "sw", "pt", "zh"];
+const AVAILABLE_LOCALES: Locale[] = ["fr", "en", "ln"];
 
 export function SiteHeader() {
   const { t, locale, setLocale } = useI18n();
@@ -139,10 +139,19 @@ export function SiteHeader() {
             ))}
             {!loading && !profile && (
               <div className="mt-2 flex flex-col gap-2">
-                <Button asChild variant="outline" className="justify-center" onClick={() => setOpen(false)}>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="justify-center"
+                  onClick={() => setOpen(false)}
+                >
                   <Link to="/candidate/login">Se connecter</Link>
                 </Button>
-                <Button asChild className="justify-center bg-brand hover:bg-brand/90 text-brand-foreground" onClick={() => setOpen(false)}>
+                <Button
+                  asChild
+                  className="justify-center bg-brand hover:bg-brand/90 text-brand-foreground"
+                  onClick={() => setOpen(false)}
+                >
                   <Link to="/candidate/signup">Créer un compte</Link>
                 </Button>
               </div>

@@ -1,4 +1,4 @@
-export type Locale = "fr" | "en" | "ln" | "es" | "sw" | "pt" | "zh";
+export type Locale = "fr" | "en" | "ln";
 
 type Dict = Record<string, string>;
 
@@ -6,10 +6,6 @@ export const FR: Dict = {
   "lang.fr": "Fr",
   "lang.en": "En",
   "lang.ln": "Ln",
-  "lang.es": "Es",
-  "lang.sw": "Sw",
-  "lang.pt": "Pt",
-  "lang.zh": "Zh",
   "nav.home": "Accueil",
   "nav.services": "Services",
   "nav.jobs": "Emplois",
@@ -41,13 +37,15 @@ export const FR: Dict = {
   "auth.placeholder.password": "Votre mot de passe",
   "auth.submit.loading": "Connexion en cours…",
   "auth.successRedirect": "Connexion réussie. Redirection en cours…",
-  "auth.error.unableToSignIn": "Impossible de se connecter. Vérifiez votre email et votre mot de passe.",
+  "auth.error.unableToSignIn":
+    "Impossible de se connecter. Vérifiez votre email et votre mot de passe.",
   "auth.error.emailRequired": "Veuillez saisir votre adresse email.",
   "auth.error.invalidEmail": "Veuillez saisir une adresse email valide.",
   "auth.error.passwordRequired": "Veuillez saisir votre mot de passe.",
   "auth.error.notAdmin": "Votre compte n'a pas les droits administrateur.",
   "auth.error.rolesLoadFailed": "Impossible de vérifier vos droits administratifs.",
-  "auth.error.unauthorized": "Accès refusé : vous n'avez pas les permissions nécessaires pour accéder à cette page.",
+  "auth.error.unauthorized":
+    "Accès refusé : vous n'avez pas les permissions nécessaires pour accéder à cette page.",
   "common.name": "Nom",
   "common.phone": "Téléphone",
   "common.subject": "Sujet",
@@ -76,16 +74,21 @@ export const FR: Dict = {
   "home.cta.subtitle": "Contactez-nous pour votre projet RH, digital ou média.",
   "home.cta.button": "Contactez-nous",
   "about.title": "À propos d'EmploiPlus Group",
-  "about.subtitle": "Nous accompagnons les entreprises et les talents dans leur transformation, leur recrutement et leur développement numérique.",
+  "about.subtitle":
+    "Nous accompagnons les entreprises et les talents dans leur transformation, leur recrutement et leur développement numérique.",
   "about.mission.title": "Notre mission",
-  "about.mission.description": "Nous connectons les entreprises aux meilleurs talents, accompagnons les organisations dans leur transformation digitale et favorisons des opportunités d'emploi durables.",
+  "about.mission.description":
+    "Nous connectons les entreprises aux meilleurs talents, accompagnons les organisations dans leur transformation digitale et favorisons des opportunités d'emploi durables.",
   "about.values.title": "Nos valeurs",
   "about.values.item1.title": "Engagement",
-  "about.values.item1.description": "Nous mettons tout en œuvre pour répondre aux besoins réels des entreprises et des candidats avec sérieux et professionnalisme.",
+  "about.values.item1.description":
+    "Nous mettons tout en œuvre pour répondre aux besoins réels des entreprises et des candidats avec sérieux et professionnalisme.",
   "about.values.item2.title": "Innovation",
-  "about.values.item2.description": "Nous accompagnons la transformation digitale avec des solutions modernes, efficaces et pensées pour le terrain.",
+  "about.values.item2.description":
+    "Nous accompagnons la transformation digitale avec des solutions modernes, efficaces et pensées pour le terrain.",
   "about.values.item3.title": "Impact",
-  "about.values.item3.description": "Chaque action que nous menons vise à créer un impact concret sur la performance, l'emploi et la croissance des talents.",
+  "about.values.item3.description":
+    "Chaque action que nous menons vise à créer un impact concret sur la performance, l'emploi et la croissance des talents.",
   "about.whyChooseUs.title": "Pourquoi nous choisir ?",
   "about.stats.jobs": "Offres diffusées",
   "about.stats.companies": "Entreprises partenaires",
@@ -229,21 +232,30 @@ export const FR: Dict = {
   "contact.social.linkedin": "LinkedIn",
   "contact.social.facebook": "Facebook",
   "faq.title": "Foire aux questions",
-  "faq.subtitle": "Réponses rapides aux questions les plus fréquentes des candidats et des entreprises.",
+  "faq.subtitle":
+    "Réponses rapides aux questions les plus fréquentes des candidats et des entreprises.",
   "faq.services.title": "Quels services propose EmploiPlus Group ?",
-  "faq.services.answer": "EmploiPlus Group propose des services de diffusion d’offres d’emploi, de recrutement, de gestion RH, de transformation digitale, de conseil et de formation pour les entreprises et les candidats en Afrique centrale.",
+  "faq.services.answer":
+    "EmploiPlus Group propose des services de diffusion d’offres d’emploi, de recrutement, de gestion RH, de transformation digitale, de conseil et de formation pour les entreprises et les candidats en Afrique centrale.",
   "faq.apply.title": "Comment postuler à un emploi sur le site ?",
-  "faq.apply.answer": "Pour postuler à une offre, rendez-vous sur la page Offre d'emploi, cliquez sur le bouton de candidature et utilisez les options proposées : email, WhatsApp ou lien externe selon l'annonce. Vous pouvez aussi créer un compte candidat pour suivre plus facilement vos candidatures.",
+  "faq.apply.answer":
+    "Pour postuler à une offre, rendez-vous sur la page Offre d'emploi, cliquez sur le bouton de candidature et utilisez les options proposées : email, WhatsApp ou lien externe selon l'annonce. Vous pouvez aussi créer un compte candidat pour suivre plus facilement vos candidatures.",
   "faq.createAccount.title": "Comment créer un compte candidat ?",
-  "faq.createAccount.answer": "Cliquez sur Créer un compte dans l’en-tête, remplissez le formulaire d’inscription, confirmez votre adresse email et connectez-vous pour accéder à votre espace candidat.",
+  "faq.createAccount.answer":
+    "Cliquez sur Créer un compte dans l’en-tête, remplissez le formulaire d’inscription, confirmez votre adresse email et connectez-vous pour accéder à votre espace candidat.",
   "faq.forgotPassword.title": "Mot de passe oublié, comment faire ?",
-  "faq.forgotPassword.answer": "Si vous avez oublié votre mot de passe, utilisez la page de réinitialisation depuis la connexion, saisissez votre email et suivez les instructions reçues par email pour définir un nouveau mot de passe.",
+  "faq.forgotPassword.answer":
+    "Si vous avez oublié votre mot de passe, utilisez la page de réinitialisation depuis la connexion, saisissez votre email et suivez les instructions reçues par email pour définir un nouveau mot de passe.",
   "faq.more.title": "Autres questions fréquentes",
-  "faq.more.answer1": "Vous pouvez consulter nos services, postes ouverts et actualités depuis le menu principal, puis nous contacter directement si vous avez besoin d’aide.",
-  "faq.more.answer2": "Les offres sont publiées régulièrement, consultez la page Emplois pour voir les dernières annonces et utiliser les filtres de recherche.",
-  "faq.more.answer3": "Si vous souhaitez une assistance personnalisée, notre équipe est disponible via le formulaire de contact ou WhatsApp.",
+  "faq.more.answer1":
+    "Vous pouvez consulter nos services, postes ouverts et actualités depuis le menu principal, puis nous contacter directement si vous avez besoin d’aide.",
+  "faq.more.answer2":
+    "Les offres sont publiées régulièrement, consultez la page Emplois pour voir les dernières annonces et utiliser les filtres de recherche.",
+  "faq.more.answer3":
+    "Si vous souhaitez une assistance personnalisée, notre équipe est disponible via le formulaire de contact ou WhatsApp.",
   "faq.stillNeedHelp.title": "Besoin d’aide supplémentaire ?",
-  "faq.stillNeedHelp.description": "Notre équipe est là pour répondre à toutes vos questions. Contactez-nous si vous souhaitez une assistance personnalisée.",
+  "faq.stillNeedHelp.description":
+    "Notre équipe est là pour répondre à toutes vos questions. Contactez-nous si vous souhaitez une assistance personnalisée.",
   "faq.stillNeedHelp.button": "Nous contacter",
   "footer.links.services": "Services",
   "footer.links.company": "Company",
@@ -322,10 +334,12 @@ export const FR: Dict = {
   "admin.sidebar.expand": "Développer le menu",
   "admin.sidebar.collapse": "Réduire le menu",
   "admin.page.title": "Administration - Tableau de bord",
-  "admin.page.description": "Gérez votre plateforme EmploiPlus depuis le tableau de bord d'administration.",
+  "admin.page.description":
+    "Gérez votre plateforme EmploiPlus depuis le tableau de bord d'administration.",
   "admin.page.loading": "Chargement du tableau de bord…",
   "admin.page.protectedTitle": "Accès administrateur requis",
-  "admin.page.protectedDescription": "Vous devez être connecté en tant qu'administrateur pour accéder à cette page.",
+  "admin.page.protectedDescription":
+    "Vous devez être connecté en tant qu'administrateur pour accéder à cette page.",
   "admin.page.loginButton": "Se connecter",
   "admin.dashboard.metric.featuredPosts": "Articles à la une",
   "admin.dashboard.action.createJob": "Créer une offre",
@@ -335,11 +349,13 @@ export const FR: Dict = {
   "admin.dashboard.action.viewTeam": "Voir l'équipe",
   "admin.dashboard.blog.title": "Blog & Actualités",
   "admin.dashboard.blog.subtitle": "Contenu et articles",
-  "admin.dashboard.blog.description": "Publiez du contenu pertinent et gardez votre audience engagée.",
+  "admin.dashboard.blog.description":
+    "Publiez du contenu pertinent et gardez votre audience engagée.",
   "admin.dashboard.blog.featuredCount": "Articles à la une",
   "admin.dashboard.admin.title": "Gestion administrative",
   "admin.dashboard.admin.subtitle": "Comptes administrateurs",
-  "admin.dashboard.admin.description": "Gérez les administrateurs de la plateforme et leurs droits d'accès.",
+  "admin.dashboard.admin.description":
+    "Gérez les administrateurs de la plateforme et leurs droits d'accès.",
   "admin.dashboard.admin.active": "Actifs",
   "admin.dashboard.admin.blocked": "Bloqués",
   "admin.dashboard.admin.roles": "Répartition des rôles",
@@ -365,7 +381,8 @@ export const FR: Dict = {
   "admin.jobs.create.field.publishAt": "Date de publication",
   "admin.jobs.create.field.description": "Description du poste",
   "admin.jobs.create.field.requirements": "Profil recherché",
-  "admin.jobs.create.field.requirementsPlaceholder": "Décrivez le profil recherché pour cette offre",
+  "admin.jobs.create.field.requirementsPlaceholder":
+    "Décrivez le profil recherché pour cette offre",
   "admin.jobs.create.field.companyLogo": "Logo de l'entreprise",
   "admin.jobs.create.field.coverImage": "Image de couverture",
   "admin.jobs.field.title": "Intitulé du poste",
@@ -387,7 +404,8 @@ export const FR: Dict = {
   "admin.jobs.field.salary": "Salaire",
   "admin.jobs.field.salaryPlaceholder": "Ex: 800 000 FCFA",
   "admin.jobs.field.description": "Description du poste",
-  "admin.jobs.field.descriptionPlaceholder": "Décrivez les missions, le profil recherché et les avantages",
+  "admin.jobs.field.descriptionPlaceholder":
+    "Décrivez les missions, le profil recherché et les avantages",
   "admin.jobs.field.seoDescription": "Description SEO",
   "admin.jobs.field.seoDescriptionPlaceholder": "Résumé court optimisé pour le référencement",
   "admin.jobs.field.keywords": "Mots-clés",
@@ -445,4 +463,42 @@ export const FR: Dict = {
   "admin.candidates.status.inactive": "Inactif",
   "admin.candidates.status.archived": "Archivé",
   "common.cancel": "Annuler",
+};
+
+export const EN: Dict = {
+  ...FR,
+  "lang.fr": "Fr",
+  "lang.en": "En",
+  "lang.ln": "Ln",
+  "nav.home": "Home",
+  "nav.services": "Services",
+  "nav.jobs": "Jobs",
+  "nav.blog": "Blog",
+  "nav.faq": "FAQ",
+  "nav.about": "About",
+  "nav.contact": "Contact",
+  "nav.admin": "Admin area",
+  "common.signIn": "Sign in",
+  "common.signOut": "Sign out",
+  "cta.viewJobs": "View jobs",
+  "cta.contactUs": "Contact us",
+};
+
+export const LN: Dict = {
+  ...FR,
+  "lang.fr": "Fr",
+  "lang.en": "En",
+  "lang.ln": "Ln",
+  "nav.home": "Accueil",
+  "nav.services": "Misala",
+  "nav.jobs": "Mikanda ya mosala",
+  "nav.blog": "Blog",
+  "nav.faq": "FAQ",
+  "nav.about": "Na biso",
+  "nav.contact": "Kontak",
+  "nav.admin": "Esika ya admin",
+  "common.signIn": "Kota",
+  "common.signOut": "Zonga",
+  "cta.viewJobs": "Tala misala",
+  "cta.contactUs": "Túnga biso",
 };

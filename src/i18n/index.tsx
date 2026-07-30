@@ -1,16 +1,12 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
-import { FR, type Locale } from "./translations";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { EN, FR, LN, type Locale } from "./translations";
 
 type Translations = Record<Locale, Record<string, string>>;
 
 const DICTIONARIES: Translations = {
   fr: FR,
-  en: FR,
-  ln: FR,
-  es: FR,
-  sw: FR,
-  pt: FR,
-  zh: FR,
+  en: EN,
+  ln: LN,
 };
 
 const I18nContext = createContext({
@@ -20,12 +16,26 @@ const I18nContext = createContext({
 });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>("fr");
+  const [locale, setLocale] = useState<Locale>(() => {
+    if (typeof window === "undefined") {
+      return "fr";
+    }
+
+    const storedLocale = window.localStorage.getItem("app-locale");
+    return storedLocale === "en" || storedLocale === "ln" ? (storedLocale as Locale) : "fr";
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("app-locale", locale);
+    }
+  }, [locale]);
+
   const value = useMemo(
     () => ({
       locale,
       setLocale,
-      t: (key: string) => DICTIONARIES[locale][key] || key,
+      t: (key: string) => DICTIONARIES[locale][key] || DICTIONARIES.fr[key] || key,
     }),
     [locale],
   );
