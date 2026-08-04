@@ -1,5 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import {
+  BarChart3,
+  BriefcaseBusiness,
+  FolderKanban,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 
@@ -32,8 +39,11 @@ export default function SolutionsEntreprisePage() {
 
             <div className="mt-10 space-y-8">
               <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-2 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
-                <p className="text-sm uppercase tracking-[0.25em] text-secondary/70">Vous avez un besoin</p>
-                <h2 className="mt-4 text-2xl font-semibold text-foreground">Externalisation de Processus Métier (BPO - Business Process Outsourcing)</h2>
+                <p className="text-sm uppercase tracking-[0.25em] text-brand">Vous avez un besoin</p>
+                <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
+                  <BriefcaseBusiness className="h-6 w-6 shrink-0 text-brand" aria-hidden="true" />
+                  Externalisation de Processus Métier (BPO - Business Process Outsourcing)
+                </h2>
                 <p className="mt-3 text-muted-foreground">
                   Libérez vos équipes : confiez-nous l'exécution de vos processus opérationnels.
                 </p>
@@ -43,8 +53,11 @@ export default function SolutionsEntreprisePage() {
               </article>
 
               <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-3 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
-                <p className="text-sm uppercase tracking-[0.25em] text-secondary/70">Nous analysons</p>
-                <h2 className="mt-4 text-2xl font-semibold text-foreground">Délégation de Personnel & Mise à Disposition</h2>
+                <p className="text-sm uppercase tracking-[0.25em] text-brand">Nous analysons</p>
+                <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
+                  <Users className="h-6 w-6 shrink-0 text-brand" aria-hidden="true" />
+                  Délégation de Personnel & Mise à Disposition
+                </h2>
                 <p className="mt-3 text-muted-foreground">
                   Renforcez vos effectifs sur mesure sans alourdir votre masse salariale.
                 </p>
@@ -54,8 +67,11 @@ export default function SolutionsEntreprisePage() {
               </article>
 
               <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-4 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
-                <p className="text-sm uppercase tracking-[0.25em] text-secondary/70">Nous déployons</p>
-                <h2 className="mt-4 text-2xl font-semibold text-foreground">Gestion de Projets & Équipes Déléguées</h2>
+                <p className="text-sm uppercase tracking-[0.25em] text-brand">Nous déployons</p>
+                <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
+                  <FolderKanban className="h-6 w-6 shrink-0 text-brand" aria-hidden="true" />
+                  Gestion de Projets & Équipes Déléguées
+                </h2>
                 <p className="mt-3 text-muted-foreground">
                   Une exécution clé en main pour vos projets stratégiques.
                 </p>
@@ -65,8 +81,11 @@ export default function SolutionsEntreprisePage() {
               </article>
 
               <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-5 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
-                <p className="text-sm uppercase tracking-[0.25em] text-secondary/70">Nous pilotons</p>
-                <h2 className="mt-4 text-2xl font-semibold text-foreground">Suivi opérationnel et amélioration continue</h2>
+                <p className="text-sm uppercase tracking-[0.25em] text-brand">Nous pilotons</p>
+                <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
+                  <BarChart3 className="h-6 w-6 shrink-0 text-brand" aria-hidden="true" />
+                  Suivi opérationnel et amélioration continue
+                </h2>
                 <p className="mt-3 text-muted-foreground">
                   Un accompagnement permanent pour optimiser vos flux et garantir la performance de chaque mission.
                 </p>
@@ -76,8 +95,11 @@ export default function SolutionsEntreprisePage() {
               </article>
 
               <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-6 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
-                <p className="text-sm uppercase tracking-[0.25em] text-secondary/70">Vous gagnez du temps</p>
-                <h2 className="mt-4 text-2xl font-semibold text-foreground">Une organisation plus légère, plus sûre, plus réactive</h2>
+                <p className="text-sm uppercase tracking-[0.25em] text-brand">Vous gagnez du temps</p>
+                <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
+                  <ShieldCheck className="h-6 w-6 shrink-0 text-brand" aria-hidden="true" />
+                  Une organisation plus légère, plus sûre, plus réactive
+                </h2>
                 <p className="mt-3 text-muted-foreground">
                   Vos équipes peuvent se concentrer sur l’essentiel pendant qu’EmploiPlus coordonne les opérations.
                 </p>

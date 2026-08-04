@@ -5,14 +5,11 @@ import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { SERVICES } from "@/constants/services";
-import hubImage from "@/assets/services/hub-emploi.svg";
-import rhImage from "@/assets/services/rh-gestion.svg";
-import conseilImage from "@/assets/services/conseil-training.svg";
-import serviceImage from "@/assets/services/service-opérationnel.svg";
+import { Briefcase, Building2, GraduationCap, BriefcaseBusiness } from "lucide-react";
 
 const SERVICE_DETAILS = {
   "hub-emploi-recrutement": {
-    image: hubImage,
+    icon: Briefcase,
     sections: [
       {
         id: "overview",
@@ -40,7 +37,7 @@ const SERVICE_DETAILS = {
     ],
   },
   "mise-disposition-rh": {
-    image: rhImage,
+    icon: Building2,
     sections: [
       {
         id: "overview",
@@ -67,7 +64,7 @@ const SERVICE_DETAILS = {
     ],
   },
   "conseil-formation-transformation": {
-    image: conseilImage,
+    icon: GraduationCap,
     sections: [
       {
         id: "overview",
@@ -148,7 +145,7 @@ const SERVICE_DETAILS = {
     ],
   },
   "prestations-operationnelles": {
-    image: serviceImage,
+    icon: BriefcaseBusiness,
     sections: [
       {
         id: "overview",
@@ -242,11 +239,12 @@ export function ServiceDetailPage() {
               </p>
             </div>
             <div className="rounded-3xl border border-border bg-card overflow-hidden">
-              <img
-                src={serviceDetail.image}
-                alt={t(service.titleKey)}
-                className="w-full h-64 object-cover"
-              />
+              <div className="flex h-64 items-center justify-center bg-gradient-to-br from-brand/20 to-muted/20 p-8">
+                {React.createElement(serviceDetail.icon, {
+                  className: "h-24 w-24 text-brand",
+                  strokeWidth: 1.5,
+                })}
+              </div>
               <div className="p-8">
                 {serviceDetail.sections.map((section) => (
                   <div key={section.id} id={section.id} className="scroll-mt-24">

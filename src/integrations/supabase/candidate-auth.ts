@@ -122,8 +122,6 @@ async function performCandidateSignup(params: CandidateSignupFlowParams): Promis
     }
   }
 
-  clearAuthStorage();
-
   return {
     user,
     profile,

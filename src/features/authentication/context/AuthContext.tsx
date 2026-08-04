@@ -169,12 +169,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sessionInitTimeoutRef.current = null;
     }, 3000);
 
-    void refreshSession().finally(() => {
-      if (sessionInitTimeoutRef.current !== null) {
-        clearTimeout(sessionInitTimeoutRef.current);
-        sessionInitTimeoutRef.current = null;
-      }
-    });
+    void refreshSession()
+      .catch((error) => {
+        console.error("[AuthContext] refreshSession failed:", error);
+      })
+      .finally(() => {
+        if (sessionInitTimeoutRef.current !== null) {
+          clearTimeout(sessionInitTimeoutRef.current);
+          sessionInitTimeoutRef.current = null;
+        }
+      });
 
     return () => {
       if (sessionInitTimeoutRef.current !== null) {
