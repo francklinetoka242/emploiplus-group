@@ -35,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hasInitializedSessionRef = useRef(false);
+  const sessionInitTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
   const user = session?.user ?? null;
   const authMetadata = useMemo(() => getAuthMetadataFromSession(session), [session]);
@@ -163,7 +164,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     hasInitializedSessionRef.current = true;
 
-    void refreshSession();
+    sessionInitTimeoutRef.current = window.setTimeout(() => {
+      setIsLoading(false);
+      sessionInitTimeoutRef.current = null;
+    }, 3000);
+
+    void refreshSession().finally(() => {
+      if (sessionInitTimeoutRef.current !== null) {
+        clearTimeout(sessionInitTimeoutRef.current);
+        sessionInitTimeoutRef.current = null;
+      }
+    });
+
+    return () => {
+      if (sessionInitTimeoutRef.current !== null) {
+        clearTimeout(sessionInitTimeoutRef.current);
+        sessionInitTimeoutRef.current = null;
+      }
+    };
   }, [refreshSession]);
 
   useEffect(() => {

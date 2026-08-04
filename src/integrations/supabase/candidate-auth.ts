@@ -213,7 +213,6 @@ export class CandidateAuthService {
       return session;
     } catch (error) {
       console.error("Get session error:", error);
-      clearAuthStorage();
       return null;
     }
   }
