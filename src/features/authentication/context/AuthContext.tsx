@@ -35,7 +35,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hasInitializedSessionRef = useRef(false);
-  const sessionInitTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
   const skipNextProfileLoadRef = useRef(false);
 
   const user = session?.user ?? null;
@@ -171,20 +170,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     hasInitializedSessionRef.current = true;
 
-    const clearInitTimeout = () => {
-      if (sessionInitTimeoutRef.current !== null) {
-        clearTimeout(sessionInitTimeoutRef.current);
-        sessionInitTimeoutRef.current = null;
+    let hasHandledAuthEvent = false;
+    let isMounted = true;
+
+    const initializeSession = async () => {
+      try {
+        await refreshSession(true);
+      } finally {
+        if (!hasHandledAuthEvent) {
+          setIsLoading(false);
+          hasHandledAuthEvent = true;
+        }
       }
     };
 
-    sessionInitTimeoutRef.current = window.setTimeout(() => {
-      setIsLoading(false);
-      sessionInitTimeoutRef.current = null;
-    }, 2500);
-
-    let hasHandledAuthEvent = false;
-    let isMounted = true;
+    void initializeSession();
 
     const authListener = supabase.auth.onAuthStateChange(async (event, nextSession) => {
       if (!isMounted) {
@@ -196,16 +196,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const nextSessionWithResolvedRoles = nextSession ? await resolveSessionRoles(nextSession) : null;
 
       if (!nextSessionWithResolvedRoles) {
-        setSession(null);
-        setProfile(null);
-        setIsProfileLoading(false);
-
         if (!hasHandledAuthEvent) {
           setIsLoading(false);
           hasHandledAuthEvent = true;
-          clearInitTimeout();
         }
 
+        setSession(null);
+        setProfile(null);
+        setIsProfileLoading(false);
         return;
       }
 
@@ -237,17 +235,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!hasHandledAuthEvent) {
           setIsLoading(false);
           hasHandledAuthEvent = true;
-          clearInitTimeout();
         }
       }
     });
 
     return () => {
       isMounted = false;
-      clearInitTimeout();
       authListener.data.subscription.unsubscribe();
     };
-  }, [resolveSessionRoles]);
+  }, [refreshSession, resolveSessionRoles]);
 
   useEffect(() => {
     if (!session?.user?.id) {
