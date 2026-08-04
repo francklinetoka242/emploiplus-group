@@ -90,7 +90,7 @@ export function JobCard({
         </div>
         <div className="flex items-center gap-2">
           {typeof matchScore === "number" ? (
-            <span className="inline-flex items-center rounded-full bg-emerald-600/95 px-3 py-1 text-xs font-semibold text-emerald-50">
+            <span className="inline-flex items-center rounded-full bg-secondary/15 px-3 py-1 text-xs font-semibold text-secondary">
               {Math.round(Math.max(0, Math.min(1, matchScore)) * 100)}% de match
             </span>
           ) : null}

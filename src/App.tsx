@@ -254,17 +254,7 @@ function AppContent() {
       }
 
       try {
-        console.warn("[App] Restored session has unconfirmed email. Clearing session...");
-        await supabase.auth.signOut();
-
-        // Clear session storage
-        try {
-          localStorage.removeItem("sb-zhldgrvmmdhtlsnsxuys-auth-token");
-          localStorage.removeItem("sb-zhldgrvmmdhtlsnsxuys-auth-token-code-verifier");
-          sessionStorage.clear();
-        } catch (e) {
-          console.warn("Could not clear session storage:", e);
-        }
+        console.warn("[App] Restored session has unconfirmed email. Skipping automatic signOut/storage clear to preserve tokens.");
       } catch (error) {
         console.error("[App] Error validating session:", error);
       }

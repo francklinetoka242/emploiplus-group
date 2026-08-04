@@ -129,18 +129,13 @@ async function performCandidateSignup(params: CandidateSignupFlowParams): Promis
 }
 
 export class CandidateAuthService {
-  private static clearAuthStorage() {
-    clearAuthStorage();
-  }
-
   private static async assertEmailConfirmed(user: User | null | undefined) {
+    // Do NOT clear local storage here. Clearing auth storage must be done
+    // only on explicit logout actions (see logoutCandidate in authApi).
     await assertEmailConfirmed(
       user,
       async () => {
         await supabase.auth.signOut();
-      },
-      () => {
-        this.clearAuthStorage();
       },
     );
   }

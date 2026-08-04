@@ -5,6 +5,7 @@ import { BASE_URL } from "@/features/seo";
 import hubCvImage from "@/assets/services/conception-cv-professionnel-axee-concept-recrutement-developpement-carriere_981640-71397.jpg";
 import coachingImage from "@/assets/services/entraineur-affaires-noir-donnant-presentation-.jpg";
 import trainingImage from "@/assets/services/reconnaitre-contributions-impactantes-individus-noi.jpg";
+import { Search, Star, FileText, Send } from "lucide-react";
 
 const canonical = `${BASE_URL}/services/hub-candidat-intelligent`;
 
@@ -35,25 +36,37 @@ export default function HubCandidatPage() {
 
             <div className="mt-10 grid gap-6 lg:grid-cols-2">
               <article className="rounded-[24px] border border-border/80 bg-background p-6 shadow-sm slide-in-left slide-delay-2">
-                <h2 className="text-2xl font-semibold text-foreground">Matching intelligent</h2>
+                <h2 className="flex items-center text-2xl font-semibold text-foreground">
+                  <Search className="mr-3 h-6 w-6 text-secondary" aria-hidden />
+                  Matching intelligent
+                </h2>
                 <p className="mt-3 text-muted-foreground">
                   Votre profil est analysé pour identifier les offres qui correspondent réellement à vos compétences, expériences et objectifs professionnels.
                 </p>
               </article>
               <article className="rounded-[24px] border border-border/80 bg-background p-6 shadow-sm slide-in-right slide-delay-2">
-                <h2 className="text-2xl font-semibold text-foreground">Offres recommandées</h2>
+                <h2 className="flex items-center text-2xl font-semibold text-foreground">
+                  <Star className="mr-3 h-6 w-6 text-secondary" aria-hidden />
+                  Offres recommandées
+                </h2>
                 <p className="mt-3 text-muted-foreground">
                   Découvrez automatiquement les opportunités les plus pertinentes grâce à une analyse intelligente de votre CV et des besoins des entreprises.
                 </p>
               </article>
               <article className="rounded-[24px] border border-border/80 bg-background p-6 shadow-sm slide-in-up slide-delay-3">
-                <h2 className="text-2xl font-semibold text-foreground">Lettre de motivation personnalisée</h2>
+                <h2 className="flex items-center text-2xl font-semibold text-foreground">
+                  <FileText className="mr-3 h-6 w-6 text-secondary" aria-hidden />
+                  Lettre de motivation personnalisée
+                </h2>
                 <p className="mt-3 text-muted-foreground">
                   Créez rapidement une lettre adaptée à chaque poste grâce à une génération basée sur votre profil et l'offre ciblée.
                 </p>
               </article>
               <article className="rounded-[24px] border border-border/80 bg-background p-6 shadow-sm slide-in-up slide-delay-4">
-                <h2 className="text-2xl font-semibold text-foreground">Candidature express</h2>
+                <h2 className="flex items-center text-2xl font-semibold text-foreground">
+                  <Send className="mr-3 h-6 w-6 text-secondary" aria-hidden />
+                  Candidature express
+                </h2>
                 <p className="mt-3 text-muted-foreground">
                   Postulez directement depuis la plateforme en quelques clics et réduisez le temps nécessaire pour saisir une opportunité.
                 </p>

@@ -148,6 +148,9 @@ export async function logoutCandidate() {
 }
 
 export async function getCandidateSession() {
+  // IMPORTANT: Do not clear auth storage here on null session or network errors.
+  // Temporary absence of a session (e.g. during startup) must not remove tokens
+  // from localStorage. Clearing auth storage belongs only to explicit logout.
   try {
     const { data, error } = await supabase.auth.getSession();
     

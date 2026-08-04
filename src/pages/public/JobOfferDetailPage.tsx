@@ -590,11 +590,11 @@ export function JobOfferDetailPage() {
                     <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-semibold text-foreground">Score de compatibilité</span>
-                        <span className="text-2xl font-bold text-brand">{analysis.match_score}%</span>
+                        <span className="text-2xl font-bold text-secondary">{analysis.match_score}%</span>
                       </div>
                       <div className="mt-3 h-2 rounded-full bg-border">
                         <div
-                          className="h-2 rounded-full bg-gradient-to-r from-emerald-500 to-brand"
+                          className="h-2 rounded-full bg-gradient-to-r from-secondary/70 to-secondary"
                           style={{ width: `${Math.max(4, Math.min(100, analysis.match_score))}%` }}
                         />
                       </div>

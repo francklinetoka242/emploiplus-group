@@ -36,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const hasInitializedSessionRef = useRef(false);
   const sessionInitTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
+  const skipNextProfileLoadRef = useRef(false);
 
   const user = session?.user ?? null;
   const authMetadata = useMemo(() => getAuthMetadataFromSession(session), [session]);
@@ -85,9 +86,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const refreshSession = useCallback(async () => {
-    setIsLoading(true);
+  const refreshSession = useCallback(async (silent?: boolean) => {
+    if (!silent) {
+      setIsLoading(true);
+    }
     setError(null);
+    console.debug("[AuthContext] refreshSession start", { silent });
 
     let retries = 0;
     const maxRetries = 2;
@@ -98,6 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           const nextSession = await authApi.getCandidateSession();
           const resolvedSession = await resolveSessionRoles(nextSession);
+          console.debug("[AuthContext] refreshSession got session", { nextSession, resolvedSession });
           setSession(resolvedSession);
 
           if (!resolvedSession) {
@@ -129,7 +134,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsProfileLoading(false);
       return null;
     } finally {
-      setIsLoading(false);
+      if (!silent) {
+        setIsLoading(false);
+      }
     }
   }, [resolveSessionRoles]);
 
@@ -164,34 +171,93 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     hasInitializedSessionRef.current = true;
 
-    sessionInitTimeoutRef.current = window.setTimeout(() => {
-      setIsLoading(false);
-      sessionInitTimeoutRef.current = null;
-    }, 3000);
-
-    void refreshSession()
-      .catch((error) => {
-        console.error("[AuthContext] refreshSession failed:", error);
-      })
-      .finally(() => {
-        if (sessionInitTimeoutRef.current !== null) {
-          clearTimeout(sessionInitTimeoutRef.current);
-          sessionInitTimeoutRef.current = null;
-        }
-      });
-
-    return () => {
+    const clearInitTimeout = () => {
       if (sessionInitTimeoutRef.current !== null) {
         clearTimeout(sessionInitTimeoutRef.current);
         sessionInitTimeoutRef.current = null;
       }
     };
-  }, [refreshSession]);
+
+    sessionInitTimeoutRef.current = window.setTimeout(() => {
+      setIsLoading(false);
+      sessionInitTimeoutRef.current = null;
+    }, 2500);
+
+    let hasHandledAuthEvent = false;
+    let isMounted = true;
+
+    const authListener = supabase.auth.onAuthStateChange(async (event, nextSession) => {
+      if (!isMounted) {
+        return;
+      }
+
+      setError(null);
+
+      const nextSessionWithResolvedRoles = nextSession ? await resolveSessionRoles(nextSession) : null;
+
+      if (!nextSessionWithResolvedRoles) {
+        setSession(null);
+        setProfile(null);
+        setIsProfileLoading(false);
+
+        if (!hasHandledAuthEvent) {
+          setIsLoading(false);
+          hasHandledAuthEvent = true;
+          clearInitTimeout();
+        }
+
+        return;
+      }
+
+      setSession(nextSessionWithResolvedRoles);
+      skipNextProfileLoadRef.current = true;
+      setIsProfileLoading(true);
+
+      try {
+        const nextProfile = await getCandidateProfileByUserId(nextSessionWithResolvedRoles.user.id);
+        if (!isMounted) {
+          return;
+        }
+
+        setProfile(nextProfile);
+      } catch (err) {
+        if (!isMounted) {
+          return;
+        }
+
+        const nextError = err instanceof Error ? err.message : "Erreur lors du chargement du profil";
+        setError(nextError);
+        setProfile(null);
+      } finally {
+        if (!isMounted) {
+          return;
+        }
+
+        setIsProfileLoading(false);
+        if (!hasHandledAuthEvent) {
+          setIsLoading(false);
+          hasHandledAuthEvent = true;
+          clearInitTimeout();
+        }
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      clearInitTimeout();
+      authListener.data.subscription.unsubscribe();
+    };
+  }, [resolveSessionRoles]);
 
   useEffect(() => {
     if (!session?.user?.id) {
       setProfile(null);
       setIsProfileLoading(false);
+      return;
+    }
+
+    if (skipNextProfileLoadRef.current) {
+      skipNextProfileLoadRef.current = false;
       return;
     }
 
@@ -224,50 +290,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isMounted = false;
     };
   }, [session?.user?.id]);
-
-  useEffect(() => {
-    let hasHandledAuthEvent = false;
-
-    const authListener = supabase.auth.onAuthStateChange(async (event, nextSession) => {
-      setError(null);
-
-      const nextSessionWithResolvedRoles = nextSession ? await resolveSessionRoles(nextSession) : null;
-
-      if (!nextSessionWithResolvedRoles) {
-        setSession(null);
-        setProfile(null);
-        setIsProfileLoading(false);
-        setIsLoading(false);
-        hasHandledAuthEvent = true;
-        return;
-      }
-
-      setSession((previousSession) => {
-        const previousUserId = previousSession?.user?.id ?? null;
-        const nextUserId = nextSessionWithResolvedRoles?.user?.id ?? null;
-
-        if (
-          event === "SIGNED_IN" ||
-          event === "TOKEN_REFRESHED" ||
-          event === "USER_UPDATED" ||
-          previousUserId !== nextUserId
-        ) {
-          return nextSessionWithResolvedRoles ?? nextSession;
-        }
-
-        return previousSession ?? (nextSessionWithResolvedRoles ?? nextSession);
-      });
-
-      if (hasHandledAuthEvent === false || event === "INITIAL_SESSION") {
-        setIsLoading(false);
-        hasHandledAuthEvent = true;
-      }
-    });
-
-    return () => {
-      authListener.data.subscription.unsubscribe();
-    };
-  }, [resolveSessionRoles]);
 
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
