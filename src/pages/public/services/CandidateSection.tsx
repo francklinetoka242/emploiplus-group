@@ -59,7 +59,7 @@ export default function CandidateSection() {
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/10 text-brand shadow-sm">
                 <Clock className="h-5 w-5" />
               </div>
-              <div className="mt-5 text-lg font-semibold text-foreground">Candidature express</div>
+              <div className="mt-5 text-lg font-semibold text-foreground">Candidature express en 1min</div>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 Postulez directement depuis la plateforme en quelques clics et réduisez le temps nécessaire pour saisir une opportunité.
               </p>

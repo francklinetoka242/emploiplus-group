@@ -110,7 +110,6 @@ export function parseAuthErrorMessage(error: unknown): string {
 }
 
 export async function loginCandidate(email: string, password: string) {
-  clearAuthStorage();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
 
@@ -144,6 +143,7 @@ export async function signupCandidate(email: string, password: string, options?:
 export async function logoutCandidate() {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
+  clearAuthStorage();
   return true;
 }
 
@@ -151,36 +151,24 @@ export async function getCandidateSession() {
   try {
     const { data, error } = await supabase.auth.getSession();
     
-    // Si erreur réseau ou autre erreur temporaire, ne pas clearAuthStorage
     if (error) {
-      // Ne clearAuthStorage que pour les erreurs non-réseau
-      if (error.message && !error.message.includes("fetch") && !error.message.includes("network")) {
-        clearAuthStorage();
-      }
       throw error;
     }
 
     const session = data.session ?? null;
     if (!session) {
-      clearAuthStorage();
       return null;
     }
 
     const user = session.user;
     if (user.email_confirmed_at === null) {
       // Ne pas vider le storage ici - la session est valide, juste l'email non confirmé
-      // clearAuthStorage();
-      // Retourner null pour forcer la redirection, mais le utilisateur peut toujours se reconnecter
+      // Retourner null pour forcer la redirection, mais l'utilisateur peut toujours se reconnecter
       return null;
     }
 
     return session;
   } catch (error) {
-    // Ne clearAuthStorage que si c'est une vraie erreur d'authentification
-    if (error instanceof Error && error.message && 
-        (error.message.includes("Invalid") || error.message.includes("Unauthorized"))) {
-      clearAuthStorage();
-    }
     throw error;
   }
 }

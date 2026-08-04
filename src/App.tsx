@@ -50,6 +50,8 @@ const ServicesPage = lazy(() =>
   import("@/pages/public/ServicesPage").then((m) => ({ default: m.ServicesPage })),
 );
 const HubEmploiPage = lazy(() => import("@/pages/public/services/HubEmploiPage"));
+const HubCandidatPage = lazy(() => import("@/pages/public/services/HubCandidatPage"));
+const SolutionsEntreprisePage = lazy(() => import("@/pages/public/services/SolutionsEntreprisePage"));
 const PrivacyPolicyPage = lazy(() =>
   import("@/pages/public/PrivacyPolicyPage").then((m) => ({ default: m.PrivacyPolicyPage })),
 );
@@ -277,6 +279,8 @@ function AppContent() {
         <Route path="/" element={withSuspense(<HomePage />, <PublicPageSkeleton />)} />
         <Route path="/about" element={withSuspense(<AboutPage />, <PublicPageSkeleton />)} />
         <Route path="/services" element={withSuspense(<ServicesPage />, <PublicPageSkeleton />)} />
+        <Route path="/services/hub-candidat-intelligent" element={withSuspense(<HubCandidatPage />, <PublicPageSkeleton />)} />
+        <Route path="/services/solutions-entreprises-bpo" element={withSuspense(<SolutionsEntreprisePage />, <PublicPageSkeleton />)} />
         <Route path="/services/:slug" element={withSuspense(<ServiceDetailPage />, <PublicPageSkeleton />)} />
         <Route path="/services/hub-emploi-recrutement/landing" element={withSuspense(<HubEmploiPage />, <PublicPageSkeleton />)} />
         <Route path="/jobs" element={withSuspense(<JobsPage />, <JobsPageSkeleton />)} />

@@ -92,41 +92,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const maxRetries = 2;
     let lastError: Error | null = null;
 
-    while (retries <= maxRetries) {
-      try {
-        const nextSession = await authApi.getCandidateSession();
-        const resolvedSession = await resolveSessionRoles(nextSession);
-        setSession(resolvedSession);
-        if (!resolvedSession) {
-          setProfile(null);
-          setIsProfileLoading(false);
-        }
-        setIsLoading(false);
-        return resolvedSession;
-      } catch (err) {
-        lastError = err instanceof Error ? err : new Error(String(err));
-        
-        // Ne pas retry sur certaines erreurs (email non confirmé)
-        if (lastError.message.includes("email") || lastError.message.includes("confirmed")) {
-          break;
-        }
+    try {
+      while (retries <= maxRetries) {
+        try {
+          const nextSession = await authApi.getCandidateSession();
+          const resolvedSession = await resolveSessionRoles(nextSession);
+          setSession(resolvedSession);
 
-        retries++;
-        if (retries <= maxRetries) {
-          // Attendre avant le retry (exponential backoff)
-          await new Promise((resolve) => setTimeout(resolve, Math.pow(2, retries) * 500));
+          if (!resolvedSession) {
+            setProfile(null);
+            setIsProfileLoading(false);
+          }
+
+          return resolvedSession;
+        } catch (err) {
+          lastError = err instanceof Error ? err : new Error(String(err));
+
+          // Ne pas retry sur certaines erreurs (email non confirmé)
+          if (lastError.message.includes("email") || lastError.message.includes("confirmed")) {
+            break;
+          }
+
+          retries++;
+          if (retries <= maxRetries) {
+            // Attendre avant le retry (exponential backoff)
+            await new Promise((resolve) => setTimeout(resolve, Math.pow(2, retries) * 500));
+          }
         }
       }
-    }
 
-    // Si on arrive ici, tous les retries ont échoué
-    const nextError = lastError?.message ?? "Session inaccessible";
-    setError(nextError);
-    setSession(null);
-    setProfile(null);
-    setIsProfileLoading(false);
-    setIsLoading(false);
-    return null;
+      const nextError = lastError?.message ?? "Session inaccessible";
+      setError(nextError);
+      setSession(null);
+      setProfile(null);
+      setIsProfileLoading(false);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
   }, [resolveSessionRoles]);
 
   const refetchProfile = useCallback(async () => {
@@ -201,17 +204,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session?.user?.id]);
 
   useEffect(() => {
+    let hasHandledAuthEvent = false;
+
     const authListener = supabase.auth.onAuthStateChange(async (event, nextSession) => {
       setError(null);
 
-      if (!nextSession) {
+      const nextSessionWithResolvedRoles = nextSession ? await resolveSessionRoles(nextSession) : null;
+
+      if (!nextSessionWithResolvedRoles) {
         setSession(null);
         setProfile(null);
         setIsProfileLoading(false);
+        setIsLoading(false);
+        hasHandledAuthEvent = true;
         return;
       }
-
-      const nextSessionWithResolvedRoles = await resolveSessionRoles(nextSession);
 
       setSession((previousSession) => {
         const previousUserId = previousSession?.user?.id ?? null;
@@ -228,12 +235,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         return previousSession ?? (nextSessionWithResolvedRoles ?? nextSession);
       });
+
+      if (hasHandledAuthEvent === false || event === "INITIAL_SESSION") {
+        setIsLoading(false);
+        hasHandledAuthEvent = true;
+      }
     });
 
     return () => {
       authListener.data.subscription.unsubscribe();
     };
-  }, []);
+  }, [resolveSessionRoles]);
 
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);

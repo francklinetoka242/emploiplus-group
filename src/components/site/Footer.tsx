@@ -16,55 +16,55 @@ export function SiteFooter() {
               alt="EmploiPlus Group"
               className="h-9 w-9 rounded-lg object-cover shadow-brand"
             />
-            <div className="font-display text-lg font-bold">EmploiPlus-Group</div>
+            <div className="font-display text-lg font-bold text-white">EmploiPlus-Group</div>
           </div>
-          <div className="text-sm text-muted-foreground">{t("footer.tagline")}</div>
+          <div className="text-sm text-slate-300">{t("footer.tagline")}</div>
         </div>
         <div>
-          <div className="font-semibold mb-3 text-sm">{t("footer.links.services")}</div>
-          <ul className="space-y-2 text-sm text-muted-foreground">
+          <div className="font-semibold mb-3 text-sm text-slate-100">{t("footer.links.services")}</div>
+          <ul className="space-y-2 text-sm text-slate-300">
             <li>
-              <Link to="/services" className="hover:text-foreground">
+              <Link to="/services" className="transition-colors duration-200 hover:text-white">
                 {t("nav.services")}
               </Link>
             </li>
             <li>
-              <Link to="/jobs" className="hover:text-foreground">
+              <Link to="/jobs" className="transition-colors duration-200 hover:text-white">
                 {t("nav.jobs")}
               </Link>
             </li>
             <li>
-              <Link to="/blog" className="hover:text-foreground">
+              <Link to="/blog" className="transition-colors duration-200 hover:text-white">
                 {t("nav.blog")}
               </Link>
             </li>
           </ul>
         </div>
         <div>
-          <div className="font-semibold mb-3 text-sm">{t("footer.links.company")}</div>
-          <ul className="space-y-2 text-sm text-muted-foreground">
+          <div className="font-semibold mb-3 text-sm text-slate-100">{t("footer.links.company")}</div>
+          <ul className="space-y-2 text-sm text-slate-300">
             <li>
-              <Link to="/about" className="hover:text-foreground">
+              <Link to="/about" className="transition-colors duration-200 hover:text-white">
                 {t("nav.about")}
               </Link>
             </li>
             <li>
-              <Link to="/contact" className="hover:text-foreground">
+              <Link to="/contact" className="transition-colors duration-200 hover:text-white">
                 {t("nav.contact")}
               </Link>
             </li>
             <li>
-              <Link to="/politique-de-confidentialite" className="hover:text-foreground">
+              <Link to="/politique-de-confidentialite" className="transition-colors duration-200 hover:text-white">
                 Politique de Confidentialité
               </Link>
             </li>
             <li>
-              <Link to="/mentions-legales" className="hover:text-foreground">
+              <Link to="/mentions-legales" className="transition-colors duration-200 hover:text-white">
                 Mentions Légales
               </Link>
             </li>
             <li>
-              <Link to="/cgu" className="hover:text-foreground">
+              <Link to="/cgu" className="transition-colors duration-200 hover:text-white">
                 Conditions Générales d'Utilisation
               </Link>
             </li>
@@ -72,7 +72,7 @@ export function SiteFooter() {
               <button
                 type="button"
                 onClick={() => openCookieBanner()}
-                className="text-left hover:text-foreground"
+                className="text-left transition-colors duration-200 hover:text-white"
               >
                 Gestion des cookies
               </button>
@@ -80,10 +80,10 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <div className="font-semibold mb-3 text-sm">Contact</div>
-          <ul className="space-y-2 text-sm text-muted-foreground">
+          <div className="font-semibold mb-3 text-sm text-slate-100">Contact</div>
+          <ul className="space-y-2 text-sm text-slate-300">
             <li>
-              <a href="tel:+242067311033" className="font-semibold hover:underline">
+              <a href="tel:+242067311033" className="font-semibold text-slate-100 transition-colors duration-200 hover:text-white">
                 Contact
               </a>
             </li>
@@ -92,7 +92,7 @@ export function SiteFooter() {
                 href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-foreground inline-flex items-center gap-2"
+                className="inline-flex items-center gap-2 transition-colors duration-200 hover:text-white"
               >
                 <MessageSquare className="size-4" />
                 WhatsApp
@@ -101,7 +101,7 @@ export function SiteFooter() {
                 href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-foreground inline-flex items-center gap-2"
+                className="inline-flex items-center gap-2 transition-colors duration-200 hover:text-white"
               >
                 <MessageSquare className="size-4" />
                 WhatsApp
@@ -113,7 +113,7 @@ export function SiteFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="text-muted-foreground hover:text-foreground"
+                className="text-slate-300 transition-colors duration-200 hover:text-white"
               >
                 <Facebook className="size-4" />
               </a>
@@ -122,7 +122,7 @@ export function SiteFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="text-muted-foreground hover:text-foreground"
+                className="text-slate-300 transition-colors duration-200 hover:text-white"
               >
                 <Linkedin className="size-4" />
               </a>

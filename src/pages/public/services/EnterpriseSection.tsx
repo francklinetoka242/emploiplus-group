@@ -73,7 +73,7 @@ export default function EnterpriseSection() {
                 <div className="ml-3 mt-4 h-2 w-2 rounded-full bg-secondary/30" />
               </div>
 
-              <article className={`p-8 pl-12 ${idx % 2 === 0 ? "bg-[#0f172b]" : "bg-[#020618]"}`}>
+              <article className={`p-8 pl-12 border border-border shadow-soft ${idx % 2 === 0 ? "bg-[#0f172b]" : "bg-[#020618]"}`}>
                 <div className="text-sm text-secondary font-medium tracking-wider">{s.tag}</div>
                 <h3 className="mt-3 text-xl font-semibold leading-snug">{s.title}</h3>
                 <p className="mt-3 text-muted-foreground">{s.lead}</p>
