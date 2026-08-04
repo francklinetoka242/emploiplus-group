@@ -17,21 +17,21 @@ export default function SolutionsEntreprisePage() {
 
       <main className="container-page py-16 md:py-20">
         <div className="mx-auto max-w-6xl space-y-12">
-          <section className="p-10">
+          <section className="px-10 pt-0 pb-10">
             <div className="space-y-6">
-              <span className="inline-flex items-center rounded-full bg-secondary/10 px-4 py-2 text-sm font-semibold text-secondary">
+              <span className="inline-flex items-center rounded-full bg-secondary/10 px-4 py-2 text-sm font-semibold text-secondary slide-in-left slide-delay-1">
                 Solutions Entreprises / BPO
               </span>
               <div className="space-y-4">
-                <h1 className="text-4xl font-bold tracking-tight text-foreground">Un processus métier clair, puissant et parfaitement orchestré.</h1>
-                <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
+                <h1 className="text-4xl font-bold tracking-tight text-foreground slide-in-right slide-delay-2">Un processus métier clair, puissant et parfaitement orchestré.</h1>
+                <p className="max-w-3xl text-lg leading-8 text-muted-foreground slide-in-up slide-delay-3">
                   Vos besoins sont traduits en un workflow précis, avec des points de contrôle, des connexions visuelles et une promesse de résultat opérationnel.
                 </p>
               </div>
             </div>
 
             <div className="mt-10 space-y-8">
-              <article className="border border-border/80 p-6 shadow-sm">
+              <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-2 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary/70">Vous avez un besoin</p>
                 <h2 className="mt-4 text-2xl font-semibold text-foreground">Externalisation de Processus Métier (BPO - Business Process Outsourcing)</h2>
                 <p className="mt-3 text-muted-foreground">
@@ -42,7 +42,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="border border-border/80 p-6 shadow-sm">
+              <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-3 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary/70">Nous analysons</p>
                 <h2 className="mt-4 text-2xl font-semibold text-foreground">Délégation de Personnel & Mise à Disposition</h2>
                 <p className="mt-3 text-muted-foreground">
@@ -53,7 +53,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="border border-border/80 p-6 shadow-sm">
+              <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-4 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary/70">Nous déployons</p>
                 <h2 className="mt-4 text-2xl font-semibold text-foreground">Gestion de Projets & Équipes Déléguées</h2>
                 <p className="mt-3 text-muted-foreground">
@@ -64,7 +64,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="border border-border/80 p-6 shadow-sm">
+              <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-5 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary/70">Nous pilotons</p>
                 <h2 className="mt-4 text-2xl font-semibold text-foreground">Suivi opérationnel et amélioration continue</h2>
                 <p className="mt-3 text-muted-foreground">
@@ -75,7 +75,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="border border-border/80 p-6 shadow-sm">
+              <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-6 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary/70">Vous gagnez du temps</p>
                 <h2 className="mt-4 text-2xl font-semibold text-foreground">Une organisation plus légère, plus sûre, plus réactive</h2>
                 <p className="mt-3 text-muted-foreground">

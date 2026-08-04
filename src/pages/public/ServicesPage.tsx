@@ -23,7 +23,7 @@ export function ServicesPage() {
 
           <div className="space-y-24">
             <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center">
-              <div className="space-y-8">
+              <div className="space-y-8 slide-in-left slide-delay-1">
                 <div className="inline-flex items-center rounded-full bg-brand/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.3em] text-brand">
                   Candidat
                 </div>
@@ -54,8 +54,14 @@ export function ServicesPage() {
                       icon: Eye,
                       label: "Outils de visibilité professionnelle",
                     },
-                  ].map(({ icon: Icon, label }) => (
-                    <div key={label} className="rounded-3xl bg-white px-6 py-5 text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                  ].map(({ icon: Icon, label }, index) => (
+                    <div
+                      key={label}
+                      className={
+                        `rounded-3xl bg-white px-6 py-5 text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md slide-in-up` +
+                        ` slide-delay-${index + 2}`
+                      }
+                    >
                       <div className="flex items-center gap-3 text-brand">
                         <Icon className="h-5 w-5" />
                         <span className="font-semibold text-slate-900">{label}</span>
@@ -66,13 +72,13 @@ export function ServicesPage() {
 
                 <Link
                   to="/services/hub-candidat-intelligent"
-                  className="inline-flex items-center justify-center rounded-full bg-brand px-7 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-brand-dark"
+                  className="inline-flex items-center justify-center rounded-full bg-brand px-7 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-brand-dark slide-in-up slide-delay-4"
                 >
                   Découvrir l'espace candidat
                 </Link>
               </div>
 
-              <div className="relative overflow-hidden rounded-[2rem] bg-white">
+              <div className="relative overflow-hidden rounded-[2rem] bg-white slide-in-right slide-delay-1">
                 <img
                   src={candidateIllustration}
                   alt="Parcours candidat et recrutement"
@@ -83,7 +89,7 @@ export function ServicesPage() {
             </section>
 
             <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] items-center">
-              <div className="relative overflow-hidden rounded-[2rem] bg-white">
+              <div className="relative overflow-hidden rounded-[2rem] bg-white slide-in-left slide-delay-1">
                 <img
                   src={enterpriseIllustration}
                   alt="Solutions entreprise et BPO"
@@ -92,7 +98,7 @@ export function ServicesPage() {
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/10 via-transparent to-transparent" />
               </div>
 
-              <div className="space-y-8">
+              <div className="space-y-8 slide-in-right slide-delay-1">
                 <div className="inline-flex items-center rounded-full bg-brand/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.3em] text-brand">
                   Entreprise
                 </div>
@@ -123,8 +129,14 @@ export function ServicesPage() {
                       icon: TrendingUp,
                       label: "Valorisation de la performance RH",
                     },
-                  ].map(({ icon: Icon, label }) => (
-                    <div key={label} className="rounded-3xl bg-white px-6 py-5 text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                  ].map(({ icon: Icon, label }, index) => (
+                    <div
+                      key={label}
+                      className={
+                        `rounded-3xl bg-white px-6 py-5 text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md slide-in-up` +
+                        ` slide-delay-${index + 2}`
+                      }
+                    >
                       <div className="flex items-center gap-3 text-brand">
                         <Icon className="h-5 w-5" />
                         <span className="font-semibold text-slate-900">{label}</span>
@@ -135,7 +147,7 @@ export function ServicesPage() {
 
                 <Link
                   to="/services/solutions-entreprises-bpo"
-                  className="inline-flex items-center justify-center rounded-full bg-brand px-7 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-brand-dark"
+                  className="inline-flex items-center justify-center rounded-full bg-brand px-7 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-brand-dark slide-in-up slide-delay-4"
                 >
                   Découvrir nos solutions
                 </Link>

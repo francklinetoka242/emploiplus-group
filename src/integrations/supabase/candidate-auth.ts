@@ -207,7 +207,6 @@ export class CandidateAuthService {
     try {
       const session = await getCandidateSession();
       if (!session) {
-        clearAuthStorage();
         return null;
       }
 
