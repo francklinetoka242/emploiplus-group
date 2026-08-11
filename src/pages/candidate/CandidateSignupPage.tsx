@@ -97,17 +97,17 @@ export function CandidateSignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4">
+    <div className="candidate-auth-page min-h-screen bg-background py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        <Card className="shadow-xl border border-border bg-card">
+        <Card className="candidate-auth-card shadow-xl border border-border bg-card">
           <CardHeader className="rounded-t-3xl bg-card text-foreground px-8 py-6 border-b border-border">
             <div className="flex items-center gap-4">
               <div className="flex h-10 w-10 items-center justify-center rounded bg-muted border border-border">
                 <img src={favicon} alt="EmploiPlus" className="h-6 w-6 object-contain" />
               </div>
               <div className="flex flex-col">
-                <CardTitle className="text-xl">S'inscrire</CardTitle>
-                <CardDescription className="text-muted-foreground text-sm">
+                <CardTitle className="card-title text-xl">S'inscrire</CardTitle>
+                <CardDescription className="card-description text-muted-foreground text-sm">
                   Remplissez vos informations pour créer un compte
                 </CardDescription>
               </div>
@@ -234,7 +234,7 @@ export function CandidateSignupPage() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-brand text-brand-foreground hover:bg-brand/90 font-medium"
+                  className="auth-submit-button w-full bg-brand text-brand-foreground hover:bg-brand/90 font-medium"
                 >
                   {loading ? "Inscription en cours..." : "S'inscrire"}
                 </Button>

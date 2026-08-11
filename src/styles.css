@@ -172,6 +172,98 @@
     padding-right: 1rem !important;
   }
 
+  body.is-mobile-app .candidate-auth-page {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  body.is-mobile-app .candidate-auth-card {
+    background: rgba(255, 255, 255, 0.96) !important;
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.is-mobile-app .candidate-auth-card .card-header,
+  body.is-mobile-app .candidate-auth-card .card-content,
+  body.is-mobile-app .candidate-auth-card .card-footer {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  body.is-mobile-app .candidate-auth-card .card-header {
+    padding-top: 24px !important;
+    padding-bottom: 24px !important;
+    border-bottom: none !important;
+  }
+
+  body.is-mobile-app .candidate-auth-card .card-content {
+    padding-top: 0 !important;
+    padding-bottom: 24px !important;
+  }
+
+  body.is-mobile-app .candidate-auth-card .card-content form {
+    width: 100% !important;
+  }
+
+  body.is-mobile-app .candidate-auth-page .auth-submit-button {
+    background: var(--brand) !important;
+    color: #ffffff !important;
+    min-height: 48px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  body.is-mobile-app .candidate-auth-page .auth-submit-button:hover {
+    background: var(--brand) !important;
+  }
+
+  body.is-mobile-app .candidate-auth-page .card-title,
+  body.is-mobile-app .candidate-auth-page .card-description {
+    text-align: left;
+  }
+
+  body.is-mobile-app .candidate-auth-page .text-foreground,
+  body.is-mobile-app .candidate-auth-page .text-slate-700,
+  body.is-mobile-app .candidate-auth-page label {
+    font-size: 16px !important;
+  }
+
+  body.is-mobile-app .candidate-auth-page .card-title {
+    font-size: 22px !important;
+    line-height: 1.2 !important;
+  }
+
+  body.is-mobile-app .candidate-auth-page input,
+  body.is-mobile-app .candidate-auth-page .auth-submit-button,
+  body.is-mobile-app .candidate-auth-page .button {
+    width: 100% !important;
+  }
+
+  body.is-mobile-app .candidate-auth-page input {
+    min-height: 48px !important;
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+  }
+
+  body.is-mobile-app .candidate-auth-page .form-label,
+  body.is-mobile-app .candidate-auth-page label {
+    font-size: 16px !important;
+    line-height: 24px !important;
+  }
+
+  body.is-mobile-app .candidate-auth-page .space-y-4 > * {
+    margin-bottom: 16px !important;
+  }
+
+  body.is-mobile-app .candidate-auth-page a.button,
+  body.is-mobile-app .candidate-auth-page a {
+    word-break: break-word;
+  }
+
   body.is-mobile-app .card > .card-header,
   body.is-mobile-app .card > .card-content,
   body.is-mobile-app .card > .card-footer {
