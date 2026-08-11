@@ -10,9 +10,9 @@ export function CandidatePreferencesPage() {
       const stored = localStorage.getItem("theme");
       if (stored === "dark") return true;
       if (stored === "light") return false;
-      return true;
+      return false;
     } catch (e) {
-      return true;
+      return false;
     }
   });
 
