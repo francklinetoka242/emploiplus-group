@@ -143,7 +143,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
               <DropdownMenuItem asChild>
                 <Link to="/candidate/settings" className="cursor-pointer">
                   <Settings className="w-4 h-4 mr-2" />
-                  Paramètres
+                  Compte
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

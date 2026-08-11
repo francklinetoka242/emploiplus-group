@@ -54,7 +54,7 @@ const menuItems = [
   { id: "applications", label: "Mes candidatures", icon: Send, href: "/candidate/applications" },
   { id: "saved", label: "Offres enregistrées", icon: Heart, href: "/candidate/saved-offers" },
   { id: "notifications", label: "Notifications", icon: Bell, href: "/candidate/notifications" },
-  { id: "settings", label: "Paramètres", icon: User, href: "/candidate/settings" },
+  { id: "settings", label: "Compte", icon: User, href: "/candidate/settings" },
 ];
 
 const getInitialDarkMode = () => {
@@ -248,8 +248,8 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
 
           {/* Footer - Logout (mobile) */}
           <div className={cn("px-4 py-4", isDarkMode ? "border-t border-white/5" : "border-t border-slate-200")}>
-            <Button onClick={() => { onOpenChange?.(false); onLogout?.(); }} className="w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium" variant="ghost">
-              <LogOut className="h-4 w-4"/> Déconnexion
+            <Button onClick={() => { onOpenChange?.(false); onLogout?.(); }} className="w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium text-white" variant="ghost">
+              <LogOut className="h-4 w-4 text-white"/> Déconnexion
             </Button>
           </div>
         </aside>
@@ -322,8 +322,8 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
           {open ? (
             <>
               <div className="mb-3"><EcoModeToggle /></div>
-              <Button onClick={onLogout} className="w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium" variant="ghost">
-                <LogOut className="h-4 w-4"/> Déconnexion
+              <Button onClick={onLogout} className="w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium text-white" variant="ghost">
+                <LogOut className="h-4 w-4 text-white"/> Déconnexion
               </Button>
             </>
           ) : (

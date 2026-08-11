@@ -173,18 +173,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let hasHandledAuthEvent = false;
     let isMounted = true;
 
-    const initializeSession = async () => {
-      try {
-        await refreshSession(true);
-      } finally {
-        if (!hasHandledAuthEvent) {
-          setIsLoading(false);
-          hasHandledAuthEvent = true;
-        }
+    const finalizeInitialLoading = () => {
+      if (!hasHandledAuthEvent) {
+        setIsLoading(false);
+        hasHandledAuthEvent = true;
       }
     };
-
-    void initializeSession();
 
     const authListener = supabase.auth.onAuthStateChange(async (event, nextSession) => {
       if (!isMounted) {
@@ -193,21 +187,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setError(null);
 
-      const nextSessionWithResolvedRoles = nextSession ? await resolveSessionRoles(nextSession) : null;
-
-      if (!nextSessionWithResolvedRoles) {
-        if (!hasHandledAuthEvent) {
-          setIsLoading(false);
-          hasHandledAuthEvent = true;
+      if (!nextSession) {
+        if (isMounted) {
+          setSession(null);
+          setProfile(null);
+          setIsProfileLoading(false);
         }
 
-        setSession(null);
-        setProfile(null);
-        setIsProfileLoading(false);
+        finalizeInitialLoading();
+        return;
+      }
+
+      const nextSessionWithResolvedRoles = await resolveSessionRoles(nextSession);
+
+      if (!isMounted) {
         return;
       }
 
       setSession(nextSessionWithResolvedRoles);
+      finalizeInitialLoading();
       skipNextProfileLoadRef.current = true;
       setIsProfileLoading(true);
 
@@ -232,18 +230,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         setIsProfileLoading(false);
-        if (!hasHandledAuthEvent) {
-          setIsLoading(false);
-          hasHandledAuthEvent = true;
-        }
       }
     });
 
+    const timeoutId = window.setTimeout(() => {
+      finalizeInitialLoading();
+    }, 4000);
+
     return () => {
       isMounted = false;
+      clearTimeout(timeoutId);
       authListener.data.subscription.unsubscribe();
     };
-  }, [refreshSession, resolveSessionRoles]);
+  }, [resolveSessionRoles]);
 
   useEffect(() => {
     if (!session?.user?.id) {
