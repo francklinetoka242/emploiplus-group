@@ -99,6 +99,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
+  const [publicNavExpanded, setPublicNavExpanded] = useState(false);
   const handleMenuClick = () => isDrawer && onOpenChange?.(false);
 
   // Compact toggle for collapsed sidebar
@@ -154,11 +155,17 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                   <p className={cn("text-[10px] font-semibold uppercase tracking-[0.24em]", isDarkMode ? "text-slate-400" : "text-slate-500")}>
                     Navigation publique
                   </p>
-                  <Button variant="ghost" size="icon" onClick={() => {}} className={cn("rounded-md p-1 transition", isDarkMode ? "text-slate-300 hover:bg-white/5" : "text-slate-700 hover:bg-slate-100")}>
-                    <ChevronDown className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setPublicNavExpanded((value) => !value)}
+                    aria-expanded={publicNavExpanded}
+                    className={cn("rounded-md p-1 transition", isDarkMode ? "text-slate-300 hover:bg-white/5" : "text-slate-700 hover:bg-slate-100")}
+                  >
+                    <ChevronDown className={cn("h-4 w-4 transition-transform", publicNavExpanded && "rotate-180")} />
                   </Button>
                 </div>
-                <div className="space-y-1">
+                <div className={cn(publicNavExpanded ? "space-y-1" : "hidden")}>
                   {publicMenuItems.map((item) => {
                     const Icon = item.icon;
                     const active = isActive(item.href);
