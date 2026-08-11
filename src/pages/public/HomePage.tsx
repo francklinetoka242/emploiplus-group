@@ -155,24 +155,36 @@ export function HomePage() {
 
   const services = [
     {
-      title: "PÔLE 1 : HUB EMPLOI & RECRUTEMENT",
+      heading: "Candidat",
+      title: "Un parcours candidat fluide et efficace",
       description:
-        "Connexion entreprises-talents : publication d'offres, sourcing, sélection et accompagnement des candidats.",
+        "Explorez les offres, préparez votre profil et postulez en quelques étapes. Tout est pensé pour gagner du temps et vous mettre en valeur.",
+      bullets: [
+        "Matching intelligent adapté à votre profil",
+        "Offres recommandées et mises à jour",
+        "Candidature express en quelques clics",
+        "Outils de visibilité professionnelle",
+      ],
+      link: {
+        href: "/services/hub-candidat-intelligent",
+        label: "Découvrir l'espace candidat",
+      },
     },
     {
-      title: "PÔLE 2 : MISE À DISPOSITION & GESTION RH",
+      heading: "Entreprise",
+      title: "Une solution RH professionnelle et sur mesure",
       description:
-        "Fourniture de personnel et gestion RH : intérim, paie, contrats et administration du personnel.",
-    },
-    {
-      title: "PÔLE 3 : CONSEIL, FORMATION & TRANSFORMATION",
-      description:
-        "Conseil et digitalisation : audit, transformation, formation et intégration de solutions numériques.",
-    },
-    {
-      title: "PÔLE 4 : PRESTATIONS OPÉRATIONNELLES",
-      description:
-        "Équipes opérationnelles et support : missions sur site, assistance administrative et appui technique.",
+        "Externalisation métier, délégation et pilotage opérationnel pour faire évoluer votre organisation avec sérénité.",
+      bullets: [
+        "Cadrage précis des besoins RH",
+        "Ressources qualifiées et opérationnelles",
+        "Pilotage continu et reporting clair",
+        "Valorisation de la performance RH",
+      ],
+      link: {
+        href: "/services/solutions-entreprises-bpo",
+        label: "Découvrir nos solutions",
+      },
     },
   ];
 
@@ -196,7 +208,7 @@ export function HomePage() {
           title={"Nos services"}
           subtitle={"Une plateforme pensée pour les entreprises et les talents."}
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
           {services.map((item, i) => (
             <article
               key={item.title}
@@ -204,9 +216,31 @@ export function HomePage() {
               style={{ animationDelay: `${i * 120}ms` }}
             >
               <div className="p-[1px] rounded-3xl gradient-brand">
-                <div className="rounded-3xl bg-card p-6 h-full">
-                  <h2 className="font-display text-lg font-bold text-foreground">{t(item.title)}</h2>
-                  <p className="mt-3 text-muted-foreground leading-relaxed">{t(item.description)}</p>
+                <div className="rounded-3xl bg-card p-6 h-full flex flex-col justify-between gap-6">
+                  <div>
+                    <div className="text-sm font-semibold uppercase tracking-[0.18em] text-brand">
+                      {item.heading}
+                    </div>
+                    <h2 className="mt-4 font-display text-2xl font-bold text-foreground">
+                      {item.title}
+                    </h2>
+                    <p className="mt-4 text-muted-foreground leading-relaxed">
+                      {item.description}
+                    </p>
+                    <ul className="mt-6 space-y-3 text-sm text-slate-700">
+                      {item.bullets.map((bullet) => (
+                        <li key={bullet} className="flex gap-3">
+                          <span className="mt-1 h-2.5 w-2.5 rounded-full bg-brand" />
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="mt-6">
+                    <Button asChild variant="ghost" className="w-full justify-center">
+                      <Link to={item.link.href}>{item.link.label}</Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </article>

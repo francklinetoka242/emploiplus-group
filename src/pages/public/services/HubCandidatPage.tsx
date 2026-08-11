@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
+import { Button } from "@/components/ui/button";
 import { BASE_URL } from "@/features/seo";
 import { Search, Star, FileText, Send, BriefcaseBusiness, Compass, GraduationCap, Trophy } from "lucide-react";
 
@@ -130,6 +131,35 @@ export default function HubCandidatPage() {
                   Un accompagnement complet pour transformer vos efforts en une offre acceptée.
                 </p>
               </article>
+              <div className="mt-8 rounded-[28px] border border-brand/20 bg-brand/5 p-8 text-center shadow-sm slide-in-up slide-delay-6">
+                <h3 className="text-2xl font-semibold text-foreground">Prêt à passer à l'étape suivante ?</h3>
+                <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+                  Rejoignez notre hub candidat et accédez à des offres qualifiées, un accompagnement personnalisé et une visibilité renforcée.
+                </p>
+                <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:justify-center">
+                  <Button asChild size="lg" variant="default">
+                    <Link to="/candidate/signup">Je crée mon compte</Link>
+                  </Button>
+                  <Button asChild size="lg" variant="outline">
+                    <Link to="/candidate/login">Connexion</Link>
+                  </Button>
+                </div>
+              </div>
+
+              <section className="mt-10 rounded-[28px] border border-emerald-200 bg-emerald-50 p-8 text-center shadow-sm slide-in-up slide-delay-7">
+                <h2 className="text-3xl font-semibold text-foreground">Partage Multical</h2>
+                <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
+                  Rejoignez notre chaîne WhatsApp pour recevoir gratuitement les dernières offres d'emploi partagées en temps réel.
+                </p>
+                <a
+                  href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-6 inline-flex items-center justify-center rounded-full bg-secondary px-6 py-3 text-sm font-semibold text-white transition hover:bg-secondary/90"
+                >
+                  S'abonner à la chaîne
+                </a>
+              </section>
             </div>
           </section>
 

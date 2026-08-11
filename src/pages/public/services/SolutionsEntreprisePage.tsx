@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import {
   BarChart3,
   BriefcaseBusiness,
@@ -107,6 +108,18 @@ export default function SolutionsEntreprisePage() {
                   Le résultat : des cycles raccourcis, des coûts contenus et une exécution fluide, sans surcharge interne.
                 </p>
               </article>
+            </div>
+
+            <div className="mt-10 rounded-[28px] border border-secondary/20 bg-secondary/5 p-8 text-center shadow-sm slide-in-up slide-delay-7">
+              <h3 className="text-2xl font-semibold text-foreground">Prêt à optimiser vos opérations dès maintenant ?</h3>
+              <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+                Contactez notre équipe pour discuter de votre externalisation BPO et obtenir une proposition sur mesure.
+              </p>
+              <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:justify-center">
+                <Button asChild size="lg" variant="secondary">
+                  <Link to="/contact">Nous contacter</Link>
+                </Button>
+              </div>
             </div>
           </section>
 
