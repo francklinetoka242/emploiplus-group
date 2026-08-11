@@ -25,6 +25,7 @@ import {
   DollarSign,
   BookOpen,
   Target,
+  Send,
 } from "lucide-react";
 import { JobCard } from "@/features/jobs/components";
 import { getRecommendedJobs, RecommendedJob } from "@/services/aiMatchingService";

@@ -287,11 +287,11 @@ function AppContent() {
       <Route path="/auth" element={<AuthPage />} />
 
       {/* Candidate pages */}
-      <Route path="/candidate/login" element={<CandidateLoginPage />} />
-      <Route path="/candidate/signup" element={<CandidateSignupPage />} />
-      <Route path="/candidate/forgot-password" element={<CandidateForgotPasswordPage />} />
-      <Route path="/candidate/reset-password" element={<CandidateResetPasswordPage />} />
-      <Route path="/candidate/confirm" element={<CandidateConfirmPage />} />
+      <Route path="/candidate/login" element={withSuspense(<CandidateLoginPage />, <CandidateDashboardSkeleton />)} />
+      <Route path="/candidate/signup" element={withSuspense(<CandidateSignupPage />, <CandidateDashboardSkeleton />)} />
+      <Route path="/candidate/forgot-password" element={withSuspense(<CandidateForgotPasswordPage />, <CandidateDashboardSkeleton />)} />
+      <Route path="/candidate/reset-password" element={withSuspense(<CandidateResetPasswordPage />, <CandidateDashboardSkeleton />)} />
+      <Route path="/candidate/confirm" element={withSuspense(<CandidateConfirmPage />, <CandidateDashboardSkeleton />)} />
       <Route
         path="/candidate"
         element={
