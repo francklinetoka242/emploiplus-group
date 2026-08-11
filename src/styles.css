@@ -145,6 +145,52 @@
     text-rendering: optimizeLegibility;
   }
 
+  body.is-mobile-app header,
+  body.is-mobile-app footer {
+    display: none !important;
+  }
+
+  body.is-mobile-app .card,
+  body.is-mobile-app .shadow,
+  body.is-mobile-app .shadow-xl,
+  body.is-mobile-app .border-border,
+  body.is-mobile-app .border-b,
+  body.is-mobile-app .bg-card {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  body.is-mobile-app .card {
+    border-radius: 0.75rem !important;
+    margin: 0 !important;
+  }
+
+  body.is-mobile-app .card > * {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  body.is-mobile-app .card > .card-header,
+  body.is-mobile-app .card > .card-content,
+  body.is-mobile-app .card > .card-footer {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  body.is-mobile-app .max-w-md,
+  body.is-mobile-app .max-w-2xl,
+  body.is-mobile-app .w-full.max-w-md,
+  body.is-mobile-app .mx-auto {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
   .dark .bg-white,
   .dark [class*="bg-white/"] ,
   .dark .bg-slate-50,

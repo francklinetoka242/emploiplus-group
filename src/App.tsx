@@ -540,6 +540,23 @@ function AppContent() {
 }
 
 export default function App() {
+  useEffect(() => {
+    if (typeof navigator === "undefined" || typeof document === "undefined") {
+      return;
+    }
+
+    const isMobileAppUserAgent = navigator.userAgent.includes("EmploiPlusApp");
+    if (isMobileAppUserAgent) {
+      document.body.classList.add("is-mobile-app");
+    }
+
+    return () => {
+      if (isMobileAppUserAgent) {
+        document.body.classList.remove("is-mobile-app");
+      }
+    };
+  }, []);
+
   return (
     <AuthProvider>
       <AppContent />
