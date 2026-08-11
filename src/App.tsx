@@ -212,8 +212,8 @@ const CandidateJobApplyPage = lazy(() =>
   })),
 );
 
-// Loading fallback component for generic public routes
-const PageLoadingFallback = () => <PublicPageSkeleton />;
+// Loading fallback component for generic routes that are still resolving
+const PageLoadingFallback = () => <div className="min-h-screen bg-background" />;
 
 function withSuspense(element: React.ReactNode, fallback: React.ReactNode) {
   return <Suspense fallback={fallback}>{element}</Suspense>;

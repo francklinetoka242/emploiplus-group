@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
@@ -14,14 +14,11 @@ import { SaasGrid } from "@/components/candidate/SaasLayout";
 import {
   ArrowRight,
   Briefcase,
-  Heart,
   CheckCircle2,
   Circle,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Send,
-  Eye,
   TrendingUp,
   Calendar,
   MapPin,
@@ -323,48 +320,6 @@ export function CandidateDashboardPage() {
 
   const profileCompletion = completion.completionPercentage;
 
-  const stats = useMemo(
-    () => [
-      {
-        label: "Candidatures",
-        value: 0,
-        icon: Send,
-        color: "text-blue-600",
-        bgColor: "bg-blue-50",
-        comingSoon: true,
-        description: "Bientôt disponible",
-      },
-      {
-        label: "Offres enregistrées",
-        value: 0,
-        icon: Heart,
-        color: "text-red-600",
-        bgColor: "bg-red-50",
-        comingSoon: true,
-        description: "Bientôt disponible",
-      },
-      {
-        label: "Vues de profil",
-        value: 0,
-        icon: Eye,
-        color: "text-green-600",
-        bgColor: "bg-green-50",
-        comingSoon: true,
-        description: "Bientôt disponible",
-      },
-      {
-        label: "Entretiens",
-        value: 0,
-        icon: Briefcase,
-        color: "text-purple-600",
-        bgColor: "bg-purple-50",
-        comingSoon: true,
-        description: "Bientôt disponible",
-      },
-    ],
-    [],
-  );
-
   const firstName = profile?.first_name || "Candidat";
   const fullName = profile ? `${profile.first_name} ${profile.last_name}`.trim() : "Jean Dupont";
   const email = profile?.email || "jean.dupont@example.com";
@@ -388,33 +343,6 @@ export function CandidateDashboardPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.label}>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-600 mb-1">{stat.label}</p>
-                    <p className={`text-2xl font-bold text-foreground ${stat.comingSoon ? "text-base font-semibold" : ""}`}>
-                      {stat.comingSoon ? "Fonctionnalite bientot disponible" : stat.value}
-                    </p>
-                    {stat.description ? (
-                      <p className="mt-2 text-sm text-slate-500">{stat.description}</p>
-                    ) : null}
-                  </div>
-                  <div className={`${stat.bgColor} p-3 rounded-lg`}>
-                    <Icon className={`${stat.color} w-6 h-6`} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
 
       {/* Profile Completion */}
       <Card>

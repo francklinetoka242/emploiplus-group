@@ -12,7 +12,9 @@ import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 import { parseAuthErrorMessage, resendConfirmationEmail } from "@/features/authentication/api/authApi";
+import { clearAuthStorage } from "@/features/authentication/utils/authStorage";
 import { useAuth } from "@/features/authentication/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import favicon from "@/assets/favicon.ico";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { loginSchema, type LoginFormValues } from "@/features/forms/schemas/auth.schemas";
@@ -63,6 +65,8 @@ export function CandidateLoginPage() {
 
     setLoading(true);
     try {
+      clearAuthStorage();
+      await supabase.auth.signOut().catch(() => undefined);
       await login(values.email, values.password);
 
       setSuccessMessage("Connexion réussie! Redirection en cours...");
