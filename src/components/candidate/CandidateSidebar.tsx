@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { isMobileApp } from "@/lib/isMobileApp";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { useCandidate } from "@/hooks/useCandidate";
@@ -100,6 +101,8 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
   };
 
   const [publicNavExpanded, setPublicNavExpanded] = useState(false);
+  const mobileApp = isMobileApp();
+  const candidateMenuItems = mobileApp ? [{ id: "public-jobs", label: "Emplois", icon: Search, href: "/jobs" }] : menuItems;
   const handleMenuClick = () => isDrawer && onOpenChange?.(false);
 
   // Compact toggle for collapsed sidebar
@@ -150,57 +153,59 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
 
           <nav className={cn("flex-1 overflow-y-auto px-2 py-4 scrollbar-hide", isDarkMode ? "" : "bg-white")}> 
             <div className="space-y-4">
-              <div className={cn("rounded-2xl p-2", isDarkMode ? "border border-white/10 bg-slate-950/60" : "border border-slate-200 bg-slate-50")}>
-                <div className="flex items-center justify-between px-2 pb-2">
-                  <p className={cn("text-[10px] font-semibold uppercase tracking-[0.24em]", isDarkMode ? "text-slate-400" : "text-slate-500")}>
-                    Navigation publique
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setPublicNavExpanded((value) => !value)}
-                    aria-expanded={publicNavExpanded}
-                    className={cn("rounded-md p-1 transition", isDarkMode ? "text-slate-300 hover:bg-white/5" : "text-slate-700 hover:bg-slate-100")}
-                  >
-                    <ChevronDown className={cn("h-4 w-4 transition-transform", publicNavExpanded && "rotate-180")} />
-                  </Button>
+              {!mobileApp && (
+                <div className={cn("rounded-2xl p-2", isDarkMode ? "border border-white/10 bg-slate-950/60" : "border border-slate-200 bg-slate-50")}>
+                  <div className="flex items-center justify-between px-2 pb-2">
+                    <p className={cn("text-[10px] font-semibold uppercase tracking-[0.24em]", isDarkMode ? "text-slate-400" : "text-slate-500")}>
+                      Navigation publique
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setPublicNavExpanded((value) => !value)}
+                      aria-expanded={publicNavExpanded}
+                      className={cn("rounded-md p-1 transition", isDarkMode ? "text-slate-300 hover:bg-white/5" : "text-slate-700 hover:bg-slate-100")}
+                    >
+                      <ChevronDown className={cn("h-4 w-4 transition-transform", publicNavExpanded && "rotate-180")} />
+                    </Button>
+                  </div>
+                  <div className={cn(publicNavExpanded ? "space-y-1" : "hidden")}>
+                    {publicMenuItems.map((item) => {
+                      const Icon = item.icon;
+                      const active = isActive(item.href);
+                      return (
+                        <Link
+                          key={item.id}
+                          to={item.href}
+                          onClick={handleMenuClick}
+                          className={cn(
+                            "relative flex items-center gap-3 rounded-lg px-4 py-3",
+                            active
+                              ? "bg-secondary text-white"
+                              : isDarkMode
+                                ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
+                                : "bg-white text-slate-700 hover:bg-slate-50",
+                          )}
+                        >
+                          {active && <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />}
+                          <div className={cn(
+                            "flex h-9 w-9 items-center justify-center rounded-lg",
+                            active ? "bg-secondary text-white" : isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
+                          )}>
+                            <Icon className="h-5 w-5"/>
+                          </div>
+                          <span className={cn("truncate text-sm font-medium", active ? "text-white" : isDarkMode ? "text-slate-300" : "text-slate-700")}>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className={cn(publicNavExpanded ? "space-y-1" : "hidden")}>
-                  {publicMenuItems.map((item) => {
-                    const Icon = item.icon;
-                    const active = isActive(item.href);
-                    return (
-                      <Link
-                        key={item.id}
-                        to={item.href}
-                        onClick={handleMenuClick}
-                        className={cn(
-                          "relative flex items-center gap-3 rounded-lg px-4 py-3",
-                          active
-                            ? "bg-secondary text-white"
-                            : isDarkMode
-                              ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
-                              : "bg-white text-slate-700 hover:bg-slate-50",
-                        )}
-                      >
-                        {active && <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />}
-                        <div className={cn(
-                          "flex h-9 w-9 items-center justify-center rounded-lg",
-                          active ? "bg-secondary text-white" : isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
-                        )}>
-                          <Icon className="h-5 w-5"/>
-                        </div>
-                        <span className={cn("truncate text-sm font-medium", active ? "text-white" : isDarkMode ? "text-slate-300" : "text-slate-700")}>{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
+              )}
 
               <div className={cn("rounded-2xl p-2", isDarkMode ? "border border-white/10 bg-slate-950/60" : "border border-slate-200 bg-slate-50")}>
                 <p className={cn("px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em]", isDarkMode ? "text-slate-400" : "text-slate-500")}>Mon espace</p>
                 <div className="space-y-1">
-                  {menuItems.map((item) => {
+                  {candidateMenuItems.map((item) => {
                     const Icon = item.icon;
                     const active = isActive(item.href);
                     return (
@@ -280,7 +285,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
             <div className={cn("rounded-2xl p-2", isDarkMode ? "border border-white/10 bg-slate-950/60" : "border border-slate-200 bg-slate-50")}>
               {open && <p className={cn("px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em]", isDarkMode ? "text-slate-400" : "text-slate-500")}>Mon espace</p>}
               <div className="space-y-1">
-                {menuItems.map((item) => {
+                {candidateMenuItems.map((item) => {
                   const Icon = item.icon;
                   const active = isActive(item.href);
                   return (

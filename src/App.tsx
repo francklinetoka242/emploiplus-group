@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { lazy, Suspense, useEffect } from "react";
 import { I18nProvider } from "@/i18n";
 import { Toaster } from "@/components/ui/sonner";
@@ -8,6 +8,7 @@ import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
 import { PublicLayout } from "@/components/site/PublicLayout";
 import { useAuthContext } from "@/features/authentication/context/AuthContext";
 import { ProtectedRoute } from "@/features/authentication/guards";
+import { isMobileApp } from "@/lib/isMobileApp";
 import {
   DashboardLayoutSkeleton,
   CandidateDashboardSkeleton,
@@ -239,7 +240,22 @@ function SharedPublicRouteShell() {
 }
 
 function AppContent() {
+  const location = useLocation();
+  const mobileApp = isMobileApp();
   const { session } = useAuthContext();
+
+  if (mobileApp) {
+    const pathname = location.pathname;
+    const isAllowedMobilePath =
+      pathname === "/jobs" ||
+      pathname.startsWith("/jobs/") ||
+      pathname === "/candidate" ||
+      pathname.startsWith("/candidate/");
+
+    if (!isAllowedMobilePath) {
+      return <Navigate to="/jobs" replace />;
+    }
+  }
 
   // CRITICAL: On app startup, verify that any restored candidate session has a confirmed email
   // This prevents Supabase from silently restoring an unconfirmed session from localStorage
