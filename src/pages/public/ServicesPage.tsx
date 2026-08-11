@@ -48,7 +48,6 @@ function CandidateCarousel() {
             />
           ))}
         </div>
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/10 via-transparent to-transparent" />
         <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
           {candidateSlides.map((image, index) => (
             <span
@@ -80,7 +79,7 @@ export function ServicesPage() {
           </header>
 
           <div className="space-y-24">
-            <section className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center">
+            <section className="mx-4 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center sm:mx-6 lg:mx-8">
               <div className="space-y-8 slide-in-left slide-delay-1">
                 <div className="inline-flex items-center rounded-full bg-brand/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.3em] text-brand">
                   Candidat

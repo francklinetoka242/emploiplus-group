@@ -39,9 +39,9 @@ export default function SolutionsEntreprisePage() {
 
             <div className="mt-10 space-y-8">
               <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-2 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
-                <p className="text-sm uppercase tracking-[0.25em] text-brand">Vous avez un besoin</p>
+                <p className="text-sm uppercase tracking-[0.25em] text-secondary">Vous avez un besoin</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
-                  <BriefcaseBusiness className="h-6 w-6 shrink-0 text-brand" aria-hidden="true" />
+                  <BriefcaseBusiness className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
                   Externalisation de Processus Métier (BPO - Business Process Outsourcing)
                 </h2>
                 <p className="mt-3 text-muted-foreground">
@@ -53,9 +53,9 @@ export default function SolutionsEntreprisePage() {
               </article>
 
               <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-3 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
-                <p className="text-sm uppercase tracking-[0.25em] text-brand">Nous analysons</p>
+                <p className="text-sm uppercase tracking-[0.25em] text-secondary">Nous analysons</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
-                  <Users className="h-6 w-6 shrink-0 text-brand" aria-hidden="true" />
+                  <Users className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
                   Délégation de Personnel & Mise à Disposition
                 </h2>
                 <p className="mt-3 text-muted-foreground">
@@ -67,9 +67,9 @@ export default function SolutionsEntreprisePage() {
               </article>
 
               <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-4 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
-                <p className="text-sm uppercase tracking-[0.25em] text-brand">Nous déployons</p>
+                <p className="text-sm uppercase tracking-[0.25em] text-secondary">Nous déployons</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
-                  <FolderKanban className="h-6 w-6 shrink-0 text-brand" aria-hidden="true" />
+                  <FolderKanban className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
                   Gestion de Projets & Équipes Déléguées
                 </h2>
                 <p className="mt-3 text-muted-foreground">
@@ -81,9 +81,9 @@ export default function SolutionsEntreprisePage() {
               </article>
 
               <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-5 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
-                <p className="text-sm uppercase tracking-[0.25em] text-brand">Nous pilotons</p>
+                <p className="text-sm uppercase tracking-[0.25em] text-secondary">Nous pilotons</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
-                  <BarChart3 className="h-6 w-6 shrink-0 text-brand" aria-hidden="true" />
+                  <BarChart3 className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
                   Suivi opérationnel et amélioration continue
                 </h2>
                 <p className="mt-3 text-muted-foreground">
@@ -95,9 +95,9 @@ export default function SolutionsEntreprisePage() {
               </article>
 
               <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-6 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
-                <p className="text-sm uppercase tracking-[0.25em] text-brand">Vous gagnez du temps</p>
+                <p className="text-sm uppercase tracking-[0.25em] text-secondary">Vous gagnez du temps</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
-                  <ShieldCheck className="h-6 w-6 shrink-0 text-brand" aria-hidden="true" />
+                  <ShieldCheck className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
                   Une organisation plus légère, plus sûre, plus réactive
                 </h2>
                 <p className="mt-3 text-muted-foreground">
@@ -119,7 +119,7 @@ export default function SolutionsEntreprisePage() {
             </Link>
             <Link
               to="/contact"
-              className="inline-flex items-center justify-center rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90"
+              className="inline-flex items-center justify-center rounded-full bg-secondary px-6 py-3 text-sm font-semibold text-white transition hover:bg-secondary/90"
             >
               Nous contacter
             </Link>
