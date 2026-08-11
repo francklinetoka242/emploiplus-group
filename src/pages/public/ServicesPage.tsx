@@ -150,7 +150,7 @@ export function ServicesPage() {
               </div>
 
               <div className="space-y-8 slide-in-right slide-delay-1">
-                <div className="inline-flex items-center rounded-full bg-brand/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.3em] text-brand">
+                <div className="inline-flex items-center rounded-full bg-secondary/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.3em] text-secondary">
                   Entreprise
                 </div>
                 <div className="space-y-4">
@@ -188,7 +188,7 @@ export function ServicesPage() {
                         ` slide-delay-${index + 2}`
                       }
                     >
-                      <div className="flex items-center gap-3 text-brand">
+                      <div className="flex items-center gap-3 text-secondary">
                         <Icon className="h-5 w-5" />
                         <span className="font-semibold text-slate-900">{label}</span>
                       </div>
@@ -198,7 +198,7 @@ export function ServicesPage() {
 
                 <Link
                   to="/services/solutions-entreprises-bpo"
-                  className="inline-flex items-center justify-center rounded-full bg-brand px-7 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-brand-dark slide-in-up slide-delay-4"
+                  className="inline-flex items-center justify-center rounded-full bg-secondary px-7 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-secondary/90 slide-in-up slide-delay-4"
                 >
                   Découvrir nos solutions
                 </Link>
