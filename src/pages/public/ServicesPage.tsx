@@ -1,10 +1,68 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Briefcase, Check, User, Sparkles, Bell, Zap, Eye, MapPin, Users, Layers, TrendingUp } from "lucide-react";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
-import candidateIllustration from "@/assets/services/conception-cv-professionnel-axee-concept-recrutement-developpement-carriere_981640-71397.jpg";
+import candidateIllustration1 from "@/assets/IMG_Page-Services/img_section_candidat/1.webp";
+import candidateIllustration2 from "@/assets/IMG_Page-Services/img_section_candidat/2.webp";
+import candidateIllustration3 from "@/assets/IMG_Page-Services/img_section_candidat/3.webp";
+import candidateIllustration4 from "@/assets/IMG_Page-Services/img_section_candidat/4.webp";
+import candidateIllustration5 from "@/assets/IMG_Page-Services/img_section_candidat/5.webp";
+import candidateIllustration6 from "@/assets/IMG_Page-Services/img_section_candidat/6.webp";
+import candidateIllustration7 from "@/assets/IMG_Page-Services/img_section_candidat/7.webp";
 import enterpriseIllustration from "@/assets/services/directeur-souriant-tenant-document-important-colleg.jpg";
+
+const candidateSlides = [
+  { src: candidateIllustration1, alt: "Parcours candidat - vue 1" },
+  { src: candidateIllustration2, alt: "Parcours candidat - vue 2" },
+  { src: candidateIllustration3, alt: "Parcours candidat - vue 3" },
+  { src: candidateIllustration4, alt: "Parcours candidat - vue 4" },
+  { src: candidateIllustration5, alt: "Parcours candidat - vue 5" },
+  { src: candidateIllustration6, alt: "Parcours candidat - vue 6" },
+  { src: candidateIllustration7, alt: "Parcours candidat - vue 7" },
+];
+
+function CandidateCarousel() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % candidateSlides.length);
+    }, 4000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="mx-auto w-full max-w-[220px] sm:max-w-[250px] slide-in-right slide-delay-1">
+      <div className="relative overflow-hidden rounded-[1.8rem] bg-transparent p-0 shadow-none">
+        <div className="relative aspect-[9/20.5] overflow-hidden rounded-[1.3rem] bg-white">
+          {candidateSlides.map((image, index) => (
+            <img
+              key={image.src}
+              src={image.src}
+              alt={image.alt}
+              className={`absolute inset-0 h-full w-full object-contain bg-white transition-opacity duration-700 ${
+                index === activeIndex ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/10 via-transparent to-transparent" />
+        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
+          {candidateSlides.map((image, index) => (
+            <span
+              key={`${image.alt}-${index}`}
+              className={`h-2.5 w-2.5 rounded-full transition-all ${
+                index === activeIndex ? "bg-brand scale-110" : "bg-white/70"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function ServicesPage() {
   return (
@@ -78,14 +136,7 @@ export function ServicesPage() {
                 </Link>
               </div>
 
-              <div className="relative overflow-hidden rounded-[2rem] bg-white slide-in-right slide-delay-1">
-                <img
-                  src={candidateIllustration}
-                  alt="Parcours candidat et recrutement"
-                  className="h-full w-full object-cover transition duration-500 ease-out hover:scale-105"
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/10 via-transparent to-transparent" />
-              </div>
+              <CandidateCarousel />
             </section>
 
             <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] items-center">
