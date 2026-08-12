@@ -28,6 +28,7 @@ export function Skeleton({
   return (
     <div
       className={cn(baseClass, variantClass, className)}
+      suppressHydrationWarning={true}
       style={style}
       {...props}
     />

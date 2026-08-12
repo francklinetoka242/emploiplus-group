@@ -4,6 +4,7 @@ import { I18nProvider } from "@/i18n";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthProvider } from "@/features/authentication/context/AuthContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
 import { PublicLayout } from "@/components/site/PublicLayout";
 import { useAuthContext } from "@/features/authentication/context/AuthContext";
@@ -559,7 +560,9 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <AppContent />
+      <ErrorBoundary>
+        <AppContent />
+      </ErrorBoundary>
     </AuthProvider>
   );
 }

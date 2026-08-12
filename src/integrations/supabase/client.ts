@@ -41,17 +41,30 @@ function createSupabaseClient() {
       storage: typeof window !== "undefined" ? localStorage : undefined,
       persistSession: true,
       autoRefreshToken: true,
+      // Autoriser Supabase à détecter la session dans l'URL (utile pour OAuth redirects
+      // et pour s'assurer que la session initiale est correctement restaurée en WebView).
+      detectSessionInUrl: true,
+      // Désactive le lock de localStorage — empêche les verrous/gel lors du F5
+      // (supabase-js tente parfois de locker localStorage entre onglets).
+      lock: false,
     },
   });
 }
 
-let _supabase: ReturnType<typeof createSupabaseClient> | undefined;
+// Ensure a single Supabase client instance across module reloads / multiple bundles.
+type GlobalForSupabase = {
+  supabase?: ReturnType<typeof createSupabaseClient>;
+};
+
+const globalForSupabase = (globalThis as unknown) as GlobalForSupabase & typeof globalThis;
+
+const _supabase = globalForSupabase.supabase || createSupabaseClient();
+
+// Expose the instance globally in non-production to survive HMR / StrictMode double-mounts
+if (process.env.NODE_ENV !== "production") {
+  globalForSupabase.supabase = _supabase;
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
-export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>, {
-  get(_, prop, receiver) {
-    if (!_supabase) _supabase = createSupabaseClient();
-    return Reflect.get(_supabase, prop, receiver);
-  },
-});
+export const supabase = _supabase;

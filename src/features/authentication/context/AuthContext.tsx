@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, startTransition, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import * as authApi from "@/features/authentication/api/authApi";
@@ -102,10 +102,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const nextSession = await authApi.getCandidateSession();
           const resolvedSession = await resolveSessionRoles(nextSession);
           console.debug("[AuthContext] refreshSession got session", { nextSession, resolvedSession });
-          setSession(resolvedSession);
+          startTransition(() => {
+            setSession(resolvedSession);
+          });
 
           if (!resolvedSession) {
-            setProfile(null);
+            startTransition(() => {
+              setProfile(null);
+            });
             setIsProfileLoading(false);
           }
 
@@ -128,8 +132,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const nextError = lastError?.message ?? "Session inaccessible";
       setError(nextError);
-      setSession(null);
-      setProfile(null);
+      startTransition(() => {
+        setSession(null);
+        setProfile(null);
+      });
       setIsProfileLoading(false);
       return null;
     } finally {
@@ -141,7 +147,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refetchProfile = useCallback(async () => {
     if (!session?.user?.id) {
-      setProfile(null);
+      startTransition(() => {
+        setProfile(null);
+      });
       setIsProfileLoading(false);
       return null;
     }
@@ -151,12 +159,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const nextProfile = await getCandidateProfileByUserId(session.user.id);
-      setProfile(nextProfile);
+      startTransition(() => {
+        setProfile(nextProfile);
+      });
       return nextProfile;
     } catch (err) {
       const nextError = err instanceof Error ? err.message : "Erreur lors du chargement du profil";
       setError(nextError);
-      setProfile(null);
+      startTransition(() => {
+        setProfile(null);
+      });
       return null;
     } finally {
       setIsProfileLoading(false);
@@ -170,83 +182,123 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     hasInitializedSessionRef.current = true;
 
-    let hasHandledAuthEvent = false;
     let isMounted = true;
 
-    const finalizeInitialLoading = () => {
-      if (!hasHandledAuthEvent) {
-        setIsLoading(false);
-        hasHandledAuthEvent = true;
-      }
-    };
+    // Ensure we always clear isLoading even if a JS/DOM error occurs during initialization.
+    (async () => {
+      setIsLoading(true);
+      try {
+        setError(null);
+        const { data: sessionData } = await supabase.auth.getSession();
+        const initialSession = sessionData?.session ?? null;
+        const resolved = await resolveSessionRoles(initialSession);
+        if (!isMounted) return;
 
-    const authListener = supabase.auth.onAuthStateChange(async (event, nextSession) => {
-      if (!isMounted) {
-        return;
-      }
+        startTransition(() => {
+          setSession(resolved);
+        });
 
+        if (resolved) {
+          skipNextProfileLoadRef.current = true;
+          setIsProfileLoading(true);
+          try {
+            const nextProfile = await getCandidateProfileByUserId(resolved.user.id);
+            if (isMounted) {
+              startTransition(() => {
+                setProfile(nextProfile);
+              });
+            }
+          } catch (err) {
+            if (isMounted) setProfile(null);
+          } finally {
+            if (isMounted) setIsProfileLoading(false);
+          }
+        } else {
+          if (isMounted) {
+            startTransition(() => {
+              setProfile(null);
+            });
+            setIsProfileLoading(false);
+          }
+        }
+      } catch (err) {
+        if (isMounted) {
+          const nextError = err instanceof Error ? err.message : String(err);
+          setError(nextError);
+          // Do not clear storage or force sign-out for transient initialization errors.
+        }
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    })();
+
+    // Subscribe to auth changes for live updates (SIGN_IN, SIGN_OUT, TOKEN_REFRESH, etc.)
+    const authListener = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (!isMounted) return;
       setError(null);
 
+      // Quick path: if session is null, clear local session/profile state synchronously
       if (!nextSession) {
-        if (isMounted) {
+        startTransition(() => {
           setSession(null);
           setProfile(null);
-          setIsProfileLoading(false);
-        }
-
-        finalizeInitialLoading();
-        return;
-      }
-
-      const nextSessionWithResolvedRoles = await resolveSessionRoles(nextSession);
-
-      if (!isMounted) {
-        return;
-      }
-
-      setSession(nextSessionWithResolvedRoles);
-      finalizeInitialLoading();
-      skipNextProfileLoadRef.current = true;
-      setIsProfileLoading(true);
-
-      try {
-        const nextProfile = await getCandidateProfileByUserId(nextSessionWithResolvedRoles.user.id);
-        if (!isMounted) {
-          return;
-        }
-
-        setProfile(nextProfile);
-      } catch (err) {
-        if (!isMounted) {
-          return;
-        }
-
-        const nextError = err instanceof Error ? err.message : "Erreur lors du chargement du profil";
-        setError(nextError);
-        setProfile(null);
-      } finally {
-        if (!isMounted) {
-          return;
-        }
-
+        });
         setIsProfileLoading(false);
+        return;
       }
-    });
 
-    const timeoutId = window.setTimeout(() => {
-      finalizeInitialLoading();
-    }, 4000);
+      // IMPORTANT: Do not perform async/await directly in this handler to avoid a
+      // known supabase-js deadlock on certain environments. Schedule the async work
+      // with setTimeout(..., 0) so it runs outside the auth state change call stack.
+      setTimeout(() => {
+        (async () => {
+          try {
+            const nextSessionWithResolvedRoles = await resolveSessionRoles(nextSession);
+            if (!isMounted) return;
+            startTransition(() => {
+              setSession(nextSessionWithResolvedRoles);
+            });
+            skipNextProfileLoadRef.current = true;
+            setIsProfileLoading(true);
+
+            try {
+              const nextProfile = await getCandidateProfileByUserId(nextSessionWithResolvedRoles.user.id);
+              if (!isMounted) return;
+              startTransition(() => {
+                setProfile(nextProfile);
+              });
+            } catch (err) {
+              if (!isMounted) return;
+              setProfile(null);
+              const nextError = err instanceof Error ? err.message : "Erreur lors du chargement du profil";
+              setError(nextError);
+            } finally {
+              if (isMounted) setIsProfileLoading(false);
+            }
+          } catch (err) {
+            if (!isMounted) return;
+            const nextError = err instanceof Error ? err.message : String(err);
+            setError(nextError);
+          }
+        })();
+      }, 0);
+    });
 
     return () => {
       isMounted = false;
-      clearTimeout(timeoutId);
-      authListener.data.subscription.unsubscribe();
+      try {
+        authListener.data.subscription.unsubscribe();
+      } catch {
+        // ignore
+      }
     };
   }, [resolveSessionRoles]);
 
   useEffect(() => {
     if (!session?.user?.id) {
-      setProfile(null);
+      startTransition(() => {
+        setProfile(null);
+      });
       setIsProfileLoading(false);
       return;
     }
@@ -264,13 +316,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const nextProfile = await getCandidateProfileByUserId(session.user.id);
         if (isMounted) {
-          setProfile(nextProfile);
+          startTransition(() => {
+            setProfile(nextProfile);
+          });
         }
       } catch (err) {
-        if (isMounted) {
+          if (isMounted) {
           const nextError = err instanceof Error ? err.message : "Erreur lors du chargement du profil";
           setError(nextError);
-          setProfile(null);
+          startTransition(() => {
+            setProfile(null);
+          });
         }
       } finally {
         if (isMounted) {
@@ -294,9 +350,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await authApi.loginCandidate(email, password);
       const nextSession = await authApi.getCandidateSession();
       const resolvedSession = await resolveSessionRoles(nextSession);
-      setSession(resolvedSession);
+      startTransition(() => {
+        setSession(resolvedSession);
+      });
       if (!resolvedSession) {
-        setProfile(null);
+        startTransition(() => {
+          setProfile(null);
+        });
       }
       return data;
     } catch (err) {
@@ -329,8 +389,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       await authApi.logoutCandidate();
-      setSession(null);
-      setProfile(null);
+      startTransition(() => {
+        setSession(null);
+        setProfile(null);
+      });
       setIsProfileLoading(false);
       return true;
     } catch (err) {
