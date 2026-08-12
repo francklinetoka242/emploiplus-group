@@ -19,10 +19,8 @@ export function AuthPage() {
   const [message, setMessage] = React.useState<string | null>(null);
   const [authDetail, setAuthDetail] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    clearAuthStorage();
-    void supabase.auth.signOut().catch(() => undefined);
-  }, []);
+  // Do not clear storage or sign out on mount — this can cause SIGNED_OUT events
+  // that remount pages and break login flows (PKCE/state races).
 
   React.useEffect(() => {
     const state = location.state as
@@ -76,9 +74,6 @@ export function AuthPage() {
 
     setLoading(true);
     setMessage(null);
-
-    clearAuthStorage();
-    await supabase.auth.signOut().catch(() => undefined);
 
     try {
       const signInRequest = supabase.auth.signInWithPassword({

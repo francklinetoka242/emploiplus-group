@@ -1,3 +1,4 @@
+import { useAuthContext } from "@/features/authentication/context/AuthContext";
 import { useCandidate } from "@/hooks/useCandidate";
 import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
 import { Navigate } from "react-router-dom";
@@ -10,8 +11,9 @@ interface ProtectedCandidateRouteProps {
 
 export function ProtectedCandidateRoute({ children }: ProtectedCandidateRouteProps) {
   const { profile, loading } = useCandidate();
+  const { isLoading: authLoading } = useAuthContext();
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="space-y-4 w-full max-w-md p-4">

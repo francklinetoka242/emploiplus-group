@@ -184,113 +184,89 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let isMounted = true;
 
-    // Ensure we always clear isLoading even if a JS/DOM error occurs during initialization.
-    (async () => {
-      setIsLoading(true);
+    const safetyTimer = setTimeout(() => {
+      if (isMounted) {
+        console.warn("[AuthContext] Safety timeout déclenché : déblocage forcé des Skeletons");
+        setIsLoading(false);
+      }
+    }, 2500);
+
+    const initSession = async () => {
       try {
+        setIsLoading(true);
         setError(null);
-        const { data: sessionData } = await supabase.auth.getSession();
-        const initialSession = sessionData?.session ?? null;
-        const resolved = await resolveSessionRoles(initialSession);
+
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise<{ timeout: true }>((resolve) =>
+          setTimeout(() => resolve({ timeout: true }), 5000),
+        );
+
+        const result = (await Promise.race([sessionPromise, timeoutPromise])) as any;
+        console.log("[AuthContext] initSession getSession result:", result);
+
         if (!isMounted) return;
 
-        startTransition(() => {
-          setSession(resolved);
-        });
-
-        if (resolved) {
-          skipNextProfileLoadRef.current = true;
-          setIsProfileLoading(true);
-          try {
-            const nextProfile = await getCandidateProfileByUserId(resolved.user.id);
-            if (isMounted) {
-              startTransition(() => {
-                setProfile(nextProfile);
-              });
-            }
-          } catch (err) {
-            if (isMounted) setProfile(null);
-          } finally {
-            if (isMounted) setIsProfileLoading(false);
-          }
-        } else {
-          if (isMounted) {
+        if (!result?.timeout) {
+          const initialSession = result?.data?.session ?? null;
+          if (initialSession) {
             startTransition(() => {
-              setProfile(null);
+              setSession(initialSession);
             });
-            setIsProfileLoading(false);
+
+            resolveSessionRoles(initialSession)
+              .then((resolved) => {
+                if (!isMounted || !resolved) return;
+                startTransition(() => {
+                  setSession(resolved);
+                });
+              })
+              .catch((err) => {
+                console.error("[AuthContext] Profil load error:", err);
+              });
           }
         }
       } catch (err) {
-        if (isMounted) {
-          const nextError = err instanceof Error ? err.message : String(err);
-          setError(nextError);
-          // Do not clear storage or force sign-out for transient initialization errors.
-        }
+        console.error("[AuthContext] Session init error:", err);
       } finally {
-        if (isMounted) setIsLoading(false);
+        if (isMounted) {
+          clearTimeout(safetyTimer);
+          setIsLoading(false);
+        }
       }
-    })();
+    };
 
-    // Subscribe to auth changes for live updates (SIGN_IN, SIGN_OUT, TOKEN_REFRESH, etc.)
-    const authListener = supabase.auth.onAuthStateChange((event, nextSession) => {
+    void initSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      console.log("[AuthContext] onAuthStateChange event:", {
+        event,
+        email: nextSession?.user?.email ?? null,
+        session: nextSession,
+      });
+
       if (!isMounted) return;
-      setError(null);
 
-      // Quick path: if session is null, clear local session/profile state synchronously
-      if (!nextSession) {
-        startTransition(() => {
-          setSession(null);
-          setProfile(null);
-        });
-        setIsProfileLoading(false);
-        return;
-      }
-
-      // IMPORTANT: Do not perform async/await directly in this handler to avoid a
-      // known supabase-js deadlock on certain environments. Schedule the async work
-      // with setTimeout(..., 0) so it runs outside the auth state change call stack.
       setTimeout(() => {
-        (async () => {
-          try {
-            const nextSessionWithResolvedRoles = await resolveSessionRoles(nextSession);
-            if (!isMounted) return;
-            startTransition(() => {
-              setSession(nextSessionWithResolvedRoles);
-            });
-            skipNextProfileLoadRef.current = true;
-            setIsProfileLoading(true);
+        if (!isMounted) return;
 
-            try {
-              const nextProfile = await getCandidateProfileByUserId(nextSessionWithResolvedRoles.user.id);
-              if (!isMounted) return;
-              startTransition(() => {
-                setProfile(nextProfile);
-              });
-            } catch (err) {
-              if (!isMounted) return;
-              setProfile(null);
-              const nextError = err instanceof Error ? err.message : "Erreur lors du chargement du profil";
-              setError(nextError);
-            } finally {
-              if (isMounted) setIsProfileLoading(false);
-            }
-          } catch (err) {
-            if (!isMounted) return;
-            const nextError = err instanceof Error ? err.message : String(err);
-            setError(nextError);
+        if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+          if (nextSession) {
+            startTransition(() => {
+              setSession(nextSession);
+            });
           }
-        })();
+        } else if (event === "SIGNED_OUT") {
+          startTransition(() => {
+            setSession(null);
+          });
+        }
       }, 0);
     });
 
     return () => {
       isMounted = false;
-      try {
-        authListener.data.subscription.unsubscribe();
-      } catch {
-        // ignore
-      }
+      clearTimeout(safetyTimer);
+      subscription.unsubscribe();
     };
   }, [resolveSessionRoles]);
 

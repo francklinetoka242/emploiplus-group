@@ -65,8 +65,6 @@ export function CandidateLoginPage() {
 
     setLoading(true);
     try {
-      clearAuthStorage();
-      await supabase.auth.signOut().catch(() => undefined);
       await login(values.email, values.password);
 
       setSuccessMessage("Connexion réussie! Redirection en cours...");
