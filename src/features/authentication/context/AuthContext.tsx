@@ -69,6 +69,23 @@ export const AuthContext = createContext<AuthContextValue | undefined>(undefined
  * No candidate-specific logic.
  * Deterministic initialization.
  */
+function areSessionsEquivalent(current: Session | null, next: Session | null) {
+  if (current === next) {
+    return true;
+  }
+
+  if (!current || !next) {
+    return current === next;
+  }
+
+  return (
+    current.user?.id === next.user?.id &&
+    current.access_token === next.access_token &&
+    current.refresh_token === next.refresh_token &&
+    current.expires_at === next.expires_at
+  );
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -202,7 +219,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         const nextSession = data.session ?? null;
-        setSession(nextSession);
+        setSession((current) => {
+          if (areSessionsEquivalent(current, nextSession)) {
+            return current;
+          }
+          return nextSession;
+        });
         setRolesResolved(true);
         setAuthLoading(false);
         setError(null);
@@ -229,7 +251,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setSession(nextSession ?? null);
+      setSession((current) => {
+        const normalizedNextSession = nextSession ?? null;
+        if (areSessionsEquivalent(current, normalizedNextSession)) {
+          return current;
+        }
+        return normalizedNextSession;
+      });
       setRolesResolved(true);
       setAuthLoading(false);
       setError(null);
