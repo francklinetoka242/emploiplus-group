@@ -24,6 +24,33 @@ export function parseAuthErrorMessage(error: unknown): string {
     return "Une erreur est survenue";
   }
 
+  const rawMessage =
+    typeof error === "string"
+      ? error
+      : error instanceof Error
+        ? error.message
+        : typeof (error as { message?: unknown })?.message === "string"
+          ? String((error as { message?: unknown }).message)
+          : "";
+
+  const normalizedMessage = rawMessage.trim().toLowerCase();
+
+  if (
+    normalizedMessage.includes("invalid login credentials") ||
+    normalizedMessage.includes("invalid email or password") ||
+    normalizedMessage.includes("email or password is incorrect") ||
+    normalizedMessage.includes("wrong password") ||
+    normalizedMessage.includes("incorrect password") ||
+    normalizedMessage.includes("password is incorrect") ||
+    normalizedMessage.includes("user not found") ||
+    normalizedMessage.includes("no user found") ||
+    normalizedMessage.includes("invalid credentials")
+  ) {
+    return normalizedMessage.includes("password") || normalizedMessage.includes("wrong")
+      ? "Mot de passe incorrect"
+      : "Adresse Email ou mot de passe incorrect";
+  }
+
   if (typeof error === "string") {
     const trimmed = error.trim();
     return trimmed || "Une erreur est survenue";
@@ -37,6 +64,21 @@ export function parseAuthErrorMessage(error: unknown): string {
   }
 
   const errorRecord = error as Record<string, unknown>;
+  const code = typeof errorRecord.code === "string" ? errorRecord.code.toLowerCase() : "";
+
+  if (
+    code === "invalid_credentials" ||
+    code === "user_not_found" ||
+    code === "email_not_found" ||
+    code === "invalid_login_credentials"
+  ) {
+    return "Adresse Email ou mot de passe incorrect";
+  }
+
+  if (code === "wrong_password" || code === "invalid_password") {
+    return "Mot de passe incorrect";
+  }
+
   const candidates = [
     errorRecord.message,
     errorRecord.error_description,

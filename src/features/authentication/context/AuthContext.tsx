@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   const user = session?.user ?? null;
-  const [candidateAccess, setCandidateAccess] = useState<{ roles: DatabaseAppRole[]; permissions: Permission[] } | null>(null);
+  const [hasCandidateProfile, setHasCandidateProfile] = useState(false);
 
   // Normalize auth metadata (roles & permissions) from session
   const authMetadata = useMemo(() => getAuthMetadataFromSession(session), [session]);
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const detectCandidateAccess = async () => {
       if (!session?.user?.id) {
         if (isMounted) {
-          setCandidateAccess(null);
+          setHasCandidateProfile((current) => (current === false ? current : false));
         }
         return;
       }
@@ -104,17 +104,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        if (!error && data) {
-          const candidateRoles: DatabaseAppRole[] = ["candidate"];
-          const candidatePermissions = getPermissionsForRole("candidate") as Permission[];
-          setCandidateAccess({ roles: candidateRoles, permissions: candidatePermissions });
-          return;
-        }
-
-        setCandidateAccess(null);
+        const nextHasCandidateProfile = !error && Boolean(data);
+        setHasCandidateProfile((current) =>
+          current === nextHasCandidateProfile ? current : nextHasCandidateProfile,
+        );
       } catch {
         if (isMounted) {
-          setCandidateAccess(null);
+          setHasCandidateProfile(false);
         }
       }
     };
@@ -126,14 +122,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [session?.user?.id]);
 
+  const candidateRoles = useMemo<DatabaseAppRole[]>(
+    () => (hasCandidateProfile ? ["candidate"] : []),
+    [hasCandidateProfile],
+  );
+
+  const candidatePermissions = useMemo<Permission[]>(
+    () => (hasCandidateProfile ? (getPermissionsForRole("candidate") as Permission[]) : []),
+    [hasCandidateProfile],
+  );
+
   const roles = useMemo<DatabaseAppRole[]>(
-    () => Array.from(new Set([...authMetadata.roles, ...(candidateAccess?.roles ?? [])])),
-    [authMetadata.roles, candidateAccess?.roles],
+    () => Array.from(new Set([...authMetadata.roles, ...candidateRoles])),
+    [authMetadata.roles, candidateRoles],
   );
 
   const permissions = useMemo<Permission[]>(
-    () => Array.from(new Set([...authMetadata.permissions, ...(candidateAccess?.permissions ?? [])])),
-    [authMetadata.permissions, candidateAccess?.permissions],
+    () => Array.from(new Set([...authMetadata.permissions, ...candidatePermissions])),
+    [authMetadata.permissions, candidatePermissions],
   );
 
   const isAuthenticated = useMemo(() => Boolean(session), [session]);

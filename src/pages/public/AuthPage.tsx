@@ -4,7 +4,10 @@ import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { supabase } from "@/integrations/supabase/client";
-import { getSession as getCandidateSession } from "@/features/authentication/api/authApi";
+import {
+  getSession as getCandidateSession,
+  parseAuthErrorMessage,
+} from "@/features/authentication/api/authApi";
 import { Button } from "@/components/ui/button";
 import favicon from "@/assets/favicon.ico";
 import { clearAuthStorage } from "@/features/authentication/utils/authStorage";
@@ -96,7 +99,7 @@ export function AuthPage() {
       const { data, error } = await Promise.race([signInRequest, timeoutPromise]);
 
       if (error) {
-        setError(error.message);
+        setError(parseAuthErrorMessage(error));
         return;
       }
 
