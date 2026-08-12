@@ -45,7 +45,7 @@ export function CandidateLoginPage() {
     formState: { errors },
   } = form;
 
-  const { login, user, isAuthenticated, roles, rolesResolved } = useAuth();
+  const { login, user, isAuthenticated, rolesResolved } = useAuth();
 
   const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -102,15 +102,12 @@ export function CandidateLoginPage() {
   };
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      // Wait until roles have been resolved to avoid redirecting admins to candidate dashboard
-      if (!rolesResolved) return;
-
-      const isAdmin = Array.isArray(roles) && roles.includes("admin");
-      const redirectUrl = isAdmin ? "/admin/dashboard" : "/candidate/dashboard";
-      navigate(redirectUrl, { replace: true });
+    if (!isAuthenticated || !user || !rolesResolved) {
+      return;
     }
-  }, [isAuthenticated, user, roles, rolesResolved, navigate]);
+
+    navigate("/candidate/dashboard", { replace: true });
+  }, [isAuthenticated, user?.id, rolesResolved, navigate]);
 
   const handleResendEmail = async () => {
     setResending(true);
