@@ -44,9 +44,12 @@ function createSupabaseClient() {
       // Autoriser Supabase à détecter la session dans l'URL (utile pour OAuth redirects
       // et pour s'assurer que la session initiale est correctement restaurée en WebView).
       detectSessionInUrl: true,
-      // Désactive le lock de localStorage — empêche les verrous/gel lors du F5
-      // (supabase-js tente parfois de locker localStorage entre onglets).
-      lock: false,
+      // Supabase s'attend à recevoir une fonction de lock. Fournir une no-op
+      // async function évite l'erreur "this.lock is not a function" tout en
+      // désactivant le verrouillage effectif.
+      lock: async (name: string, acquireTimeout: number, fn: () => Promise<any>) => {
+        return await fn();
+      },
     },
   });
 }
