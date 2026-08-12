@@ -22,23 +22,44 @@ export interface AuthMetadataSnapshot {
   permissions: Permission[];
 }
 
-export function getAuthMetadataFromSession(session: Session | null | undefined): AuthMetadataSnapshot {
+import { normalizeAppMetadataRoles } from "@/features/authentication/utils/resolveAuthRoles";
+
+export function getAuthMetadataFromSession(
+  session: Session | null | undefined,
+): AuthMetadataSnapshot {
   if (!session?.user?.app_metadata) {
     return { roles: [], permissions: [] };
   }
 
-  const rawRoles = Array.isArray(session.user.app_metadata.roles)
-    ? session.user.app_metadata.roles.filter((value): value is string => typeof value === "string")
+  const rawPermissions = Array.isArray(session.user.app_metadata.permissions)
+    ? session.user.app_metadata.permissions.filter(
+        (value): value is string => typeof value === "string",
+      )
     : [];
 
-  const rawPermissions = Array.isArray(session.user.app_metadata.permissions)
-    ? session.user.app_metadata.permissions.filter((value): value is string => typeof value === "string")
-    : [];
+  const normalizedRoles = normalizeAppMetadataRoles(session.user.app_metadata);
 
   return {
-    roles: resolveAuthRoles(rawRoles, []),
+    roles: normalizedRoles,
     permissions: rawPermissions.filter((permission): permission is Permission =>
-      ["jobs.read", "jobs.create", "jobs.edit", "jobs.delete", "candidate.read", "candidate.update", "candidate.apply", "blog.read", "blog.write", "notifications.read", "notifications.manage", "services.manage", "dashboard.admin", "dashboard.candidate", "seo.manage", "team.manage"].includes(permission as Permission),
+      [
+        "jobs.read",
+        "jobs.create",
+        "jobs.edit",
+        "jobs.delete",
+        "candidate.read",
+        "candidate.update",
+        "candidate.apply",
+        "blog.read",
+        "blog.write",
+        "notifications.read",
+        "notifications.manage",
+        "services.manage",
+        "dashboard.admin",
+        "dashboard.candidate",
+        "seo.manage",
+        "team.manage",
+      ].includes(permission as Permission),
     ),
   };
 }

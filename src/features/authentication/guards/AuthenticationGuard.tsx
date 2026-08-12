@@ -8,25 +8,37 @@ interface AuthenticationGuardProps {
   loadingSkeleton?: React.ReactNode;
 }
 
+/**
+ * AuthenticationGuard: Single responsibility
+ *
+ * Responsibilities:
+ * - Display loading skeleton during auth initialization (authLoading = true)
+ * - Once initialized, verify user exists
+ * - Redirect to login if no user
+ * - Pass through to children if authenticated
+ *
+ * Does NOT:
+ * - Check roles or permissions (that's RoleGuard/PermissionGuard)
+ * - Make any async calls
+ * - Manage profile loading
+ */
 export function AuthenticationGuard({
   children,
   fallbackPath = "/candidate/login",
   loadingSkeleton,
 }: AuthenticationGuardProps) {
-  const { user, isLoading, error } = useAuth();
+  const { user, authLoading } = useAuth();
 
-  // Attendre impérativement la fin du chargement de la session
-  if (isLoading) {
+  // During initialization, show skeleton
+  if (authLoading) {
     return <>{loadingSkeleton ?? <DashboardLayoutSkeleton />}</>;
   }
 
-  // Rediriger uniquement une fois le chargement terminé si l'utilisateur est absent
+  // After initialization, check if user exists
   if (!user) {
-    if (error) {
-      console.debug("[AuthenticationGuard] Authentication error:", error);
-    }
     return <Navigate to={fallbackPath} replace />;
   }
 
+  // User is authenticated, pass through to next guard or children
   return <>{children}</>;
 }

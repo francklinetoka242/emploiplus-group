@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
@@ -89,12 +89,12 @@ export function CandidateDashboardPage() {
   const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [offersLoading, setOffersLoading] = useState(true);
   const [isCompletionCollapsed, setIsCompletionCollapsed] = useState(true);
-  const { offers: publishedOffers, loading: publishedOffersLoading } = useJobs({
-    status: "published",
-    limit: 3,
-    orderBy: "published_at",
-    order: "desc",
-  });
+  const jobFilters = useMemo(
+    () => ({ status: "published", limit: 3, orderBy: "published_at", order: "desc" }),
+    [],
+  );
+
+  const { offers: publishedOffers, loading: publishedOffersLoading } = useJobs(jobFilters);
   const [experienceEntries, setExperienceEntries] = useState<CandidateExperience[]>([]);
   const { educations } = useCandidateEducation(profile?.id);
   const { skills } = useCandidateSkills(profile?.id);
@@ -125,9 +125,7 @@ export function CandidateDashboardPage() {
         title: offer.title ?? "Offre à découvrir",
         company: offer.company ?? "Entreprise",
         location: offer.location_city ?? "À distance",
-        postedDate: offer.publish_at
-          ? new Date(offer.publish_at).toLocaleDateString("fr-FR")
-          : "—",
+        postedDate: offer.publish_at ? new Date(offer.publish_at).toLocaleDateString("fr-FR") : "—",
         type: offer.contract_type ?? "CDI",
         salary: offer.salary ?? "Salaire à négocier",
         description: offer.description ?? null,
@@ -170,18 +168,30 @@ export function CandidateDashboardPage() {
       const raw = localStorage.getItem(`emploiplus-candidate-documents-${profile.id}`);
       if (!raw) {
         // Fallback: if server knows the cv_url, hydrate local state from profile
-        const serverCvUrl = (profile as any)?.cv_url as string | undefined;
+        const serverCvUrl = profile?.cv_url as string | undefined;
         if (serverCvUrl) {
           let resolved = serverCvUrl;
           if (!serverCvUrl.startsWith("http")) {
             try {
-              const { data: signed, error } = await supabase.storage.from(CANDIDATE_DOCUMENTS_BUCKET).createSignedUrl(serverCvUrl, 60 * 60);
+              const { data: signed, error } = await supabase.storage
+                .from(CANDIDATE_DOCUMENTS_BUCKET)
+                .createSignedUrl(serverCvUrl, 60 * 60);
               if (!error && signed?.signedUrl) resolved = signed.signedUrl;
             } catch (e) {
               console.debug("Failed to generate signed URL for dashboard CV", e);
             }
           }
-          setCandidateDocuments({ cv: { id: `cv-server-${profile.id}`, name: "CV", displayName: "Mon CV", date: new Date().toISOString(), size: "", url: resolved }, documents: [] });
+          setCandidateDocuments({
+            cv: {
+              id: `cv-server-${profile.id}`,
+              name: "CV",
+              displayName: "Mon CV",
+              date: new Date().toISOString(),
+              size: "",
+              url: resolved,
+            },
+            documents: [],
+          });
           return;
         }
 
@@ -242,7 +252,9 @@ export function CandidateDashboardPage() {
 
     const candidateCvText = profile?.cv_text;
     const candidateEmbedding = profile?.embedding_vector;
-    const hasCvUploaded = Boolean(candidateDocuments.cv?.url || candidateCvText || candidateEmbedding);
+    const hasCvUploaded = Boolean(
+      candidateDocuments.cv?.url || candidateCvText || candidateEmbedding,
+    );
 
     console.debug("[Dashboard] Preparing recommended jobs", {
       candidateId: profile.id,
@@ -271,12 +283,15 @@ export function CandidateDashboardPage() {
           RECOMMENDED_JOBS_PAGE_SIZE,
           (recommendedPage - 1) * RECOMMENDED_JOBS_PAGE_SIZE,
         );
-        console.debug(`[Dashboard] getRecommendedJobs returned ${Array.isArray(jobs) ? jobs.length : 0} jobs`, {
-          candidateId: profile.id,
-          requestedCount: RECOMMENDED_JOBS_PAGE_SIZE,
-          page: recommendedPage,
-          jobs,
-        });
+        console.debug(
+          `[Dashboard] getRecommendedJobs returned ${Array.isArray(jobs) ? jobs.length : 0} jobs`,
+          {
+            candidateId: profile.id,
+            requestedCount: RECOMMENDED_JOBS_PAGE_SIZE,
+            page: recommendedPage,
+            jobs,
+          },
+        );
         if (!mounted) return;
         setRecommendedJobs(jobs || []);
         setHasMoreRecommendedJobs((jobs?.length ?? 0) === RECOMMENDED_JOBS_PAGE_SIZE);
@@ -303,12 +318,7 @@ export function CandidateDashboardPage() {
 
   useEffect(() => {
     setRecommendedPage(1);
-  }, [
-    profile?.id,
-    candidateDocuments.cv?.url,
-    profile?.cv_text,
-    profile?.embedding_vector,
-  ]);
+  }, [profile?.id, candidateDocuments.cv?.url, profile?.cv_text, profile?.embedding_vector]);
 
   const completion = useProfileCompletion({
     profile,
@@ -431,7 +441,9 @@ export function CandidateDashboardPage() {
               <Target className="w-5 h-5 text-foreground" />
               <CardTitle>Offres recommandées pour votre profil</CardTitle>
             </div>
-            <CardDescription>Suggestions automatiques basées sur votre CV et votre profil</CardDescription>
+            <CardDescription>
+              Suggestions automatiques basées sur votre CV et votre profil
+            </CardDescription>
           </div>
           <Link to="/jobs">
             <Button variant="outline" size="sm">
@@ -448,15 +460,21 @@ export function CandidateDashboardPage() {
                 <Skeleton className="h-28 w-full rounded-2xl" />
                 <Skeleton className="h-28 w-full rounded-2xl" />
               </div>
-            ) : (recommendedJobs.length > 0 ? (
+            ) : recommendedJobs.length > 0 ? (
               <>
                 {recommendedJobs.map((offer, index) => {
-                  const location = [offer.location_city ?? "", offer.company ?? ""].filter(Boolean).join(" • ");
-                  const previewText = (offer.description || offer.requirements || "").replace(/\s+/g, " ").trim();
+                  const location = [offer.location_city ?? "", offer.company ?? ""]
+                    .filter(Boolean)
+                    .join(" • ");
+                  const previewText = (offer.description || offer.requirements || "")
+                    .replace(/\s+/g, " ")
+                    .trim();
                   const contractLabel = offer.contract_type ?? null;
                   const tags = (offer.tags || []).filter(Boolean).slice(0, 3);
                   const deadlineValue = offer.deadline ?? offer.expires_at ?? null;
-                  const isExpired = Boolean(deadlineValue && new Date(deadlineValue).getTime() < Date.now());
+                  const isExpired = Boolean(
+                    deadlineValue && new Date(deadlineValue).getTime() < Date.now(),
+                  );
 
                   return (
                     <JobCard
@@ -476,7 +494,7 @@ export function CandidateDashboardPage() {
                       deadlineValue={deadlineValue}
                       isExpired={isExpired}
                       index={index}
-                      matchScore={typeof offer.score === 'number' ? offer.score : undefined}
+                      matchScore={typeof offer.score === "number" ? offer.score : undefined}
                       onApplyClick={() => navigate(`/candidate/jobs/${offer.slug}/apply`)}
                     />
                   );
@@ -507,13 +525,16 @@ export function CandidateDashboardPage() {
               </>
             ) : (
               <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-                {profile?.id && !(candidateDocuments.cv?.url || (profile as any)?.cv_text) ? (
-                  <div>Vous n'avez pas encore téléversé de CV. Téléversez un CV pour obtenir des recommandations personnalisées.</div>
+                {profile?.id && !(candidateDocuments.cv?.url || profile?.cv_text) ? (
+                  <div>
+                    Vous n'avez pas encore téléversé de CV. Téléversez un CV pour obtenir des
+                    recommandations personnalisées.
+                  </div>
                 ) : (
                   <div>Aucune recommandation disponible pour le moment.</div>
                 )}
               </div>
-            ))}
+            )}
           </div>
         </CardContent>
       </Card>

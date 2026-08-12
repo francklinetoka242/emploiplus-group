@@ -7,7 +7,7 @@ import { AuthProvider } from "@/features/authentication/context/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
 import { PublicLayout } from "@/components/site/PublicLayout";
-import { useAuthContext } from "@/features/authentication/context/AuthContext";
+import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 import { ProtectedRoute } from "@/features/authentication/guards";
 import { isMobileApp } from "@/lib/isMobileApp";
 import {
@@ -53,7 +53,9 @@ const ServicesPage = lazy(() =>
 );
 const HubEmploiPage = lazy(() => import("@/pages/public/services/HubEmploiPage"));
 const HubCandidatPage = lazy(() => import("@/pages/public/services/HubCandidatPage"));
-const SolutionsEntreprisePage = lazy(() => import("@/pages/public/services/SolutionsEntreprisePage"));
+const SolutionsEntreprisePage = lazy(
+  () => import("@/pages/public/services/SolutionsEntreprisePage"),
+);
 const PrivacyPolicyPage = lazy(() =>
   import("@/pages/public/PrivacyPolicyPage").then((m) => ({ default: m.PrivacyPolicyPage })),
 );
@@ -64,7 +66,9 @@ const CguPage = lazy(() => import("@/pages/public/CguPage").then((m) => ({ defau
 const FAQPage = lazy(() => import("@/pages/public/FAQPage").then((m) => ({ default: m.default })));
 
 // Lazy load admin pages (heavy feature area)
-const AdminPage = lazy(() => import("@/pages/admin/AdminPage").then((m) => ({ default: m.AdminPage })));
+const AdminPage = lazy(() =>
+  import("@/pages/admin/AdminPage").then((m) => ({ default: m.AdminPage })),
+);
 const AdminHomePage = lazy(() =>
   import("@/pages/admin/AdminHomePage").then((m) => ({ default: m.AdminHomePage })),
 );
@@ -86,16 +90,26 @@ const AdminJobCreatePage = lazy(() =>
 const AdminBlogCreatePage = lazy(() =>
   import("@/pages/admin/AdminBlogCreatePage").then((m) => ({ default: m.AdminBlogCreatePage })),
 );
-const AdminSEOPage = lazy(() => import("@/pages/admin/AdminSEOPage").then((m) => ({ default: m.AdminSEOPage })));
+const AdminSEOPage = lazy(() =>
+  import("@/pages/admin/AdminSEOPage").then((m) => ({ default: m.AdminSEOPage })),
+);
 const AdminPrivacyPolicyPage = lazy(() =>
-  import("@/pages/admin/AdminPrivacyPolicyPage").then((m) => ({ default: m.AdminPrivacyPolicyPage })),
+  import("@/pages/admin/AdminPrivacyPolicyPage").then((m) => ({
+    default: m.AdminPrivacyPolicyPage,
+  })),
 );
 const AdminLegalDocumentsPage = lazy(() =>
-  import("@/pages/admin/AdminLegalDocumentsPage").then((m) => ({ default: m.AdminLegalDocumentsPage })),
+  import("@/pages/admin/AdminLegalDocumentsPage").then((m) => ({
+    default: m.AdminLegalDocumentsPage,
+  })),
 );
-const AdminCguPage = lazy(() => import("@/pages/admin/AdminCguPage").then((m) => ({ default: m.AdminCguPage })));
+const AdminCguPage = lazy(() =>
+  import("@/pages/admin/AdminCguPage").then((m) => ({ default: m.AdminCguPage })),
+);
 const AdminNotificationsPage = lazy(() =>
-  import("@/pages/admin/AdminNotificationsPage").then((m) => ({ default: m.AdminNotificationsPage })),
+  import("@/pages/admin/AdminNotificationsPage").then((m) => ({
+    default: m.AdminNotificationsPage,
+  })),
 );
 const AdminCandidatesPage = lazy(() =>
   import("@/pages/admin/AdminCandidatesPage").then((m) => ({ default: m.AdminCandidatesPage })),
@@ -143,16 +157,22 @@ const CandidateCVPage = lazy(() =>
   import("@/pages/candidate/CandidateCVPage").then((m) => ({ default: m.CandidateCVPage })),
 );
 const CandidateCreateCVPage = lazy(() =>
-  import("@/pages/candidate/CandidateCreateCVPage").then((m) => ({ default: m.CandidateCreateCVPage })),
+  import("@/pages/candidate/CandidateCreateCVPage").then((m) => ({
+    default: m.CandidateCreateCVPage,
+  })),
 );
 const CandidateCreateCVEditorPage = lazy(() =>
-  import("@/pages/candidate/CandidateCreateCVEditorPage").then((m) => ({ default: m.CandidateCreateCVEditorPage })),
+  import("@/pages/candidate/CandidateCreateCVEditorPage").then((m) => ({
+    default: m.CandidateCreateCVEditorPage,
+  })),
 );
 const CreationMotivationRedirect = lazy(() =>
   import("@/pages/candidate/CreationMotivationRedirect").then((m) => ({ default: m.default })),
 );
 const CandidateDocumentsPage = lazy(() =>
-  import("@/pages/candidate/CandidateDocumentsPage").then((m) => ({ default: m.CandidateDocumentsPage })),
+  import("@/pages/candidate/CandidateDocumentsPage").then((m) => ({
+    default: m.CandidateDocumentsPage,
+  })),
 );
 const CandidateProfileEditPage = lazy(() =>
   import("@/pages/candidate/CandidateProfileEditPage").then((m) => ({ default: m.default })),
@@ -222,21 +242,15 @@ function withSuspense(element: React.ReactNode, fallback: React.ReactNode) {
 }
 
 function SharedPublicRouteShell() {
-  const { profile, isLoading, isProfileLoading } = useAuthContext();
+  const { authLoading } = useAuthContext();
   const content = <Outlet />;
 
-  if (isLoading || isProfileLoading) {
+  if (authLoading) {
     return <PublicLayout>{content}</PublicLayout>;
   }
 
-  if (profile) {
-    return (
-      <ProtectedRoute fallbackPath="/candidate/login" requiredPermissions={["dashboard.candidate"]}>
-        <CandidateLayout>{content}</CandidateLayout>
-      </ProtectedRoute>
-    );
-  }
-
+  // Always render with public layout for shared routes.
+  // Candidate-specific layouts are applied by candidate routes themselves.
   return <PublicLayout>{content}</PublicLayout>;
 }
 
@@ -271,7 +285,9 @@ function AppContent() {
       }
 
       try {
-        console.warn("[App] Restored session has unconfirmed email. Skipping automatic signOut/storage clear to preserve tokens.");
+        console.warn(
+          "[App] Restored session has unconfirmed email. Skipping automatic signOut/storage clear to preserve tokens.",
+        );
       } catch (error) {
         console.error("[App] Error validating session:", error);
       }
@@ -286,29 +302,68 @@ function AppContent() {
         <Route path="/" element={withSuspense(<HomePage />, <PublicPageSkeleton />)} />
         <Route path="/about" element={withSuspense(<AboutPage />, <PublicPageSkeleton />)} />
         <Route path="/services" element={withSuspense(<ServicesPage />, <PublicPageSkeleton />)} />
-        <Route path="/services/hub-candidat-intelligent" element={withSuspense(<HubCandidatPage />, <PublicPageSkeleton />)} />
-        <Route path="/services/solutions-entreprises-bpo" element={withSuspense(<SolutionsEntreprisePage />, <PublicPageSkeleton />)} />
-        <Route path="/services/:slug" element={withSuspense(<ServiceDetailPage />, <PublicPageSkeleton />)} />
-        <Route path="/services/hub-emploi-recrutement/landing" element={withSuspense(<HubEmploiPage />, <PublicPageSkeleton />)} />
+        <Route
+          path="/services/hub-candidat-intelligent"
+          element={withSuspense(<HubCandidatPage />, <PublicPageSkeleton />)}
+        />
+        <Route
+          path="/services/solutions-entreprises-bpo"
+          element={withSuspense(<SolutionsEntreprisePage />, <PublicPageSkeleton />)}
+        />
+        <Route
+          path="/services/:slug"
+          element={withSuspense(<ServiceDetailPage />, <PublicPageSkeleton />)}
+        />
+        <Route
+          path="/services/hub-emploi-recrutement/landing"
+          element={withSuspense(<HubEmploiPage />, <PublicPageSkeleton />)}
+        />
         <Route path="/jobs" element={withSuspense(<JobsPage />, <JobsPageSkeleton />)} />
-        <Route path="/jobs/:slug" element={withSuspense(<JobOfferDetailPage />, <JobOfferDetailSkeleton />)} />
+        <Route
+          path="/jobs/:slug"
+          element={withSuspense(<JobOfferDetailPage />, <JobOfferDetailSkeleton />)}
+        />
         <Route path="/blog" element={withSuspense(<BlogPage />, <BlogPageSkeleton />)} />
-        <Route path="/blog/:slug" element={withSuspense(<BlogPostDetailPage />, <BlogPageSkeleton />)} />
+        <Route
+          path="/blog/:slug"
+          element={withSuspense(<BlogPostDetailPage />, <BlogPageSkeleton />)}
+        />
         <Route path="/faq" element={withSuspense(<FAQPage />, <PublicPageSkeleton />)} />
         <Route path="/contact" element={withSuspense(<ContactPage />, <PublicPageSkeleton />)} />
-        <Route path="/politique-de-confidentialite" element={withSuspense(<PrivacyPolicyPage />, <PublicPageSkeleton />)} />
-        <Route path="/mentions-legales" element={withSuspense(<LegalDocumentsPage />, <PublicPageSkeleton />)} />
+        <Route
+          path="/politique-de-confidentialite"
+          element={withSuspense(<PrivacyPolicyPage />, <PublicPageSkeleton />)}
+        />
+        <Route
+          path="/mentions-legales"
+          element={withSuspense(<LegalDocumentsPage />, <PublicPageSkeleton />)}
+        />
         <Route path="/cgu" element={withSuspense(<CguPage />, <PublicPageSkeleton />)} />
       </Route>
 
       <Route path="/auth" element={<AuthPage />} />
 
       {/* Candidate pages */}
-      <Route path="/candidate/login" element={withSuspense(<CandidateLoginPage />, <CandidateDashboardSkeleton />)} />
-      <Route path="/candidate/signup" element={withSuspense(<CandidateSignupPage />, <CandidateDashboardSkeleton />)} />
-      <Route path="/candidate/forgot-password" element={withSuspense(<CandidateForgotPasswordPage />, <CandidateDashboardSkeleton />)} />
-      <Route path="/candidate/reset-password" element={withSuspense(<CandidateResetPasswordPage />, <CandidateDashboardSkeleton />)} />
-      <Route path="/candidate/confirm" element={withSuspense(<CandidateConfirmPage />, <CandidateDashboardSkeleton />)} />
+      <Route
+        path="/candidate/login"
+        element={withSuspense(<CandidateLoginPage />, <CandidateDashboardSkeleton />)}
+      />
+      <Route
+        path="/candidate/signup"
+        element={withSuspense(<CandidateSignupPage />, <CandidateDashboardSkeleton />)}
+      />
+      <Route
+        path="/candidate/forgot-password"
+        element={withSuspense(<CandidateForgotPasswordPage />, <CandidateDashboardSkeleton />)}
+      />
+      <Route
+        path="/candidate/reset-password"
+        element={withSuspense(<CandidateResetPasswordPage />, <CandidateDashboardSkeleton />)}
+      />
+      <Route
+        path="/candidate/confirm"
+        element={withSuspense(<CandidateConfirmPage />, <CandidateDashboardSkeleton />)}
+      />
       <Route
         path="/candidate"
         element={
@@ -322,31 +377,82 @@ function AppContent() {
         }
       >
         <Route index element={<Navigate to="/candidate/dashboard" replace />} />
-        <Route path="dashboard" element={withSuspense(<CandidateDashboardPage />, <CandidateDashboardSkeleton />)} />
+        <Route
+          path="dashboard"
+          element={withSuspense(<CandidateDashboardPage />, <CandidateDashboardSkeleton />)}
+        />
         <Route path="public" element={withSuspense(<HomePage />, <PublicPageSkeleton />)} />
-        <Route path="public/services" element={withSuspense(<ServicesPage />, <PublicPageSkeleton />)} />
+        <Route
+          path="public/services"
+          element={withSuspense(<ServicesPage />, <PublicPageSkeleton />)}
+        />
         <Route path="public/jobs" element={withSuspense(<JobsPage />, <JobsPageSkeleton />)} />
         <Route path="public/blog" element={withSuspense(<BlogPage />, <BlogPageSkeleton />)} />
         <Route path="public/about" element={withSuspense(<AboutPage />, <PublicPageSkeleton />)} />
-        <Route path="public/contact" element={withSuspense(<ContactPage />, <PublicPageSkeleton />)} />
-        <Route path="profile" element={withSuspense(<CandidateProfilePage />, <CandidateDashboardSkeleton />)} />
-        <Route path="profile/edit" element={withSuspense(<CandidateProfileEditPage />, <CandidateDashboardSkeleton />)} />
-        <Route path="documents" element={withSuspense(<CandidateDocumentsPage />, <CandidateDashboardSkeleton />)} />
-        <Route path="guides" element={withSuspense(<CandidateLocalGuidesPage />, <CandidateDashboardSkeleton />)} />
+        <Route
+          path="public/contact"
+          element={withSuspense(<ContactPage />, <PublicPageSkeleton />)}
+        />
+        <Route
+          path="profile"
+          element={withSuspense(<CandidateProfilePage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="profile/edit"
+          element={withSuspense(<CandidateProfileEditPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="documents"
+          element={withSuspense(<CandidateDocumentsPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="guides"
+          element={withSuspense(<CandidateLocalGuidesPage />, <CandidateDashboardSkeleton />)}
+        />
         {/* Backwards-compatible redirects */}
         <Route path="creation" element={<Navigate to="/candidate/documents" replace />} />
         <Route path="creation-motivation" element={<CreationMotivationRedirect />} />
-        <Route path="experience" element={<Navigate to="/candidate/profile?tab=experience" replace />} />
-        <Route path="education" element={<Navigate to="/candidate/profile?tab=education" replace />} />
+        <Route
+          path="experience"
+          element={<Navigate to="/candidate/profile?tab=experience" replace />}
+        />
+        <Route
+          path="education"
+          element={<Navigate to="/candidate/profile?tab=education" replace />}
+        />
         <Route path="skills" element={<Navigate to="/candidate/profile?tab=skills" replace />} />
-        <Route path="languages" element={<Navigate to="/candidate/profile?tab=languages" replace />} />
-        <Route path="preferences" element={<Navigate to="/candidate/profile?tab=preferences" replace />} />
-        <Route path="applications" element={withSuspense(<CandidateApplicationsPage />, <CandidateDashboardSkeleton />)} />
-        <Route path="applications/:id" element={withSuspense(<CandidateApplicationDetailPage />, <CandidateDashboardSkeleton />)} />
-        <Route path="saved-offers" element={withSuspense(<CandidateSavedOffersPage />, <CandidateDashboardSkeleton />)} />
-        <Route path="notifications" element={withSuspense(<CandidateNotificationsPage />, <CandidateDashboardSkeleton />)} />
-        <Route path="settings" element={withSuspense(<CandidateSettingsPage />, <CandidateDashboardSkeleton />)} />
-        <Route path="jobs/:slug/apply" element={withSuspense(<CandidateJobApplyPage />, <CandidateDashboardSkeleton />)} />
+        <Route
+          path="languages"
+          element={<Navigate to="/candidate/profile?tab=languages" replace />}
+        />
+        <Route
+          path="preferences"
+          element={<Navigate to="/candidate/profile?tab=preferences" replace />}
+        />
+        <Route
+          path="applications"
+          element={withSuspense(<CandidateApplicationsPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="applications/:id"
+          element={withSuspense(<CandidateApplicationDetailPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="saved-offers"
+          element={withSuspense(<CandidateSavedOffersPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="notifications"
+          element={withSuspense(<CandidateNotificationsPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="settings"
+          element={withSuspense(<CandidateSettingsPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="jobs/:slug/apply"
+          element={withSuspense(<CandidateJobApplyPage />, <CandidateDashboardSkeleton />)}
+        />
       </Route>
 
       <Route

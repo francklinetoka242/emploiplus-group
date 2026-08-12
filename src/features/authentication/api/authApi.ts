@@ -126,7 +126,11 @@ export async function loginCandidate(email: string, password: string) {
   return data;
 }
 
-export async function signupCandidate(email: string, password: string, options?: { redirectTo?: string; data?: Record<string, unknown> }) {
+export async function signupCandidate(
+  email: string,
+  password: string,
+  options?: { redirectTo?: string; data?: Record<string, unknown> },
+) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -151,29 +155,25 @@ export async function getCandidateSession() {
   // IMPORTANT: Do not clear auth storage here on null session or network errors.
   // Temporary absence of a session (e.g. during startup) must not remove tokens
   // from localStorage. Clearing auth storage belongs only to explicit logout.
-  try {
-    const { data, error } = await supabase.auth.getSession();
-    
-    if (error) {
-      throw error;
-    }
+  const { data, error } = await supabase.auth.getSession();
 
-    const session = data.session ?? null;
-    if (!session) {
-      return null;
-    }
-
-    const user = session.user;
-    if (user.email_confirmed_at === null) {
-      // Ne pas vider le storage ici - la session est valide, juste l'email non confirmé
-      // Retourner null pour forcer la redirection, mais l'utilisateur peut toujours se reconnecter
-      return null;
-    }
-
-    return session;
-  } catch (error) {
+  if (error) {
     throw error;
   }
+
+  const session = data.session ?? null;
+  if (!session) {
+    return null;
+  }
+
+  const user = session.user;
+  if (user.email_confirmed_at === null) {
+    // Ne pas vider le storage ici - la session est valide, juste l'email non confirmé
+    // Retourner null pour forcer la redirection, mais l'utilisateur peut toujours se reconnecter
+    return null;
+  }
+
+  return session;
 }
 
 export async function resendConfirmationEmail(email: string) {
@@ -185,7 +185,9 @@ export async function resendConfirmationEmail(email: string) {
 
   const body = await response.json().catch(() => null);
   if (!response.ok) {
-    throw body?.error ? new Error(body.error) : new Error("Impossible de renvoyer l'email de confirmation.");
+    throw body?.error
+      ? new Error(body.error)
+      : new Error("Impossible de renvoyer l'email de confirmation.");
   }
 
   return true;
@@ -200,7 +202,9 @@ export async function requestPasswordReset(email: string) {
 
   const body = await response.json().catch(() => null);
   if (!response.ok) {
-    throw body?.error ? new Error(body.error) : new Error("Impossible d'envoyer le lien de réinitialisation.");
+    throw body?.error
+      ? new Error(body.error)
+      : new Error("Impossible d'envoyer le lien de réinitialisation.");
   }
 
   return true;

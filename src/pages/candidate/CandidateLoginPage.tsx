@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,16 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 import { parseAuthErrorMessage, resendConfirmationEmail } from "@/features/authentication/api/authApi";
-import { clearAuthStorage } from "@/features/authentication/utils/authStorage";
 import { useAuth } from "@/features/authentication/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import favicon from "@/assets/favicon.ico";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { loginSchema, type LoginFormValues } from "@/features/forms/schemas/auth.schemas";
 
 export function CandidateLoginPage() {
@@ -24,7 +20,8 @@ export function CandidateLoginPage() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const state = location.state as { notification?: string; pendingEmail?: string; from?: string } | null;
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const isSubmittingRef = useRef(false);
   const [resending, setResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState(state?.notification || "");
@@ -42,7 +39,19 @@ export function CandidateLoginPage() {
     },
   });
 
-  const { login } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form;
+
+  const { login, user, isAuthenticated, roles, rolesResolved } = useAuth();
+
+  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    await handleSubmit(onSubmit)();
+  };
 
   useEffect(() => {
     if (searchParams.get("confirmed") === "true") {
@@ -58,17 +67,19 @@ export function CandidateLoginPage() {
     canonical: "https://emploiplus.group/#/candidate/login",
   });
 
-  const handleSubmit = async (values: LoginFormValues) => {
+  const onSubmit = async (values: LoginFormValues) => {
+    if (isSubmittingRef.current) {
+      return;
+    }
+    isSubmittingRef.current = true;
     setErrorMessage("");
     setSuccessMessage("");
     setEmailNotConfirmed(false);
 
-    setLoading(true);
+    setIsLoading(true);
     try {
       await login(values.email, values.password);
-
       setSuccessMessage("Connexion réussie! Redirection en cours...");
-      navigate(state?.from || "/candidate/dashboard", { replace: true });
     } catch (error: unknown) {
       if (
         typeof error === "object" &&
@@ -85,9 +96,21 @@ export function CandidateLoginPage() {
       }
       console.error("Login error:", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
+      isSubmittingRef.current = false;
     }
   };
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // Wait until roles have been resolved to avoid redirecting admins to candidate dashboard
+      if (!rolesResolved) return;
+
+      const isAdmin = Array.isArray(roles) && roles.includes("admin");
+      const redirectUrl = isAdmin ? "/admin/dashboard" : "/candidate/dashboard";
+      navigate(redirectUrl, { replace: true });
+    }
+  }, [isAuthenticated, user, roles, rolesResolved, navigate]);
 
   const handleResendEmail = async () => {
     setResending(true);
@@ -188,82 +211,56 @@ export function CandidateLoginPage() {
               </Alert>
             )}
 
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4" noValidate>
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-slate-700">Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          id="email"
-                          type="email"
-                          placeholder="votre@email.com"
-                          disabled={loading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+              <form onSubmit={handleFormSubmit} className="space-y-4" noValidate>
+                <div>
+                  <Label htmlFor="email" className="text-slate-700">Email</Label>
+                  <Input
+                    {...register("email")}
+                    id="email"
+                    type="email"
+                    placeholder="votre@email.com"
+                    disabled={isLoading}
+                  />
+                  {errors.email && (
+                    <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
                   )}
-                />
+                </div>
 
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-slate-700">Mot de passe</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          id="password"
-                          type="password"
-                          placeholder="••••••••"
-                          disabled={loading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                <div>
+                  <Label htmlFor="password" className="text-slate-700">Mot de passe</Label>
+                  <Input
+                    {...register("password")}
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    disabled={isLoading}
+                  />
+                  {errors.password && (
+                    <p className="text-sm text-destructive mt-1">{errors.password.message}</p>
                   )}
-                />
+                </div>
 
-                <FormField
-                  control={form.control}
-                  name="rememberMe"
-                  render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <FormControl>
-                          <Checkbox
-                            id="rememberMe"
-                            checked={field.value === true}
-                            onCheckedChange={(checked) => {
-                              field.onChange(checked === true);
-                            }}
-                            disabled={loading}
-                          />
-                        </FormControl>
-                        <FormLabel htmlFor="rememberMe" className="text-sm cursor-pointer">
-                          Se souvenir de moi
-                        </FormLabel>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="flex items-center gap-2">
+                  <input
+                    {...register("rememberMe")}
+                    id="rememberMe"
+                    type="checkbox"
+                    className="h-4 w-4 rounded border border-border text-brand focus:ring-brand"
+                    disabled={isLoading}
+                  />
+                  <Label htmlFor="rememberMe" className="text-sm cursor-pointer">
+                    Se souvenir de moi
+                  </Label>
+                </div>
 
                 <Button
                   type="submit"
-                  disabled={loading}
+                  disabled={isLoading}
                   className="auth-submit-button w-full bg-brand text-brand-foreground hover:bg-brand/90 font-medium"
                 >
-                  {loading ? "Connexion en cours..." : "Se connecter"}
+                  {isLoading ? "Connexion en cours..." : "Se connecter"}
                 </Button>
               </form>
-            </Form>
 
             {/* Divider */}
             <div className="relative my-6">

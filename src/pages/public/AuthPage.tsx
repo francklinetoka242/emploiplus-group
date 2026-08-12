@@ -4,6 +4,7 @@ import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { supabase } from "@/integrations/supabase/client";
+import { getSession as getCandidateSession } from "@/features/authentication/api/authApi";
 import { Button } from "@/components/ui/button";
 import favicon from "@/assets/favicon.ico";
 import { clearAuthStorage } from "@/features/authentication/utils/authStorage";
@@ -15,6 +16,7 @@ export function AuthPage() {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [loading, setLoading] = React.useState<boolean>(false);
+  const isSubmittingRef = React.useRef(false);
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
   const [authDetail, setAuthDetail] = React.useState<string | null>(null);
@@ -50,6 +52,10 @@ export function AuthPage() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmittingRef.current) {
+      return;
+    }
+    isSubmittingRef.current = true;
     setError(null);
     setMessage(null);
     setAuthDetail(null);
@@ -101,12 +107,32 @@ export function AuthPage() {
       }
 
       setMessage(t("auth.successRedirect") ?? "Redirection…");
+
+      // Wait for the session to be available/resolved in storage (avoid guard race)
+      const waitForSession = async (timeoutMs = 5000) => {
+        const start = Date.now();
+        while (Date.now() - start < timeoutMs) {
+          try {
+            const session = await getCandidateSession();
+            if (session) return session;
+          } catch (err) {
+            // ignore and retry
+          }
+          // small delay
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise((r) => setTimeout(r, 250));
+        }
+        return null;
+      };
+
+      await waitForSession(5000);
       navigate("/admin", { replace: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : (t("auth.error.unableToSignIn") ?? "Impossible de se connecter.");
       setError(message);
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 

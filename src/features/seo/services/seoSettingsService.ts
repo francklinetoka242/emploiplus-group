@@ -41,6 +41,17 @@ function getStoredSiteSeoSettings(): SiteSEOSettings {
   return DEFAULT_SITE_SEO_SETTINGS;
 }
 
+function areSiteSeoSettingsEqual(a: SiteSEOSettings, b: SiteSEOSettings): boolean {
+  return (
+    a.title === b.title &&
+    a.description === b.description &&
+    a.keywords === b.keywords &&
+    a.canonical === b.canonical &&
+    a.robots === b.robots &&
+    a.ogImage === b.ogImage
+  );
+}
+
 export function getSiteSeoSettings(): SiteSEOSettings {
   return getStoredSiteSeoSettings();
 }
@@ -57,14 +68,20 @@ export function saveSiteSeoSettings(settings: Partial<SiteSEOSettings>): SiteSEO
 }
 
 export function useSiteSeoSettings() {
-  const [settings, setSettings] = useState<SiteSEOSettings>(getStoredSiteSeoSettings);
+  const [settings, setSettings] = useState<SiteSEOSettings>(() => getStoredSiteSeoSettings());
 
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
 
-    const syncSettings = () => setSettings(getStoredSiteSeoSettings());
+    const syncSettings = () => {
+      setSettings((current) => {
+        const next = getStoredSiteSeoSettings();
+        return areSiteSeoSettingsEqual(current, next) ? current : next;
+      });
+    };
+
     syncSettings();
     window.addEventListener("emploiplus-seo-updated", syncSettings);
     return () => window.removeEventListener("emploiplus-seo-updated", syncSettings);

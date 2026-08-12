@@ -12,12 +12,26 @@ interface ProtectedRouteProps {
   fallbackPath?: string;
   requireAllPermissions?: boolean;
   /**
-   * Skeleton ou composant à afficher pendant le chargement des permissions.
-   * Permet une meilleure UX en évitant les écrans blancs bloquants.
+   * Skeleton or component to display during auth initialization.
+   * Only used by AuthenticationGuard (the only guard that waits for authLoading).
+   * RoleGuard and PermissionGuard do not display skeletons.
    */
   loadingSkeleton?: ReactNode;
 }
 
+/**
+ * ProtectedRoute: Simple orchestrator of authentication and authorization guards
+ *
+ * Guard composition order:
+ * 1. AuthenticationGuard - checks if user is authenticated
+ * 2. RoleGuard (if allowedRoles) - checks if user has required roles
+ * 3. PermissionGuard (if requiredPermissions) - checks if user has required permissions
+ * 4. children - rendered if all guards pass
+ *
+ * Each guard is independent and does not know about the others.
+ * No guard performs async operations or makes network calls.
+ * No guard displays loading UI except AuthenticationGuard during initialization.
+ */
 export function ProtectedRoute({
   children,
   allowedRoles,
@@ -26,32 +40,37 @@ export function ProtectedRoute({
   requireAllPermissions = true,
   loadingSkeleton,
 }: ProtectedRouteProps) {
+  // Compose guards from outermost to innermost
+  // AuthenticationGuard is outermost - handles loading state
+
   const content = <>{children}</>;
 
-  const guardedContent = allowedRoles?.length ? (
-    <RoleGuard allowedRoles={allowedRoles} fallbackPath={fallbackPath} loadingSkeleton={loadingSkeleton}>
-      {content}
-    </RoleGuard>
-  ) : (
-    content
-  );
-
+  // Apply PermissionGuard if permissions are required
   const permissionGuardedContent = requiredPermissions?.length ? (
     <PermissionGuard
       requiredPermissions={requiredPermissions}
       fallbackPath={fallbackPath}
       requireAll={requireAllPermissions}
-      loadingSkeleton={loadingSkeleton}
     >
-      {guardedContent}
+      {content}
     </PermissionGuard>
   ) : (
-    guardedContent
+    content
   );
 
+  // Apply RoleGuard if roles are required
+  const roleGuardedContent = allowedRoles?.length ? (
+    <RoleGuard allowedRoles={allowedRoles} fallbackPath={fallbackPath}>
+      {permissionGuardedContent}
+    </RoleGuard>
+  ) : (
+    permissionGuardedContent
+  );
+
+  // AuthenticationGuard is always applied (outermost guard)
   return (
     <AuthenticationGuard fallbackPath={fallbackPath} loadingSkeleton={loadingSkeleton}>
-      {permissionGuardedContent}
+      {roleGuardedContent}
     </AuthenticationGuard>
   );
 }

@@ -35,8 +35,10 @@ export function parseAuthErrorMessage(error: unknown): string {
     (errorRecord.body as { message?: unknown } | undefined)?.message,
     (errorRecord.data as { message?: unknown } | undefined)?.message,
     (errorRecord.data as { error?: unknown } | undefined)?.error,
-    (errorRecord.response as { data?: { message?: unknown; error?: unknown } } | undefined)?.data?.message,
-    (errorRecord.response as { data?: { message?: unknown; error?: unknown } } | undefined)?.data?.error,
+    (errorRecord.response as { data?: { message?: unknown; error?: unknown } } | undefined)?.data
+      ?.message,
+    (errorRecord.response as { data?: { message?: unknown; error?: unknown } } | undefined)?.data
+      ?.error,
   ];
 
   for (const candidate of candidates) {

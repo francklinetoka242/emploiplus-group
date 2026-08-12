@@ -7,7 +7,9 @@ export async function resendConfirmationEmail(email: string) {
 
   const body = await response.json().catch(() => null);
   if (!response.ok) {
-    throw body?.error ? new Error(body.error) : new Error("Impossible de renvoyer l'email de confirmation.");
+    throw body?.error
+      ? new Error(body.error)
+      : new Error("Impossible de renvoyer l'email de confirmation.");
   }
 
   return { success: true };

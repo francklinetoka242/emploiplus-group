@@ -9,9 +9,14 @@ export type AppRole =
   | "accountant"
   | "recruiter";
 
-export type DatabaseAppRole = "super_admin" | "admin" | "editor";
+export type DatabaseAppRole = "super_admin" | "admin" | "editor" | "candidate";
 
-export const DATABASE_ROLES: ReadonlyArray<DatabaseAppRole> = ["super_admin", "admin", "editor"];
+export const DATABASE_ROLES: ReadonlyArray<DatabaseAppRole> = [
+  "super_admin",
+  "admin",
+  "editor",
+  "candidate",
+];
 
 export const ROLE_LABELS: Record<AppRole, string> = {
   super_admin: "Super Admin",

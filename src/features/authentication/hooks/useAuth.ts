@@ -1,5 +1,11 @@
-﻿import { useAuthContext } from "@/features/authentication/context/AuthContext";
+﻿import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 
 export function useAuth() {
-  return useAuthContext();
+  const context = useAuthContext();
+
+  return {
+    ...context,
+    loading: context.authLoading,
+    isLoading: context.authLoading,
+  };
 }
