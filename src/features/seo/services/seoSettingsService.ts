@@ -82,7 +82,6 @@ export function useSiteSeoSettings() {
       });
     };
 
-    syncSettings();
     window.addEventListener("emploiplus-seo-updated", syncSettings);
     return () => window.removeEventListener("emploiplus-seo-updated", syncSettings);
   }, []);
