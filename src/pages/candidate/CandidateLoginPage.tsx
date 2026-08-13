@@ -22,6 +22,7 @@ export function CandidateLoginPage() {
   const state = location.state as { notification?: string; pendingEmail?: string; from?: string } | null;
   const [isLoading, setIsLoading] = useState(false);
   const isSubmittingRef = useRef(false);
+  const redirectAttemptedRef = useRef(false);
   const [resending, setResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState(state?.notification || "");
@@ -102,12 +103,17 @@ export function CandidateLoginPage() {
   };
 
   useEffect(() => {
-    if (!isAuthenticated || !user || !rolesResolved) {
+    if (!isAuthenticated || !user || !rolesResolved || location.pathname !== "/candidate/login") {
       return;
     }
 
+    if (redirectAttemptedRef.current) {
+      return;
+    }
+
+    redirectAttemptedRef.current = true;
     navigate("/candidate/dashboard", { replace: true });
-  }, [isAuthenticated, user?.id, rolesResolved, navigate]);
+  }, [isAuthenticated, user?.id, rolesResolved, location.pathname, navigate]);
 
   const handleResendEmail = async () => {
     setResending(true);

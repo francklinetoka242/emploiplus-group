@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-08-13T01:30:10.394Z",
+  "scenario": "LOGIN_TO_DASHBOARD",
+  "consoleLogs": [],
+  "pageErrors": [],
+  "metrics": {
+    "renderCount": 0,
+    "reloadCandidateDocumentsCount": 0,
+    "resetRecommendedPageCount": 0,
+    "setRecommendedPageCount": 0,
+    "loadRecommendedJobsCount": 0,
+    "setCandidateDocumentsCount": 0,
+    "setRecommendedJobsCount": 0,
+    "setRecommendedLoadingCount": 0,
+    "setHasMoreRecommendedJobsCount": 0
+  },
+  "react185Detected": false,
+  "react185Messages": [],
+  "dependencies": {
+    "profileId": [],
+    "cvUrl": [],
+    "cvText": [],
+    "embedding": [],
+    "recommendationContextSignature": [],
+    "recommendedPage": []
+  },
+  "executionSequence": [],
+  "phase": "dashboard-loaded"
+}

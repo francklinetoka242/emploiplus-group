@@ -1,11 +1,8 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CandidateExperience } from "@/features/candidates/api/types";
-import { getCandidateExperiences } from "@/features/candidates/api/experiencesApi";
-import { useCandidate } from "@/hooks/useCandidate";
 import { useJobs } from "@/features/jobs/hooks";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -33,10 +30,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { CANDIDATE_DOCUMENTS_BUCKET } from "@/services/storageService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfileCompletion } from "@/features/profile/hooks/useProfileCompletion";
-import { useCandidateEducation } from "@/features/profile/hooks/useCandidateEducation";
-import { useCandidateLanguages } from "@/features/profile/hooks/useCandidateLanguages";
-import { useCandidatePreferences } from "@/features/profile/hooks/useCandidatePreferences";
-import { useCandidateSkills } from "@/features/profile/hooks/useCandidateSkills";
+import { useCandidateProfileData } from "@/features/candidates/hooks/useCandidateProfileData";
+import { diagnosticLogger } from "@/services/diagnosticLogger";
 
 type DashboardOffer = {
   id: string;
@@ -85,21 +80,41 @@ const quickActions = [
 
 export function CandidateDashboardPage() {
   const navigate = useNavigate();
-  const { profile, loading: profileLoading, refetch } = useCandidate();
+  // Unified candidate profile data loader (coordinated loading)
+  const {
+    profile,
+    educations,
+    skills,
+    languages,
+    preferences,
+    experiences,
+    isLoading: profileDataLoading,
+    isReady: profileDataReady,
+    error: profileDataError,
+    refetch,
+  } = useCandidateProfileData();
+  
   const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [offersLoading, setOffersLoading] = useState(true);
   const [isCompletionCollapsed, setIsCompletionCollapsed] = useState(true);
+  
+  // Diagnostic: Track renders
+  const renderCountRef = useRef(0);
+  renderCountRef.current++;
+  diagnosticLogger.log('COMPONENT_RENDER', {
+    renderCount: renderCountRef.current,
+    profileId: profile?.id,
+    profileDataReady,
+    profileDataLoading,
+    timestamp: new Date().toISOString(),
+  }, 'CandidateDashboardPage');
+
   const jobFilters = useMemo(
     () => ({ status: "published", limit: 3, orderBy: "published_at", order: "desc" }),
     [],
   );
 
   const { offers: publishedOffers, loading: publishedOffersLoading } = useJobs(jobFilters);
-  const [experienceEntries, setExperienceEntries] = useState<CandidateExperience[]>([]);
-  const { educations } = useCandidateEducation(profile?.id);
-  const { skills } = useCandidateSkills(profile?.id);
-  const { languages } = useCandidateLanguages(profile?.id);
-  const { preferences } = useCandidatePreferences(profile?.id);
   const [candidateDocuments, setCandidateDocuments] = useState<{
     cv: { url?: string | null } | null;
     documents: Array<{ url?: string | null }>;
@@ -109,6 +124,11 @@ export function CandidateDashboardPage() {
   const [recommendedPage, setRecommendedPage] = useState(1);
   const [hasMoreRecommendedJobs, setHasMoreRecommendedJobs] = useState(false);
   const RECOMMENDED_JOBS_PAGE_SIZE = 3;
+  const recommendationContextSignature = useMemo(
+    () => `${profile?.id ?? "unknown"}:${profile?.cv_text ?? ""}:${String(profile?.embedding_vector ?? "")}`,
+    [profile?.id, profile?.cv_text, profile?.embedding_vector],
+  );
+  const lastRecommendationContextRef = useRef<string | null>(null);
 
   usePageSEO({
     title: "Tableau de bord - EmploiPlus Group",
@@ -117,7 +137,15 @@ export function CandidateDashboardPage() {
   });
 
   useEffect(() => {
+    diagnosticLogger.log('EFFECT_START', {
+      effectName: 'publishedOffers',
+      offersCount: publishedOffers.length,
+      loading: publishedOffersLoading,
+    }, 'CandidateDashboardPage');
+    
     setOffersLoading(publishedOffersLoading);
+    diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setOffersLoading', publishedOffersLoading);
+    
     setOffers(
       publishedOffers.map((offer) => ({
         id: offer.id,
@@ -138,28 +166,15 @@ export function CandidateDashboardPage() {
     );
   }, [publishedOffers, publishedOffersLoading]);
 
-  useEffect(() => {
-    if (!profile?.id) {
-      setExperienceEntries([]);
-      return;
-    }
-
-    const loadExperiences = async () => {
-      try {
-        const data = await getCandidateExperiences(profile.id);
-        setExperienceEntries(data || []);
-      } catch (error) {
-        console.error("Unable to load candidate experiences for dashboard", error);
-        setExperienceEntries([]);
-      }
-    };
-
-    void loadExperiences();
-  }, [profile?.id]);
-
   // Fonction helper pour recharger les documents du localStorage
   const reloadCandidateDocuments = useCallback(async () => {
+    diagnosticLogger.log('RELOAD_DOCS_START', {
+      profileId: profile?.id,
+      hasProfile: !!profile,
+    }, 'CandidateDashboardPage');
+    
     if (!profile?.id) {
+      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setCandidateDocuments', 'empty');
       setCandidateDocuments({ cv: null, documents: [] });
       return;
     }
@@ -181,6 +196,7 @@ export function CandidateDashboardPage() {
               console.debug("Failed to generate signed URL for dashboard CV", e);
             }
           }
+          diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setCandidateDocuments', 'from-server');
           setCandidateDocuments({
             cv: {
               id: `cv-server-${profile.id}`,
@@ -204,18 +220,23 @@ export function CandidateDashboardPage() {
         documents?: Array<{ url?: string | null }>;
       };
 
+      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setCandidateDocuments', 'from-storage');
       setCandidateDocuments({
         cv: parsed.cv ?? null,
         documents: parsed.documents ?? [],
       });
     } catch (error) {
       console.error("Unable to restore candidate documents for dashboard", error);
+      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setCandidateDocuments', 'empty-error');
       setCandidateDocuments({ cv: null, documents: [] });
     }
   }, [profile?.id]);
 
   // Charger les documents au démarrage
   useEffect(() => {
+    diagnosticLogger.log('EFFECT_START', {
+      effectName: 'reloadCandidateDocuments',
+    }, 'CandidateDashboardPage');
     reloadCandidateDocuments();
   }, [reloadCandidateDocuments]);
 
@@ -244,8 +265,20 @@ export function CandidateDashboardPage() {
   }, [profile?.id, reloadCandidateDocuments, refetch]);
 
   useEffect(() => {
+    diagnosticLogger.log('EFFECT_START', {
+      effectName: 'loadRecommendedJobs',
+      profileId: profile?.id,
+      hasProfile: !!profile,
+      hasCvUrlInDocuments: !!candidateDocuments.cv?.url,
+      cvText: !!profile?.cv_text,
+      embedding: !!profile?.embedding_vector,
+      recommendedPage,
+    }, 'CandidateDashboardPage');
+    
     if (!profile?.id) {
+      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedJobs', 'empty');
       setRecommendedJobs([]);
+      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedLoading', false);
       setRecommendedLoading(false);
       return;
     }
@@ -265,13 +298,22 @@ export function CandidateDashboardPage() {
     });
 
     if (!hasCvUploaded) {
+      diagnosticLogger.log('RECOMMENDED_JOBS_SKIPPED', {
+        reason: 'no-cv-uploaded',
+        hasCvUrl: !!candidateDocuments.cv?.url,
+        hasCvText: !!candidateCvText,
+        hasEmbedding: !!candidateEmbedding,
+      }, 'CandidateDashboardPage');
+      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedJobs', 'empty');
       setRecommendedJobs([]);
+      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedLoading', false);
       setRecommendedLoading(false);
       return;
     }
 
     let mounted = true;
     const loadRecommended = async () => {
+      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedLoading', true);
       setRecommendedLoading(true);
       try {
         console.debug(
@@ -293,14 +335,25 @@ export function CandidateDashboardPage() {
           },
         );
         if (!mounted) return;
+        diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedJobs', jobs?.length ?? 0);
         setRecommendedJobs(jobs || []);
+        diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setHasMoreRecommendedJobs', (jobs?.length ?? 0) === RECOMMENDED_JOBS_PAGE_SIZE);
         setHasMoreRecommendedJobs((jobs?.length ?? 0) === RECOMMENDED_JOBS_PAGE_SIZE);
       } catch (error) {
         console.error("Unable to load recommended jobs:", error, { candidateId: profile.id });
-        if (mounted) setRecommendedJobs([]);
-        if (mounted) setHasMoreRecommendedJobs(false);
+        if (mounted) {
+          diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedJobs', 'empty-error');
+          setRecommendedJobs([]);
+        }
+        if (mounted) {
+          diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setHasMoreRecommendedJobs', false);
+          setHasMoreRecommendedJobs(false);
+        }
       } finally {
-        if (mounted) setRecommendedLoading(false);
+        if (mounted) {
+          diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedLoading', false);
+          setRecommendedLoading(false);
+        }
       }
     };
 
@@ -317,19 +370,38 @@ export function CandidateDashboardPage() {
   ]);
 
   useEffect(() => {
-    setRecommendedPage(1);
-  }, [profile?.id, candidateDocuments.cv?.url, profile?.cv_text, profile?.embedding_vector]);
+    const nextContext = profile?.id ? recommendationContextSignature : "empty";
 
+    if (lastRecommendationContextRef.current === nextContext) {
+      return;
+    }
+
+    lastRecommendationContextRef.current = nextContext;
+
+    diagnosticLogger.log('EFFECT_RESET_PAGE', {
+      effectName: 'resetRecommendedPage',
+      newPage: 1,
+      profileId: profile?.id,
+      recommendationContextSignature,
+      hasCvText: !!profile?.cv_text,
+      hasEmbedding: !!profile?.embedding_vector,
+    }, 'CandidateDashboardPage');
+    diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedPage', 1);
+    setRecommendedPage(1);
+  }, [profile?.id, profile?.cv_text, profile?.embedding_vector, recommendationContextSignature]);
+
+  // Use the exact same completion rule as the candidate profile page.
+  // The loading skeleton should protect the UI, not change the calculation logic.
   const completion = useProfileCompletion({
     profile,
-    experiences: experienceEntries,
+    experiences,
     educations,
     skills,
     languages,
     preferences,
   });
 
-  const profileCompletion = completion.completionPercentage;
+  const profileCompletion = profileDataLoading ? 0 : completion.completionPercentage;
 
   const firstName = profile?.first_name || "Candidat";
   const fullName = profile ? `${profile.first_name} ${profile.last_name}`.trim() : "Jean Dupont";
@@ -363,6 +435,7 @@ export function CandidateDashboardPage() {
             className="flex items-center justify-between gap-4 text-left"
             onClick={() => setIsCompletionCollapsed((prev) => !prev)}
             aria-expanded={!isCompletionCollapsed}
+            disabled={profileDataLoading}
           >
             <div>
               <CardTitle>Complétude de votre profil</CardTitle>
@@ -370,8 +443,17 @@ export function CandidateDashboardPage() {
             </div>
             <div className="flex items-center gap-3">
               <div className="flex min-w-[120px] flex-col items-end gap-1">
-                <p className="text-2xl font-bold text-foreground">{profileCompletion}%</p>
-                <Progress value={profileCompletion} className="h-1.5 w-full" />
+                {profileDataLoading ? (
+                  <>
+                    <Skeleton className="h-8 w-20" />
+                    <Skeleton className="h-1.5 w-full" />
+                  </>
+                ) : (
+                  <>
+                    <p className="text-2xl font-bold text-foreground">{profileCompletion}%</p>
+                    <Progress value={profileCompletion} className="h-1.5 w-full" />
+                  </>
+                )}
               </div>
               {isCompletionCollapsed ? (
                 <ChevronRight className="h-5 w-5 text-slate-500" />
@@ -383,21 +465,29 @@ export function CandidateDashboardPage() {
         </CardHeader>
         {!isCompletionCollapsed ? (
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              {completion.completionItems.map((item) => (
-                <div
-                  key={item.label}
-                  className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${item.isCompleted ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-600"}`}
-                >
-                  {item.isCompleted ? (
-                    <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-emerald-600" />
-                  ) : (
-                    <Circle className="h-4 w-4 flex-shrink-0 text-slate-400" />
-                  )}
-                  <span>{item.label}</span>
-                </div>
-              ))}
-            </div>
+            {profileDataLoading ? (
+              <div className="space-y-2">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Skeleton key={i} className="h-10 w-full" />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {completion.completionItems.map((item) => (
+                  <div
+                    key={item.label}
+                    className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${item.isCompleted ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-600"}`}
+                  >
+                    {item.isCompleted ? (
+                      <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-emerald-600" />
+                    ) : (
+                      <Circle className="h-4 w-4 flex-shrink-0 text-slate-400" />
+                    )}
+                    <span>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         ) : null}
       </Card>

@@ -14,6 +14,7 @@ import { getAuthMetadataFromSession } from "@/features/authentication/types";
 import type { DatabaseAppRole } from "@/features/authentication/permissions/roles";
 import type { Permission } from "@/features/authentication/permissions/permissions";
 import { getPermissionsForRole } from "@/features/authentication/permissions/rolePermissions";
+import { diagnosticLogger } from "@/services/diagnosticLogger";
 
 /**
  * Core authentication state interface.
@@ -91,6 +92,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authLoading, setAuthLoading] = useState(true);
   const [rolesResolved, setRolesResolved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  diagnosticLogger.log('AUTH_PROVIDER_INIT', {
+    sessionPresent: !!session,
+    authLoading,
+    rolesResolved,
+    userId: session?.user?.id,
+  }, 'AuthContext');
 
   const user = session?.user ?? null;
   const [hasCandidateProfile, setHasCandidateProfile] = useState(false);
@@ -209,6 +217,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let isMounted = true;
 
     const initSession = async () => {
+      diagnosticLogger.log('INIT_SESSION_START', {
+        timestamp: new Date().toISOString(),
+      }, 'AuthContext');
+      
       try {
         const { data, error: sessionError } = await supabase.auth.getSession();
         if (!isMounted) {
@@ -219,6 +231,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         const nextSession = data.session ?? null;
+        diagnosticLogger.log('INIT_SESSION_GOT', {
+          sessionPresent: !!nextSession,
+          userId: nextSession?.user?.id,
+          timestamp: new Date().toISOString(),
+        }, 'AuthContext');
+        
         setSession((current) => {
           if (areSessionsEquivalent(current, nextSession)) {
             return current;
@@ -270,15 +288,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
+    diagnosticLogger.log('LOGIN_START', {
+      email,
+      timestamp: new Date().toISOString(),
+    }, 'AuthContext');
     setAuthLoading(true);
     setError(null);
 
     try {
       const data = await authApi.loginCandidate(email, password);
+      diagnosticLogger.log('LOGIN_SUCCESS', {
+        email,
+        timestamp: new Date().toISOString(),
+      }, 'AuthContext');
       // Session will be set by onAuthStateChange listener
       return data;
     } catch (err) {
       const nextError = err instanceof Error ? err.message : String(err);
+      diagnosticLogger.log('LOGIN_FAILED', {
+        email,
+        error: nextError,
+        timestamp: new Date().toISOString(),
+      }, 'AuthContext');
       setError(nextError);
       setAuthLoading(false);
       throw err;

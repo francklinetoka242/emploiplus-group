@@ -1,0 +1,46 @@
+{
+  "totalEvents": 4,
+  "events": [
+    {
+      "timestamp": 1346.199999999255,
+      "type": "AUTH_PROVIDER_INIT",
+      "component": "AuthContext",
+      "data": {
+        "sessionPresent": false,
+        "authLoading": true,
+        "rolesResolved": false
+      }
+    },
+    {
+      "timestamp": 1424.1000000014901,
+      "type": "INIT_SESSION_START",
+      "component": "AuthContext",
+      "data": {
+        "timestamp": "2026-08-13T00:39:04.069Z"
+      }
+    },
+    {
+      "timestamp": 1427.699999999255,
+      "type": "INIT_SESSION_GOT",
+      "component": "AuthContext",
+      "data": {
+        "sessionPresent": false,
+        "timestamp": "2026-08-13T00:39:04.072Z"
+      }
+    },
+    {
+      "timestamp": 1431,
+      "type": "AUTH_PROVIDER_INIT",
+      "component": "AuthContext",
+      "data": {
+        "sessionPresent": false,
+        "authLoading": false,
+        "rolesResolved": true
+      }
+    }
+  ],
+  "renderCounts": {},
+  "effectCounts": {},
+  "setterCalls": {},
+  "chronology": "[1346.2ms] AUTH_PROVIDER_INIT (AuthContext): {\"sessionPresent\":false,\"authLoading\":true,\"rolesResolved\":false}\n[1424.1ms] INIT_SESSION_START (AuthContext): {\"timestamp\":\"2026-08-13T00:39:04.069Z\"}\n[1427.7ms] INIT_SESSION_GOT (AuthContext): {\"sessionPresent\":false,\"timestamp\":\"2026-08-13T00:39:04.072Z\"}\n[1431.0ms] AUTH_PROVIDER_INIT (AuthContext): {\"sessionPresent\":false,\"authLoading\":false,\"rolesResolved\":true}"
+}

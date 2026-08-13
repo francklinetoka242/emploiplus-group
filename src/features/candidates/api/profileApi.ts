@@ -44,99 +44,22 @@ export async function getCandidateProfile(candidateId: string): Promise<Candidat
 }
 
 export async function getCandidateProfileByUserId(userId: string): Promise<CandidateProfile | null> {
-  try {
-    const fetchPromise = supabase
-      .from("candidates")
-      .select(
-        "id, user_id, first_name, last_name, email, phone, avatar_url, bio, headline, location_city, location_country, date_of_birth, status, cv_text, embedding_vector, cv_url, created_at, updated_at",
-      )
-      .eq("user_id", userId)
-      .maybeSingle();
+  const { data, error } = await supabase
+    .from("candidates")
+    .select(
+      "id, user_id, first_name, last_name, email, phone, avatar_url, bio, headline, location_city, location_country, date_of_birth, status, cv_text, embedding_vector, cv_url, created_at, updated_at",
+    )
+    .eq("user_id", userId)
+    .maybeSingle();
 
-    const timeoutPromise = new Promise<{ timeout: true }>((resolve) =>
-      setTimeout(() => resolve({ timeout: true }), 2000),
-    );
-
-    const result = (await Promise.race([fetchPromise, timeoutPromise])) as any;
-
-    // Si timeout, utiliser un fallback minimal basé sur user_metadata
-    if (result?.timeout) {
-      try {
-        const userRes = await supabase.auth.getUser();
-        const user = userRes?.data?.user;
-        if (user) {
-          const name = (user.user_metadata && (user.user_metadata.name || user.user_metadata.full_name)) || null;
-          const firstName = (user.user_metadata && (user.user_metadata.first_name || (typeof name === 'string' ? name.split(' ')[0] : null))) || null;
-          const lastName = (user.user_metadata && (user.user_metadata.last_name || (typeof name === 'string' ? name.split(' ').slice(1).join(' ') : null))) || null;
-          const now = new Date().toISOString();
-          return {
-            id: `fallback-${user.id ?? userId}`,
-            user_id: user.id ?? userId,
-            first_name: firstName,
-            last_name: lastName,
-            email: user.email ?? "",
-            phone: null,
-            avatar_url: (user.user_metadata && (user.user_metadata.avatar_url || user.user_metadata.picture)) || null,
-            bio: null,
-            headline: null,
-            location_city: null,
-            location_country: null,
-            date_of_birth: null,
-            status: "unknown",
-            created_at: now,
-            updated_at: now,
-          } as CandidateProfile;
-        }
-      } catch (err) {
-        return null;
-      }
+  if (error) {
+    if (isIgnorableProfileError(error)) {
+      return null;
     }
-
-    const { data, error } = result;
-
-    if (error) {
-      if (isIgnorableProfileError(error)) {
-        return null;
-      }
-      throw error;
-    }
-
-    return data as CandidateProfile | null;
-  } catch (err) {
-    // En cas d'erreur, tenter un fallback minimum
-    try {
-      const userRes = await supabase.auth.getUser();
-      const user = userRes?.data?.user;
-      if (user) {
-        const name = (user.user_metadata && (user.user_metadata.name || user.user_metadata.full_name)) || null;
-        const firstName = (user.user_metadata && (user.user_metadata.first_name || (typeof name === 'string' ? name.split(' ')[0] : null))) || null;
-        const lastName = (user.user_metadata && (user.user_metadata.last_name || (typeof name === 'string' ? name.split(' ').slice(1).join(' ') : null))) || null;
-        const now = new Date().toISOString();
-        return {
-          id: `fallback-${user.id ?? userId}`,
-          user_id: user.id ?? userId,
-          first_name: firstName,
-          last_name: lastName,
-          email: user.email ?? "",
-          phone: null,
-          avatar_url: (user.user_metadata && (user.user_metadata.avatar_url || user.user_metadata.picture)) || null,
-          bio: null,
-          headline: null,
-          location_city: null,
-          location_country: null,
-          date_of_birth: null,
-          status: "unknown",
-          created_at: now,
-          updated_at: now,
-        } as CandidateProfile;
-      }
-    } catch (e) {
-      // ignore
-    }
-
-    // Si on ne peut pas fournir de fallback, repropager l'erreur
-    throw err;
+    throw error;
   }
+
+  return data as CandidateProfile | null;
 }
 
 export async function createCandidateProfile(

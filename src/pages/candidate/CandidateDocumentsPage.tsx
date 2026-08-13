@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useCandidate } from "@/hooks/useCandidate";
-import { useCandidateDocuments } from "@/features/profile/hooks/useCandidateDocuments";
+import { useCandidateDocuments } from "@/features/candidates/hooks/useCandidateDocuments";
 import { DocumentsSection } from "@/features/profile/components/sections/DocumentsSection";
 import { usePageSEO } from "@/features/seo";
 

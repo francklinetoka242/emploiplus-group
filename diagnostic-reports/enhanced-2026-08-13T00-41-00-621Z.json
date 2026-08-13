@@ -1,0 +1,20 @@
+{
+  "phase1_authState": {
+    "url": "/candidate/login",
+    "sessionPresent": false,
+    "totalDiagEvents": 4
+  },
+  "phase2_authState": {
+    "url": "/candidate/login",
+    "sessionPresent": false,
+    "totalDiagEvents": 4
+  },
+  "totalLogsPhase1": 6,
+  "reactErrorsPhase1": [],
+  "diags": [
+    "[DIAG] [440.4ms] AUTH_PROVIDER_INIT (AuthContext) [object Object]",
+    "[DIAG] [475.3ms] INIT_SESSION_START (AuthContext) [object Object]",
+    "[DIAG] [477.8ms] INIT_SESSION_GOT (AuthContext) [object Object]",
+    "[DIAG] [479.3ms] AUTH_PROVIDER_INIT (AuthContext) [object Object]"
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "totalEvents": 9,
+  "events": [
+    {
+      "timestamp": 1681.8999999985099,
+      "type": "AUTH_PROVIDER_INIT",
+      "component": "AuthContext",
+      "data": {
+        "sessionPresent": false,
+        "authLoading": true,
+        "rolesResolved": false
+      }
+    },
+    {
+      "timestamp": 1802.199999999255,
+      "type": "INIT_SESSION_START",
+      "component": "AuthContext",
+      "data": {
+        "timestamp": "2026-08-13T00:38:52.807Z"
+      }
+    },
+    {
+      "timestamp": 1814.300000000745,
+      "type": "INIT_SESSION_GOT",
+      "component": "AuthContext",
+      "data": {
+        "sessionPresent": false,
+        "timestamp": "2026-08-13T00:38:52.820Z"
+      }
+    },
+    {
+      "timestamp": 1989.0999999977648,
+      "type": "AUTH_PROVIDER_INIT",
+      "component": "AuthContext",
+      "data": {
+        "sessionPresent": false,
+        "authLoading": false,
+        "rolesResolved": true
+      }
+    },
+    {
+      "timestamp": 4046.300000000745,
+      "type": "LOGIN_START",
+      "component": "AuthContext",
+      "data": {
+        "email": "melinaetoka@gmail.com",
+        "timestamp": "2026-08-13T00:38:55.052Z"
+      }
+    },
+    {
+      "timestamp": 4049.099999997765,
+      "type": "AUTH_PROVIDER_INIT",
+      "component": "AuthContext",
+      "data": {
+        "sessionPresent": false,
+        "authLoading": true,
+        "rolesResolved": true
+      }
+    },
+    {
+      "timestamp": 5419,
+      "type": "LOGIN_SUCCESS",
+      "component": "AuthContext",
+      "data": {
+        "email": "melinaetoka@gmail.com",
+        "timestamp": "2026-08-13T00:38:56.425Z"
+      }
+    },
+    {
+      "timestamp": 5420.099999997765,
+      "type": "AUTH_PROVIDER_INIT",
+      "component": "AuthContext",
+      "data": {
+        "sessionPresent": true,
+        "authLoading": false,
+        "rolesResolved": true,
+        "userId": "f812d578-e6fa-4446-8b0f-ca814b1d1502"
+      }
+    },
+    {
+      "timestamp": 6133.099999997765,
+      "type": "AUTH_PROVIDER_INIT",
+      "component": "AuthContext",
+      "data": {
+        "sessionPresent": true,
+        "authLoading": false,
+        "rolesResolved": true,
+        "userId": "f812d578-e6fa-4446-8b0f-ca814b1d1502"
+      }
+    }
+  ],
+  "renderCounts": {},
+  "effectCounts": {},
+  "setterCalls": {},
+  "chronology": "[1681.9ms] AUTH_PROVIDER_INIT (AuthContext): {\"sessionPresent\":false,\"authLoading\":true,\"rolesResolved\":false}\n[1802.2ms] INIT_SESSION_START (AuthContext): {\"timestamp\":\"2026-08-13T00:38:52.807Z\"}\n[1814.3ms] INIT_SESSION_GOT (AuthContext): {\"sessionPresent\":false,\"timestamp\":\"2026-08-13T00:38:52.820Z\"}\n[1989.1ms] AUTH_PROVIDER_INIT (AuthContext): {\"sessionPresent\":false,\"authLoading\":false,\"rolesResolved\":true}\n[4046.3ms] LOGIN_START (AuthContext): {\"email\":\"melinaetoka@gmail.com\",\"timestamp\":\"2026-08-13T00:38:55.052Z\"}\n[4049.1ms] AUTH_PROVIDER_INIT (AuthContext): {\"sessionPresent\":false,\"authLoading\":true,\"rolesResolved\":true}\n[5419.0ms] LOGIN_SUCCESS (AuthContext): {\"email\":\"melinaetoka@gmail.com\",\"timestamp\":\"2026-08-13T00:38:56.425Z\"}\n[5420.1ms] AUTH_PROVIDER_INIT (AuthContext): {\"sessionPresent\":true,\"authLoading\":false,\"rolesResolved\":true,\"userId\":\"f812d578-e6fa-4446-8b0f-ca814b1d1502\"}\n[6133.1ms] AUTH_PROVIDER_INIT (AuthContext): {\"sessionPresent\":true,\"authLoading\":false,\"rolesResolved\":true,\"userId\":\"f812d578-e6fa-4446-8b0f-ca814b1d1502\"}"
+}

@@ -7,6 +7,7 @@ import {
 } from "@/features/candidates/api/profileApi";
 import { logoutCandidate } from "@/features/authentication/api/authApi";
 import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
+import { diagnosticLogger } from "@/services/diagnosticLogger";
 
 /**
  * Candidate profile hook - manages candidate-specific data.
@@ -23,7 +24,17 @@ export function useCandidate() {
 
   // Load candidate profile when user becomes authenticated
   useEffect(() => {
+    diagnosticLogger.log('USECANDIDATE_EFFECT_START', {
+      isAuthenticated,
+      userId: user?.id,
+      timestamp: new Date().toISOString(),
+    }, 'useCandidate');
+    
     if (!isAuthenticated || !user?.id) {
+      diagnosticLogger.log('USECANDIDATE_SKIPPED', {
+        isAuthenticated,
+        hasUserId: !!user?.id,
+      }, 'useCandidate');
       setProfile(null);
       return;
     }
@@ -31,11 +42,24 @@ export function useCandidate() {
     let isMounted = true;
 
     const loadProfile = async () => {
+      diagnosticLogger.log('LOAD_PROFILE_START', {
+        userId: user.id,
+        timestamp: new Date().toISOString(),
+      }, 'useCandidate');
+      
       setLoading(true);
       setError(null);
 
       try {
         const nextProfile = await getCandidateProfileByUserId(user.id);
+        diagnosticLogger.log('LOAD_PROFILE_SUCCESS', {
+          userId: user.id,
+          profileId: nextProfile?.id,
+          cvText: !!nextProfile?.cv_text,
+          embedding: !!nextProfile?.embedding_vector,
+          timestamp: new Date().toISOString(),
+        }, 'useCandidate');
+        
         if (isMounted) {
           setProfile(nextProfile);
         }
@@ -43,6 +67,11 @@ export function useCandidate() {
         if (isMounted) {
           const errorMsg =
             err instanceof Error ? err.message : "Erreur lors du chargement du profil";
+          diagnosticLogger.log('LOAD_PROFILE_ERROR', {
+            userId: user.id,
+            error: errorMsg,
+            timestamp: new Date().toISOString(),
+          }, 'useCandidate');
           setError(errorMsg);
           setProfile(null);
         }
