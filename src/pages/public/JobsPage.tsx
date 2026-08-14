@@ -6,7 +6,10 @@ import {
   Building2,
   CalendarDays,
   MapPin,
+  Search,
+  SlidersHorizontal,
   Sparkles,
+  X,
 } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { useNavigate } from "react-router-dom";
@@ -19,18 +22,23 @@ import { useJobs } from "@/features/jobs/hooks";
 export function JobsPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
-  const { offers, loading } = useJobs({ status: "published", limit: 100 });
-  const [query, setQuery] = React.useState("");
-  const [companyQuery, setCompanyQuery] = React.useState("");
-  const [locationQuery, setLocationQuery] = React.useState("");
-  const [contractType, setContractType] = React.useState("");
+  const { offers, loading } = useJobs(appliedFilters);
+  const [searchInput, setSearchInput] = React.useState("");
+  const [companyInput, setCompanyInput] = React.useState("");
+  const [contractTypeInput, setContractTypeInput] = React.useState("");
+  const [appliedFilters, setAppliedFilters] = React.useState({
+    status: "published" as const,
+    limit: 100,
+    query: "",
+    company: "",
+    contractType: "",
+  });
   const [filtersOpen, setFiltersOpen] = React.useState(false);
   const [page, setPage] = React.useState(1);
   const pageSize = 8;
 
-  const q = query.trim().toLowerCase();
-  const companyFilter = companyQuery.trim().toLowerCase();
-  const lq = locationQuery.trim().toLowerCase();
+  const q = appliedFilters.query.trim().toLowerCase();
+  const companyFilter = appliedFilters.company.trim().toLowerCase();
   const getContractLabel = (contractType?: string | null) => {
     if (!contractType) return null;
     const translated = t(`jobs.contract.${contractType}`);
@@ -57,17 +65,35 @@ export function JobsPage() {
       `${job.title || ""} ${job.company || ""} ${job.description || ""} ${job.requirements || ""}`.toLowerCase();
     if (q && !hay.includes(q)) return false;
     if (companyFilter && !job.company?.toLowerCase().includes(companyFilter)) return false;
-    if (lq) {
-      const location = `${job.location_city || ""} ${job.location_country || ""}`.toLowerCase();
-      if (!location.includes(lq)) return false;
-    }
-    if (contractType && job.contract_type !== contractType) return false;
+    if (appliedFilters.contractType && job.contract_type !== appliedFilters.contractType) return false;
     return true;
   });
 
+  const handleSearchSubmit = (event?: React.FormEvent) => {
+    event?.preventDefault();
+    setAppliedFilters({
+      status: "published",
+      limit: 100,
+      query: searchInput.trim(),
+      company: companyInput.trim(),
+      contractType: contractTypeInput,
+    });
+    setFiltersOpen(false);
+    setPage(1);
+  };
+
+  const resetFilters = () => {
+    setSearchInput("");
+    setCompanyInput("");
+    setContractTypeInput("");
+    setAppliedFilters({ status: "published", limit: 100, query: "", company: "", contractType: "" });
+    setFiltersOpen(false);
+    setPage(1);
+  };
+
   React.useEffect(() => {
     setPage(1);
-  }, [q, companyFilter, lq, contractType]);
+  }, [q, companyFilter, appliedFilters.contractType]);
 
   const totalPages = Math.max(1, Math.ceil(filteredOffers.length / pageSize));
   const safePage = Math.min(page, totalPages);
@@ -89,103 +115,106 @@ export function JobsPage() {
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6 text-foreground/90 leading-relaxed">
-            <div className="self-start w-full sticky top-24 z-40">
-              <div className="rounded-3xl border border-border/60 bg-card/95 p-5 shadow-lg shadow-black/5 backdrop-blur supports-[backdrop-filter]:bg-card/80 sm:p-6 md:p-8">
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <h3 className="font-display text-lg font-bold text-foreground">
-                    {t("jobs.search.title")}
-                  </h3>
+            <div className="sticky top-20 z-40 mb-4 w-full border-0 bg-white" style={{ backgroundColor: "#FFFFFF" }}>
+              <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm ring-1 ring-black/5" style={{ backgroundColor: "#FFFFFF" }}>
+                <form onSubmit={handleSearchSubmit} className="flex items-center gap-3 bg-white p-3 sm:p-4" style={{ backgroundColor: "#FFFFFF" }}>
+                  <div className="relative flex-1">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleSearchSubmit();
+                        }
+                      }}
+                      placeholder="Rechercher un emploi..."
+                      className="w-full rounded-xl border border-border bg-white py-3 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    aria-label="Rechercher"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-white text-foreground transition hover:bg-primary/5"
+                  >
+                    <Search className="h-4 w-4" />
+                  </button>
+
                   <button
                     type="button"
+                    aria-label="Afficher ou masquer les filtres"
+                    aria-expanded={filtersOpen}
                     onClick={() => setFiltersOpen((prev) => !prev)}
-                    className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-primary/5"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-white text-foreground transition hover:bg-primary/5"
                   >
-                    {filtersOpen ? "Masquer les filtres" : "Afficher les filtres"}
+                    <SlidersHorizontal className="h-4 w-4" />
                   </button>
-                </div>
-                {filtersOpen && (
-                  <form
-                    onSubmit={(e) => e.preventDefault()}
-                    className="mt-6 grid gap-4 md:grid-cols-[1fr_1fr]"
-                  >
+                </form>
+
+                <div
+                  className={`overflow-hidden border-t border-border bg-white transition-all duration-200 ${
+                    filtersOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+                  }`}
+                  style={{ backgroundColor: "#FFFFFF" }}
+                >
+                  <div className="grid gap-3 bg-white p-3 sm:p-4" style={{ backgroundColor: "#FFFFFF" }}>
                     <div>
-                      <label className="text-sm font-semibold text-foreground mb-1 block">
-                        {t("jobs.search.keywords")}
-                      </label>
-                      <input
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder={t("jobs.search.keywords.placeholder")}
-                        className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-semibold text-foreground mb-1 block">
-                        {t("jobs.search.company")}
-                      </label>
-                      <input
-                        value={companyQuery}
-                        onChange={(e) => setCompanyQuery(e.target.value)}
-                        placeholder={t("jobs.search.company.placeholder")}
-                        className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-semibold text-foreground mb-1 block">
-                        {t("jobs.search.location")}
-                      </label>
-                      <input
-                        value={locationQuery}
-                        onChange={(e) => setLocationQuery(e.target.value)}
-                        placeholder={t("jobs.search.location.placeholder")}
-                        className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-semibold text-foreground mb-1 block">
-                        {t("jobs.search.contractType")}
+                      <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                        Type de contrat
                       </label>
                       <select
-                        value={contractType}
-                        onChange={(e) => setContractType(e.target.value)}
-                        className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                        value={contractTypeInput}
+                        onChange={(e) => setContractTypeInput(e.target.value)}
+                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                       >
-                        <option value="">{t("jobs.search.all")}</option>
-                        <option value="cdi">{t("jobs.search.type.cdi")}</option>
-                        <option value="cdd">{t("jobs.search.type.cdd")}</option>
-                        <option value="stage">{t("jobs.search.type.stage")}</option>
-                        <option value="freelance">{t("jobs.search.type.freelance")}</option>
-                        <option value="prestation_de_services">{t("jobs.search.type.prestation_de_services")}</option>
-                        <option value="temps_partiel">{t("jobs.search.type.temps_partiel")}</option>
-                        <option value="interim">{t("jobs.search.type.interim")}</option>
+                        <option value="">Tous</option>
+                        <option value="cdi">CDI</option>
+                        <option value="cdd">CDD</option>
+                        <option value="stage">Stage</option>
+                        <option value="freelance">Freelance</option>
+                        <option value="prestation_de_services">Prestation de services</option>
+                        <option value="temps_partiel">Temps partiel</option>
+                        <option value="interim">Intérim</option>
                       </select>
                     </div>
-                    <div className="md:col-span-2 flex flex-wrap justify-end gap-3 mt-2">
+
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                        Entreprise
+                      </label>
+                      <input
+                        value={companyInput}
+                        onChange={(e) => setCompanyInput(e.target.value)}
+                        placeholder="Nom de l'entreprise"
+                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-1">
                       <button
                         type="button"
-                        onClick={() => {
-                          setQuery("");
-                          setCompanyQuery("");
-                          setLocationQuery("");
-                          setContractType("");
-                        }}
-                        className="rounded-md px-4 py-2 border border-border text-sm text-foreground hover:bg-primary/5"
+                        onClick={resetFilters}
+                        className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-primary/5"
                       >
-                        {t("jobs.search.reset")}
+                        <X className="h-3.5 w-3.5" />
+                        Réinitialiser
                       </button>
                       <button
-                        type="submit"
-                        className="rounded-md px-4 py-2 bg-brand text-brand-foreground font-semibold"
+                        type="button"
+                        onClick={handleSearchSubmit}
+                        className="inline-flex items-center gap-2 rounded-full bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground"
                       >
-                        {t("jobs.search.submit")}
+                        <Search className="h-3.5 w-3.5" />
+                        Rechercher
                       </button>
                     </div>
-                  </form>
-                )}
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="mt-6 grid gap-4">
+            <div className="mt-2 grid gap-4 pt-2">
               {loading ? (
                 [1, 2, 3].map((index) => (
                   <article
