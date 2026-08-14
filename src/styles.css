@@ -145,6 +145,19 @@
     text-rendering: optimizeLegibility;
   }
 
+  html.is-mobile-app *,
+  html.is-mobile-app *::before,
+  html.is-mobile-app *::after,
+  body.is-mobile-app *,
+  body.is-mobile-app *::before,
+  body.is-mobile-app *::after {
+    animation: none !important;
+    animation-duration: 0s !important;
+    transition: none !important;
+    transition-duration: 0s !important;
+    transform: none !important;
+  }
+
   body.is-mobile-app header,
   body.is-mobile-app footer {
     display: none !important;
