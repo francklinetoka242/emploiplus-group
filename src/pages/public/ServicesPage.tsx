@@ -24,14 +24,20 @@ const candidateSlides = [
 
 function CandidateCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const isMobileAppUserAgent =
+    typeof navigator !== "undefined" && navigator.userAgent.includes("EmploiPlusApp");
 
   useEffect(() => {
+    if (isMobileAppUserAgent) {
+      return;
+    }
+
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % candidateSlides.length);
     }, 4000);
 
     return () => window.clearInterval(timer);
-  }, []);
+  }, [isMobileAppUserAgent]);
 
   return (
     <div className="mx-auto w-full max-w-[220px] sm:max-w-[250px] slide-in-right slide-delay-1">

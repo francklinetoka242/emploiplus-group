@@ -17,6 +17,8 @@ export function useJobs(filters?: JobOfferFilters) {
   const [offers, setOffers] = useState<JobOffer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const isMobileAppUserAgent =
+    typeof navigator !== "undefined" && navigator.userAgent.includes("EmploiPlusApp");
 
   const serializedFilters = useMemo(
     () =>
@@ -47,8 +49,9 @@ export function useJobs(filters?: JobOfferFilters) {
     setError(null);
 
     try {
+      const effectiveLimit = isMobileAppUserAgent ? Math.min(overrideFilters?.limit ?? 5, 5) : overrideFilters?.limit ?? 10;
       const data = shouldUsePublishedOffers(overrideFilters)
-        ? await jobService.getPublishedOffers(overrideFilters?.limit ?? 10)
+        ? await jobService.getPublishedOffers(effectiveLimit)
         : await jobService.searchOffers(overrideFilters ?? {});
       setOffers(data);
     } catch (err) {
