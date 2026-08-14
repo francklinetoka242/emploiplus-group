@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -15,6 +16,7 @@ import type { DatabaseAppRole } from "@/features/authentication/permissions/role
 import type { Permission } from "@/features/authentication/permissions/permissions";
 import { getPermissionsForRole } from "@/features/authentication/permissions/rolePermissions";
 import { diagnosticLogger } from "@/services/diagnosticLogger";
+import { notifyReactNativeAuthState } from "@/lib/isMobileApp";
 
 /**
  * Core authentication state interface.
@@ -98,6 +100,7 @@ function areSessionsEquivalent(current: Session | null, next: Session | null) {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const lastNotifiedAuthState = useRef<"AUTHENTICATED" | "SIGNED_OUT" | null>(null);
   /**
    * candidateAccessResolved: true when detectCandidateAccess has completed
    * (either found a candidate profile or determined user has none)
@@ -190,6 +193,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = useMemo(() => Boolean(session), [session]);
 
+  const notifyAuthStateToNative = useCallback(
+    (nextSession: Session | null) => {
+      const nextState = nextSession ? "AUTHENTICATED" : "SIGNED_OUT";
+
+      if (!nextSession && lastNotifiedAuthState.current === null) {
+        return;
+      }
+
+      if (lastNotifiedAuthState.current === nextState) {
+        return;
+      }
+
+      lastNotifiedAuthState.current = nextState;
+      notifyReactNativeAuthState(nextState);
+    },
+    [],
+  );
+
   // Alias for backward compatibility
   const isLoading = authLoading;
 
@@ -277,6 +298,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           return nextSession;
         });
+
+        if (nextSession) {
+          notifyAuthStateToNative(nextSession);
+        }
+
         // Reset candidateAccessResolved so detectCandidateAccess runs again if session changed
         setCandidateAccessResolved(false);
         setAuthLoading(false);
@@ -310,6 +336,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         return normalizedNextSession;
       });
+
+      if (nextSession) {
+        notifyAuthStateToNative(nextSession);
+      } else {
+        notifyAuthStateToNative(null);
+      }
+
       // Reset candidateAccessResolved so detectCandidateAccess runs again
       setCandidateAccessResolved(false);
       setAuthLoading(false);
@@ -380,6 +413,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authApi.logoutCandidate();
       setSession(null);
+      notifyAuthStateToNative(null);
       setCandidateAccessResolved(false);
       setAuthLoading(false);
       return true;
