@@ -155,9 +155,13 @@ export function JobCard({
       ) : null}
 
       <div className="mt-4 flex items-center justify-end gap-2">
-        <Button asChild size="sm" className="h-9 rounded-full bg-brand px-4 text-brand-foreground hover:bg-brand/90">
-          <Link to={detailUrl}>Voir plus</Link>
-        </Button>
+        <Link
+          to={detailUrl}
+          className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-[#00009E] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-[#00007A] active:scale-95 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-60"
+          aria-label={`Voir plus : ${job.title}`}
+        >
+          Voir plus
+        </Link>
         {applyOptions.length > 0 || onApplyClick ? (
           <div className="relative">
             <Button
