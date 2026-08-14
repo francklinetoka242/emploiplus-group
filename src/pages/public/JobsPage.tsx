@@ -22,7 +22,6 @@ import { useJobs } from "@/features/jobs/hooks";
 export function JobsPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
-  const { offers, loading } = useJobs(appliedFilters);
   const [searchInput, setSearchInput] = React.useState("");
   const [companyInput, setCompanyInput] = React.useState("");
   const [contractTypeInput, setContractTypeInput] = React.useState("");
@@ -36,6 +35,8 @@ export function JobsPage() {
   const [filtersOpen, setFiltersOpen] = React.useState(false);
   const [page, setPage] = React.useState(1);
   const pageSize = 8;
+
+  const { offers, loading } = useJobs(appliedFilters);
 
   const q = appliedFilters.query.trim().toLowerCase();
   const companyFilter = appliedFilters.company.trim().toLowerCase();
@@ -115,8 +116,8 @@ export function JobsPage() {
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div className="space-y-6 text-foreground/90 leading-relaxed">
-            <div className="sticky top-20 z-40 mb-4 w-full border-0 bg-white" style={{ backgroundColor: "#FFFFFF" }}>
-              <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm ring-1 ring-black/5" style={{ backgroundColor: "#FFFFFF" }}>
+            <div className="sticky top-16 z-40 mt-0 mb-0 w-full border-0 bg-white" style={{ backgroundColor: "#FFFFFF" }}>
+              <div className="overflow-hidden rounded-none border-0 border-b border-border bg-white shadow-none ring-0" style={{ backgroundColor: "#FFFFFF" }}>
                 <form onSubmit={handleSearchSubmit} className="flex items-center gap-3 bg-white p-3 sm:p-4" style={{ backgroundColor: "#FFFFFF" }}>
                   <div className="relative flex-1">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -214,7 +215,7 @@ export function JobsPage() {
               </div>
             </div>
 
-            <div className="mt-2 grid gap-4 pt-2">
+            <div className="mt-0 grid gap-4 pt-4">
               {loading ? (
                 [1, 2, 3].map((index) => (
                   <article
