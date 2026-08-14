@@ -265,6 +265,7 @@ function AppContent() {
       pathname === "/jobs" ||
       pathname.startsWith("/jobs/") ||
       pathname === "/candidate" ||
+      pathname === "/candidate/guides" ||
       pathname.startsWith("/candidate/");
 
     if (!isAllowedMobilePath) {
