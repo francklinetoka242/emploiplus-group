@@ -32,6 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useProfileCompletion } from "@/features/profile/hooks/useProfileCompletion";
 import { useCandidateProfileData } from "@/features/candidates/hooks/useCandidateProfileData";
 import { diagnosticLogger } from "@/services/diagnosticLogger";
+import { isMobileApp } from "@/lib/isMobileApp";
 
 type DashboardOffer = {
   id: string;
@@ -80,6 +81,8 @@ const quickActions = [
 
 export function CandidateDashboardPage() {
   const navigate = useNavigate();
+  const mobileApp = isMobileApp();
+
   // Unified candidate profile data loader (coordinated loading)
   const {
     profile,
@@ -408,7 +411,7 @@ export function CandidateDashboardPage() {
   const email = profile?.email || "jean.dupont@example.com";
 
   return (
-    <div className="space-y-8">
+    <div className={mobileApp ? "space-y-4 pt-0" : "space-y-8"}>
       {/* Welcome Card */}
       <Card className="bg-gradient-to-r from-slate-900 to-slate-800 border-slate-700 text-white">
         <CardContent className="pt-6">

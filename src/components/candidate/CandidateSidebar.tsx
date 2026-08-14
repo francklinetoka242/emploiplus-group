@@ -85,6 +85,9 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
   const { profile } = useCandidate();
   const [isDarkMode, setIsDarkMode] = useState(getInitialDarkMode);
   const { isEcoMode } = useEcoMode();
+  const mobileApp =
+    typeof window !== "undefined" &&
+    (isMobileApp() || (window as Window & { isMobileApp?: boolean }).isMobileApp === true);
 
   useEffect(() => applyTheme(isDarkMode), [isDarkMode]);
 
