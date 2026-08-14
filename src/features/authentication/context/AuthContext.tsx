@@ -35,6 +35,14 @@ interface AuthContextValue {
   // Authentication state
   isAuthenticated: boolean;
   authLoading: boolean;
+  /**
+   * rolesResolved is true only when:
+   * 1. Session initialization is complete (authLoading = false)
+   * 2. Candidate access detection is complete (candidateAccessResolved = true)
+   *
+   * This ensures candidate roles/permissions are stable before routing
+   * makes any access decisions.
+   */
   rolesResolved: boolean;
   error: string | null;
 
@@ -90,13 +98,18 @@ function areSessionsEquivalent(current: Session | null, next: Session | null) {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [rolesResolved, setRolesResolved] = useState(false);
+  /**
+   * candidateAccessResolved: true when detectCandidateAccess has completed
+   * (either found a candidate profile or determined user has none)
+   * Ensures candidate roles are stable before routing checks access.
+   */
+  const [candidateAccessResolved, setCandidateAccessResolved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   diagnosticLogger.log('AUTH_PROVIDER_INIT', {
     sessionPresent: !!session,
     authLoading,
-    rolesResolved,
+    candidateAccessResolved,
     userId: session?.user?.id,
   }, 'AuthContext');
 
@@ -106,13 +119,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Normalize auth metadata (roles & permissions) from session
   const authMetadata = useMemo(() => getAuthMetadataFromSession(session), [session]);
 
+  /**
+   * Detect candidate access after session is established.
+   * Once this completes (success or error), candidateAccessResolved = true.
+   * This ensures candidate roles/permissions are stable for routing.
+   */
   useEffect(() => {
     let isMounted = true;
 
     const detectCandidateAccess = async () => {
       if (!session?.user?.id) {
         if (isMounted) {
-          setHasCandidateProfile((current) => (current === false ? current : false));
+          setHasCandidateProfile(false);
+          setCandidateAccessResolved(true);
         }
         return;
       }
@@ -133,9 +152,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setHasCandidateProfile((current) =>
           current === nextHasCandidateProfile ? current : nextHasCandidateProfile,
         );
+        setCandidateAccessResolved(true);
       } catch {
         if (isMounted) {
           setHasCandidateProfile(false);
+          setCandidateAccessResolved(true);
         }
       }
     };
@@ -173,6 +194,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isLoading = authLoading;
 
   /**
+   * rolesResolved: true only when BOTH:
+   * 1. Session initialization complete (!authLoading)
+   * 2. Candidate access detection complete (candidateAccessResolved)
+   *
+   * This ensures all async initialization is done before routing.
+   */
+  const rolesResolved = useMemo(
+    () => !authLoading && candidateAccessResolved,
+    [authLoading, candidateAccessResolved],
+  );
+
+  /**
    * Refresh session from Supabase.
    * Called on explicit logout or session expiry.
    */
@@ -187,7 +220,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const nextSession = data.session ?? null;
 
       setSession(nextSession);
-      setRolesResolved(true);
+      // candidateAccessResolved will be reset and detectCandidateAccess will run again
+      setCandidateAccessResolved(false);
       setAuthLoading(false);
       setError(null);
 
@@ -198,7 +232,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setError(nextError);
       setSession(null);
-      setRolesResolved(true);
+      setCandidateAccessResolved(false);
       setAuthLoading(false);
 
       return null;
@@ -243,7 +277,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           return nextSession;
         });
-        setRolesResolved(true);
+        // Reset candidateAccessResolved so detectCandidateAccess runs again if session changed
+        setCandidateAccessResolved(false);
         setAuthLoading(false);
         setError(null);
       } catch (err) {
@@ -254,8 +289,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           err instanceof Error ? err.message : "Erreur lors de l’initialisation de session";
         setError(nextError);
         setSession(null);
-
-        setRolesResolved(true);
+        setCandidateAccessResolved(false);
         setAuthLoading(false);
       }
     };
@@ -276,7 +310,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         return normalizedNextSession;
       });
-      setRolesResolved(true);
+      // Reset candidateAccessResolved so detectCandidateAccess runs again
+      setCandidateAccessResolved(false);
       setAuthLoading(false);
       setError(null);
     });
@@ -345,7 +380,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authApi.logoutCandidate();
       setSession(null);
-      setRolesResolved(true);
+      setCandidateAccessResolved(false);
       setAuthLoading(false);
       return true;
     } catch (err) {

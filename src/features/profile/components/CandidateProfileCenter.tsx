@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useCandidateProfile } from "../hooks/useCandidateProfile";
+import { useCandidate } from "@/features/candidates/hooks/useCandidate";
 import { useCandidateExperiences } from "../hooks/useCandidateExperiences";
 import { useCandidateEducation } from "../hooks/useCandidateEducation";
 import { useCandidateSkills } from "../hooks/useCandidateSkills";
@@ -24,7 +24,7 @@ import type { ProfileTabValue } from "../types";
 export function CandidateProfileCenter() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get("tab") as ProfileTabValue | null) ?? "profile";
-  const { profile, loading: profileLoading, error: profileError, updateProfile } = useCandidateProfile();
+  const { profile, loading: profileLoading, error: profileError, updateProfile } = useCandidate();
   const { experiences, loading: experiencesLoading, createExperience, updateExperience, deleteExperience } = useCandidateExperiences(profile?.id);
   const { educations, loading: educationsLoading, createEducation, updateEducation, deleteEducation } = useCandidateEducation(profile?.id);
   const { skills, loading: skillsLoading, createSkill, deleteSkill } = useCandidateSkills(profile?.id);

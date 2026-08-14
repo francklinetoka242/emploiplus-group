@@ -145,6 +145,5 @@ export function useCandidate() {
     logout,
     updateProfile,
     refetch,
-    isAuthenticated,
   };
 }

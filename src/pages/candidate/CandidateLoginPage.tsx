@@ -81,6 +81,7 @@ export function CandidateLoginPage() {
     try {
       await login(values.email, values.password);
       setSuccessMessage("Connexion réussie! Redirection en cours...");
+      // Redirection will be handled by orchestration below (rolesResolved watch)
     } catch (error: unknown) {
       if (
         typeof error === "object" &&
@@ -102,18 +103,44 @@ export function CandidateLoginPage() {
     }
   };
 
+  /**
+   * Orchestration: Handle post-login redirection to dashboard.
+   *
+   * Triggers when:
+   * 1. User is authenticated (session exists)
+   * 2. rolesResolved = true (session + user + candidate access all determined)
+   * 3. Current page is /candidate/login
+   *
+   * Only navigates once per login (using redirectAttemptedRef).
+   *
+   * Note: rolesResolved is now stable — it combines authLoading and
+   * candidateAccessResolved, ensuring candidate roles are ready before navigation.
+   */
   useEffect(() => {
-    if (!isAuthenticated || !user || !rolesResolved || location.pathname !== "/candidate/login") {
+    // Exit if not on login page or still initializing
+    if (location.pathname !== "/candidate/login") {
       return;
     }
 
+    // Exit if not authenticated
+    if (!isAuthenticated) {
+      redirectAttemptedRef.current = false; // Reset for future logins
+      return;
+    }
+
+    // Exit if still resolving roles/permissions
+    if (!rolesResolved) {
+      return;
+    }
+
+    // Prevent multiple navigations
     if (redirectAttemptedRef.current) {
       return;
     }
 
     redirectAttemptedRef.current = true;
     navigate("/candidate/dashboard", { replace: true });
-  }, [isAuthenticated, user?.id, rolesResolved, location.pathname, navigate]);
+  }, [isAuthenticated, rolesResolved, location.pathname, navigate]);
 
   const handleResendEmail = async () => {
     setResending(true);
