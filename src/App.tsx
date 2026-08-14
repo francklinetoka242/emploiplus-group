@@ -439,12 +439,20 @@ function AppContent() {
           element={withSuspense(<CandidateApplicationDetailPage />, <CandidateDashboardSkeleton />)}
         />
         <Route
+          path="saved-jobs"
+          element={withSuspense(<CandidateSavedOffersPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
           path="saved-offers"
           element={withSuspense(<CandidateSavedOffersPage />, <CandidateDashboardSkeleton />)}
         />
         <Route
           path="notifications"
           element={withSuspense(<CandidateNotificationsPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="account"
+          element={withSuspense(<CandidateSettingsPage />, <CandidateDashboardSkeleton />)}
         />
         <Route
           path="settings"

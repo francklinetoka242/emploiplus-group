@@ -28,9 +28,11 @@ const pageToTitle: Record<string, string> = {
   "/candidate/languages": "Profil",
   "/candidate/preferences": "Profil",
   "/candidate/applications": "Mes candidatures",
+  "/candidate/saved-jobs": "Offres enregistrées",
   "/candidate/saved-offers": "Offres enregistrées",
   "/candidate/notifications": "",
-  "/candidate/settings": "",
+  "/candidate/account": "Compte",
+  "/candidate/settings": "Compte",
 };
 
 export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: CandidateAppShellProps) {

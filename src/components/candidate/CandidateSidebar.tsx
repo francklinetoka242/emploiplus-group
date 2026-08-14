@@ -53,9 +53,9 @@ const menuItems = [
   { id: "documents", label: "Documents", icon: PlusCircle, href: "/candidate/documents" },
   { id: "guides", label: "Fiches", icon: BookOpen, href: "/candidate/guides" },
   { id: "applications", label: "Mes candidatures", icon: Send, href: "/candidate/applications" },
-  { id: "saved", label: "Offres enregistrées", icon: Heart, href: "/candidate/saved-offers" },
+  { id: "saved", label: "Offres enregistrées", icon: Heart, href: "/candidate/saved-jobs" },
   { id: "notifications", label: "Notifications", icon: Bell, href: "/candidate/notifications" },
-  { id: "settings", label: "Compte", icon: User, href: "/candidate/settings" },
+  { id: "settings", label: "Compte", icon: User, href: "/candidate/account" },
 ];
 
 const getInitialDarkMode = () => {
@@ -101,8 +101,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
   };
 
   const [publicNavExpanded, setPublicNavExpanded] = useState(false);
-  const mobileApp = isMobileApp();
-  const candidateMenuItems = mobileApp ? [{ id: "public-jobs", label: "Emplois", icon: Search, href: "/jobs" }] : menuItems;
+  const candidateMenuItems = menuItems;
   const handleMenuClick = () => isDrawer && onOpenChange?.(false);
 
   // Compact toggle for collapsed sidebar
