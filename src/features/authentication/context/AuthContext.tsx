@@ -16,7 +16,7 @@ import type { DatabaseAppRole } from "@/features/authentication/permissions/role
 import type { Permission } from "@/features/authentication/permissions/permissions";
 import { getPermissionsForRole } from "@/features/authentication/permissions/rolePermissions";
 import { diagnosticLogger } from "@/services/diagnosticLogger";
-import { notifyReactNativeAuthState } from "@/lib/isMobileApp";
+import { sendSessionToNative } from "@/lib/sendSessionToNative";
 
 /**
  * Core authentication state interface.
@@ -197,16 +197,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     (nextSession: Session | null) => {
       const nextState = nextSession ? "AUTHENTICATED" : "SIGNED_OUT";
 
-      if (!nextSession && lastNotifiedAuthState.current === null) {
-        return;
-      }
-
       if (lastNotifiedAuthState.current === nextState) {
         return;
       }
 
       lastNotifiedAuthState.current = nextState;
-      notifyReactNativeAuthState(nextState);
+
+      if (!nextSession) {
+        sendSessionToNative({ type: "SIGNED_OUT" });
+        return;
+      }
+
+      sendSessionToNative({
+        type: "AUTHENTICATED",
+        token: nextSession.access_token,
+        refreshToken: nextSession.refresh_token,
+        expiresIn:
+          typeof nextSession.expires_at === "number"
+            ? Math.max(0, Math.round(nextSession.expires_at - Date.now() / 1000))
+            : undefined,
+        user: {
+          id: nextSession.user.id,
+          email: nextSession.user.email ?? null,
+          full_name: nextSession.user.user_metadata?.full_name ?? null,
+        },
+      });
     },
     [],
   );

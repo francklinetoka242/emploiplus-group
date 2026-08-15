@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/features/authentication/hooks/useAuth";
 import { DashboardLayoutSkeleton } from "@/components/ui/skeletons";
+import { getSessionTokenFromNativeOrStorage } from "@/lib/sendSessionToNative";
 
 interface AuthenticationGuardProps {
   children: React.ReactNode;
@@ -28,14 +29,16 @@ export function AuthenticationGuard({
   loadingSkeleton,
 }: AuthenticationGuardProps) {
   const { user, authLoading } = useAuth();
+  const hasValidFallbackSession = Boolean(getSessionTokenFromNativeOrStorage());
 
   // During initialization, show skeleton
   if (authLoading) {
     return <>{loadingSkeleton ?? <DashboardLayoutSkeleton />}</>;
   }
 
-  // After initialization, check if user exists
-  if (!user) {
+  // After initialization, check if user exists or if a valid token has been
+  // re-injected by the mobile shell.
+  if (!user && !hasValidFallbackSession) {
     return <Navigate to={fallbackPath} replace />;
   }
 
