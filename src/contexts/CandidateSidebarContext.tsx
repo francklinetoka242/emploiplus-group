@@ -30,6 +30,24 @@ export function CandidateSidebarProvider({ children }: { children: React.ReactNo
     }
   }, [open]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const win = window as Window & {
+      closeMobileSidebar?: () => void;
+    };
+
+    win.closeMobileSidebar = () => {
+      setOpenState(false);
+    };
+
+    return () => {
+      delete win.closeMobileSidebar;
+    };
+  }, []);
+
   const value = useMemo(
     () => ({ open, setOpen }),
     [open, setOpen],
