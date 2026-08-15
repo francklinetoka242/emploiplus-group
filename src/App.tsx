@@ -242,15 +242,19 @@ function withSuspense(element: React.ReactNode, fallback: React.ReactNode) {
 }
 
 function SharedPublicRouteShell() {
-  const { authLoading } = useAuthContext();
+  const { authLoading, isAuthenticated, roles } = useAuthContext();
   const content = <Outlet />;
 
   if (authLoading) {
     return <PublicLayout>{content}</PublicLayout>;
   }
 
-  // Always render with public layout for shared routes.
-  // Candidate-specific layouts are applied by candidate routes themselves.
+  const showCandidateShell = isAuthenticated && roles.includes("candidate");
+
+  if (showCandidateShell) {
+    return withSuspense(<CandidateLayout>{content}</CandidateLayout>, <CandidateDashboardSkeleton />);
+  }
+
   return <PublicLayout>{content}</PublicLayout>;
 }
 
