@@ -117,6 +117,9 @@ const AdminCandidatesPage = lazy(() =>
 const AdminLocalGuidesPage = lazy(() =>
   import("@/pages/admin/AdminLocalGuidesPage").then((m) => ({ default: m.AdminLocalGuidesPage })),
 );
+const AdminAnalyticsOffresPage = lazy(() =>
+  import("@/pages/admin/AdminAnalyticsOffresPage").then((m) => ({ default: m.default })),
+);
 
 // Lazy load candidate pages
 const CandidateLoginPage = lazy(() =>
@@ -569,6 +572,18 @@ function AppContent() {
               requiredPermissions={["notifications.manage"]}
             >
               <AdminNotificationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="analytics-offres"
+          element={
+            <ProtectedRoute
+              fallbackPath="/auth"
+              allowedRoles={["super_admin", "admin"]}
+              requiredPermissions={["dashboard.admin"]}
+            >
+              <AdminAnalyticsOffresPage />
             </ProtectedRoute>
           }
         />

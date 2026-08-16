@@ -24,7 +24,8 @@ type AdminView =
   | "cgu"
   | "candidates"
   | "guides"
-  | "faq";
+  | "faq"
+  | "analytics-offres";
 
 export function AdminPage() {
   const { session } = useAuthContext();
@@ -61,6 +62,7 @@ export function AdminPage() {
     const path = location.pathname.replace("/admin", "").replace(/^\//, "");
     if (path === "jobs") setActiveView("jobs");
     else if (path === "blog") setActiveView("blog");
+    else if (path === "analytics-offres") setActiveView("analytics-offres");
     else if (path === "candidates") setActiveView("candidates");
     else if (path === "guides") setActiveView("guides");
     else if (path === "notifications") setActiveView("notifications");

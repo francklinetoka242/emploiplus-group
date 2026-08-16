@@ -18,11 +18,12 @@ import {
   Users,
   Moon,
   Sun,
+  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
-type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "privacy" | "legal" | "cgu" | "candidates" | "guides" | "faq";
+type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "privacy" | "legal" | "cgu" | "candidates" | "guides" | "faq" | "analytics-offres";
 
 interface AdminSidebarProps {
   open: boolean;
@@ -81,6 +82,7 @@ export function AdminSidebar({
       icon: LayoutDashboard,
     },
     { id: "jobs", label: t("admin.sidebar.jobs") || "Offres", icon: Briefcase },
+    { id: "analytics-offres", label: "Analytics-Offres", icon: BarChart3 },
     { id: "candidates", label: t("admin.sidebar.candidates") || "Utilisateur", icon: Users },
     { id: "guides", label: "Fiches-doc", icon: FileText },
     { id: "blog", label: t("admin.sidebar.blog") || "Blog", icon: FileText },

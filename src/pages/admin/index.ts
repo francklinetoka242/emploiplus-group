@@ -15,3 +15,4 @@ export { AdminCguPage } from "@/pages/admin/AdminCguPage";
 export { AdminCandidatesPage } from "@/pages/admin/AdminCandidatesPage";
 export { AdminLocalGuidesPage } from "@/pages/admin/AdminLocalGuidesPage";
 export { AdminNotificationsPage } from "@/pages/admin/AdminNotificationsPage";
+export { default as AdminAnalyticsOffresPage } from "@/pages/admin/AdminAnalyticsOffresPage";
