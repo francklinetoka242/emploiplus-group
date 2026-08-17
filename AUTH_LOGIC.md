@@ -458,4 +458,6 @@ La logique d’authentification utilisée par le projet est un mélange de :
 - une table métier `public.candidates` pour le profil candidat
 - des endpoints personnalisés pour la validation et la réinitialisation du mot de passe
 
+----
+
 Le point le plus important à retenir est que le profil candidat n’est pas créé automatiquement par un trigger `on_auth_user_created` dans le dépôt ; il est créé explicitement dans le code de l’inscription après la création du compte Auth.
