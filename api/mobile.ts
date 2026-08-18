@@ -1,8 +1,7 @@
-
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import nodemailer from 'nodemailer';
 import { createClient } from '@supabase/supabase-js';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 // Configuration
 const supabaseUrl = process.env.SUPABASE_URL!;
@@ -131,15 +130,88 @@ async function handleRegister(req: VercelRequest, res: VercelResponse) {
 
 async function handleConfirm(req: VercelRequest, res: VercelResponse) {
   try {
-    const { token, email, userId } = req.body;
+    const { token, code, email, userId } = req.body;
 
-    if (!token || !email || !userId) {
-      return res.status(400).json({ error: 'Token, email, and userId required' });
+    if (!email || !userId || (!token && !code)) {
+      return res.status(400).json({
+        error: 'Email, userId and either code or token are required',
+      });
     }
 
-    const decoded = verifyHMACToken(token, jwtSecret);
-    if (!decoded || decoded.email !== email || decoded.userId !== userId) {
-      return res.status(401).json({ error: 'Invalid or expired token' });
+    // Deep link token flow
+    if (token) {
+      const decoded = verifyHMACToken(token, jwtSecret);
+      if (!decoded || decoded.email !== email || decoded.userId !== userId) {
+        return res.status(401).json({ error: 'Invalid or expired token' });
+      }
+
+      const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+        email_confirm: true,
+      });
+
+      if (updateError) {
+        return res.status(500).json({ error: 'Failed to confirm email' });
+      }
+
+      await supabase
+        .from('email_verification_codes')
+        .update({ verified_at: new Date().toISOString() })
+        .eq('email', email)
+        .eq('user_id', userId);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Email confirmed successfully',
+      });
+    }
+
+    // Manual 6-digit code flow
+    const { data: verificationRow, error: verificationError } = await supabase
+      .from('email_verification_codes')
+      .select('*')
+      .eq('email', email)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (verificationError || !verificationRow) {
+      return res.status(400).json({ error: 'Verification record not found' });
+    }
+
+    if (verificationRow.verified_at) {
+      return res.status(400).json({ error: 'Email already verified' });
+    }
+
+    const expiresAt = new Date(verificationRow.expires_at);
+    const now = new Date();
+
+    if (expiresAt < now) {
+      return res.status(400).json({ error: 'Verification code expired' });
+    }
+
+    const attemptsUsed = Number(verificationRow.attempts ?? 0);
+    const maxAttempts = Number(verificationRow.max_attempts ?? 5);
+
+    if (attemptsUsed >= maxAttempts) {
+      return res.status(429).json({
+        error: 'Too many attempts',
+        attemptsRemaining: 0,
+      });
+    }
+
+    if (String(verificationRow.code) !== String(code).trim()) {
+      const nextAttempts = attemptsUsed + 1;
+
+      await supabase
+        .from('email_verification_codes')
+        .update({ attempts: nextAttempts })
+        .eq('id', verificationRow.id);
+
+      return res.status(400).json({
+        error: 'Invalid verification code',
+        attemptsRemaining: Math.max(maxAttempts - nextAttempts, 0),
+      });
     }
 
     const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
@@ -152,17 +224,19 @@ async function handleConfirm(req: VercelRequest, res: VercelResponse) {
 
     await supabase
       .from('email_verification_codes')
-      .update({ verified_at: new Date().toISOString() })
-      .eq('email', email)
-      .eq('user_id', userId);
+      .update({
+        verified_at: new Date().toISOString(),
+        attempts: attemptsUsed + 1,
+      })
+      .eq('id', verificationRow.id);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Email confirmed successfully',
     });
   } catch (error: any) {
     console.error('Mobile confirm error:', error);
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    return res.status(500).json({ error: error.message || 'Internal server error' });
   }
 }
 
