@@ -1,6 +1,7 @@
 import React from "react";
 import { faqService, type FAQ, type FAQCategory } from "@/features/faq/api/faqService";
 import { Button } from "@/components/ui/button";
+import { Plus, Pencil, Trash2, X, FolderOpen } from "lucide-react";
 
 const DEFAULT_FAQ_CATEGORIES = ["Compte", "Services", "Autres"];
 
@@ -19,6 +20,8 @@ export default function AdminFAQPage() {
   const [editCategory, setEditCategory] = React.useState<string>(DEFAULT_FAQ_CATEGORIES[0]);
   const [editSortOrder, setEditSortOrder] = React.useState(1);
   const [newCategoryName, setNewCategoryName] = React.useState("");
+  const [showForm, setShowForm] = React.useState(false);
+  const [showCategories, setShowCategories] = React.useState(false);
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -163,84 +166,170 @@ export default function AdminFAQPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold mb-4">FAQ — Gestion</h1>
-
-      <form onSubmit={handleCreate} className="space-y-2 mb-6">
-        {error ? (
-          <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-            {error}
+    <div className="space-y-4">
+      <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[9px] font-medium uppercase tracking-[0.22em] text-slate-500">
+              Administration
+            </p>
+            <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
+              FAQ — Gestion
+            </h1>
           </div>
-        ) : null}
-        <input value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Question" className="w-full p-2 border rounded" />
-        <textarea value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Réponse" className="w-full p-2 border rounded" />
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className="space-y-1">
-            <span>Catégorie</span>
-            <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2 border rounded">
-              {availableCategories.map((option) => (
-                <option key={option.id} value={option.name}>
-                  {option.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="space-y-1">
-            <span>Ordre d'affichage</span>
-            <input
-              type="number"
-              min={1}
-              value={sortOrder}
-              onChange={(e) => setSortOrder(Number(e.target.value) || 1)}
-              className="w-full p-2 border rounded"
-            />
-          </label>
-        </div>
-        <Button type="submit">Ajouter</Button>
-      </form>
 
-      <div className="rounded-2xl border p-4 space-y-3">
-        <h2 className="font-semibold">Catégories</h2>
-        <form onSubmit={handleAddCategory} className="flex flex-wrap gap-2">
-          <input value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} placeholder="Nouvelle catégorie" className="min-w-64 p-2 border rounded" />
-          <Button type="submit">Ajouter une catégorie</Button>
-        </form>
-        <div className="flex flex-wrap gap-2">
-          {availableCategories.map((option) => (
-            <div key={option.id} className="flex items-center gap-2 rounded-full border px-3 py-1 text-sm">
-              <span>{option.name}</span>
-              <button type="button" className="text-destructive" onClick={() => handleRemoveCategory(option.id, option.name)}>
-                ×
-              </button>
-            </div>
-          ))}
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => setShowCategories((prev) => !prev)}
+              className="h-10 w-10 rounded-full border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+              aria-label={showCategories ? "Fermer les catégories" : "Afficher les catégories"}
+              title={showCategories ? "Fermer les catégories" : "Afficher les catégories"}
+            >
+              <FolderOpen className={`h-4 w-4 transition-transform ${showCategories ? "scale-110" : ""}`} />
+            </Button>
+
+            <Button
+              type="button"
+              size="icon"
+              onClick={() => setShowForm((prev) => !prev)}
+              className="h-10 w-10 rounded-full bg-slate-900 text-white hover:bg-slate-800"
+              aria-label={showForm ? "Fermer le formulaire" : "Ajouter une FAQ"}
+              title={showForm ? "Fermer le formulaire" : "Ajouter une FAQ"}
+            >
+              <Plus className={`h-4 w-4 transition-transform ${showForm ? "rotate-45" : ""}`} />
+            </Button>
+          </div>
         </div>
       </div>
 
+      {showForm && (
+        <form onSubmit={handleCreate} className="space-y-3 rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
+          {error ? (
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              {error}
+            </div>
+          ) : null}
+
+          <div className="space-y-2">
+            <input
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Question"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none ring-0 transition focus:border-slate-400"
+            />
+            <textarea
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              placeholder="Réponse"
+              className="min-h-[110px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-slate-400"
+            />
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <label className="space-y-1.5 text-sm text-slate-700">
+              <span>Catégorie</span>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-400"
+              >
+                {availableCategories.map((option) => (
+                  <option key={option.id} value={option.name}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="space-y-1.5 text-sm text-slate-700">
+              <span>Ordre d'affichage</span>
+              <input
+                type="number"
+                min={1}
+                value={sortOrder}
+                onChange={(e) => setSortOrder(Number(e.target.value) || 1)}
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-400"
+              />
+            </label>
+          </div>
+
+          <div className="flex justify-end">
+            <Button type="submit" className="rounded-full bg-slate-900 text-white hover:bg-slate-800">
+              Ajouter
+            </Button>
+          </div>
+        </form>
+      )}
+
+      {showCategories && (
+        <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 className="text-base font-semibold text-slate-900">Catégories</h2>
+          </div>
+
+          <form onSubmit={handleAddCategory} className="flex flex-col gap-2 sm:flex-row">
+            <input
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder="Nouvelle catégorie"
+              className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-400"
+            />
+            <Button type="submit" variant="outline" className="rounded-full border-slate-200 bg-white hover:bg-slate-50">
+              Ajouter une catégorie
+            </Button>
+          </form>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {availableCategories.map((option) => (
+              <div key={option.id} className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700">
+                <span>{option.name}</span>
+                <button
+                  type="button"
+                  className="flex h-5 w-5 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
+                  onClick={() => handleRemoveCategory(option.id, option.name)}
+                  aria-label={`Supprimer la catégorie ${option.name}`}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="space-y-3">
         {loading ? (
-          <p>Chargement…</p>
+          <div className="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-500">
+            Chargement…
+          </div>
         ) : (
           faqs.map((faq) => (
-            <div key={faq.id} className="p-3 border rounded">
+            <div key={faq.id} className="rounded-[1.25rem] border border-slate-200 bg-white/90 p-3 shadow-sm">
               {editingId === faq.id ? (
                 <div className="space-y-3">
                   <input
                     value={editQuestion}
                     onChange={(e) => setEditQuestion(e.target.value)}
                     placeholder="Question"
-                    className="w-full p-2 border rounded"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-400"
                   />
                   <textarea
                     value={editAnswer}
                     onChange={(e) => setEditAnswer(e.target.value)}
                     placeholder="Réponse"
-                    className="w-full p-2 border rounded"
+                    className="min-h-[110px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-400"
                   />
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <label className="space-y-1">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="space-y-1.5 text-sm text-slate-700">
                       <span>Catégorie</span>
-                      <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)} className="w-full p-2 border rounded">
+                      <select
+                        value={editCategory}
+                        onChange={(e) => setEditCategory(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-400"
+                      >
                         {availableCategories.map((option) => (
                           <option key={option.id} value={option.name}>
                             {option.name}
@@ -248,35 +337,61 @@ export default function AdminFAQPage() {
                         ))}
                       </select>
                     </label>
-                    <label className="space-y-1">
+                    <label className="space-y-1.5 text-sm text-slate-700">
                       <span>Ordre d'affichage</span>
                       <input
                         type="number"
                         min={1}
                         value={editSortOrder}
                         onChange={(e) => setEditSortOrder(Number(e.target.value) || 1)}
-                        className="w-full p-2 border rounded"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-400"
                       />
                     </label>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Button onClick={handleSaveEdit}>Enregistrer</Button>
-                    <Button variant="secondary" onClick={handleCancelEdit}>Annuler</Button>
+                    <Button onClick={handleSaveEdit} className="rounded-full bg-slate-900 text-white hover:bg-slate-800">
+                      Enregistrer
+                    </Button>
+                    <Button variant="secondary" onClick={handleCancelEdit} className="rounded-full">
+                      Annuler
+                    </Button>
                   </div>
                 </div>
               ) : (
-                <>
-                  <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                    <span className="font-semibold">Catégorie :</span> {faq.category}
-                    <span className="font-semibold">Ordre :</span> {faq.sort_order}
+                <div className="space-y-3">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs text-slate-500">
+                    <span className="rounded-full bg-slate-100 px-2 py-1 font-medium text-slate-600">
+                      {faq.category}
+                    </span>
+                    <span>Ordre : {faq.sort_order}</span>
                   </div>
-                  <h3 className="font-semibold">{faq.question}</h3>
-                  <p className="text-sm text-muted-foreground">{faq.answer}</p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <Button onClick={() => handleEdit(faq)}>Modifier</Button>
-                    <Button variant="destructive" onClick={() => handleDelete(faq.id)}>Supprimer</Button>
+                  <h3 className="text-base font-semibold text-slate-900">{faq.question}</h3>
+                  <p className="text-sm leading-6 text-slate-600">{faq.answer}</p>
+                  <div className="flex flex-wrap justify-end gap-2">
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="outline"
+                      onClick={() => handleEdit(faq)}
+                      className="h-9 w-9 rounded-full border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+                      aria-label="Modifier la FAQ"
+                      title="Modifier la FAQ"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      onClick={() => handleDelete(faq.id)}
+                      className="h-9 w-9 rounded-full"
+                      aria-label="Supprimer la FAQ"
+                      title="Supprimer la FAQ"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                </>
+                </div>
               )}
             </div>
           ))

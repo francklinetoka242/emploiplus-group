@@ -130,63 +130,87 @@ export function AdminCguPage() {
         robots: "noindex,nofollow",
       })}
 
-      <div className="space-y-6">
-        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-violet-500/10">
-                <FileText className="h-6 w-6 text-violet-500" />
+      <div className="space-y-4">
+        <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+                <FileText className="h-4 w-4" />
               </div>
-              <div>
-                <h1 className="text-3xl font-semibold text-foreground">CGU</h1>
-                <p className="mt-1 text-sm text-muted-foreground">
+              <div className="min-w-0">
+                <p className="text-[9px] font-medium uppercase tracking-[0.22em] text-slate-500">
+                  Administration
+                </p>
+                <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
+                  CGU
+                </h1>
+                <p className="mt-0.5 text-xs text-slate-500">
                   Rédigez et publiez la version actuelle des Conditions Générales d'Utilisation.
                 </p>
               </div>
             </div>
-            <div className="rounded-2xl border border-border bg-background/70 px-4 py-3 text-sm text-muted-foreground">
-              Le contenu est stocké dans Supabase et publié sur la page publique /cgu.
+
+            <div className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[10px] font-medium text-slate-600">
+              Publiées sur /cgu
             </div>
           </div>
         </div>
 
-        <form onSubmit={handleSave} className="space-y-5 rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
-            <div className="space-y-3">
-              <Label htmlFor="cgu-version">Version</Label>
+        <form
+          onSubmit={handleSave}
+          className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5"
+        >
+          <div className="rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2">
+            <h2 className="text-sm font-semibold text-slate-800">Version et contenu</h2>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-[200px_minmax(0,1fr)]">
+            <div className="space-y-2">
+              <Label htmlFor="cgu-version" className="text-sm font-medium text-slate-700">
+                Version
+              </Label>
               <Input
                 id="cgu-version"
                 value={version}
                 onChange={(event) => setVersion(event.target.value)}
                 placeholder="1.0"
+                className="h-11 rounded-xl border-slate-200 bg-white focus-visible:ring-slate-200"
               />
             </div>
 
-            <div className="space-y-3">
-              <Label htmlFor="cgu-content">Contenu des CGU</Label>
+            <div className="space-y-2">
+              <Label htmlFor="cgu-content" className="text-sm font-medium text-slate-700">
+                Contenu des CGU
+              </Label>
               <Textarea
                 id="cgu-content"
                 value={content}
                 onChange={(event) => setContent(event.target.value)}
-                rows={24}
+                rows={18}
                 placeholder="Saisissez le contenu Markdown ou HTML des CGU ici..."
-                className="min-h-[520px]"
+                className="min-h-[360px] resize-y rounded-xl border-slate-200 bg-white focus-visible:ring-slate-200"
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-sm text-muted-foreground">
-              {loading ? "Chargement de la version actuelle..." : "Enregistrer créera une nouvelle version publiée comme active."}
+          <div className="flex flex-col gap-3 border-t border-slate-200 pt-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-xs text-slate-500">
+              {loading
+                ? "Chargement de la version actuelle..."
+                : "Enregistrer créera une nouvelle version publiée comme active."}
             </div>
-            <Button type="submit" disabled={saving || loading} className="gap-2">
+            <Button
+              type="submit"
+              disabled={saving || loading}
+              className="gap-2 rounded-full bg-slate-900 text-white hover:bg-slate-800"
+            >
               <Save className="h-4 w-4" />
               {saving ? "Publication..." : "Enregistrer et publier"}
             </Button>
           </div>
 
           {message && (
-            <div className="rounded-2xl border border-border bg-background p-4 text-sm text-foreground">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
               {message}
             </div>
           )}

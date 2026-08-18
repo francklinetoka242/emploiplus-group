@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { AlertCircle, Ban, CheckCircle2, Pencil, PlusCircle, Trash2, Users } from "lucide-react";
+import { AlertCircle, Ban, CheckCircle2, Pencil, Plus, Trash2, Users } from "lucide-react";
 import { buildAdminCreateUserPayload } from "@/features/authentication/utils/adminCreateUserPayload";
 
 type AdminRole = "super_admin" | "admin" | "editor";
@@ -357,17 +357,27 @@ export function AdminTeamPage() {
         canonical={`${BASE_URL}/admin/team`}
         robots="noindex,nofollow"
       />
-      <div className="space-y-6">
-        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-3xl font-semibold text-foreground">{t("admin.team.title")}</h1>
-              <p className="mt-3 text-sm text-muted-foreground">{t("admin.team.description")}</p>
+      <div className="space-y-4">
+        <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
+              <p className="text-[9px] font-medium uppercase tracking-[0.22em] text-slate-500">
+                Administration
+              </p>
+              <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
+                {t("admin.team.title")}
+              </h1>
+              <p className="mt-0.5 text-xs text-slate-500">{t("admin.team.description")}</p>
             </div>
             {canManageAdmins && (
-              <Button onClick={openCreateDialog} className="gap-2">
-                <PlusCircle className="h-4 w-4" />
-                {t("admin.team.createAdmin")}
+              <Button
+                onClick={openCreateDialog}
+                size="icon"
+                className="h-10 w-10 rounded-full bg-slate-900 text-white hover:bg-slate-800"
+                aria-label={t("admin.team.createAdmin")}
+                title={t("admin.team.createAdmin")}
+              >
+                <Plus className="h-4 w-4" />
               </Button>
             )}
           </div>
@@ -389,79 +399,76 @@ export function AdminTeamPage() {
             {t("admin.team.empty")}
           </div>
         ) : (
-          <div className="grid gap-6 xl:grid-cols-3">
+          <div className="space-y-3">
             {teamMembers.map((member) => (
               <div
                 key={member.id}
-                className="rounded-[2rem] border border-border bg-background p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-lg"
+                className="flex flex-col gap-3 rounded-[1.25rem] border border-slate-200 bg-white/90 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md md:flex-row md:items-center"
               >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-primary/10 text-primary">
-                    <Users className="h-6 w-6" />
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                    <Users className="h-4 w-4" />
                   </div>
-                  <div>
-                    <p className="text-base font-semibold text-foreground">{member.name}</p>
-                    <p className="text-sm text-muted-foreground">{member.role}</p>
-                  </div>
-                </div>
-                <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-                  <div>
-                    <span className="font-semibold text-foreground">
-                      {t("admin.team.emailLabel")} :
-                    </span>{" "}
-                    {member.email}
-                  </div>
-                  <div>
-                    <span className="font-semibold text-foreground">
-                      {t("admin.team.specialtyLabel")} :
-                    </span>{" "}
-                    {member.specialty || "-"}
-                  </div>
-                  <div>
-                    <span className="font-semibold text-foreground">
-                      {t("admin.team.statusLabel")} :
-                    </span>{" "}
-                    {member.isActive ? (
-                      <span className="text-emerald-600">{t("admin.team.status.active")}</span>
-                    ) : (
-                      <span className="text-destructive">{t("admin.team.status.blocked")}</span>
-                    )}
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex min-w-0 flex-wrap items-center gap-2">
+                      <p className="truncate text-base font-semibold text-slate-900">{member.name}</p>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-slate-600">
+                        {member.role}
+                      </span>
+                    </div>
+                    <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2 text-xs text-slate-500">
+                      <span className="truncate">{member.email}</span>
+                      <span>•</span>
+                      <span>{member.specialty || "-"}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => openEditDialog(member)}
-                    className="gap-2"
+
+                <div className="flex items-center justify-between gap-2 md:justify-end">
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-[10px] font-medium ${member.isActive ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}
                   >
-                    <Pencil className="h-4 w-4" />
-                    {t("admin.team.actions.edit")}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => handleToggleStatus(member)}
-                    className="gap-2"
-                  >
-                    {member.isActive ? (
-                      <Ban className="h-4 w-4" />
-                    ) : (
-                      <CheckCircle2 className="h-4 w-4" />
-                    )}
-                    {member.isActive
-                      ? t("admin.team.actions.block")
-                      : t("admin.team.actions.unblock")}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleDelete(member)}
-                    className="gap-2"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    {t("admin.team.actions.delete")}
-                  </Button>
+                    {member.isActive ? t("admin.team.status.active") : t("admin.team.status.blocked")}
+                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="outline"
+                      onClick={() => openEditDialog(member)}
+                      className="h-9 w-9 rounded-full border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+                      aria-label={t("admin.team.actions.edit")}
+                      title={t("admin.team.actions.edit")}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="secondary"
+                      onClick={() => handleToggleStatus(member)}
+                      className="h-9 w-9 rounded-full"
+                      aria-label={member.isActive ? t("admin.team.actions.block") : t("admin.team.actions.unblock")}
+                      title={member.isActive ? t("admin.team.actions.block") : t("admin.team.actions.unblock")}
+                    >
+                      {member.isActive ? <Ban className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
+                    </Button>
+
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      onClick={() => handleDelete(member)}
+                      className="h-9 w-9 rounded-full"
+                      aria-label={t("admin.team.actions.delete")}
+                      title={t("admin.team.actions.delete")}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

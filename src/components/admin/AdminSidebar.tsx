@@ -98,69 +98,80 @@ export function AdminSidebar({
   return (
     <aside
       className={cn(
-        "flex min-h-[calc(100vh-57px)] lg:min-h-[calc(100vh-48px)] flex-col gap-4 sm:gap-6 rounded-none lg:rounded-[2rem] border-0 lg:border border-border bg-card p-3 sm:p-4 text-foreground shadow-none lg:shadow-soft transition-all duration-300",
+        "flex h-screen flex-col overflow-hidden bg-card text-foreground transition-all duration-300",
         open ? "w-full lg:w-72" : "w-20",
       )}
+      style={{
+        scrollbarColor: "rgba(148, 163, 184, 0.8) transparent",
+      }}
     >
-      <div className="flex items-center justify-between gap-2 sm:gap-3 px-2">
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+      <div className="flex items-center justify-between gap-2 px-2 pt-2 pb-2">
+<div className={cn("flex min-w-0 items-center gap-2 sm:gap-3", !open && "justify-center")}> 
           {!open && (
             <button
               type="button"
               onClick={onToggle}
-              className="hidden lg:inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-background/80 text-foreground transition hover:bg-background"
+              className="hidden h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-200 lg:inline-flex"
               aria-label={t("admin.sidebar.expand")}
             >
-              <PanelLeftOpen className="h-5 w-5" />
+              <PanelLeftOpen className="h-4 w-4" />
             </button>
           )}
-          <div className="flex h-10 sm:h-11 w-10 sm:w-11 items-center justify-center overflow-hidden rounded-2xl bg-background/80 p-1 shadow-sm flex-shrink-0">
+          <div className={cn("flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 p-1 shadow-sm", !open && "mx-auto") }>
             <img src={favicon} alt="Emploi+" className="h-full w-full object-contain" />
           </div>
           <div
             className={cn(
-              "space-y-1 overflow-hidden transition-all duration-300 min-w-0",
+              "min-w-0 overflow-hidden transition-all duration-300",
               open ? "max-w-full opacity-100" : "max-w-0 opacity-0 lg:max-w-0",
             )}
           >
-            <p className="text-sm font-semibold truncate">Emploi+</p>
-            <p className="text-xs text-slate-300 truncate">Dashboard pro</p>
+            <p className="truncate text-sm font-semibold">Emploi+</p>
+            <p className="truncate text-[11px] text-slate-500">Dashboard pro</p>
           </div>
         </div>
+
         <button
           type="button"
           onClick={onToggle}
-          className="inline-flex lg:inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-slate-100 transition hover:bg-white/15 flex-shrink-0"
+          className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-200"
           aria-label={open ? t("admin.sidebar.collapse") : t("admin.sidebar.expand")}
+          style={{
+            boxShadow: "inset 0 0 0 1px rgba(148, 163, 184, 0.18)",
+          }}
         >
-          {open ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+          {open ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </button>
       </div>
 
       <div
         className={cn(
-          "space-y-2 overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-background/80 p-3 sm:p-4 transition-all duration-300",
+          "relative z-10 overflow-hidden border border-slate-200 bg-slate-50/80 p-3 transition-all duration-300",
           open ? "max-h-[12rem] opacity-100" : "max-h-0 opacity-0 lg:max-h-0",
         )}
       >
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="flex h-10 sm:h-12 w-10 sm:w-12 items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl bg-slate-800 flex-shrink-0">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-800">
             {avatar ? (
               <img src={avatar} alt={name} className="h-full w-full object-cover" />
             ) : (
-              <span className="text-xs sm:text-sm font-semibold text-slate-200">
-                {name.slice(0, 2).toUpperCase()}
-              </span>
+              <span className="text-xs font-semibold text-slate-200">{name.slice(0, 2).toUpperCase()}</span>
             )}
           </div>
           <div className="min-w-0">
-            <p className="text-xs sm:text-sm font-semibold text-white truncate">{name}</p>
-            <p className="text-xs text-slate-400 truncate">{email}</p>
+            <p className="truncate text-sm font-semibold text-slate-900">{name}</p>
+            <p className="truncate text-xs text-slate-500">{email}</p>
           </div>
         </div>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1 sm:gap-2">
+      <nav
+        className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-2 pb-2"
+        style={{
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(148, 163, 184, 0.8) rgba(15, 23, 42, 0.04)",
+        }}
+      >
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = activeView === item.id;
@@ -170,16 +181,17 @@ export function AdminSidebar({
               type="button"
               onClick={() => onSelect(item.id)}
               className={cn(
-                "group flex items-center rounded-2xl sm:rounded-3xl px-3 sm:px-4 py-2 sm:py-3 text-left text-sm sm:text-base transition-all duration-300 hover:bg-white/10",
-                open ? "gap-2 sm:gap-3 justify-start whitespace-nowrap" : "justify-center gap-0",
-                active ? "bg-white/10 ring-1 ring-white/20" : "",
+                "group flex items-center rounded-xl px-3 py-2.5 text-left text-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-slate-100 hover:text-slate-900 active:scale-[0.98]",
+                open ? "justify-start gap-3 whitespace-nowrap" : "justify-center gap-0",
+                active ? "bg-slate-900 text-white shadow-sm hover:bg-slate-800 hover:text-white" : "text-slate-700",
+                !open && "w-full px-0",
               )}
               title={item.label}
             >
-              <Icon className="h-4 sm:h-5 w-4 sm:w-5 text-foreground flex-shrink-0" />
+              <Icon className={cn("h-4 w-4 flex-shrink-0", !open && "mx-auto")} />
               <span
                 className={cn(
-                  "text-xs sm:text-sm font-medium transition-all duration-300",
+                  "text-sm font-medium transition-all duration-300",
                   open ? "opacity-100" : "opacity-0 lg:opacity-0",
                 )}
               >
@@ -190,20 +202,22 @@ export function AdminSidebar({
         })}
       </nav>
 
-      <div className="mt-auto rounded-2xl sm:rounded-3xl border border-border bg-background/80 p-2 sm:p-4">
-        <div className={cn("flex flex-col gap-2")}> 
-          <div className={cn(
-            "flex items-center justify-between px-2 py-1 rounded-md",
-            open ? "" : "justify-center"
-          )}>
-            <div className={cn("flex items-center gap-3 min-w-0", open ? "" : "hidden")}>
-              <Sun className="h-4 w-4 text-yellow-400" />
+      <div className="mt-auto border-t border-slate-200 bg-slate-50/70 p-2 pb-0">
+        <div className="flex flex-col gap-2">
+          <div
+            className={cn(
+              "flex items-center px-2 py-1",
+              open ? "justify-between gap-3" : "justify-center",
+            )}
+          >
+            <div className={cn("flex min-w-0 items-center gap-3", open ? "" : "hidden")}>
+              <Sun className="h-4 w-4 text-amber-500" />
               <div className="min-w-0">
-                <p className="text-xs font-medium text-foreground">Mode sombre</p>
-                <p className="text-[10px] text-muted-foreground truncate">Basculer le thème clair/sombre</p>
+                <p className="text-xs font-medium text-slate-800">Mode sombre</p>
+                <p className="truncate text-[10px] text-slate-500">Thème clair/sombre</p>
               </div>
             </div>
-            <div className={cn(open ? "" : "mx-auto")}> 
+            <div className={cn(open ? "" : "mx-auto")}>
               <Switch checked={darkMode} onCheckedChange={(value) => setDarkMode(Boolean(value))} />
             </div>
           </div>
@@ -212,11 +226,12 @@ export function AdminSidebar({
             type="button"
             onClick={onLogout}
             className={cn(
-              "group inline-flex w-full items-center rounded-2xl sm:rounded-3xl px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-slate-100 transition hover:bg-white/10",
-              open ? "gap-2 sm:gap-3 justify-start" : "justify-center gap-0",
+              "group inline-flex w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-100 hover:text-slate-900 active:scale-[0.98]",
+              open ? "justify-start gap-3" : "justify-center gap-0",
+              !open && "px-0",
             )}
           >
-            <LogOut className="h-4 sm:h-5 w-4 sm:w-5 text-red-400 flex-shrink-0" />
+            <LogOut className={cn("h-4 w-4 text-red-500", !open && "mx-auto")} />
             <span className={cn("transition-all duration-300", open ? "opacity-100" : "opacity-0 lg:opacity-0")}>
               {t("common.signOut")}
             </span>

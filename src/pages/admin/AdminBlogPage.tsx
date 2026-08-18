@@ -3,6 +3,7 @@ import {
   Eye,
   EyeOff,
   ExternalLink,
+  FileText,
   PencilLine,
   Plus,
   RefreshCw,
@@ -28,6 +29,8 @@ import {
 import type { Database } from "@/integrations/supabase/types";
 
 type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
+
+const PAGE_SIZE = 10;
 
 function createEmptyForm() {
   return {
@@ -56,9 +59,13 @@ export function AdminBlogPage() {
   const [submitting, setSubmitting] = React.useState(false);
   const [uploadingImage, setUploadingImage] = React.useState(false);
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
+  const [page, setPage] = React.useState(1);
+  const [totalPosts, setTotalPosts] = React.useState(0);
   const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(
     null,
   );
+
+  const totalPages = Math.max(1, Math.ceil(totalPosts / PAGE_SIZE));
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -69,25 +76,43 @@ export function AdminBlogPage() {
     }));
   };
 
-  const loadPosts = React.useCallback(async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("blog_posts")
-      .select("*")
-      .order("is_featured", { ascending: false })
-      .order("sort_order", { ascending: true })
-      .order("publish_at", { ascending: false });
-    setLoading(false);
-    if (!error) {
+  const loadPosts = React.useCallback(
+    async (nextPage = page) => {
+      setLoading(true);
+      const offset = (nextPage - 1) * PAGE_SIZE;
+
+      const [{ data, error }, { count, error: countError }] = await Promise.all([
+        supabase
+          .from("blog_posts")
+          .select("*")
+          .order("is_featured", { ascending: false })
+          .order("sort_order", { ascending: true })
+          .order("publish_at", { ascending: false })
+          .range(offset, offset + PAGE_SIZE - 1),
+        supabase.from("blog_posts").select("id", { count: "exact", head: true }),
+      ]);
+
+      setLoading(false);
+
+      if (error) {
+        setMessage({ type: "error", text: error.message });
+        return;
+      }
+
+      if (countError) {
+        setMessage({ type: "error", text: countError.message });
+        return;
+      }
+
       setPosts(data ?? []);
-      return;
-    }
-    setMessage({ type: "error", text: error.message });
-  }, []);
+      setTotalPosts(count ?? 0);
+    },
+    [page],
+  );
 
   React.useEffect(() => {
-    void loadPosts();
-  }, [loadPosts]);
+    void loadPosts(page);
+  }, [loadPosts, page]);
 
   function createSlug(value: string) {
     return (
@@ -131,6 +156,11 @@ export function AdminBlogPage() {
     setEditingId(null);
     setMessage(null);
     setShowForm(false);
+  };
+
+  const handlePageChange = (nextPage: number) => {
+    const safePage = Math.min(Math.max(1, nextPage), totalPages);
+    setPage(safePage);
   };
 
   const toggleForm = () => {
@@ -273,24 +303,43 @@ export function AdminBlogPage() {
         canonical={`${BASE_URL}/admin/blog`}
         robots="noindex,nofollow"
       />
-      <div className="space-y-6">
-        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div>
-              <h1 className="text-3xl font-semibold text-foreground">
+      <div className="space-y-3">
+        <div className="rounded-[1.25rem] border border-slate-200 bg-white/90 p-3 shadow-sm md:p-4">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
+              <p className="text-[9px] font-medium uppercase tracking-[0.22em] text-slate-500">
+                Administration
+              </p>
+              <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
                 {t("admin.blog.pageTitle")}
               </h1>
-              <p className="mt-3 text-sm text-muted-foreground">
+              <p className="mt-0.5 text-xs text-slate-500">
                 {t("admin.blog.pageDescription")}
               </p>
             </div>
-            <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={toggleForm}>
-                <Plus className="mr-2 size-4" />
-                {editingId ? "Annuler l'édition" : "Nouvel article"}
+
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={toggleForm}
+                className="h-10 w-10 rounded-full border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-100"
+                aria-label={editingId ? "Annuler l'édition" : "Nouvel article"}
+                title={editingId ? "Annuler l'édition" : "Nouvel article"}
+              >
+                <Plus className="h-4 w-4" />
               </Button>
-              <Button type="button" variant="secondary" onClick={() => void loadPosts()}>
-                <RefreshCw className={`mr-2 size-4 ${loading ? "animate-spin" : ""}`} /> Actualiser
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon"
+                onClick={() => void loadPosts(page)}
+                className="h-10 w-10 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200"
+                aria-label="Actualiser"
+                title="Actualiser"
+              >
+                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
               </Button>
             </div>
           </div>
@@ -519,118 +568,162 @@ export function AdminBlogPage() {
           </form>
         ) : null}
 
-        <div className="rounded-[2rem] border border-border bg-card p-6 shadow-soft">
-          <div className="flex items-center justify-between">
+        <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-foreground">Liste des articles</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <h2 className="text-xl font-semibold text-slate-900">Liste des articles</h2>
+              <p className="mt-1 text-sm text-slate-500">
                 Consultez chaque contenu, suivez son statut et pilotez sa visibilité.
               </p>
             </div>
-            <div className="text-sm text-muted-foreground">{posts.length} élément(s)</div>
+            <div className="rounded-full bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-600">
+              {totalPosts} élément(s)
+            </div>
           </div>
 
           {loading ? (
-            <div className="mt-6 rounded-3xl border border-border bg-background/70 p-6 text-sm text-muted-foreground">
+            <div className="mt-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-500">
               Chargement...
             </div>
           ) : posts.length === 0 ? (
-            <div className="mt-6 rounded-3xl border border-border bg-background/70 p-6 text-sm text-muted-foreground">
+            <div className="mt-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-500">
               Aucun article pour le moment.
             </div>
           ) : (
-            <div className="mt-6 max-h-[60vh] overflow-y-auto rounded-3xl border border-border/60">
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border text-left text-muted-foreground">
-                      <th className="px-3 py-3 font-medium">Article</th>
-                      <th className="px-3 py-3 font-medium">Date</th>
-                      <th className="px-3 py-3 font-medium">Statut</th>
-                      <th className="px-3 py-3 font-medium">Catégorie</th>
-                      <th className="px-3 py-3 font-medium text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {posts.map((post) => {
-                      const meta =
-                        statusMeta[post.status as keyof typeof statusMeta] ?? statusMeta.draft;
-                      return (
-                        <tr key={post.id} className="border-b border-border/60 align-top">
-                          <td className="px-3 py-4">
-                            <div className="font-semibold text-foreground">{post.title}</div>
-                            <div className="mt-1 text-muted-foreground">
-                              {post.author || "Équipe"}
-                            </div>
-                            {post.is_featured ? (
-                              <div className="mt-2 inline-flex rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600">
-                                À la une
-                              </div>
-                            ) : null}
-                          </td>
-                          <td className="px-3 py-4 text-muted-foreground">
-                            {post.publish_at
-                              ? new Date(post.publish_at).toLocaleDateString("fr-FR")
-                              : new Date(post.created_at).toLocaleDateString("fr-FR")}
-                          </td>
-                          <td className="px-3 py-4">
+            <>
+              <div className="space-y-3">
+                {posts.map((post) => {
+                  const meta =
+                    statusMeta[post.status as keyof typeof statusMeta] ?? statusMeta.draft;
+
+                  return (
+                    <div
+                      key={post.id}
+                      className="flex flex-col gap-3 rounded-[1.25rem] border border-slate-200 bg-slate-50/60 p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                    >
+                      <div className="flex min-w-0 items-start gap-3">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                          <FileText className="h-4 w-4" />
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex min-w-0 flex-wrap items-center gap-2">
+                            <p className="truncate text-base font-semibold text-slate-900">
+                              {post.title}
+                            </p>
                             <Badge variant={meta.badge}>{meta.label}</Badge>
-                          </td>
-                          <td className="px-3 py-4 text-muted-foreground">
-                            {post.category || "—"}
-                          </td>
-                          <td className="px-3 py-4">
-                            <div className="flex flex-wrap justify-end gap-2">
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                onClick={() => startEdit(post)}
-                              >
-                                <PencilLine className="mr-2 size-4" /> Modifier
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="secondary"
-                                onClick={() =>
-                                  void updateStatus(
-                                    post,
-                                    post.status === "published" ? "archived" : "published",
-                                  )
-                                }
-                                disabled={actionLoadingId === post.id}
-                              >
-                                {post.status === "published" ? (
-                                  <EyeOff className="mr-2 size-4" />
-                                ) : (
-                                  <Eye className="mr-2 size-4" />
-                                )}
-                                {post.status === "published" ? "Masquer" : "Publier"}
-                              </Button>
-                              <Button type="button" size="sm" variant="ghost" asChild>
-                                <a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer">
-                                  <ExternalLink className="mr-2 size-4" /> Voir
-                                </a>
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => void deletePost(post)}
-                                disabled={actionLoadingId === post.id}
-                              >
-                                <Trash2 className="mr-2 size-4" /> Supprimer
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                          </div>
+                          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2 text-xs text-slate-500">
+                            <span className="truncate">{post.category || "—"}</span>
+                            <span>•</span>
+                            <span>{post.publish_at ? new Date(post.publish_at).toLocaleDateString("fr-FR") : new Date(post.created_at).toLocaleDateString("fr-FR")}</span>
+                          </div>
+                          <div className="mt-1 text-xs text-slate-500">
+                            {post.author || "Équipe"}
+                            {post.is_featured ? " • À la une" : ""}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-end gap-2">
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="outline"
+                          onClick={() => startEdit(post)}
+                          className="h-9 w-9 rounded-full border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+                          aria-label="Modifier l'article"
+                          title="Modifier l'article"
+                        >
+                          <PencilLine className="h-4 w-4" />
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant={post.status === "published" ? "secondary" : "outline"}
+                          onClick={() =>
+                            void updateStatus(
+                              post,
+                              post.status === "published" ? "archived" : "published",
+                            )
+                          }
+                          disabled={actionLoadingId === post.id}
+                          className="h-9 w-9 rounded-full"
+                          aria-label={post.status === "published" ? "Masquer l'article" : "Publier l'article"}
+                          title={post.status === "published" ? "Masquer l'article" : "Publier l'article"}
+                        >
+                          {post.status === "published" ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          className="h-9 w-9 rounded-full text-slate-700 hover:bg-slate-100"
+                          aria-label="Voir l'article"
+                          title="Voir l'article"
+                          asChild
+                        >
+                          <a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer">
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="destructive"
+                          onClick={() => void deletePost(post)}
+                          disabled={actionLoadingId === post.id}
+                          className="h-9 w-9 rounded-full"
+                          aria-label="Supprimer l'article"
+                          title="Supprimer l'article"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+
+              <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-200 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1 || loading}
+                  className="h-9 w-9 rounded-full"
+                  aria-label="Page précédente"
+                  title="Page précédente"
+                >
+                  <span className="text-base">‹</span>
+                </Button>
+
+                <div className="text-xs font-medium text-slate-500">
+                  Page {page}/{totalPages}
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page >= totalPages || loading}
+                  className="h-9 w-9 rounded-full"
+                  aria-label="Page suivante"
+                  title="Page suivante"
+                >
+                  <span className="text-base">›</span>
+                </Button>
+              </div>
+            </>
           )}
         </div>
       </div>

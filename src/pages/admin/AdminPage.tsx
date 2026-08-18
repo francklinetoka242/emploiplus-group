@@ -128,20 +128,23 @@ export function AdminPage() {
           {/* Main Container */}
           <div
             className={cn(
-              "relative flex min-h-[calc(100vh-57px)] lg:min-h-screen",
-              isMobile ? "flex-col" : "flex-row gap-6 px-4 sm:px-6 lg:px-8 py-6",
+              "relative min-h-[calc(100vh-57px)] lg:min-h-screen",
+              isMobile ? "flex flex-col" : "",
             )}
           >
             {/* Sidebar */}
             <div
               className={cn(
-                "lg:sticky lg:top-6 lg:self-start lg:shrink-0 transition-all duration-300",
+                "transition-all duration-300",
                 isMobile
                   ? cn(
                       "fixed inset-y-[57px] left-0 z-40 w-72 overflow-y-auto transform transition-transform duration-300",
                       mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
                     )
-                  : "",
+                  : cn(
+                      "fixed inset-y-0 left-0 z-30 h-screen",
+                      sidebarOpen ? "w-72" : "w-20",
+                    ),
               )}
             >
               <AdminSidebar
@@ -163,12 +166,11 @@ export function AdminPage() {
             {/* Content Area */}
             <div
               className={cn(
-                "flex flex-1 flex-col gap-4 sm:gap-6",
-                isMobile ? "px-4 pb-6 pt-0" : "min-w-0",
+                "w-full flex-1 transition-all duration-300",
+                isMobile ? "px-4 pb-6 pt-0" : cn("min-w-0", sidebarOpen ? "lg:pl-72" : "lg:pl-20"),
               )}
             >
-              {/* AdminTopbar removed as requested */}
-              <main className="flex-1 overflow-y-auto rounded-[1.5rem] sm:rounded-[2rem] border border-border bg-background p-4 sm:p-6 shadow-soft transition-all duration-300">
+              <main className="w-full min-h-[calc(100vh-2rem)] overflow-y-auto rounded-none border-0 bg-background p-4 sm:p-6 transition-all duration-300 lg:mt-4">
                 <Outlet />
               </main>
             </div>

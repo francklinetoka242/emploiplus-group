@@ -44,16 +44,6 @@ export function SiteFooter() {
           <div className="font-semibold mb-3 text-sm text-slate-100">{t("footer.links.company")}</div>
           <ul className="space-y-2 text-sm text-slate-300">
             <li>
-              <Link to="/about" className="transition-colors duration-200 hover:text-white">
-                {t("nav.about")}
-              </Link>
-            </li>
-            <li>
-              <Link to="/contact" className="transition-colors duration-200 hover:text-white">
-                {t("nav.contact")}
-              </Link>
-            </li>
-            <li>
               <Link to="/politique-de-confidentialite" className="transition-colors duration-200 hover:text-white">
                 Politique de Confidentialité
               </Link>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { Pencil, Trash2, Eye, EyeOff, Plus } from "lucide-react";
 import {
   createNotification,
   deleteNotification,
@@ -65,6 +65,7 @@ export function AdminNotificationsPage() {
   const [usersLoading, setUsersLoading] = React.useState(false);
   const [typeFilter, setTypeFilter] = React.useState<"all" | NotificationType>("all");
   const [statusFilter, setStatusFilter] = React.useState<"all" | NotificationStatus>("all");
+  const [showForm, setShowForm] = React.useState(false);
 
   const loadNotifications = React.useCallback(async () => {
     setLoading(true);
@@ -241,22 +242,38 @@ export function AdminNotificationsPage() {
         robots="noindex,nofollow"
       />
 
-      <div className="space-y-6">
-        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-slate-500">Administration</p>
-              <h1 className="text-3xl font-semibold text-slate-900">Gestion des notifications</h1>
-              <p className="mt-2 text-sm text-slate-600">
+      <div className="space-y-4">
+        <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
+              <p className="text-[9px] font-medium uppercase tracking-[0.22em] text-slate-500">
+                Administration
+              </p>
+              <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
+                Gestion des notifications
+              </h1>
+              <p className="mt-0.5 text-xs text-slate-500">
                 Envoyez, modifiez et masquez des notifications candidates depuis le back-office.
               </p>
             </div>
-            <div className="grid gap-3 sm:auto-cols-min sm:grid-flow-col">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                {activeCount} notification{activeCount > 1 ? "s" : ""} active
-                {activeCount > 1 ? "s" : ""}
+
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-10 w-10 rounded-full border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-100"
+                onClick={() => setShowForm((prev) => !prev)}
+                title={showForm ? "Fermer le formulaire" : "Créer une notification"}
+                aria-label={showForm ? "Fermer le formulaire" : "Créer une notification"}
+              >
+                <Plus className={`h-4 w-4 transition-transform ${showForm ? "rotate-45" : ""}`} />
+              </Button>
+
+              <div className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700">
+                {activeCount} active
               </div>
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+              <div className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-700">
                 {notifications.length} total
               </div>
             </div>
@@ -265,27 +282,27 @@ export function AdminNotificationsPage() {
 
         {message && (
           <div
-            className={`rounded-3xl border px-4 py-4 text-sm ${message.type === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}
+            className={`rounded-2xl border px-4 py-3 text-sm ${message.type === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}
           >
             {message.text}
           </div>
         )}
 
-        <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-          <section className="rounded-[2rem] border border-border bg-background p-6 shadow-soft">
-            <div className="mb-6 flex items-center justify-between gap-4">
+        {showForm && (
+          <section className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
+            <div className="mb-4 flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">
+                <h2 className="text-lg font-semibold text-slate-900">
                   Créer ou modifier une notification
                 </h2>
-                <p className="text-sm text-slate-500">
+                <p className="mt-1 text-xs text-slate-500">
                   Le statut "Masqué" permet de conserver l'enregistrement sans le rendre visible aux
                   candidats.
                 </p>
               </div>
               {editingId && (
-                <Button variant="outline" onClick={handleCancelEdit} disabled={saving}>
-                  Annuler la modification
+                <Button variant="outline" size="sm" onClick={handleCancelEdit} disabled={saving}>
+                  Annuler
                 </Button>
               )}
             </div>
@@ -405,7 +422,7 @@ export function AdminNotificationsPage() {
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-3 pt-4">
+              <div className="flex flex-wrap gap-3 pt-2">
                 <Button type="submit" disabled={saving}>
                   {editingId ? "Mettre à jour" : "Créer la notification"}
                 </Button>
@@ -415,28 +432,7 @@ export function AdminNotificationsPage() {
               </div>
             </form>
           </section>
-
-          <section className="rounded-[2rem] border border-border bg-background p-6 shadow-soft">
-            <div className="space-y-4">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900">Aide rapide</h2>
-                <p className="text-sm text-slate-500">
-                  Utilisez "Cible" pour envoyer des notifications globales ou à un candidat précis.
-                  Les notifications masquées restent en base sans être visibles dans les listes
-                  publiques.
-                </p>
-              </div>
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-700">
-                <p className="font-semibold">Bonnes pratiques</p>
-                <ul className="mt-3 space-y-2 list-disc pl-5 text-slate-600">
-                  <li>Choisir un titre clair et bref.</li>
-                  <li>Masquer plutôt que supprimer si vous souhaitez conserver l'historique.</li>
-                  <li>Limiter l'envoi ciblé aux utilisateurs nécessaires.</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-        </div>
+        )}
 
         <div className="overflow-x-auto rounded-[2rem] border border-border bg-background p-6 shadow-soft">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

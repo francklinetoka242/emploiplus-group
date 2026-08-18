@@ -86,52 +86,75 @@ export function AdminPrivacyPolicyPage() {
         canonical: `${BASE_URL}/admin/privacy`,
         robots: "noindex,nofollow",
       })}
-      <div className="space-y-6">
-        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-cyan-500/10">
-                <ShieldCheck className="h-6 w-6 text-cyan-500" />
+      <div className="space-y-4">
+        <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-100 text-cyan-700">
+                <ShieldCheck className="h-4 w-4" />
               </div>
-              <div>
-                <h1 className="text-3xl font-semibold text-foreground">
+              <div className="min-w-0">
+                <p className="text-[9px] font-medium uppercase tracking-[0.22em] text-slate-500">
+                  Administration
+                </p>
+                <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
                   Politique de Confidentialité
                 </h1>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-0.5 text-xs text-slate-500">
                   Modifiez et enregistrez le contenu de la politique de confidentialité.
                 </p>
               </div>
             </div>
-            <div className="rounded-2xl border border-border bg-background/70 px-4 py-3 text-sm text-muted-foreground">
-              Cette page gère le texte stocké dans Supabase pour le site public.
+
+            <div className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[10px] font-medium text-slate-600">
+              Texte public lié à Supabase
             </div>
           </div>
         </div>
 
-        <form onSubmit={handleSave} className="space-y-5 rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="space-y-3">
-            <Label htmlFor="privacy-content">Contenu de la politique de confidentialité</Label>
+        <form
+          onSubmit={handleSave}
+          className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5"
+        >
+          <div className="rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2">
+            <h2 className="text-sm font-semibold text-slate-800">
+              Contenu de la politique de confidentialité
+            </h2>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="privacy-content" className="text-sm font-medium text-slate-700">
+              Texte public
+            </Label>
             <Textarea
               id="privacy-content"
               value={content}
               onChange={(event) => setContent(event.target.value)}
-              rows={20}
+              rows={18}
               placeholder="Saisissez le texte Markdown ou HTML de la politique ici..."
-              className="min-h-[480px]"
+              className="min-h-[360px] resize-y rounded-xl border-slate-200 bg-white focus-visible:ring-slate-200"
             />
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-sm text-muted-foreground">
+          <div className="flex flex-col gap-3 border-t border-slate-200 pt-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-xs text-slate-500">
               Le contenu enregistré sera affiché dynamiquement sur la page publique.
             </div>
-            <Button type="submit" disabled={saving} className="gap-2">
+            <Button
+              type="submit"
+              disabled={saving}
+              className="gap-2 rounded-full bg-slate-900 text-white hover:bg-slate-800"
+            >
               <Save className="h-4 w-4" />
               {saving ? "Sauvegarde..." : "Sauvegarder"}
             </Button>
           </div>
 
-          {message && <div className="rounded-2xl border border-border bg-background p-4 text-sm text-foreground">{message}</div>}
+          {message && (
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+              {message}
+            </div>
+          )}
         </form>
       </div>
     </>

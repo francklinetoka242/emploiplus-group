@@ -1,5 +1,7 @@
 import React from "react";
 import {
+  ChevronLeft,
+  ChevronRight,
   Eye,
   EyeOff,
   ExternalLink,
@@ -78,6 +80,8 @@ function formatDateInput(value?: string | null) {
   return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
 }
 
+const PAGE_SIZE = 10;
+
 export function AdminJobsPage() {
   const { t } = useI18n();
   const [form, setForm] = React.useState<JobFormState>(createEmptyForm());
@@ -88,6 +92,8 @@ export function AdminJobsPage() {
   const [submitting, setSubmitting] = React.useState(false);
   const [uploadingImage, setUploadingImage] = React.useState(false);
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
+  const [page, setPage] = React.useState(1);
+  const [totalJobs, setTotalJobs] = React.useState(0);
   const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(
     null,
   );
@@ -97,25 +103,36 @@ export function AdminJobsPage() {
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   };
 
-  const loadJobs = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await jobService.searchOffers({
-        orderBy: "created_at",
-        order: "desc",
-        limit: 1000,
-      });
-      setJobs(data);
-    } catch (error) {
-      setMessage({ type: "error", text: error instanceof Error ? error.message : "Erreur de chargement des offres." });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const loadJobs = React.useCallback(
+    async (nextPage = page) => {
+      setLoading(true);
+      try {
+        const offset = (nextPage - 1) * PAGE_SIZE;
+        const [data, total] = await Promise.all([
+          jobService.searchOffers({
+            orderBy: "created_at",
+            order: "desc",
+            limit: PAGE_SIZE,
+            offset,
+          }),
+          jobService.getOffersCount(),
+        ]);
+        setJobs(data);
+        setTotalJobs(total);
+      } catch (error) {
+        setMessage({ type: "error", text: error instanceof Error ? error.message : "Erreur de chargement des offres." });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [page],
+  );
 
   React.useEffect(() => {
-    void loadJobs();
-  }, [loadJobs]);
+    void loadJobs(page);
+  }, [loadJobs, page]);
+
+  const totalPages = Math.max(1, Math.ceil(totalJobs / PAGE_SIZE));
 
   function createSlug(value: string) {
     return (
@@ -159,6 +176,10 @@ export function AdminJobsPage() {
     setEditingId(null);
     setMessage(null);
     setShowForm(false);
+  };
+
+  const handlePageChange = (nextPage: number) => {
+    setPage(Math.min(Math.max(1, nextPage), totalPages));
   };
 
   const toggleForm = () => {
@@ -341,20 +362,35 @@ export function AdminJobsPage() {
         canonical={`${BASE_URL}/admin/jobs`}
         robots="noindex,nofollow"
       />
-      <div className="space-y-6">
-        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div>
-              <h1 className="text-3xl font-semibold text-foreground">{t("admin.jobs.title")}</h1>
-              <p className="mt-3 text-sm text-muted-foreground">{t("admin.jobs.description")}</p>
+      <div className="space-y-4">
+        <div className="rounded-[1.5rem] border border-border bg-card p-4 shadow-soft sm:p-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-xl font-semibold text-foreground sm:text-2xl">{t("admin.jobs.title")}</h1>
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{t("admin.jobs.description")}</p>
             </div>
-            <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={toggleForm}>
-                <Plus className="mr-2 size-4" />
-                {editingId ? "Annuler l'édition" : "Nouvelle offre"}
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={toggleForm}
+                className="h-9 w-9 rounded-full"
+                aria-label={editingId ? "Annuler l'édition" : "Nouvelle offre"}
+                title={editingId ? "Annuler l'édition" : "Nouvelle offre"}
+              >
+                <Plus className="size-4" />
               </Button>
-              <Button type="button" variant="secondary" onClick={() => void loadJobs()}>
-                <RefreshCw className={`mr-2 size-4 ${loading ? "animate-spin" : ""}`} /> Actualiser
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon"
+                onClick={() => void loadJobs()}
+                className="h-9 w-9 rounded-full"
+                aria-label="Actualiser"
+                title="Actualiser"
+              >
+                <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} />
               </Button>
             </div>
           </div>
@@ -674,111 +710,151 @@ export function AdminJobsPage() {
           </form>
         ) : null}
 
-        <div className="rounded-[2rem] border border-border bg-card p-6 shadow-soft">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-foreground">Liste des offres</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
+        <div className="rounded-[1.5rem] border border-border bg-card p-4 shadow-soft sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold text-foreground">Liste des offres</h2>
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                 Publiez, masquez, modifiez ou supprimez une offre en quelques clics.
               </p>
             </div>
-            <div className="text-sm text-muted-foreground">{jobs.length} élément(s)</div>
+            <div className="shrink-0 text-xs text-muted-foreground">
+              {totalJobs} élément(s)
+            </div>
           </div>
 
           {loading ? (
-            <div className="mt-6 rounded-3xl border border-border bg-background/70 p-6 text-sm text-muted-foreground">
+            <div className="mt-4 rounded-2xl border border-border bg-background/70 p-5 text-sm text-muted-foreground">
               Chargement...
             </div>
           ) : jobs.length === 0 ? (
-            <div className="mt-6 rounded-3xl border border-border bg-background/70 p-6 text-sm text-muted-foreground">
+            <div className="mt-4 rounded-2xl border border-border bg-background/70 p-5 text-sm text-muted-foreground">
               Aucune offre pour le moment.
             </div>
           ) : (
-            <div className="mt-6 max-h-[60vh] overflow-y-auto rounded-3xl border border-border/60">
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border text-left text-muted-foreground">
-                      <th className="px-3 py-3 font-medium">Offre</th>
-                      <th className="px-3 py-3 font-medium">Date</th>
-                      <th className="px-3 py-3 font-medium">Statut</th>
-                      <th className="px-3 py-3 font-medium">Ville</th>
-                      <th className="px-3 py-3 font-medium text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {jobs.map((job) => {
-                      const meta =
-                        statusMeta[job.status as keyof typeof statusMeta] ?? statusMeta.draft;
-                      return (
-                        <tr key={job.id} className="border-b border-border/60 align-top">
-                          <td className="px-3 py-4">
-                            <div className="font-semibold text-foreground">{job.title}</div>
-                            <div className="mt-1 text-muted-foreground">{job.company}</div>
-                          </td>
-                          <td className="px-3 py-4 text-muted-foreground">
-                            {job.publish_at
-                              ? new Date(job.publish_at).toLocaleDateString("fr-FR")
-                              : new Date(job.created_at).toLocaleDateString("fr-FR")}
-                          </td>
-                          <td className="px-3 py-4">
-                            <Badge variant={meta.badge}>{meta.label}</Badge>
-                          </td>
-                          <td className="px-3 py-4 text-muted-foreground">
-                            {job.location_city || "—"}
-                          </td>
-                          <td className="px-3 py-4">
-                            <div className="flex flex-wrap justify-end gap-2">
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                onClick={() => startEdit(job)}
-                              >
-                                <PencilLine className="mr-2 size-4" /> Modifier
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="secondary"
-                                onClick={() =>
-                                  void updateStatus(
-                                    job,
-                                    job.status === "published" ? "archived" : "published",
-                                  )
-                                }
-                                disabled={actionLoadingId === job.id}
-                              >
-                                {job.status === "published" ? (
-                                  <EyeOff className="mr-2 size-4" />
-                                ) : (
-                                  <Eye className="mr-2 size-4" />
-                                )}
-                                {job.status === "published" ? "Masquer" : "Publier"}
-                              </Button>
-                              <Button type="button" size="sm" variant="ghost" asChild>
-                                <a href={`/jobs/${job.slug}`} target="_blank" rel="noreferrer">
-                                  <ExternalLink className="mr-2 size-4" /> Voir
-                                </a>
-                              </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => void deleteJob(job)}
-                                disabled={actionLoadingId === job.id}
-                              >
-                                <Trash2 className="mr-2 size-4" /> Supprimer
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+            <>
+              <div className="mt-4 space-y-3">
+                {jobs.map((job) => {
+                  const meta =
+                    statusMeta[job.status as keyof typeof statusMeta] ?? statusMeta.draft;
+
+                  return (
+                    <div
+                      key={job.id}
+                      className="group rounded-[1.25rem] border border-slate-200 bg-white/90 p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+                    >
+                      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex min-w-0 flex-wrap items-center gap-2">
+                            <p className="truncate text-base font-semibold text-foreground">{job.title}</p>
+                            <Badge variant={meta.badge} className="shrink-0">
+                              {meta.label}
+                            </Badge>
+                          </div>
+                          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                            <span className="truncate">{job.company}</span>
+                            <span className="hidden sm:inline">•</span>
+                            <span>{job.location_city || "—"}</span>
+                          </div>
+                          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+                            <span>
+                              {job.publish_at
+                                ? new Date(job.publish_at).toLocaleDateString("fr-FR")
+                                : new Date(job.created_at).toLocaleDateString("fr-FR")}
+                            </span>
+                            {job.contract_type ? <span>{job.contract_type}</span> : null}
+                          </div>
+                        </div>
+
+                        <div className="flex shrink-0 items-center justify-end gap-2">
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="outline"
+                            onClick={() => startEdit(job)}
+                            className="h-9 w-9 rounded-full"
+                            aria-label="Modifier l'offre"
+                            title="Modifier l'offre"
+                          >
+                            <PencilLine className="size-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="secondary"
+                            onClick={() =>
+                              void updateStatus(
+                                job,
+                                job.status === "published" ? "archived" : "published",
+                              )
+                            }
+                            disabled={actionLoadingId === job.id}
+                            className="h-9 w-9 rounded-full"
+                            aria-label={job.status === "published" ? "Masquer" : "Publier"}
+                            title={job.status === "published" ? "Masquer" : "Publier"}
+                          >
+                            {job.status === "published" ? (
+                              <EyeOff className="size-4" />
+                            ) : (
+                              <Eye className="size-4" />
+                            )}
+                          </Button>
+                          <Button type="button" size="icon" variant="ghost" asChild className="h-9 w-9 rounded-full">
+                            <a href={`/jobs/${job.slug}`} target="_blank" rel="noreferrer" aria-label="Voir l'offre" title="Voir l'offre">
+                              <ExternalLink className="size-4" />
+                            </a>
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => void deleteJob(job)}
+                            disabled={actionLoadingId === job.id}
+                            className="h-9 w-9 rounded-full"
+                            aria-label="Supprimer l'offre"
+                            title="Supprimer l'offre"
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+
+              <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1 || loading}
+                  className="h-9 w-9 rounded-full"
+                  aria-label="Page précédente"
+                  title="Page précédente"
+                >
+                  <ChevronLeft className="size-4" />
+                </Button>
+
+                <div className="text-xs text-muted-foreground">
+                  Page {page}/{totalPages}
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page >= totalPages || loading}
+                  className="h-9 w-9 rounded-full"
+                  aria-label="Page suivante"
+                  title="Page suivante"
+                >
+                  <ChevronRight className="size-4" />
+                </Button>
+              </div>
+            </>
           )}
         </div>
       </div>

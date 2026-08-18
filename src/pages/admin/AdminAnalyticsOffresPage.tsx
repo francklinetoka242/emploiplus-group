@@ -100,45 +100,62 @@ export default function AdminAnalyticsOffresPage() {
 
   return (
     <div className="flex-1 overflow-auto">
-      <div className="space-y-6 p-6">
+      <div className="space-y-5 p-4 md:p-6">
         {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Analytics-Offres</h1>
-            <p className="text-sm text-muted-foreground">
-              Analyse complète des offres d'emploi et des candidatures
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => analytics.fetchData(filter)}
-              disabled={analytics.loading}
-            >
-              <RotateCw className="mr-2 h-4 w-4" />
-              Actualiser
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => setShowExportDialog(true)}
-              disabled={analytics.loading}
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Exporter
-            </Button>
+        <div className="rounded-[2rem] border border-slate-200 bg-white/90 p-5 shadow-sm md:p-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0">
+              <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-slate-500">
+                Administration
+              </p>
+              <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">
+                Analytics-Offres
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm text-slate-600">
+                Analyse complète des offres d'emploi et des candidatures
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => analytics.fetchData(filter)}
+                disabled={analytics.loading}
+                className="rounded-full border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+              >
+                <RotateCw className="mr-2 h-4 w-4" />
+                Actualiser
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setShowExportDialog(true)}
+                disabled={analytics.loading}
+                className="rounded-full bg-slate-900 text-white shadow-sm hover:bg-slate-800"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Exporter
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Filters */}
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-4">
+        <Card className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-5 shadow-sm">
+          <div className="mb-4 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              <h3 className="font-semibold">Filtres</h3>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-700">
+                <Filter className="h-4 w-4" />
+              </div>
+              <h3 className="text-base font-semibold text-slate-900">Filtres</h3>
             </div>
             {hasActiveFilters && (
-              <Button variant="ghost" size="sm" onClick={handleResetFilters}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleResetFilters}
+                className="rounded-full text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              >
                 Réinitialiser
               </Button>
             )}

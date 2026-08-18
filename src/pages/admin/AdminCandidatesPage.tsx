@@ -1,19 +1,11 @@
 import React from "react";
-import { Eye, Ban, CheckCircle2, Trash2 } from "lucide-react";
+import { Eye, Ban, CheckCircle2, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { BASE_URL } from "@/features/seo";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +17,8 @@ import type { Database } from "@/integrations/supabase/types";
 
 type CandidateRow = Database["public"]["Tables"]["candidates"]["Row"];
 type CandidateStatus = CandidateRow["status"];
+
+const PAGE_SIZE = 10;
 
 const statusStyles: Record<CandidateStatus, string> = {
   active: "bg-emerald-100 text-emerald-700",
@@ -52,34 +46,60 @@ export function AdminCandidatesPage() {
   const [loading, setLoading] = React.useState(true);
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
   const [selectedCandidate, setSelectedCandidate] = React.useState<CandidateRow | null>(null);
+  const [expandedCandidateId, setExpandedCandidateId] = React.useState<string | null>(null);
+  const [page, setPage] = React.useState(1);
+  const [totalCandidates, setTotalCandidates] = React.useState(0);
   const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(
     null,
   );
 
-  const loadCandidates = React.useCallback(async () => {
-    setLoading(true);
-    setMessage(null);
+  const totalPages = Math.max(1, Math.ceil(totalCandidates / PAGE_SIZE));
 
-    const { data, error } = await supabase
-      .from("candidates")
-      .select(
-        "id, user_id, first_name, last_name, email, phone, avatar_url, headline, location_city, location_country, date_of_birth, status, created_at, updated_at",
-      )
-      .order("created_at", { ascending: false });
+  const loadCandidates = React.useCallback(
+    async (nextPage = page) => {
+      setLoading(true);
+      setMessage(null);
 
-    setLoading(false);
+      const offset = (nextPage - 1) * PAGE_SIZE;
 
-    if (error) {
-      setMessage({ type: "error", text: error.message });
-      return;
-    }
+      const [{ data, error }, { count, error: countError }] = await Promise.all([
+        supabase
+          .from("candidates")
+          .select(
+            "id, user_id, first_name, last_name, email, phone, avatar_url, headline, location_city, location_country, date_of_birth, status, created_at, updated_at",
+            { count: "exact" },
+          )
+          .order("created_at", { ascending: false })
+          .range(offset, offset + PAGE_SIZE - 1),
+        supabase.from("candidates").select("id", { count: "exact", head: true }),
+      ]);
 
-    setCandidates((data ?? []) as CandidateRow[]);
-  }, []);
+      setLoading(false);
+
+      if (error) {
+        setMessage({ type: "error", text: error.message });
+        return;
+      }
+
+      if (countError) {
+        setMessage({ type: "error", text: countError.message });
+        return;
+      }
+
+      setCandidates((data ?? []) as CandidateRow[]);
+      setTotalCandidates(count ?? 0);
+    },
+    [page],
+  );
+
+  const handlePageChange = (nextPage: number) => {
+    const safePage = Math.min(Math.max(1, nextPage), totalPages);
+    setPage(safePage);
+  };
 
   React.useEffect(() => {
-    void loadCandidates();
-  }, [loadCandidates]);
+    void loadCandidates(page);
+  }, [loadCandidates, page]);
 
   const candidateStats = React.useMemo(
     () => ({
@@ -152,28 +172,7 @@ export function AdminCandidatesPage() {
         canonical={`${BASE_URL}/admin/candidates`}
         robots="noindex,nofollow"
       />
-      <div className="space-y-6">
-        <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-slate-500">Administration</p>
-              <h1 className="mt-2 text-3xl font-semibold text-foreground">{pageTitle}</h1>
-              <p className="mt-3 max-w-2xl text-sm text-slate-600">{pageDescription}</p>
-            </div>
-            <div className="grid gap-3 sm:auto-cols-min sm:grid-flow-col">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                {candidateStats.active} {t("admin.candidates.counts.active") || "Actifs"}
-              </div>
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                {candidateStats.inactive} {t("admin.candidates.counts.inactive") || "Inactifs"}
-              </div>
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                {candidateStats.archived} {t("admin.candidates.counts.archived") || "Archivé"}
-              </div>
-            </div>
-          </div>
-        </div>
-
+      <div className="space-y-4">
         {message && (
           <div
             className={`rounded-3xl border px-4 py-4 text-sm ${
@@ -196,10 +195,19 @@ export function AdminCandidatesPage() {
                 {t("admin.candidates.description") || pageDescription}
               </p>
             </div>
-            <div className="rounded-3xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
-              {loading
-                ? "Chargement..."
-                : `${candidates.length} ${candidates.length > 1 ? "candidats" : "candidat"}`}
+            <div className="flex flex-wrap items-center gap-2 text-sm text-slate-700">
+              <span className="rounded-full bg-slate-900 px-2.5 py-1.5 text-white">
+                {totalCandidates} Total
+              </span>
+              <span className="rounded-full bg-emerald-50 px-2.5 py-1.5 text-emerald-700">
+                {candidateStats.active} Actifs
+              </span>
+              <span className="rounded-full bg-amber-50 px-2.5 py-1.5 text-amber-700">
+                {candidateStats.inactive} Inactifs
+              </span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-1.5 text-slate-700">
+                {candidateStats.archived} Archivé
+              </span>
             </div>
           </div>
 
@@ -212,81 +220,164 @@ export function AdminCandidatesPage() {
               {t("admin.candidates.noCandidates") || "Aucun candidat n'a été trouvé."}
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{t("admin.candidates.table.name") || "Nom"}</TableHead>
-                  <TableHead>{t("admin.candidates.table.email") || "Email"}</TableHead>
-                  <TableHead>{t("admin.candidates.table.phone") || "Téléphone"}</TableHead>
-                  <TableHead>{t("admin.candidates.table.status") || "Statut"}</TableHead>
-                  <TableHead>{t("admin.candidates.table.joined") || "Inscrit le"}</TableHead>
-                  <TableHead>{t("admin.candidates.table.actions") || "Actions"}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {candidates.map((candidate) => (
-                  <TableRow key={candidate.id}>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        <span className="font-medium text-slate-900">
-                          {candidate.first_name} {candidate.last_name}
-                        </span>
-                        <span className="text-xs text-slate-500">{candidate.user_id}</span>
+            <>
+              <div className="space-y-3">
+                {candidates.map((candidate) => {
+                  const initials = `${candidate.first_name?.charAt(0) ?? "C"}${candidate.last_name?.charAt(0) ?? "A"}`.toUpperCase();
+                  const fullName = `${candidate.first_name ?? ""} ${candidate.last_name ?? ""}`.trim() || "Candidat";
+                  const isExpanded = expandedCandidateId === candidate.id;
+
+                  return (
+                    <div
+                      key={candidate.id}
+                      className="group relative overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+                    >
+                      <div className="flex flex-col gap-3">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-900 via-slate-700 to-slate-500 text-sm font-semibold text-white shadow-inner">
+                            {initials}
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex min-w-0 flex-wrap items-center gap-2">
+                              <p className="truncate text-base font-semibold text-slate-900">{fullName}</p>
+                              <span
+                                className={`inline-flex shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${statusStyles[candidate.status]}`}
+                              >
+                                {t(statusLabels[candidate.status]) || candidate.status}
+                              </span>
+                            </div>
+
+                            <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2 text-xs text-slate-500">
+                              <span className="truncate">{candidate.email}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span className="truncate">{candidate.phone || "Téléphone non renseigné"}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex shrink-0 items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => setExpandedCandidateId(isExpanded ? null : candidate.id)}
+                              className="h-9 w-9 rounded-full border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-100"
+                              aria-label={isExpanded ? "Réduire les détails" : "Afficher plus de détails"}
+                              title={isExpanded ? "Réduire les détails" : "Afficher plus de détails"}
+                            >
+                              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                            </Button>
+
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => setSelectedCandidate(candidate)}
+                              className="h-9 w-9 rounded-full border-slate-200 bg-white text-slate-700 shadow-sm hover:bg-slate-100"
+                              aria-label={t("admin.candidates.actions.view") || "Voir les informations"}
+                              title={t("admin.candidates.actions.view") || "Voir les informations"}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+
+                            <Button
+                              variant={candidate.status === "active" ? "secondary" : "outline"}
+                              size="icon"
+                              onClick={() => void handleToggleStatus(candidate)}
+                              disabled={actionLoadingId === candidate.id}
+                              className="h-9 w-9 rounded-full shadow-sm"
+                              aria-label={
+                                candidate.status === "active"
+                                  ? t("admin.candidates.actions.block") || "Bloquer"
+                                  : t("admin.candidates.actions.unblock") || "Débloquer"
+                              }
+                              title={
+                                candidate.status === "active"
+                                  ? t("admin.candidates.actions.block") || "Bloquer"
+                                  : t("admin.candidates.actions.unblock") || "Débloquer"
+                              }
+                            >
+                              {candidate.status === "active" ? (
+                                <Ban className="h-4 w-4" />
+                              ) : (
+                                <CheckCircle2 className="h-4 w-4" />
+                              )}
+                            </Button>
+
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => void handleDeleteCandidate(candidate)}
+                              disabled={actionLoadingId === candidate.id}
+                              className="h-9 w-9 rounded-full text-red-600 hover:bg-red-50 hover:text-red-700"
+                              aria-label={t("admin.candidates.actions.delete") || "Supprimer"}
+                              title={t("admin.candidates.actions.delete") || "Supprimer"}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+
+                        {isExpanded && (
+                          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/80 p-3">
+                            <div className="grid gap-3 text-xs text-slate-600 md:grid-cols-3">
+                              <div className="min-w-0 rounded-xl bg-white p-2.5">
+                                <p className="font-medium text-slate-500">Ville / Pays</p>
+                                <p className="mt-1 truncate text-slate-800">
+                                  {candidate.location_city || "-"}
+                                  {candidate.location_city && candidate.location_country ? ", " : ""}
+                                  {candidate.location_country || ""}
+                                </p>
+                              </div>
+                              <div className="min-w-0 rounded-xl bg-white p-2.5">
+                                <p className="font-medium text-slate-500">Inscription</p>
+                                <p className="mt-1 text-slate-800">{formatDate(candidate.created_at)}</p>
+                              </div>
+                              <div className="min-w-0 rounded-xl bg-white p-2.5">
+                                <p className="font-medium text-slate-500">Profil</p>
+                                <p className="mt-1 truncate text-slate-800">
+                                  {candidate.headline || "Profil incomplet"}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </TableCell>
-                    <TableCell>{candidate.email}</TableCell>
-                    <TableCell>{candidate.phone || "-"}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[candidate.status]}`}
-                      >
-                        {t(statusLabels[candidate.status]) || candidate.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>{formatDate(candidate.created_at)}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setSelectedCandidate(candidate)}
-                          className="gap-2"
-                        >
-                          <Eye className="h-4 w-4" />
-                          {t("admin.candidates.actions.view") || "Voir les informations"}
-                        </Button>
-                        <Button
-                          variant={candidate.status === "active" ? "secondary" : "outline"}
-                          size="sm"
-                          onClick={() => void handleToggleStatus(candidate)}
-                          disabled={actionLoadingId === candidate.id}
-                          className="gap-2"
-                        >
-                          {candidate.status === "active" ? (
-                            <Ban className="h-4 w-4" />
-                          ) : (
-                            <CheckCircle2 className="h-4 w-4" />
-                          )}
-                          {candidate.status === "active"
-                            ? t("admin.candidates.actions.block") || "Bloquer"
-                            : t("admin.candidates.actions.unblock") || "Débloquer"}
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => void handleDeleteCandidate(candidate)}
-                          disabled={actionLoadingId === candidate.id}
-                          className="gap-2"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          {t("admin.candidates.actions.delete") || "Supprimer"}
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-200 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1 || loading}
+                  className="h-9 w-9 rounded-full"
+                  aria-label="Page précédente"
+                  title="Page précédente"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+
+                <div className="text-xs text-slate-500">
+                  Page {page}/{totalPages}
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page >= totalPages || loading}
+                  className="h-9 w-9 rounded-full"
+                  aria-label="Page suivante"
+                  title="Page suivante"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </>
           )}
         </div>
 
