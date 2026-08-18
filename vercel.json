@@ -4,9 +4,9 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    {
-    "source": "/api/mobile-:action",
-    "destination": "/api/mobile?action=:action"
+   {
+  "source": "/api/mobile",
+  "destination": "/api/mobile"
   },
     {
       "source": "/send-email",
