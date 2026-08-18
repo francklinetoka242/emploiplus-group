@@ -116,7 +116,11 @@ export function CandidateApplicationsPage() {
       <Card className="w-full max-w-4xl mx-auto border border-border bg-card shadow-sm">
         <CardHeader>
           <CardTitle>Mes candidatures</CardTitle>
-          <CardDescription>Récapitulatif des offres auxquelles vous avez postulé.</CardDescription>
+          <CardDescription>
+            Récapitulatif des offres auxquelles vous avez postulé.
+            <br />
+            Après 30 jours, la candidature est supprimée de cette page.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {applications.length === 0 ? (

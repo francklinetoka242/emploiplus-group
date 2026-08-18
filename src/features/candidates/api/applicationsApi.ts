@@ -2,6 +2,18 @@ import { supabase } from "@/integrations/supabase/client";
 import type { CandidateProfile } from "./types";
 
 export async function getCandidateApplications(candidateId: string) {
+  const cutoffDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  const { error: cleanupError } = await supabase
+    .from("job_applications")
+    .delete()
+    .eq("candidate_id", candidateId)
+    .lt("applied_at", cutoffDate);
+
+  if (cleanupError) {
+    throw cleanupError;
+  }
+
   const { data, error } = await supabase
     .from("job_applications")
     .select(`
@@ -13,7 +25,8 @@ export async function getCandidateApplications(candidateId: string) {
       job_offers:job_offer_id(id, title, company, location_city, contract_type, salary)
     `)
     .eq("candidate_id", candidateId)
-    .order("applied_at", { ascending: false });
+    .order("applied_at", { ascending: false })
+    .limit(5);
 
   if (error) throw error;
   return data as Array<Record<string, unknown>>;

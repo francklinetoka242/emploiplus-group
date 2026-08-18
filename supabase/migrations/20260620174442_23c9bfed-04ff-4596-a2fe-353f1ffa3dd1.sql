@@ -138,10 +138,7 @@ CREATE TRIGGER trg_notify_new_contact AFTER INSERT ON public.contacts_messages
 CREATE OR REPLACE FUNCTION public.notify_job_published()
 RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 BEGIN
-  IF NEW.status = 'published' AND (TG_OP = 'INSERT' OR OLD.status IS DISTINCT FROM 'published') THEN
-    INSERT INTO public.notifications (type, title, body, link)
-    VALUES ('job', 'Offre publiée', NEW.title || ' — ' || NEW.company, '/jobs/' || NEW.slug);
-  END IF;
+  -- Job publication notifications are disabled; only manual admin notifications are kept.
   RETURN NEW;
 END $$;
 

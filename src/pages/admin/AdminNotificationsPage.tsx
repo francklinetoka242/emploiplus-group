@@ -65,7 +65,6 @@ export function AdminNotificationsPage() {
   const [usersLoading, setUsersLoading] = React.useState(false);
   const [typeFilter, setTypeFilter] = React.useState<"all" | NotificationType>("all");
   const [statusFilter, setStatusFilter] = React.useState<"all" | NotificationStatus>("all");
-  const [showSystemNotifications, setShowSystemNotifications] = React.useState(false);
 
   const loadNotifications = React.useCallback(async () => {
     setLoading(true);
@@ -216,15 +215,6 @@ export function AdminNotificationsPage() {
       allNotifications.filter((notification) => {
         const type = String(notification.type ?? "").toLowerCase();
         return type === "admin";
-      }),
-    [allNotifications],
-  );
-
-  const systemOfferNotifications = React.useMemo(
-    () =>
-      allNotifications.filter((notification) => {
-        const type = String(notification.type ?? "").toLowerCase();
-        return type === "job" || type === "offre";
       }),
     [allNotifications],
   );
@@ -446,54 +436,6 @@ export function AdminNotificationsPage() {
               </div>
             </div>
           </section>
-        </div>
-
-        <div className="rounded-[2rem] border border-dashed border-slate-300 bg-slate-50/70 p-4 shadow-soft">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">
-                Notifications système des offres d'emploi
-              </h2>
-              <p className="text-sm text-slate-500">
-                Affichez ici les notifications automatiques générées lors de la publication
-                d'offres.
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowSystemNotifications((value) => !value)}
-            >
-              {showSystemNotifications ? "Masquer" : "Afficher les notifications d'offres d'emploi"}
-            </Button>
-          </div>
-
-          {showSystemNotifications && (
-            <div className="mt-4 space-y-3">
-              {systemOfferNotifications.length > 0 ? (
-                systemOfferNotifications.map((notification) => (
-                  <div
-                    key={notification.id}
-                    className="rounded-2xl border border-slate-200 bg-white p-4"
-                  >
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <div className="font-medium text-slate-900">{notification.title}</div>
-                        <div className="text-sm text-slate-600">{notification.content}</div>
-                      </div>
-                      <div className="text-sm text-slate-500">
-                        {new Date(notification.created_at).toLocaleString("fr-FR")}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-4 text-sm text-slate-500">
-                  Aucune notification système d'offre pour le moment.
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         <div className="overflow-x-auto rounded-[2rem] border border-border bg-background p-6 shadow-soft">

@@ -16,8 +16,6 @@ let notificationState: NotificationState = {
   error: null,
   unreadCount: 0,
 };
-let notificationSubscriptionStarted = false;
-
 const notifySubscribers = () => {
   notificationSubscribers.forEach((subscriber) => subscriber(notificationState));
 };
@@ -51,7 +49,9 @@ const loadNotifications = async () => {
     const notifications = Array.isArray(data) ? data : [];
     const userNotifications = notifications.filter(
       (notif: NotificationRecord) =>
-        notif.status === "active" && (notif.user_id === null || notif.user_id === user.id),
+        notif.status === "active" &&
+        (notif.type === "admin" || notif.type === "offre") &&
+        notif.user_id === user.id,
     );
 
     const unread = userNotifications.filter((n: NotificationRecord) => !n.is_read).length;
@@ -69,28 +69,6 @@ const loadNotifications = async () => {
   }
 };
 
-const initNotificationSubscription = () => {
-  if (notificationSubscriptionStarted) return;
-  notificationSubscriptionStarted = true;
-
-  loadNotifications();
-
-  supabase
-    .channel("notifications-updates")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "notifications",
-      },
-      () => {
-        loadNotifications();
-      },
-    )
-    .subscribe();
-};
-
 export function useNotifications() {
   const [state, setState] = useState(notificationState);
 
@@ -104,7 +82,7 @@ export function useNotifications() {
   }, []);
 
   useEffect(() => {
-    initNotificationSubscription();
+    void loadNotifications();
   }, []);
 
   const markAsRead = useCallback(async (notificationId: string) => {

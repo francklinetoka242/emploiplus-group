@@ -123,6 +123,66 @@ export async function createNotification(
   };
 
   try {
+    if (payload.user_id === null) {
+      const { data: candidates, error: candidatesError } = await supabase
+        .from("candidates")
+        .select("user_id")
+        .not("user_id", "is", null);
+
+      if (candidatesError) {
+        return { data: null, error: candidatesError };
+      }
+
+      const recipients = Array.from(
+        new Set((candidates ?? []).map((candidate) => candidate.user_id).filter(Boolean) as string[]),
+      );
+
+      if (recipients.length === 0) {
+        return { data: null, error: null };
+      }
+
+      const rows = recipients.map((userId) => ({
+        ...primaryPayload,
+        user_id: userId,
+        status: payload.status,
+        is_read: false,
+      }));
+
+      const { data, error } = await supabase
+        .from("notifications")
+        .insert(rows)
+        .select(NOTIFICATION_LIST_SELECT);
+
+      if (error) {
+        if (isSchemaError(error)) {
+          const fallbackRows = recipients.map((userId) => ({
+            title: payload.title,
+            body: payload.content ?? "",
+            type: payload.type,
+            link: null,
+            user_id: userId,
+          }));
+          const fallback = await supabase
+            .from("notifications")
+            .insert(fallbackRows)
+            .select("id, user_id, type, title, body, is_read, status, created_at, link, read_at");
+          return {
+            data:
+              fallback.data && fallback.data.length > 0
+                ? normalizeNotification(fallback.data[0] as Record<string, unknown>)
+                : null,
+            error: fallback.error,
+          };
+        }
+        return { data: null, error };
+      }
+
+      return {
+        data: data && data.length > 0 ? normalizeNotification(data[0] as Record<string, unknown>) : null,
+        error: null,
+      };
+    }
+
     const { data, error } = await supabase
       .from("notifications")
       .insert([primaryPayload])
