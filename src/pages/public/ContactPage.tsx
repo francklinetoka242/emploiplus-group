@@ -1,12 +1,16 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
+import { Phone, Mail, MapPin, Send, CheckCircle } from "lucide-react";
+import { staggerContainer, staggerItem, fadeUp } from "@/lib/animations/animations";
 
 export function ContactPage() {
   const { t } = useI18n();
   const [formData, setFormData] = React.useState({ name: "", email: "", subject: "", message: "" });
+  const [submitted, setSubmitted] = React.useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -16,7 +20,9 @@ export function ContactPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted:", formData);
+    setSubmitted(true);
     setFormData({ name: "", email: "", subject: "", message: "" });
+    setTimeout(() => setSubmitted(false), 5000);
   };
 
   return (
@@ -33,22 +39,177 @@ export function ContactPage() {
           { name: t("contact.title"), url: `${BASE_URL}/contact` },
         ]}
       />
-      <section className="container-page pb-20 md:pb-28">
-        <div className="grid gap-8 md:grid-cols-2 items-start">
-          {/* Contact Form Card */}
-          <div className="rounded-3xl p-[1px] gradient-brand">
-            <div className="rounded-3xl bg-card p-8 md:p-10">
-              <div className="mb-4">
-                <h2 className="font-display text-2xl font-bold text-foreground">
+      
+      {/* Hero Section */}
+      <motion.section 
+        className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 py-16 md:py-28"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(232,169,0,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(59,130,246,0.1),transparent_50%)]" />
+        </div>
+        <motion.div 
+          className="container-page relative z-10 text-center"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.p 
+            className="inline-flex rounded-full bg-secondary/10 px-4 py-2 text-sm font-semibold text-secondary ring-1 ring-secondary/20 mb-6"
+            variants={fadeUp}
+          >
+            {t("contact.subtitle")}
+          </motion.p>
+          <motion.h1 
+            className="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6"
+            variants={fadeUp}
+          >
+            {t("contact.title")}
+          </motion.h1>
+          <motion.p 
+            className="text-lg text-slate-300 max-w-2xl mx-auto"
+            variants={fadeUp}
+          >
+            {t("contact.subtitle")} - Nous répondons sous 24h
+          </motion.p>
+        </motion.div>
+      </motion.section>
+
+      {/* Contact Content */}
+      <section className="container-page py-20 md:py-28">
+        <motion.div 
+          className="grid gap-12 md:grid-cols-3 lg:grid-cols-5"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={staggerContainer}
+        >
+          {/* Quick Contact Cards */}
+          <motion.div 
+            className="md:col-span-3 lg:col-span-2"
+            variants={staggerItem}
+          >
+            <div className="grid gap-6 mb-12">
+              {/* Phone Card */}
+              <motion.div 
+                className="rounded-2xl border border-secondary/20 bg-gradient-to-br from-secondary/5 to-secondary/10 p-6 md:p-8 hover:border-secondary/40 transition-all duration-300"
+                whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(232,169,0,0.1)" }}
+              >
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0">
+                    <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-secondary/20 text-secondary">
+                      <Phone className="h-6 w-6" />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                      {t("contact.info.phoneLabel")}
+                    </p>
+                    <a
+                      href="tel:+242067311033"
+                      className="text-xl font-bold text-secondary hover:text-secondary/80 transition-colors"
+                    >
+                      {t("contact.info.phoneValue")}
+                    </a>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {t("contact.info.phoneHelp")}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Email Card */}
+              <motion.div 
+                className="rounded-2xl border border-secondary/20 bg-gradient-to-br from-secondary/5 to-secondary/10 p-6 md:p-8 hover:border-secondary/40 transition-all duration-300"
+                whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(232,169,0,0.1)" }}
+              >
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0">
+                    <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-secondary/20 text-secondary">
+                      <Mail className="h-6 w-6" />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                      {t("contact.info.emailLabel")}
+                    </p>
+                    <a
+                      href="mailto:contact@emploiplus.group"
+                      className="text-xl font-bold text-secondary hover:text-secondary/80 transition-colors"
+                    >
+                      {t("contact.info.emailValue")}
+                    </a>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      contact@emploiplus.group
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Location Card */}
+              <motion.div 
+                className="rounded-2xl border border-secondary/20 bg-gradient-to-br from-secondary/5 to-secondary/10 p-6 md:p-8 hover:border-secondary/40 transition-all duration-300"
+                whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(232,169,0,0.1)" }}
+              >
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0">
+                    <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-secondary/20 text-secondary">
+                      <MapPin className="h-6 w-6" />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                      {t("contact.location.headquarter")}
+                    </p>
+                    <p className="text-xl font-bold text-secondary">
+                      {t("contact.location.city")}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {t("contact.location.country")}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Contact Form */}
+          <motion.div 
+            className="md:col-span-3 lg:col-span-3"
+            variants={staggerItem}
+          >
+            <div className="rounded-3xl border border-secondary/20 bg-gradient-to-br from-secondary/8 via-card to-card p-8 md:p-10 shadow-sm">
+              <div className="mb-8">
+                <h2 className="font-display text-3xl font-bold text-foreground">
                   {t("contact.form.title")}
                 </h2>
-                <p className="mt-2 text-muted-foreground">{t("contact.form.subtitle")}</p>
+                <p className="mt-3 text-muted-foreground">
+                  {t("contact.form.subtitle")}
+                </p>
               </div>
-              <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto md:mx-0">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="block text-sm font-semibold text-foreground mb-1">
-                      {t("contact.form.label.name")}
+
+              {submitted && (
+                <motion.div 
+                  className="mb-6 rounded-xl bg-green-50 border border-green-200 p-4 flex items-center gap-3"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <p className="text-sm font-semibold text-green-800">
+                    Merci ! Votre message a été envoyé avec succès.
+                  </p>
+                </motion.div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <motion.div variants={staggerItem}>
+                    <label className="block text-sm font-semibold text-foreground mb-2">
+                      {t("contact.form.label.name")} *
                     </label>
                     <input
                       type="text"
@@ -57,12 +218,12 @@ export function ContactPage() {
                       onChange={handleChange}
                       required
                       placeholder={t("contact.form.placeholder.name")}
-                      className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-foreground mb-1">
-                      {t("contact.form.label.email")}
+                  </motion.div>
+                  <motion.div variants={staggerItem}>
+                    <label className="block text-sm font-semibold text-foreground mb-2">
+                      {t("contact.form.label.email")} *
                     </label>
                     <input
                       type="email"
@@ -71,13 +232,14 @@ export function ContactPage() {
                       onChange={handleChange}
                       required
                       placeholder={t("contact.form.placeholder.email")}
-                      className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200"
                     />
-                  </div>
+                  </motion.div>
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-1">
-                    {t("contact.form.label.subject")}
+
+                <motion.div variants={staggerItem}>
+                  <label className="block text-sm font-semibold text-foreground mb-2">
+                    {t("contact.form.label.subject")} *
                   </label>
                   <input
                     type="text"
@@ -86,135 +248,42 @@ export function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder={t("contact.form.placeholder.subject")}
-                    className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                    className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-1">
-                    {t("contact.form.label.message")}
+                </motion.div>
+
+                <motion.div variants={staggerItem}>
+                  <label className="block text-sm font-semibold text-foreground mb-2">
+                    {t("contact.form.label.message")} *
                   </label>
                   <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
                     required
-                    rows={4}
+                    rows={5}
                     placeholder={t("contact.form.placeholder.message")}
-                    className="w-full px-3 py-2 rounded-md border border-border bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand resize-none"
+                    className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 resize-none"
                   />
-                </div>
-                <div className="flex justify-end">
+                </motion.div>
+
+                <motion.div 
+                  className="flex justify-end pt-4"
+                  variants={staggerItem}
+                >
                   <Button
+                    type="submit"
                     size="lg"
-                    className="w-full md:w-auto bg-brand hover:bg-brand/90 text-brand-foreground font-semibold shadow-brand"
+                    className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
                   >
+                    <Send className="h-4 w-4" />
                     {t("contact.form.submit")}
                   </Button>
-                </div>
+                </motion.div>
               </form>
             </div>
-          </div>
-
-          {/* Contact Info Sidebar */}
-          <aside className="space-y-6 md:sticky md:top-24">
-            {/* Direct Contact Card */}
-            <div className="rounded-2xl p-[1px] gradient-brand">
-              <div className="rounded-2xl bg-card p-6 md:p-8 space-y-6">
-                <div>
-                  <h3 className="font-display text-xl font-bold text-foreground mb-4">
-                    {t("contact.info.directTitle")}
-                  </h3>
-                  <div className="space-y-5">
-                    {/* Phone */}
-                    <div className="flex gap-4 items-start">
-                      <div className="flex-shrink-0">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-brand/10">
-                          <svg
-                            className="h-5 w-5 text-brand"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">
-                          {t("contact.info.phoneLabel")}
-                        </p>
-                        <a
-                          href="tel:+242067311033"
-                          className="text-lg font-semibold text-brand hover:text-brand/80"
-                        >
-                          {t("contact.info.phoneValue")}
-                        </a>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {t("contact.info.phoneHelp")}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Email */}
-                    <div className="flex gap-4 items-start">
-                      <div className="flex-shrink-0">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-brand/10">
-                          <svg
-                            className="h-5 w-5 text-brand"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold">
-                          {t("contact.info.emailLabel")}
-                        </p>
-                        <a
-                          href="mailto:contact@emploiplus.group"
-                          className="text-lg font-semibold text-foreground hover:text-brand"
-                        >
-                          {t("contact.info.emailValue")}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Location Card */}
-            <div className="rounded-2xl border border-border bg-card p-6 md:p-8 shadow-soft">
-              <h3 className="font-display text-xl font-bold text-foreground mb-3">
-                {t("contact.location.title")}
-              </h3>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-muted-foreground uppercase tracking-wide font-semibold mb-1">
-                    {t("contact.location.headquarter")}
-                  </p>
-                  <p className="text-lg text-foreground font-semibold">
-                    {t("contact.location.city")}
-                  </p>
-                  <p className="text-foreground/80">{t("contact.location.country")}</p>
-                </div>
-              </div>
-            </div>
-          </aside>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
     </>
   );
