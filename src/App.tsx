@@ -280,6 +280,11 @@ function AppContent() {
     }
   }
 
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   // CRITICAL: On app startup, verify that any restored candidate session has a confirmed email
   // This prevents Supabase from silently restoring an unconfirmed session from localStorage
   useEffect(() => {
