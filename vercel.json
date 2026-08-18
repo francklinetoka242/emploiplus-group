@@ -5,9 +5,9 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/api/mobile-:path*",
-      "destination": "/api/mobile-:path*"
-    },
+    "source": "/api/mobile-:action",
+    "destination": "/api/mobile?action=:action"
+  },
     {
       "source": "/send-email",
       "destination": "/api/send-email"
