@@ -26,6 +26,20 @@ export function useCandidateDocuments(profileId?: string | null) {
   const [loading, setLoading] = useState(false);
   const [hasRestoredDocuments, setHasRestoredDocuments] = useState(false);
 
+  const addDocument = (document: CandidateDocument | CandidateCVState, isCV = false) => {
+    if (isCV) {
+      setCv(document as CandidateCVState);
+      return;
+    }
+
+    setDocuments((prev) => [document as CandidateDocument, ...prev]);
+  };
+
+  const deleteDocument = (id: string) => {
+    setCv((currentCv) => (currentCv && currentCv.id === id ? null : currentCv));
+    setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+  };
+
   useEffect(() => {
     setHasRestoredDocuments(false);
   }, [profileId]);
@@ -58,5 +72,5 @@ export function useCandidateDocuments(profileId?: string | null) {
     localStorage.setItem(`emploiplus-candidate-documents-${profileId}`, JSON.stringify({ cv, documents }));
   }, [profileId, cv, documents, hasRestoredDocuments]);
 
-  return { cv, documents, setCv, setDocuments, loading };
+  return { cv, documents, setCv, setDocuments, loading, addDocument, deleteDocument };
 }

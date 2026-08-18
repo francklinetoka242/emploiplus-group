@@ -104,6 +104,12 @@ export function DocumentsSection({
     return new Set(Array.from(documentsByType.keys()));
   }, [documentsByType]);
 
+  const canUploadDocument =
+    Boolean(candidateId) &&
+    Boolean(onAddDocument) &&
+    !isUploading &&
+    (selectedType !== "other" || otherLabel.trim().length > 0);
+
   const handleDelete = useCallback(
     (id: string) => {
       if (!onDeleteDocument) return;
@@ -311,7 +317,7 @@ export function DocumentsSection({
                   size="sm"
                   className="bg-cyan-600 hover:bg-cyan-700"
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={!candidateId || !onAddDocument || isUploading}
+                  disabled={!canUploadDocument}
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   {isUploading ? "Envoi…" : "Choisir un PDF"}
