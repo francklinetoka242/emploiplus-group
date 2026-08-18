@@ -195,95 +195,79 @@ function HeroSection({ job, profile }: { job: JobApplyHeroJob; profile: JobApply
 
   return (
     <div className="mb-8 sm:mb-12 rounded-3xl border border-border/80 bg-gradient-to-br from-brand/5 via-card to-secondary/5 p-4 sm:p-8 shadow-soft">
-      <div className="flex flex-col md:flex-row gap-4 sm:gap-6 items-start">
-        {/* Logo & Main Info */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 flex-1 w-full min-w-0">
-          {job.company_logo && (
-            <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-2xl border border-border/60 bg-background/80 flex items-center justify-center p-2 self-start">
-              <img
-                src={job.company_logo}
-                alt={job.company}
-                className="h-full w-full object-contain"
-              />
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
-              Entreprise
-            </p>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight break-words whitespace-normal">
-              {job.title}
-            </h1>
-            <p className="text-base font-medium text-foreground/80 mb-4 break-words whitespace-normal">
-              {job.company}
-            </p>
-            {contractLabel && (
-              <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand">
-                <BriefcaseBusiness className="h-3.5 w-3.5" />
-                {contractLabel}
-              </div>
-            )}
+      {/* Single row header with all elements */}
+      <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+        {/* Logo */}
+        {job.company_logo && (
+          <div className="h-16 w-16 sm:h-20 sm:w-20 shrink-0 rounded-2xl border border-border/60 bg-background/80 flex items-center justify-center p-2">
+            <img
+              src={job.company_logo}
+              alt={job.company ?? "Entreprise"}
+              className="h-full w-full object-contain"
+            />
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Info Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-border/60">
-        <div className="space-y-1 min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Localisation
+        {/* Company & Title */}
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">
+            Entreprise
           </p>
-          <div className="flex items-start gap-2 min-w-0">
-            <MapPin className="h-4 w-4 text-brand shrink-0 mt-0.5" />
-            <p className="text-sm font-medium text-foreground break-words">{jobLocation}</p>
-          </div>
+          <h1 className="text-lg sm:text-xl font-bold text-foreground break-words">
+            {job.title}
+          </h1>
+          <p className="text-sm font-medium text-foreground/80 break-words">
+            {job.company}
+          </p>
         </div>
+
+        {/* Contract Type */}
+        {contractLabel && (
+          <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand shrink-0">
+            <BriefcaseBusiness className="h-3 w-3" />
+            {contractLabel}
+          </div>
+        )}
+
+        {/* Location */}
+        <div className="flex items-center gap-2 text-sm shrink-0">
+          <MapPin className="h-4 w-4 text-brand shrink-0" />
+          <span className="font-medium text-foreground">{jobLocation}</span>
+        </div>
+
+        {/* Salary */}
         {job.salary && (
-          <div className="space-y-1 min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Salaire
-            </p>
-            <div className="flex items-start gap-2 min-w-0">
-              <BadgeDollarSign className="h-4 w-4 text-brand shrink-0 mt-0.5" />
-              <p className="text-sm font-medium text-foreground break-words">{job.salary}</p>
-            </div>
+          <div className="flex items-center gap-2 text-sm shrink-0">
+            <BadgeDollarSign className="h-4 w-4 text-brand shrink-0" />
+            <span className="font-medium text-foreground">{job.salary}</span>
           </div>
         )}
+
+        {/* Published Date */}
         {jobPublished && (
-          <div className="space-y-1 min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Publié le
-            </p>
-            <div className="flex items-start gap-2 min-w-0">
-              <CalendarDays className="h-4 w-4 text-brand shrink-0 mt-0.5" />
-              <p className="text-sm font-medium text-foreground break-words">{jobPublished}</p>
-            </div>
+          <div className="flex items-center gap-2 text-sm shrink-0">
+            <CalendarDays className="h-4 w-4 text-brand shrink-0" />
+            <span className="font-medium text-foreground">{jobPublished}</span>
           </div>
         )}
+
+        {/* Deadline */}
         {jobDeadline && (
-          <div className="space-y-1 min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Date limite
-            </p>
-            <div className="flex items-start gap-2 min-w-0">
-              <CalendarDays className="h-4 w-4 text-brand shrink-0 mt-0.5" />
-              <p className="text-sm font-medium text-foreground break-words">{jobDeadline}</p>
-            </div>
+          <div className="flex items-center gap-2 text-sm shrink-0">
+            <CalendarDays className="h-4 w-4 text-brand shrink-0" />
+            <span className="font-medium text-foreground">{jobDeadline}</span>
           </div>
         )}
       </div>
 
       {/* Tags */}
       {jobTags.length > 0 && (
-        <div className="mt-6 pt-6 border-t border-border/60">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-            Tags
-          </p>
+        <div className="mt-4 pt-4 border-t border-border/60">
           <div className="flex flex-wrap gap-2">
             {jobTags.map((tag: string) => (
               <span
                 key={tag}
-                className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border/60 bg-background/70 px-3 py-1.5 text-xs font-medium text-foreground break-words"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/70 px-2.5 py-1 text-xs font-medium text-foreground"
               >
                 <Sparkles className="h-3 w-3 text-brand" />
                 {tag}
@@ -396,7 +380,6 @@ export function CandidateJobApplyPage() {
     type: "success" | "error";
     message: string;
   } | null>(null);
-  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
   const [profileForm, setProfileForm] = useState({
     first_name: "",
     last_name: "",
@@ -615,8 +598,30 @@ export function CandidateJobApplyPage() {
       ]);
 
       const candidateMessage = (message || "").replace(/\r\n/g, "\n");
-      const htmlMessage = escapeHtml(candidateMessage).replace(/\n/g, "<br />");
       const outgoingSubject = emailSubject.trim() || `Nouvelle candidature - ${job?.title ?? "Offre"}`;
+      const documentsList = [
+        ...savedDocuments.filter((doc) => selectedDocuments.has(doc.id)).map((doc) => doc.displayName || doc.name || "Document joint"),
+        ...temporaryDocuments.map((doc) => doc.file.name || "Document joint"),
+      ];
+
+      const applicationHtml = `
+        <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
+          <p style="margin: 0 0 12px;"><strong>Objet :</strong> ${escapeHtml(outgoingSubject)}</p>
+          <div style="white-space: pre-wrap; margin: 0 0 16px;">${escapeHtml(candidateMessage || "Aucun message fourni.").replace(/\n/g, "<br />")}</div>
+          <p style="margin: 0 0 12px;"><strong>Ci-joints</strong></p>
+          ${documentsList.length > 0
+            ? `<ul style="margin: 0 0 0 20px; padding: 0;">${documentsList.map((name) => `<li>${escapeHtml(name)}</li>`).join("")}</ul>`
+            : "<p style=\"margin: 0;\">Aucun document sélectionné.</p>"}
+        </div>
+      `;
+      const applicationText = [
+        `Objet : ${outgoingSubject}`,
+        "",
+        candidateMessage || "Aucun message fourni.",
+        "",
+        "Ci-joints",
+        documentsList.length > 0 ? documentsList.join("\n- ") : "Aucun document sélectionné.",
+      ].join("\n");
 
       if (!profile?.id) {
         throw new Error("Impossible d'identifier votre profil candidat.");
@@ -626,7 +631,7 @@ export function CandidateJobApplyPage() {
         throw new Error("Impossible d'identifier l'offre sélectionnée.");
       }
 
-      await applyToJob(profile.id, job.id, candidateMessage || null, outgoingSubject);
+      await applyToJob(profile.id, job.id, candidateMessage || undefined, outgoingSubject);
 
       const response = await fetch("/api/send-email", {
         method: "POST",
@@ -637,9 +642,10 @@ export function CandidateJobApplyPage() {
           recipient: recipientEmail,
           replyTo: candidateEmail,
           subject: outgoingSubject,
-          html: htmlMessage,
-          text: candidateMessage,
-          attachments: selectedAttachments.filter((attachment) => attachment.path || attachment.content),
+          html: applicationHtml,
+          text: applicationText,
+          template: "simple-application",
+          attachments: selectedAttachments,
         }),
       });
 
@@ -755,67 +761,9 @@ export function CandidateJobApplyPage() {
       <HeroSection job={job} profile={profile} />
 
       {/* Main Form Layout */}
-      <div className="grid gap-8 lg:grid-cols-3 w-full">
-        {/* Left column - Job Description */}
-        <div className="lg:col-span-1 w-full">
-          <Card className="border border-border/80 shadow-soft rounded-3xl lg:sticky lg:top-8 w-full max-w-full">
-            <CardHeader className="pb-3 px-4 pt-4 sm:px-6 sm:pt-6 border-b border-border/60">
-              <CardTitle className="text-lg">Aperçu du poste</CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4 pt-4 sm:px-6 sm:pb-6 sm:pt-6 space-y-4 w-full max-w-full lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto">
-              {job.description && (
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-                    Description
-                  </p>
-                  <p
-                    className={`text-sm text-foreground/80 leading-relaxed whitespace-pre-line ${isPreviewExpanded ? "" : "max-h-48 overflow-hidden line-clamp-8"}`}
-                  >
-                    {job.description}
-                  </p>
-                </div>
-              )}
-
-              {job.requirements && (
-                <div className="border-t border-border/60 pt-4">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-                    Profil recherché
-                  </p>
-                  <div
-                    className={`space-y-1.5 ${isPreviewExpanded ? "" : "max-h-36 overflow-hidden"}`}
-                  >
-                    {job.requirements
-                      .split(/\n+/)
-                      .map((item) => item.trim())
-                      .filter(Boolean)
-                      .slice(0, isPreviewExpanded ? undefined : 6)
-                      .map((item, idx) => (
-                        <p key={idx} className="text-sm text-foreground/80">
-                          • {item}
-                        </p>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {(job.description || job.requirements) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsPreviewExpanded((prev) => !prev)}
-                  className="px-0 h-auto text-brand hover:text-brand/90"
-                >
-                  {isPreviewExpanded ? "Voir moins" : "Voir plus"}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right column - Form */}
-        <div className="lg:col-span-2 space-y-6 w-full">
-          {/* Block 2: Message */}
-          <Card
+      <div className="space-y-6 w-full">
+        {/* Block 2: Message */}
+        <Card
             className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full"
             style={{ animationDelay: "0.1s" }}
           >
@@ -858,59 +806,59 @@ export function CandidateJobApplyPage() {
             </CardContent>
           </Card>
 
-          {/* Block 3: Saved Documents */}
-          <Card
-            className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full"
-            style={{ animationDelay: "0.2s" }}
-          >
-            <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
-              <CardTitle className="text-base">Documents enregistrés</CardTitle>
-              <CardDescription className="text-xs mt-1">
-                Sélectionnez les documents à transmettre
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6">
-              {!hasDocuments ? (
-                <Alert className="border-yellow-200/60 bg-yellow-50/80">
-                  <AlertCircle className="h-4 w-4 text-yellow-700" />
-                  <AlertDescription className="text-sm text-foreground/80 ml-2">
-                    Vous n'avez pas encore enregistré de documents.
-                    <br />
-                    <button
-                      onClick={() => navigate("/candidate/documents")}
-                      className="font-semibold text-brand hover:underline mt-1 inline-block"
-                    >
-                      Ajouter des documents →
-                    </button>
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <div className="space-y-3">
-                  {savedDocuments.map((doc) => (
-                    <DocumentCard
-                      key={doc.id}
-                      document={doc}
-                      selected={selectedDocuments.has(doc.id)}
-                      onSelect={(isSelected) => handleDocumentSelect(doc.id, isSelected)}
-                    />
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        {/* Block 3: Saved Documents */}
+        <Card
+          className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full"
+          style={{ animationDelay: "0.2s" }}
+        >
+          <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
+            <CardTitle className="text-base">Documents enregistrés</CardTitle>
+            <CardDescription className="text-xs mt-1">
+              Sélectionnez les documents à transmettre
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            {!hasDocuments ? (
+              <Alert className="border-yellow-200/60 bg-yellow-50/80">
+                <AlertCircle className="h-4 w-4 text-yellow-700" />
+                <AlertDescription className="text-sm text-foreground/80 ml-2">
+                  Vous n'avez pas encore enregistré de documents.
+                  <br />
+                  <button
+                    onClick={() => navigate("/candidate/documents")}
+                    className="font-semibold text-brand hover:underline mt-1 inline-block"
+                  >
+                    Ajouter des documents →
+                  </button>
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <div className="space-y-3">
+                {savedDocuments.map((doc) => (
+                  <DocumentCard
+                    key={doc.id}
+                    document={doc}
+                    selected={selectedDocuments.has(doc.id)}
+                    onSelect={(isSelected) => handleDocumentSelect(doc.id, isSelected)}
+                  />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-          {/* Block 4: Temporary Documents */}
-          <Card
-            className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full"
-            style={{ animationDelay: "0.3s" }}
-          >
-            <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
-              <CardTitle className="text-base">Ajouter des documents</CardTitle>
-              <CardDescription className="text-xs mt-1">
-                Pour cette candidature uniquement
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4">
+        {/* Block 4: Temporary Documents */}
+        <Card
+          className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full"
+          style={{ animationDelay: "0.3s" }}
+        >
+          <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
+            <CardTitle className="text-base">Ajouter des documents</CardTitle>
+            <CardDescription className="text-xs mt-1">
+              Pour cette candidature uniquement
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6 space-y-4">
               {/* Drag & Drop Zone */}
               <div
                 ref={dragZoneRef}
@@ -991,42 +939,24 @@ export function CandidateJobApplyPage() {
             </CardContent>
           </Card>
 
-          {/* Block 5: Summary */}
-          <Card
-            className="border border-brand/30 shadow-soft rounded-3xl overflow-hidden bg-gradient-to-br from-brand/5 to-secondary/5 animate-fade-in w-full max-w-full"
-            style={{ animationDelay: "0.4s" }}
-          >
-            <CardHeader className="pb-4 px-6 pt-6 border-b border-brand/20 bg-brand/10">
-              <CardTitle className="text-base flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-brand" />
-                Résumé de votre candidature
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4 text-sm">
+        {/* Block 5: Summary */}
+        <Card
+          className="border border-brand/30 shadow-soft rounded-3xl overflow-hidden bg-gradient-to-br from-brand/5 to-secondary/5 animate-fade-in w-full max-w-full"
+          style={{ animationDelay: "0.4s" }}
+        >
+          <CardHeader className="pb-4 px-6 pt-6 border-b border-brand/20 bg-brand/10">
+            <CardTitle className="text-base flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-brand" />
+              Résumé de votre candidature
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 space-y-4 text-sm">
               <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">
-                  Entreprise & Offre
-                </p>
-                <p className="font-medium text-foreground break-words">{job.company}</p>
-                <p className="text-foreground/80 break-words">{job.title}</p>
-              </div>
-
-              <div className="border-t border-border/60 pt-4">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">
-                  Candidat
-                </p>
-                <p className="font-medium text-foreground break-words">
-                  {profile.first_name} {profile.last_name}
-                </p>
-                <p className="text-foreground/80 break-words">{profile.email}</p>
-              </div>
-
-              <div className="border-t border-border/60 pt-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">
                   État du canal de candidature
                 </p>
                 <div
-                  className={`inline-flex flex-wrap items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium ${submissionChannelAvailable ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"}`}
+                  className={`inline-flex flex-wrap items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium ${submissionChannelAvailable ? "border-secondary/30 bg-secondary/10 text-secondary" : "border-rose-200 bg-rose-50 text-rose-700"}`}
                 >
                   {submissionChannelAvailable ? (
                     <CheckCircle2 className="h-4 w-4" />
@@ -1079,73 +1009,72 @@ export function CandidateJobApplyPage() {
             </CardContent>
           </Card>
 
-          {/* Block 6: Consent */}
-          <Card
-            className="border border-border/80 shadow-soft rounded-3xl animate-fade-in w-full max-w-full"
-            style={{ animationDelay: "0.5s" }}
-          >
-            <CardContent className="p-6">
-              <div className="flex flex-col sm:flex-row items-start gap-3">
-                <Checkbox
-                  id="consent"
-                  checked={consent}
-                  onCheckedChange={(checked) => setConsent(checked as boolean)}
-                  className="mt-1"
-                />
-                <label
-                  htmlFor="consent"
-                  className="text-sm text-foreground/80 leading-relaxed cursor-pointer break-words"
-                >
-                  J'accepte que mes informations personnelles ainsi que les documents sélectionnés
-                  soient transmis à l'entreprise dans le cadre de cette candidature.
-                </label>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Action Buttons */}
-          <div className="space-y-3">
-            {!submissionChannelAvailable && (
-              <Alert className="border-amber-200/70 bg-amber-50/80 text-amber-950">
-                <AlertCircle className="h-4 w-4 text-amber-700" />
-                <AlertDescription className="ml-2">
-                  <p className="font-semibold text-amber-950">
-                    Candidature momentanément indisponible
-                  </p>
-                  <p className="mt-1 text-sm text-amber-900">
-                    Cette offre ne possède actuellement aucune adresse de réception des
-                    candidatures. Le recrutement n'est donc pas disponible pour le moment. Nous vous
-                    invitons à consulter d'autres offres ou à revenir ultérieurement.
-                  </p>
-                </AlertDescription>
-              </Alert>
-            )}
-            {submitFeedback && (
-              <Alert
-                className={`border ${submitFeedback.type === "success" ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}
+        {/* Block 6: Consent */}
+        <Card
+          className="border border-border/80 shadow-soft rounded-3xl animate-fade-in w-full max-w-full"
+          style={{ animationDelay: "0.5s" }}
+        >
+          <CardContent className="p-6">
+            <div className="flex flex-col sm:flex-row items-start gap-3">
+              <Checkbox
+                id="consent"
+                checked={consent}
+                onCheckedChange={(checked) => setConsent(checked as boolean)}
+                className="mt-1"
+              />
+              <label
+                htmlFor="consent"
+                className="text-sm text-foreground/80 leading-relaxed cursor-pointer break-words"
               >
-                <AlertDescription
-                  className={
-                    submitFeedback.type === "success" ? "text-emerald-800" : "text-rose-800"
-                  }
-                >
-                  {submitFeedback.message}
-                </AlertDescription>
-              </Alert>
-            )}
-            <div className="flex flex-col gap-3 sm:flex-row sm:sticky sm:bottom-0 bg-background/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-border/60 shadow-lg z-10 w-full max-w-full">
-              <Button variant="outline" onClick={handleCancel} className="w-full sm:flex-1">
-                Annuler
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={!isFormValid || isSubmitting}
-                className="w-full sm:flex-1 gap-2 bg-brand hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Send className="h-4 w-4" />
-                {isSubmitting ? "Envoi en cours..." : "Envoyer ma candidature"}
-              </Button>
+                J'accepte que mes informations personnelles ainsi que les documents sélectionnés
+                soient transmis à l'entreprise dans le cadre de cette candidature.
+              </label>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Action Buttons */}
+        <div className="space-y-3">
+          {!submissionChannelAvailable && (
+            <Alert className="border-amber-200/70 bg-amber-50/80 text-amber-950">
+              <AlertCircle className="h-4 w-4 text-amber-700" />
+              <AlertDescription className="ml-2">
+                <p className="font-semibold text-amber-950">
+                  Candidature momentanément indisponible
+                </p>
+                <p className="mt-1 text-sm text-amber-900">
+                  Cette offre ne possède actuellement aucune adresse de réception des
+                  candidatures. Le recrutement n'est donc pas disponible pour le moment. Nous vous
+                  invitons à consulter d'autres offres ou à revenir ultérieurement.
+                </p>
+              </AlertDescription>
+            </Alert>
+          )}
+          {submitFeedback && (
+            <Alert
+              className={`border ${submitFeedback.type === "success" ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}
+            >
+              <AlertDescription
+                className={
+                  submitFeedback.type === "success" ? "text-emerald-800" : "text-rose-800"
+                }
+              >
+                {submitFeedback.message}
+              </AlertDescription>
+            </Alert>
+          )}
+          <div className="flex flex-col gap-3 sm:flex-row sm:sticky sm:bottom-0 bg-background/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-border/60 shadow-lg z-10 w-full max-w-full">
+            <Button variant="outline" onClick={handleCancel} className="w-full sm:flex-1">
+              Annuler
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={!isFormValid || isSubmitting}
+              className="w-full sm:flex-1 gap-2 bg-brand hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Send className="h-4 w-4" />
+              {isSubmitting ? "Envoi en cours..." : "Envoyer ma candidature"}
+            </Button>
           </div>
         </div>
       </div>

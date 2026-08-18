@@ -51,7 +51,7 @@ const loadNotifications = async () => {
       (notif: NotificationRecord) =>
         notif.status === "active" &&
         (notif.type === "admin" || notif.type === "offre") &&
-        notif.user_id === user.id,
+        (notif.user_id === user.id || notif.user_id === null),
     );
 
     const unread = userNotifications.filter((n: NotificationRecord) => !n.is_read).length;
