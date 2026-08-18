@@ -79,6 +79,22 @@ async function handleRegister(req: VercelRequest, res: VercelResponse) {
     }
 
     const userId = authData.user.id;
+
+    const { error: candidateInsertError } = await supabase.from('candidates').insert({
+      user_id: userId,
+      first_name: firstName?.trim() || 'Candidat',
+      last_name: lastName?.trim() || 'Mobile',
+      email: email.trim(),
+      status: 'active',
+    });
+
+    if (candidateInsertError) {
+      console.error('Candidate insert error:', candidateInsertError);
+      return res.status(400).json({
+        error: candidateInsertError.message || 'Failed to create candidate profile',
+      });
+    }
+
     const code = generateVerificationCode();
     const token = createHMACToken(email, userId, jwtSecret);
     const expiresAt = new Date(Date.now() + 20 * 60 * 1000);
