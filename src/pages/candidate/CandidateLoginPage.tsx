@@ -139,8 +139,8 @@ export function CandidateLoginPage() {
     }
 
     redirectAttemptedRef.current = true;
-    navigate("/candidate/dashboard", { replace: true });
-  }, [isAuthenticated, rolesResolved, location.pathname, navigate]);
+    navigate(state?.from || "/candidate/dashboard", { replace: true });
+  }, [isAuthenticated, rolesResolved, location.pathname, navigate, state?.from]);
 
   const handleResendEmail = async () => {
     setResending(true);

@@ -6,6 +6,7 @@ import {
   Building2,
   CalendarDays,
   MapPin,
+  MessageCircle,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -15,6 +16,16 @@ import { useI18n } from "@/i18n";
 import { useNavigate } from "react-router-dom";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { JobCard } from "@/features/jobs/components";
+import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { useJobs } from "@/features/jobs/hooks";
@@ -23,6 +34,7 @@ import { isMobileApp } from "@/lib/isMobileApp";
 export function JobsPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
+  const { user, isLoading } = useAuthContext();
   const mobileApp = isMobileApp();
   const [searchInput, setSearchInput] = React.useState("");
   const [companyInput, setCompanyInput] = React.useState("");
@@ -35,6 +47,8 @@ export function JobsPage() {
     contractType: "",
   });
   const [filtersOpen, setFiltersOpen] = React.useState(false);
+  const [loginPromptSlug, setLoginPromptSlug] = React.useState<string | null>(null);
+  const [whatsappOpen, setWhatsappOpen] = React.useState(false);
   const [page, setPage] = React.useState(1);
   const pageSize = 8;
 
@@ -101,6 +115,16 @@ export function JobsPage() {
   const totalPages = Math.max(1, Math.ceil(filteredOffers.length / pageSize));
   const safePage = Math.min(page, totalPages);
   const paginatedOffers = filteredOffers.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const loginRedirectPath = loginPromptSlug ? `/jobs/${loginPromptSlug}` : "/jobs";
+
+  const handleApplyClick = (slug: string) => {
+    if (isLoading) return;
+    if (user) {
+      navigate(`/candidate/jobs/${slug}/apply`);
+      return;
+    }
+    setLoginPromptSlug(slug);
+  };
 
   return (
     <>
@@ -116,7 +140,7 @@ export function JobsPage() {
         ]}
       />
       <section className="container-page pb-20 md:pb-28">
-        <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-8">
           <div className="space-y-6 text-foreground/90 leading-relaxed">
             <div
               className="sticky z-40 mt-0 mb-0 w-full border-0 bg-white"
@@ -223,7 +247,7 @@ export function JobsPage() {
               </div>
             </div>
 
-            <div className={mobileApp ? "mt-0 grid gap-4 pt-0" : "mt-0 grid gap-4 pt-4"}>
+            <div className={mobileApp ? "mt-0 grid gap-3 pt-0" : "mt-0 grid gap-3 pt-4"}>
               {loading ? (
                 [1, 2, 3].map((index) => (
                   <article
@@ -263,7 +287,9 @@ export function JobsPage() {
                         isExpired={isExpired}
                         t={t}
                         index={i}
-                        onApplyClick={() => navigate(`/candidate/jobs/${job.slug}/apply`)}
+                        hideRequirementsSection
+                        variant="list"
+                        onApplyClick={() => handleApplyClick(job.slug)}
                       />
                     );
                   })}
@@ -300,37 +326,91 @@ export function JobsPage() {
               )}
             </div>
           </div>
-          <aside
-            className="rounded-3xl border border-border bg-card p-8 shadow-soft fade-up self-start lg:sticky lg:top-24 lg:z-20"
-            style={{ animationDelay: "240ms" }}
+        </div>
+      </section>
+      <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
+        {whatsappOpen ? (
+          <div
+            role="dialog"
+            aria-label="Accès rapide WhatsApp"
+            className="w-[min(calc(100vw-2rem),24rem)] rounded-2xl border border-border bg-card p-5 shadow-2xl"
           >
-            <div className="text-sm uppercase tracking-[0.25em] text-muted-foreground">
-              {t("jobs.quickAccess.title")}
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="font-display text-lg font-bold text-foreground">Accès rapide</h2>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  Visitez nos chaînes WhatsApp pour recevoir les dernières offres et mises à jour emploi.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setWhatsappOpen(false)}
+                className="rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                aria-label="Fermer l'accès rapide WhatsApp"
+              >
+                <X className="size-4" />
+              </button>
             </div>
-            <p className="mt-4 text-foreground/90 leading-relaxed">
-              {t("jobs.quickAccess.description")}
-            </p>
-            <div className="mt-6 flex flex-col gap-3">
+            <div className="mt-4 grid gap-2">
               <a
                 href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1ea952]"
+                className="inline-flex items-center justify-center rounded-xl bg-[#25D366] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1ea952]"
               >
-                {t("jobs.quickAccess.channel1")}
+                Chaîne Emploiplus-group
               </a>
               <a
                 href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1ea952]"
+                className="inline-flex items-center justify-center rounded-xl border border-[#25D366]/40 bg-[#25D366]/10 px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-[#25D366]/20"
               >
-                {t("jobs.quickAccess.channel2")}
+                Chaîne Offres d'emploi (gratuit)
               </a>
             </div>
-          </aside>
-        </div>
-      </section>
+          </div>
+        ) : null}
+        <button
+          type="button"
+          onClick={() => setWhatsappOpen((open) => !open)}
+          aria-expanded={whatsappOpen}
+          aria-label={whatsappOpen ? "Fermer les chaînes WhatsApp" : "Ouvrir les chaînes WhatsApp"}
+          className="flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition hover:scale-105 hover:bg-[#1ea952] focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
+        >
+          <MessageCircle className="size-7" />
+        </button>
+      </div>
+      <Dialog open={Boolean(loginPromptSlug)} onOpenChange={(open) => !open && setLoginPromptSlug(null)}>
+        <DialogContent className="w-[calc(100%-2rem)] max-w-md rounded-3xl p-6 sm:p-7">
+          <DialogHeader className="text-left">
+            <DialogTitle className="text-xl text-foreground">Connexion requise</DialogTitle>
+            <DialogDescription className="pt-2 text-base leading-6 text-muted-foreground">
+              Vous devez vous connecter pour postuler aux offres d'emploi
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-3 flex-col gap-2 sm:flex-row sm:justify-start sm:space-x-0">
+            <Button asChild className="w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90 sm:w-auto">
+              <Link
+                to="/candidate/login"
+                state={{ from: loginRedirectPath }}
+                onClick={() => setLoginPromptSlug(null)}
+              >
+                Se connecter
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full rounded-xl sm:w-auto">
+              <Link
+                to="/candidate/signup"
+                state={{ from: loginRedirectPath }}
+                onClick={() => setLoginPromptSlug(null)}
+              >
+                S'inscrire
+              </Link>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

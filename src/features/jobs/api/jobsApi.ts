@@ -3,7 +3,7 @@ import { generateJobEmbeddingVector } from "@/services/aiMatchingService";
 import type { JobOffer, JobOfferFilters, JobOfferInsert, JobOfferUpdate } from "@/features/jobs/types";
 
 const DEFAULT_ORDER_BY = "publish_at" as const;
-const JOB_LIST_SELECT = "id, slug, title, company, contract_type, location_city, location_country, salary, publish_at, deadline, expires_at, status, cover_image";
+const JOB_LIST_SELECT = "id, slug, title, company, contract_type, location_city, location_country, salary, description, publish_at, deadline, expires_at, status, cover_image";
 
 export const jobService = {
   async getPublishedOffers(limit = 10, offset = 0): Promise<JobOffer[]> {

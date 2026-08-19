@@ -9,6 +9,7 @@ import {
   Mail,
   MapPin,
   Sparkles,
+  ArrowUpRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ShareButtons } from "@/components/site/ShareButtons";
@@ -36,6 +37,7 @@ export type JobCardProps = {
   onApplyClick?: () => void;
   hideRequirementsSection?: boolean;
   matchScore?: number;
+  variant?: "card" | "list";
 };
 
 export function JobCard({
@@ -51,6 +53,7 @@ export function JobCard({
   onApplyClick,
   hideRequirementsSection = false,
   matchScore,
+  variant = "card",
 }: JobCardProps) {
   const [isApplyOpen, setIsApplyOpen] = React.useState(false);
   const detailUrl = `/jobs/${job.slug}`;
@@ -74,73 +77,97 @@ export function JobCard({
     }
   };
 
+  const isList = variant === "list";
+
   return (
     <article
-      className={`relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-br from-card via-card to-primary/[0.03] p-5 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elev fade-up ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`}
+      className={`relative flex h-full overflow-hidden border border-border/80 bg-card shadow-soft transition-all duration-300 hover:border-brand/30 hover:shadow-elev focus-within:border-brand/40 ${isList ? "flex-col gap-4 rounded-xl p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5" : "flex-col rounded-2xl p-5"} ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`}
       style={{ animationDelay: `${index * 120}ms` }}
     >
-      <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-brand via-brand/70 to-transparent" />
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand/80">
+      <div className="absolute inset-y-0 left-0 w-1 bg-brand" />
+      <div className={`${isList ? "min-w-0 flex-1" : ""}`}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             <Building2 className="size-3.5" />
             <span className="truncate">{job.company}</span>
           </div>
-          <h3 className="mt-2 font-display text-lg font-bold leading-tight text-foreground">{job.title}</h3>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          <h3 className="mt-2 line-clamp-2 font-display text-xl font-bold leading-tight text-foreground">{job.title}</h3>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           {typeof matchScore === "number" ? (
-            <span className="inline-flex items-center rounded-full border border-secondary/20 bg-secondary/10 px-3 py-1 text-xs font-semibold text-secondary">
+            <span className="inline-flex items-center rounded-full border border-secondary/20 bg-secondary/10 px-2.5 py-1 text-xs font-semibold text-secondary">
               {Math.round(Math.max(0, Math.min(1, matchScore)) * 100)}% de match
             </span>
           ) : null}
           {contractLabel ? (
-            <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-xs font-semibold uppercase text-brand">
+            <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-2.5 py-1 text-xs font-semibold uppercase text-brand">
               <BriefcaseBusiness className="size-3.5" />
               {contractLabel}
             </span>
           ) : null}
+          </div>
         </div>
+
+        {isList ? (
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
+            <span className="flex min-w-0 items-center gap-2">
+              <MapPin className="size-4 shrink-0 text-brand" />
+              <span className="truncate">{location}</span>
+            </span>
+            {job.salary ? (
+              <span className="flex min-w-0 items-center gap-2">
+                <BadgeDollarSign className="size-4 shrink-0 text-brand" />
+                <span className="truncate">{job.salary}</span>
+              </span>
+            ) : null}
+            {deadlineValue ? (
+              <span className={`flex min-w-0 items-center gap-2 ${isExpired ? "text-destructive" : ""}`}>
+                <CalendarDays className="size-4 shrink-0 text-brand" />
+                {isExpired ? "Expirée le" : "Jusqu'au"} {new Date(deadlineValue).toLocaleDateString("fr-FR")}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        <div className="flex min-w-[0] flex-1 items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
+      {!isList ? <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-y border-border/60 py-3 text-sm text-muted-foreground">
+        <div className="flex min-w-0 items-center gap-2">
           <MapPin className="size-4 shrink-0 text-brand" />
           <span className="truncate">{location}</span>
         </div>
         {deadlineValue ? (
           <div
-            className={`flex min-w-[0] flex-1 items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80 ${isExpired ? "text-muted-foreground" : ""}`}
+            className={`flex min-w-0 items-center gap-2 ${isExpired ? "text-destructive" : ""}`}
           >
             <CalendarDays className="size-4 shrink-0 text-brand" />
             <span className="truncate">
-              Date limite : {new Date(deadlineValue).toLocaleDateString("fr-FR")}
-              {isExpired ? " • Expirée" : ""}
+              {isExpired ? "Expirée le" : "Jusqu'au"} {new Date(deadlineValue).toLocaleDateString("fr-FR")}
             </span>
           </div>
         ) : null}
         {job.salary ? (
-          <div className="flex w-full items-center gap-2 rounded-2xl border border-border/60 bg-background/70 px-3 py-2 text-sm text-foreground/80">
+          <div className="flex min-w-0 items-center gap-2">
             <BadgeDollarSign className="size-4 shrink-0 text-brand" />
-            <span>{job.salary}</span>
+            <span className="truncate">{job.salary}</span>
           </div>
         ) : null}
-      </div>
+      </div> : null}
 
       {previewText ? (
-        <p className="mt-3 rounded-2xl border border-border/60 bg-background/60 p-3 text-sm text-foreground/80 leading-relaxed">
+        <p className={`${isList ? "mt-3 line-clamp-2 max-w-3xl" : "mt-4 line-clamp-3"} text-sm leading-relaxed text-foreground/75`}>
           {previewText.length > 180 ? `${previewText.slice(0, 177)}...` : previewText}
         </p>
       ) : null}
 
-      {!hideRequirementsSection && job.requirements ? (
-        <div className="mt-3 rounded-2xl border border-border/60 bg-background/60 p-3 text-sm text-foreground/80 leading-relaxed">
-          <div className="mb-2 text-sm font-semibold text-foreground">Profil recherché</div>
-          <p className="whitespace-pre-line">{job.requirements}</p>
+      {!isList && !hideRequirementsSection && job.requirements ? (
+        <div className="mt-3 border-l-2 border-brand/30 pl-3 text-sm leading-relaxed text-foreground/75">
+          <div className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Profil recherché</div>
+          <p className="line-clamp-3 whitespace-pre-line">{job.requirements}</p>
         </div>
       ) : null}
 
-      {tags.length > 0 ? (
+      {tags.length > 0 && !isList ? (
         <div className="mt-3 flex flex-wrap gap-2">
           {tags.map((tag) => (
             <span
@@ -154,20 +181,21 @@ export function JobCard({
         </div>
       ) : null}
 
-      <div className="mt-4 flex items-center justify-end gap-2">
+      <div className={`${isList ? "shrink-0" : "mt-auto border-t border-border/60 pt-4"} flex flex-wrap items-center gap-2`}>
         <Link
           to={detailUrl}
-          className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-[#00009E] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-[#00007A] active:scale-95 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-60"
+          className="inline-flex min-h-10 items-center justify-center gap-1 rounded-xl border border-border px-3.5 py-2 text-sm font-semibold text-foreground transition hover:border-brand/40 hover:bg-brand/5 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:ring-offset-2"
           aria-label={`Voir plus : ${job.title}`}
         >
-          Voir plus
+          Voir l'offre
+          <ArrowUpRight className="size-4" />
         </Link>
         {applyOptions.length > 0 || onApplyClick ? (
           <div className="relative">
             <Button
               type="button"
               size="sm"
-              className="h-9 rounded-full border border-brand/20 bg-background/80 px-4 text-foreground hover:bg-primary/5"
+              className="h-10 rounded-xl bg-brand px-4 font-semibold text-brand-foreground shadow-sm hover:bg-brand/90"
               onClick={handleApplyClick}
             >
               Postuler
@@ -194,7 +222,7 @@ export function JobCard({
           </div>
         ) : null}
         {shareUrl ? (
-          <div>
+          <div className="ml-auto">
             <ShareButtons url={shareUrl} text={shareText} variant="compact" />
           </div>
         ) : null}
