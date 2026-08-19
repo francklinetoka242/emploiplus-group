@@ -99,8 +99,16 @@ export function CandidateSignupPage() {
   return (
     <div className="candidate-auth-page flex min-h-screen flex-col bg-background">
       <header className="flex h-16 w-full items-center border-b border-border px-4 sm:px-6">
-        <Link to="/" aria-label="Retour à l'accueil">
-          <img src="/Logo.png" alt="EmploiPlus Group" className="h-9 w-9 rounded-lg object-cover" />
+        <Link to="/" aria-label="EmploiPlus Group - Retour à l'accueil" className="group flex items-center gap-3">
+          <img
+            src="/Logo.png"
+            alt="EmploiPlus Group"
+            className="h-9 w-9 rounded-lg object-cover shadow-brand"
+          />
+          <div className="hidden leading-tight sm:block">
+            <div className="font-display font-bold text-foreground">EmploiPlus</div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Group</div>
+          </div>
         </Link>
       </header>
 
