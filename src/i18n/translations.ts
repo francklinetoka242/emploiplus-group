@@ -56,7 +56,7 @@ export const FR: Dict = {
   "home.hero.eyebrow": "Emplois, Business Process Outsourcing",
   "home.hero.title": "Construisons votre avenir professionnel.",
   "home.hero.subtitle":
-    "Emploiplus Group accompagne les entreprises d'Afrique centrale à travers des solutions sur mesure en employabilité, Business Process Outsourcing (BPO) et gestion déléguée des ressources humaines.",
+    "Emploiplus Group est une entreprise spécialisée dans les services d'employabilité, le Business Process Outsourcing (BPO) et la gestion déléguée des ressources humaines basée en Afrique centrale.",
   "home.hero.cta.jobs": "Voir les offres",
   "home.hero.cta.services": "Nos services",
   "home.stats.jobs": "Offres diffusées",
