@@ -7,13 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Facebook, Linkedin, MessageSquare } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 import { parseAuthErrorMessage, resendConfirmationEmail } from "@/features/authentication/api/authApi";
 import { useAuth } from "@/features/authentication/hooks/useAuth";
-import favicon from "@/assets/favicon.ico";
 import { loginSchema, type LoginFormValues } from "@/features/forms/schemas/auth.schemas";
+import { openCookieBanner } from "@/components/site/CookieConsentBanner";
 
 export function CandidateLoginPage() {
   const navigate = useNavigate();
@@ -157,20 +157,21 @@ export function CandidateLoginPage() {
   };
 
   return (
-    <div className="candidate-auth-page min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Card className="candidate-auth-card shadow-xl border border-border bg-card">
-          <CardHeader className="rounded-t-3xl bg-card text-foreground px-8 py-6 border-b border-border">
-            <div className="flex items-center gap-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded bg-muted border border-border">
-                <img src={favicon} alt="EmploiPlus" className="h-6 w-6 object-contain" />
-              </div>
-              <div className="flex flex-col">
-                <CardTitle className="card-title text-xl">Se connecter</CardTitle>
-                <CardDescription className="card-description text-muted-foreground text-sm">
-                  Entrez vos identifiants pour accéder à votre espace
-                </CardDescription>
-              </div>
+    <div className="candidate-auth-page flex min-h-screen flex-col bg-background">
+      <header className="flex h-16 w-full items-center border-b border-border px-4 sm:px-6">
+        <Link to="/" aria-label="Retour à l'accueil">
+          <img src="/Logo.png" alt="EmploiPlus Group" className="h-9 w-9 rounded-lg object-cover" />
+        </Link>
+      </header>
+      <main className="flex flex-1 items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <Card className="candidate-auth-card rounded-lg border border-border bg-card shadow-xl">
+          <CardHeader className="rounded-t-lg bg-card px-8 py-6 text-foreground">
+            <div className="flex flex-col items-center text-center">
+              <CardTitle className="card-title text-xl">Se connecter</CardTitle>
+              <CardDescription className="card-description text-muted-foreground text-sm">
+                Entrez vos identifiants pour accéder à votre espace
+              </CardDescription>
             </div>
           </CardHeader>
 
@@ -292,6 +293,22 @@ export function CandidateLoginPage() {
                 </Button>
               </form>
 
+              <p className="mt-4 text-center text-xs font-normal leading-5 text-muted-foreground">
+                En continuant, vous acceptez les{" "}
+                <Link to="/cgu" className="font-normal text-brand hover:underline">
+                  Conditions Générales d'Utilisation
+                </Link>{" "}
+                et la{" "}
+                <Link to="/politique-de-confidentialite" className="font-normal text-brand hover:underline">
+                  politique de confidentialité
+                </Link>{" "}
+                et la{" "}
+                <button type="button" onClick={openCookieBanner} className="font-normal text-brand hover:underline">
+                  Gestion des cookies
+                </button>{" "}
+                de Emploisplus-group
+              </p>
+
             {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
@@ -327,13 +344,67 @@ export function CandidateLoginPage() {
               </div>
             </div>
           </CardContent>
-        </Card>
+          </Card>
+        </div>
+      </main>
 
-        {/* Footer */}
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          © 2024 EmploiPlus Group. Tous droits réservés.
-        </p>
-      </div>
+      <footer className="w-full overflow-hidden px-3 py-4 text-[9px] text-muted-foreground sm:px-6 sm:text-xs">
+        <div className="flex w-full items-center justify-between gap-1 whitespace-nowrap sm:gap-3">
+            <Link to="/politique-de-confidentialite" className="transition-colors hover:text-foreground">
+              Politique de Confidentialité
+            </Link>
+            <Link to="/mentions-legales" className="transition-colors hover:text-foreground">
+              Mentions Légales
+            </Link>
+            <Link to="/cgu" className="transition-colors hover:text-foreground">
+              Conditions Générales d'Utilisation
+            </Link>
+            <button type="button" onClick={openCookieBanner} className="transition-colors hover:text-foreground">
+              Gestion des cookies
+            </button>
+            <a href="tel:+242067311033" className="transition-colors hover:text-foreground">
+              Contact
+            </a>
+            <a
+              href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
+            >
+              <MessageSquare className="size-3.5" />
+              WhatsApp
+            </a>
+            <a
+              href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
+            >
+              <MessageSquare className="size-3.5" />
+              WhatsApp
+            </a>
+            <span className="h-3 w-px bg-border" aria-hidden="true" />
+            <a
+              href="https://www.facebook.com/EmploiplusConsulting"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              className="transition-colors hover:text-foreground"
+            >
+              <Facebook className="size-4" />
+            </a>
+            <a
+              href="https://www.linkedin.com/company/emploiplus-consulting/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="transition-colors hover:text-foreground"
+            >
+              <Linkedin className="size-4" />
+            </a>
+            <span className="text-center">© {new Date().getFullYear()} EmploiPlus Group. Tous droits réservés.</span>
+        </div>
+      </footer>
     </div>
   );
 }
