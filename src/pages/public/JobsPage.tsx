@@ -192,7 +192,7 @@ export function JobsPage() {
                   }`}
                   style={{ backgroundColor: "#FFFFFF" }}
                 >
-                  <div className="grid gap-3 bg-white p-3 sm:p-4" style={{ backgroundColor: "#FFFFFF" }}>
+                  <div className="grid gap-3 bg-white p-3 sm:grid-cols-2 sm:p-4" style={{ backgroundColor: "#FFFFFF" }}>
                     <div>
                       <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                         Type de contrat
@@ -225,7 +225,7 @@ export function JobsPage() {
                       />
                     </div>
 
-                    <div className="flex items-center justify-end gap-2 pt-1">
+                    <div className="flex items-center justify-end gap-2 pt-1 sm:col-span-2">
                       <button
                         type="button"
                         onClick={resetFilters}
