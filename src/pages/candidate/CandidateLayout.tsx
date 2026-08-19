@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { CandidateSidebar } from "@/components/candidate/CandidateSidebar";
 import { CandidateMobileHeader } from "@/components/candidate/CandidateMobileHeader";
@@ -38,11 +38,45 @@ const pageToTitle: Record<string, string> = {
 export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: CandidateAppShellProps) {
   const { open, setOpen } = useCandidateSidebar();
   const { logout } = useCandidate();
+  const mainRef = useRef<HTMLElement | null>(null);
+  const lastMainScrollTopRef = useRef(0);
+  const lastWindowScrollTopRef = useRef(0);
+  const [headerVisible, setHeaderVisible] = useState(true);
+
+  useEffect(() => {
+    const scrollContainer = mainRef.current;
+    const updateHeaderVisibility = (currentScrollTop: number, lastScrollTopRef: React.MutableRefObject<number>) => {
+      const scrollDelta = currentScrollTop - lastScrollTopRef.current;
+
+      if (currentScrollTop <= 0 || scrollDelta < -4) {
+        setHeaderVisible((visible) => (visible ? visible : true));
+      } else if (scrollDelta > 4) {
+        setHeaderVisible((visible) => (visible ? false : visible));
+      }
+
+      lastScrollTopRef.current = currentScrollTop;
+    };
+
+    const handleContainerScroll = () => updateHeaderVisibility(scrollContainer?.scrollTop ?? 0, lastMainScrollTopRef);
+    const handleWindowScroll = () => updateHeaderVisibility(window.scrollY, lastWindowScrollTopRef);
+
+    scrollContainer?.addEventListener("scroll", handleContainerScroll, { passive: true });
+    window.addEventListener("scroll", handleWindowScroll, { passive: true });
+
+    return () => {
+      scrollContainer?.removeEventListener("scroll", handleContainerScroll);
+      window.removeEventListener("scroll", handleWindowScroll);
+    };
+  }, []);
 
   return (
     <div className="h-screen min-h-screen flex flex-col bg-background text-foreground">
       {/* Mobile Header (visible uniquement sur mobile) */}
-      <CandidateMobileHeader title={pageTitle} onMenuOpen={() => setOpen(true)} onLogout={logout} />
+      <div className={cn("transition-transform duration-300 md:hidden", headerVisible ? "translate-y-0" : "-translate-y-full")}>
+        <div>
+          <CandidateMobileHeader title={pageTitle} onMenuOpen={() => setOpen(true)} onLogout={logout} />
+        </div>
+      </div>
 
       {/* Drawer Mobile (géré par CandidateSidebar) */}
       <CandidateSidebar open={open} onOpenChange={setOpen} onLogout={logout} isDrawer={true} />
@@ -60,10 +94,14 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
           )}
         >
           {/* Topbar Desktop */}
-          <CandidateTopbar onMenuToggle={() => setOpen(!open)} onLogout={logout} />
+          <div className={cn("transition-transform duration-300", headerVisible ? "translate-y-0" : "-translate-y-full")}>
+            <div>
+              <CandidateTopbar onMenuToggle={() => setOpen(!open)} onLogout={logout} />
+            </div>
+          </div>
 
           {/* Contenu avec scroll */}
-          <main className="min-w-0 flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+          <main ref={mainRef} className="min-w-0 flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
             <div className="min-w-0 w-full">
               <div className="mx-auto w-full px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10 max-w-7xl">
                 {children}
