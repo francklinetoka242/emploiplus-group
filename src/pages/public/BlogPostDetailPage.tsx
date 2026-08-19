@@ -179,11 +179,11 @@ export function BlogPostDetailPage() {
                       }}
                     />
                   </div>
-                  <h1 className="max-w-4xl font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl">
+                  <h1 className="max-w-4xl font-display text-2xl font-bold leading-tight text-foreground sm:text-3xl md:text-4xl">
                     {post.title}
                   </h1>
                   {post.excerpt ? (
-                    <p className="max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
+                    <p className="max-w-3xl text-base leading-7 text-muted-foreground sm:leading-8">
                       {post.excerpt}
                     </p>
                   ) : null}
@@ -192,10 +192,10 @@ export function BlogPostDetailPage() {
             </article>
 
             <article className="rounded-[28px] border border-border bg-card p-6 shadow-soft sm:p-8 md:p-10">
-              <h2 className="border-l-4 border-brand pl-4 font-display text-2xl font-semibold text-foreground sm:text-3xl">
+              <h2 className="border-l-4 border-brand pl-4 font-display text-xl font-semibold text-foreground sm:text-2xl">
                 {t("blog.article.content")}
               </h2>
-              <div className="mt-8 max-w-3xl whitespace-pre-line text-base leading-8 text-foreground/85 sm:text-lg sm:leading-9">
+              <div className="mt-8 max-w-3xl whitespace-pre-line text-base leading-7 text-foreground/85 sm:leading-8">
                 {post.content}
               </div>
             </article>
