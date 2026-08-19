@@ -1,7 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { MapPin, UserRound } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { CandidateAvatar } from "@/components/candidate/CandidateAvatar";
 
 interface ProfileHeaderProps {
   name: string;
@@ -20,23 +20,11 @@ export function ProfileHeader({
   completionPercentage,
   avatarUrl,
 }: ProfileHeaderProps) {
-  const initials = name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
   return (
     <div className="overflow-hidden rounded-3xl border border-primary/15 bg-card p-6 shadow-sm sm:p-7">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex min-w-0 items-start gap-4">
-          <Avatar className="h-16 w-16 shrink-0 border-2 border-primary/20 bg-primary/5 p-0.5 shadow-sm">
-            {avatarUrl ? <AvatarImage src={avatarUrl} alt={name} /> : null}
-            <AvatarFallback className="bg-primary/10 font-semibold text-primary">
-              {initials || <UserRound className="h-5 w-5" />}
-            </AvatarFallback>
-          </Avatar>
+          <CandidateAvatar name={name} avatarUrl={avatarUrl} className="h-16 w-16 p-0.5 shadow-sm" />
 
           <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2">

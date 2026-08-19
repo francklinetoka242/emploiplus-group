@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Menu, Settings, LogOut, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +12,7 @@ import {
 import { useCandidate } from "@/hooks/useCandidate";
 import { useNotifications } from "@/hooks/useNotifications";
 import { NotificationsDropdown } from "./NotificationsDropdown";
+import { CandidateAvatar } from "./CandidateAvatar";
 
 interface CandidateMobileHeaderProps {
   title: string;
@@ -31,10 +31,7 @@ export function CandidateMobileHeader({ title, onMenuOpen, onLogout }: Candidate
     deleteNotification,
   } = useNotifications();
 
-  const initials =
-    profile?.first_name && profile?.last_name
-      ? `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase()
-      : "C";
+  const userName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || "Candidat";
 
   const handleLogout = async () => {
     await logout();
@@ -82,14 +79,7 @@ export function CandidateMobileHeader({ title, onMenuOpen, onLogout }: Candidate
               className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
               aria-label="Ouvrir le menu du compte"
             >
-              <Avatar className="h-9 w-9 border-2 border-border">
-                {profile?.avatar_url && (
-                  <AvatarImage src={profile.avatar_url} alt={profile?.first_name ?? undefined} />
-                )}
-                <AvatarFallback className="bg-muted text-xs font-semibold text-muted-foreground">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
+              <CandidateAvatar name={userName} avatarUrl={profile?.avatar_url} className="h-9 w-9" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">

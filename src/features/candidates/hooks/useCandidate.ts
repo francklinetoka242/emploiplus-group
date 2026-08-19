@@ -9,6 +9,49 @@ import { logoutCandidate } from "@/features/authentication/api/authApi";
 import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 import { diagnosticLogger } from "@/services/diagnosticLogger";
 
+type ProfileListener = () => void;
+
+const profileCache = new Map<string, CandidateProfile | null>();
+const profileRequests = new Map<string, Promise<CandidateProfile | null>>();
+const profileListeners = new Map<string, Set<ProfileListener>>();
+
+function notifyProfileListeners(userId: string) {
+  profileListeners.get(userId)?.forEach((listener) => listener());
+}
+
+function subscribeToProfile(userId: string, listener: ProfileListener) {
+  const listeners = profileListeners.get(userId) ?? new Set<ProfileListener>();
+  listeners.add(listener);
+  profileListeners.set(userId, listeners);
+
+  return () => {
+    listeners.delete(listener);
+    if (listeners.size === 0) profileListeners.delete(userId);
+  };
+}
+
+function loadSharedProfile(userId: string, force = false) {
+  if (!force && profileCache.has(userId)) {
+    return Promise.resolve(profileCache.get(userId) ?? null);
+  }
+
+  const existingRequest = profileRequests.get(userId);
+  if (existingRequest) return existingRequest;
+
+  const request = getCandidateProfileByUserId(userId)
+    .then((nextProfile) => {
+      profileCache.set(userId, nextProfile);
+      notifyProfileListeners(userId);
+      return nextProfile;
+    })
+    .finally(() => {
+      profileRequests.delete(userId);
+    });
+
+  profileRequests.set(userId, request);
+  return request;
+}
+
 /**
  * Candidate profile hook - manages candidate-specific data.
  * Independent from auth context.
@@ -18,7 +61,9 @@ export function useCandidate() {
   const { logout: logoutContext, isAuthenticated, user } = useAuthContext();
   const navigate = useNavigate();
 
-  const [profile, setProfile] = useState<CandidateProfile | null>(null);
+  const [profile, setProfile] = useState<CandidateProfile | null>(() =>
+    user?.id ? profileCache.get(user.id) ?? null : null,
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,6 +85,10 @@ export function useCandidate() {
     }
 
     let isMounted = true;
+    const syncProfile = () => {
+      if (isMounted) setProfile(profileCache.get(user.id) ?? null);
+    };
+    const unsubscribe = subscribeToProfile(user.id, syncProfile);
 
     const loadProfile = async () => {
       diagnosticLogger.log('LOAD_PROFILE_START', {
@@ -51,7 +100,7 @@ export function useCandidate() {
       setError(null);
 
       try {
-        const nextProfile = await getCandidateProfileByUserId(user.id);
+        const nextProfile = await loadSharedProfile(user.id);
         diagnosticLogger.log('LOAD_PROFILE_SUCCESS', {
           userId: user.id,
           profileId: nextProfile?.id,
@@ -86,6 +135,7 @@ export function useCandidate() {
 
     return () => {
       isMounted = false;
+      unsubscribe();
     };
   }, [isAuthenticated, user?.id]);
 
@@ -107,7 +157,8 @@ export function useCandidate() {
       if (!profile?.id) return null;
       try {
         const updatedProfile = await updateCandidateProfile(profile.id, updates);
-        setProfile(updatedProfile);
+        profileCache.set(profile.id, updatedProfile);
+        notifyProfileListeners(profile.id);
         return updatedProfile;
       } catch (err) {
         const errorMsg =
@@ -125,7 +176,9 @@ export function useCandidate() {
     setError(null);
 
     try {
-      const nextProfile = await getCandidateProfileByUserId(user.id);
+      const nextProfile = await loadSharedProfile(user.id, true);
+      profileCache.set(user.id, nextProfile);
+      notifyProfileListeners(user.id);
       setProfile(nextProfile);
       return nextProfile;
     } catch (err) {

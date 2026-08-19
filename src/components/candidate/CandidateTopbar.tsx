@@ -8,9 +8,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Settings, LogOut, ChevronDown, Menu, Loader2, User } from "lucide-react";
 import { NotificationsDropdown } from "./NotificationsDropdown";
+import { CandidateAvatar } from "./CandidateAvatar";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useCandidate } from "@/hooks/useCandidate";
 import { cn } from "@/lib/utils";
@@ -43,11 +43,6 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
   const avatarUrl = useMemo(() => {
     return profile?.avatar_url || "";
   }, [profile]);
-
-  const initials = useMemo(() => {
-    const first = profile?.first_name?.trim() || userName || "C";
-    return first.slice(0, 2).toUpperCase();
-  }, [profile, userName]);
 
   const publicLinks = [
     { to: "/", label: "Accueil" },
@@ -119,12 +114,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
                 aria-label="Ouvrir le menu du compte"
                 className="h-12 gap-3 rounded-2xl border border-transparent bg-transparent px-2.5 pr-3 shadow-none transition-colors hover:bg-muted data-[state=open]:border-border/70 data-[state=open]:bg-card data-[state=open]:shadow-sm data-[state=open]:hover:border-primary/25 data-[state=open]:hover:bg-primary/[0.03]"
               >
-                <Avatar className="h-9 w-9 border border-primary/20 bg-primary/5">
-                  <AvatarImage src={avatarUrl} alt={userName} />
-                  <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
+                <CandidateAvatar name={userName} avatarUrl={avatarUrl} className="h-9 w-9 border" />
                 <div className="flex max-w-[190px] flex-col items-start text-left">
                   <p className="w-full truncate text-sm font-semibold text-foreground">{userName}</p>
                   {userEmail && <p className="w-full truncate text-xs text-muted-foreground">{userEmail}</p>}
