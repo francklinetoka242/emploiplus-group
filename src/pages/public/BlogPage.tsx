@@ -167,7 +167,7 @@ export function BlogPage() {
                       return (
                         <motion.article
                           key={post.id}
-                          className="flex min-w-[360px] flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-3 hover:shadow-lg hover:border-secondary/30"
+                          className="flex min-w-[360px] flex-col overflow-visible rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-3 hover:shadow-lg hover:border-secondary/30"
                           variants={staggerItem}
                         >
                           <Link to={`/blog/${post.slug}`} className="group flex flex-1 flex-col">
@@ -266,7 +266,7 @@ export function BlogPage() {
                         return (
                           <motion.article
                             key={post.id}
-                            className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-md"
+                            className="flex h-full flex-col overflow-visible rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-md"
                             variants={staggerItem}
                           >
                             <Link to={`/blog/${post.slug}`} className="group flex flex-1 flex-col">
@@ -327,7 +327,7 @@ export function BlogPage() {
                         return (
                           <motion.article
                             key={post.id}
-                            className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-md"
+                            className="flex h-full flex-col overflow-visible rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-md"
                             variants={staggerItem}
                           >
                             <Link to={`/blog/${post.slug}`} className="group flex flex-1 flex-col">

@@ -15,7 +15,7 @@ import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadFileToStorage } from "@/services/storageService";
+import { uploadImageToStorage } from "@/services/storageService";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -134,7 +134,7 @@ export function AdminBlogPage() {
     setMessage(null);
 
     try {
-      const { url: publicUrl } = await uploadFileToStorage(
+      const { url: publicUrl } = await uploadImageToStorage(
         file,
         "blog",
         import.meta.env.VITE_SUPABASE_BLOG_BUCKET || undefined,

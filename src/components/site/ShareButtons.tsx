@@ -92,7 +92,7 @@ export function ShareButtons({
           <Share2 className="size-4" />
         </Button>
         {open ? (
-          <div className="absolute right-0 top-full z-20 mt-2 flex min-w-[180px] flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-elev">
+          <div className="absolute bottom-full right-0 z-50 mb-2 flex min-w-[180px] flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-elev">
             <a
               href={links.whatsapp}
               target="_blank"

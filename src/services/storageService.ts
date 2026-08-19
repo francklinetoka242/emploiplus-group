@@ -9,6 +9,8 @@ export const CANDIDATE_DOCUMENTS_BUCKET =
   "public";
 export const MAX_DOCUMENT_SIZE_BYTES = 2 * 1024 * 1024;
 export const ALLOWED_DOCUMENT_MIME_TYPES = ["application/pdf"];
+export const ALLOWED_IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+export const MAX_IMAGE_SIZE_BYTES = 8 * 1024 * 1024;
 
 function normalizeBucketName(bucketName?: string) {
   const raw = (bucketName || STORAGE_BUCKET || "public").trim();
@@ -47,21 +49,31 @@ async function resolveStorageUrl(bucket: string, filename: string, forceSignedUr
   return null;
 }
 
-export async function uploadFileToStorage(
+async function uploadValidatedFileToStorage(
   file: File,
   folder: string,
   bucketName = STORAGE_BUCKET,
   forceSignedUrl = false,
+  allowedMimeTypes: string[] = ALLOWED_DOCUMENT_MIME_TYPES,
+  maxSizeBytes = MAX_DOCUMENT_SIZE_BYTES,
 ) {
-  const extension = file.name.split(".").pop() || "pdf";
+  const extension = file.name.split(".").pop() || "bin";
   const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${extension}`;
 
-  if (!ALLOWED_DOCUMENT_MIME_TYPES.includes(file.type)) {
-    throw new Error("Seuls les fichiers PDF sont acceptés.");
+  if (!allowedMimeTypes.includes(file.type)) {
+    throw new Error(
+      allowedMimeTypes === ALLOWED_DOCUMENT_MIME_TYPES
+        ? "Seuls les fichiers PDF sont acceptés."
+        : "Seules les images JPG, PNG, WEBP ou GIF sont acceptées.",
+    );
   }
 
-  if (file.size > MAX_DOCUMENT_SIZE_BYTES) {
-    throw new Error("Le fichier dépasse la limite de 2 Mo.");
+  if (file.size > maxSizeBytes) {
+    throw new Error(
+      maxSizeBytes === MAX_DOCUMENT_SIZE_BYTES
+        ? "Le fichier dépasse la limite de 2 Mo."
+        : "L’image dépasse la limite de 8 Mo.",
+    );
   }
 
   const bucketCandidates = getBucketCandidates(bucketName);
@@ -94,5 +106,32 @@ export async function uploadFileToStorage(
   throw new Error(
     lastError?.message ||
       `Impossible d’uploader le fichier — aucun bucket Supabase disponible pour ${bucketName}. Vérifiez que le bucket existe bien dans le projet Supabase ${projectUrl} et que son nom correspond exactement à l’un des suivants : ${triedBuckets}.`,
+  );
+}
+
+export function uploadFileToStorage(
+  file: File,
+  folder: string,
+  bucketName = STORAGE_BUCKET,
+  forceSignedUrl = false,
+) {
+  return uploadValidatedFileToStorage(
+    file,
+    folder,
+    bucketName,
+    forceSignedUrl,
+    ALLOWED_DOCUMENT_MIME_TYPES,
+    MAX_DOCUMENT_SIZE_BYTES,
+  );
+}
+
+export function uploadImageToStorage(file: File, folder: string, bucketName = STORAGE_BUCKET) {
+  return uploadValidatedFileToStorage(
+    file,
+    folder,
+    bucketName,
+    false,
+    ALLOWED_IMAGE_MIME_TYPES,
+    MAX_IMAGE_SIZE_BYTES,
   );
 }
