@@ -85,14 +85,16 @@ export function JobCard({
       style={{ animationDelay: `${index * 120}ms` }}
     >
       <div className="absolute inset-y-0 left-0 w-1 bg-brand" />
-      <div className={`${isList ? "min-w-0 flex-1" : ""}`}>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            <Building2 className="size-3.5" />
-            <span className="truncate">{job.company}</span>
-          </div>
-          <h3 className="mt-2 line-clamp-2 font-display text-xl font-bold leading-tight text-foreground">{job.title}</h3>
+      <div className={`relative z-10 ${isList ? "min-w-0 flex-1" : ""}`}>
+        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground">
+              <Building2 className="size-4 shrink-0 text-brand" />
+              <span className="truncate">{job.company || "Entreprise non renseignée"}</span>
+            </div>
+            <h3 className="mt-1 block line-clamp-2 text-lg font-bold leading-snug !text-foreground sm:text-xl">
+              {job.title || "Offre d'emploi"}
+            </h3>
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           {typeof matchScore === "number" ? (
@@ -129,6 +131,12 @@ export function JobCard({
             ) : null}
           </div>
         ) : null}
+
+        {previewText && isList ? (
+          <p className="mt-3 line-clamp-2 max-w-3xl text-sm leading-relaxed text-foreground/75">
+            {previewText.length > 180 ? `${previewText.slice(0, 177)}...` : previewText}
+          </p>
+        ) : null}
       </div>
 
       {!isList ? <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-y border-border/60 py-3 text-sm text-muted-foreground">
@@ -154,8 +162,8 @@ export function JobCard({
         ) : null}
       </div> : null}
 
-      {previewText ? (
-        <p className={`${isList ? "mt-3 line-clamp-2 max-w-3xl" : "mt-4 line-clamp-3"} text-sm leading-relaxed text-foreground/75`}>
+      {previewText && !isList ? (
+        <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-foreground/75">
           {previewText.length > 180 ? `${previewText.slice(0, 177)}...` : previewText}
         </p>
       ) : null}
