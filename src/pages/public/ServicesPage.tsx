@@ -39,20 +39,46 @@ function CandidateCarousel() {
     return () => window.clearInterval(timer);
   }, [isMobileAppUserAgent]);
 
+  const positionedSlides = candidateSlides.map((image, index) => {
+    let offset = (index - activeIndex + candidateSlides.length) % candidateSlides.length;
+    if (offset > candidateSlides.length / 2) {
+      offset -= candidateSlides.length;
+    }
+
+    return { image, offset };
+  });
+
   return (
-    <div className="mx-auto w-full max-w-[220px] sm:max-w-[250px] slide-in-right slide-delay-1">
-      <div className="relative overflow-hidden rounded-[1.8rem] bg-transparent p-0 shadow-none">
-        <div className="relative aspect-[9/20.5] overflow-hidden rounded-[1.3rem] bg-white">
-          {candidateSlides.map((image, index) => (
-            <img
-              key={image.src}
-              src={image.src}
-              alt={image.alt}
-              className={`absolute inset-0 h-full w-full object-contain bg-white transition-opacity duration-700 ${
-                index === activeIndex ? "opacity-100" : "opacity-0"
-              }`}
-            />
-          ))}
+    <div className="mx-auto w-full max-w-[520px] overflow-x-clip slide-in-right slide-delay-1">
+      <div className="relative rounded-[1.8rem] bg-transparent p-0 shadow-none">
+        <div className="relative mx-auto aspect-[9/20.5] w-[220px] sm:w-[250px]">
+          {positionedSlides.map(({ image, offset }) => (
+              <div
+                key={image.src}
+                className="absolute inset-0 overflow-hidden rounded-[1.3rem] bg-white transition-[transform,opacity] duration-700 ease-out will-change-transform"
+                style={{
+                  opacity: offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.5 : 0,
+                  transform:
+                    offset === 0
+                      ? "translate3d(0, 0, 0) scale(1)"
+                      : offset === -1
+                        ? "translate3d(clamp(-175px, -30vw, -80px), 0, 0) scale(0.7)"
+                        : offset === 1
+                          ? "translate3d(clamp(80px, 30vw, 175px), 0, 0) scale(0.7)"
+                          : offset < 0
+                            ? "translate3d(clamp(-250px, -42vw, -130px), 0, 0) scale(0.5)"
+                            : "translate3d(clamp(130px, 42vw, 250px), 0, 0) scale(0.5)",
+                  zIndex: offset === 0 ? 5 : Math.abs(offset) === 1 ? 2 : 1,
+                }}
+              >
+                <img
+                  src={image.src}
+                  alt={offset === 0 ? image.alt : ""}
+                  aria-hidden={offset !== 0}
+                  className="h-full w-full object-contain bg-white"
+                />
+              </div>
+            ))}
         </div>
         <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
           {candidateSlides.map((image, index) => (
@@ -144,7 +170,7 @@ export function ServicesPage() {
               <CandidateCarousel />
             </section>
 
-            <section className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] items-center">
+            <section className="grid gap-10 border-t border-slate-200/80 pt-16 lg:grid-cols-[0.95fr_1.05fr] lg:pt-20 items-center">
               <div className="relative overflow-hidden rounded-[2rem] bg-white slide-in-left slide-delay-1">
                 <img
                   src={enterpriseIllustration}
@@ -160,10 +186,10 @@ export function ServicesPage() {
                 </div>
                 <div className="space-y-4">
                   <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-                    Une solution RH professionnelle et sur mesure
+                    Une solution d'externalisation globale et sur mesure
                   </h2>
                   <p className="max-w-2xl text-base leading-8 text-slate-600">
-                    Externalisation métier, délégation et pilotage opérationnel pour faire évoluer votre organisation avec sérénité.
+                    BPO, gestion déléguée et pilotage opérationnel pour faire évoluer votre organisation avec sérénité.
                   </p>
                 </div>
 
@@ -171,11 +197,11 @@ export function ServicesPage() {
                   {[
                     {
                       icon: MapPin,
-                      label: "Cadrage précis des besoins RH",
+                      label: "Cadrage précis des besoins opérationnels",
                     },
                     {
                       icon: Users,
-                      label: "Ressources qualifiées et opérationnelles",
+                      label: "Ressources qualifiées et compétences clés",
                     },
                     {
                       icon: Layers,
@@ -183,7 +209,7 @@ export function ServicesPage() {
                     },
                     {
                       icon: TrendingUp,
-                      label: "Valorisation de la performance RH",
+                      label: "Valorisation de la performance d'entreprise",
                     },
                   ].map(({ icon: Icon, label }, index) => (
                     <div
