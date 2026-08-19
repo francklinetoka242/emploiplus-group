@@ -105,7 +105,7 @@ export function ServicesPage() {
         robots="index,follow"
       />
 
-      <main className="bg-slate-50 py-20">
+      <main className="bg-slate-50 pb-20 pt-0">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <header className="space-y-6 text-center">
           </header>
