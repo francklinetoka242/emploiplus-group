@@ -8,7 +8,11 @@ import { usePublishedBlogPosts } from "@/hooks/usePublishedOffers";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { SectionHeader } from "@/components/page/SectionHeader";
 import { staggerContainer, staggerItem } from "@/lib/animations/animations";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import blogImage1 from "@/assets/imgCarrousselBlog/1.jpg";
+import blogImage2 from "@/assets/imgCarrousselBlog/2.jpg";
+import blogImage3 from "@/assets/imgCarrousselBlog/3.jpg";
+import blogImage4 from "@/assets/imgCarrousselBlog/4.jpg";
 
 export function BlogPage() {
   const { t } = useI18n();
@@ -16,7 +20,17 @@ export function BlogPage() {
   const featuredPosts = posts.filter((post) => post.is_featured);
   const regularPosts = posts.filter((post) => !post.is_featured);
   const [page, setPage] = React.useState(1);
+  const [heroSlide, setHeroSlide] = React.useState(0);
   const pageSize = 8;
+  const heroImages = [blogImage1, blogImage2, blogImage3, blogImage4];
+
+  React.useEffect(() => {
+    const interval = window.setInterval(() => {
+      setHeroSlide((current) => (current + 1) % heroImages.length);
+    }, 5000);
+
+    return () => window.clearInterval(interval);
+  }, [heroImages.length]);
 
   React.useEffect(() => {
     setPage(1);
@@ -41,14 +55,23 @@ export function BlogPage() {
         ]}
       />
       <motion.section 
-        className="relative z-10 overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-16 md:py-24"
+        className="relative z-10 overflow-hidden bg-gradient-to-br from-blue-950 via-blue-900 to-slate-950 py-16 md:py-24"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-secondary rounded-full filter blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-brand rounded-full filter blur-3xl" />
+        <div className="absolute inset-0" aria-hidden="true">
+          {heroImages.map((image, index) => (
+            <img
+              key={image}
+              src={image}
+              alt=""
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+                index === heroSlide ? "opacity-45" : "opacity-0"
+              }`}
+            />
+          ))}
+          <div className="absolute inset-0 bg-blue-950/80" />
         </div>
         <div className="container-page relative z-10">
           <motion.div
@@ -73,6 +96,39 @@ export function BlogPage() {
               </div>
             </div>
           </motion.div>
+          <div className="mt-8 flex items-center gap-2" aria-label="Navigation du carrousel du blog">
+            <button
+              type="button"
+              onClick={() => setHeroSlide((current) => (current - 1 + heroImages.length) % heroImages.length)}
+              className="inline-flex size-10 items-center justify-center rounded-full border border-white/30 bg-blue-950/50 text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/70"
+              aria-label="Image précédente"
+            >
+              <ChevronLeft className="size-5" />
+            </button>
+            <div className="flex items-center gap-2 px-2" role="tablist" aria-label="Images du carrousel">
+              {heroImages.map((image, index) => (
+                <button
+                  key={image}
+                  type="button"
+                  onClick={() => setHeroSlide(index)}
+                  className={`h-2.5 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-white/70 ${
+                    index === heroSlide ? "w-8 bg-white" : "w-2.5 bg-white/50 hover:bg-white/80"
+                  }`}
+                  aria-label={`Afficher l'image ${index + 1}`}
+                  aria-selected={index === heroSlide}
+                  role="tab"
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setHeroSlide((current) => (current + 1) % heroImages.length)}
+              className="inline-flex size-10 items-center justify-center rounded-full border border-white/30 bg-blue-950/50 text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/70"
+              aria-label="Image suivante"
+            >
+              <ChevronRight className="size-5" />
+            </button>
+          </div>
         </div>
       </motion.section>
 
@@ -98,15 +154,6 @@ export function BlogPage() {
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.6 }}
               >
-                <div className="mb-8">
-                  <span className="inline-flex items-center rounded-full border border-secondary/30 bg-secondary/10 px-4 py-1.5 text-sm font-semibold text-secondary">
-                    Sélection éditoriale
-                  </span>
-                  <h2 className="mt-4 font-display text-3xl font-bold text-foreground">
-                    Articles mis en avant
-                  </h2>
-                  <p className="mt-2 text-slate-600">Nos derniers contenus pour vous accompagner dans votre carrière</p>
-                </div>
                 <div className="overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <motion.div 
                     className="flex gap-6"
@@ -125,19 +172,28 @@ export function BlogPage() {
                         >
                           <Link to={`/blog/${post.slug}`} className="group flex flex-1 flex-col">
                             {post.image ? (
-                              <div className="h-48 w-full overflow-hidden bg-slate-100">
+                              <div className="relative h-48 w-full overflow-hidden bg-slate-100">
                                 <img
                                   src={post.image}
                                   alt={post.title}
                                   className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                                 />
+                                <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-blue-950/85 px-3 py-1.5 text-xs font-semibold text-white shadow-sm">
+                                  <Star className="size-3.5 fill-current" aria-hidden="true" />
+                                  À la une
+                                </span>
                               </div>
                             ) : (
-                              <div className="h-48 w-full bg-gradient-to-br from-secondary/20 to-brand/10" />
+                              <div className="relative h-48 w-full bg-gradient-to-br from-secondary/20 to-brand/10">
+                                <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-blue-950/85 px-3 py-1.5 text-xs font-semibold text-white shadow-sm">
+                                  <Star className="size-3.5 fill-current" aria-hidden="true" />
+                                  À la une
+                                </span>
+                              </div>
                             )}
                             <div className="flex flex-1 flex-col gap-4 p-6">
                               <div className="flex flex-wrap items-center gap-2">
-                                {post.category && (
+                                {post.category && !["à la une", "a la une"].includes(post.category.trim().toLowerCase()) && (
                                   <span className="rounded-full bg-secondary/15 px-3 py-1 text-xs font-semibold text-secondary">
                                     {post.category}
                                   </span>
