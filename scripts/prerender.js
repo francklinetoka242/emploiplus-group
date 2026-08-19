@@ -42,7 +42,7 @@ async function fetchDynamicRoutes() {
 
   if (!supabase) {
     console.warn("Supabase credentials not found. Skipping dynamic prerender routes.");
-    return [];
+    return { routes: [], blogPosts: [] };
   }
 
   const [{ data: jobOffers, error: jobsError }, { data: blogPosts, error: postsError }] =
@@ -54,7 +54,7 @@ async function fetchDynamicRoutes() {
         .order("publish_at", { ascending: false }),
       supabase
         .from("blog_posts")
-        .select("slug")
+        .select("slug,title,excerpt,content,image,og_image")
         .eq("status", "published")
         .order("publish_at", { ascending: false }),
     ]);
@@ -77,7 +77,10 @@ async function fetchDynamicRoutes() {
         .filter(Boolean)
     : [];
 
-  return [...jobRoutes, ...postRoutes];
+  return {
+    routes: [...jobRoutes, ...postRoutes],
+    blogPosts: Array.isArray(blogPosts) ? blogPosts : [],
+  };
 }
 
 function createServer(outputDir) {
@@ -137,7 +140,16 @@ function getLocalBrowserExecutable() {
   return undefined;
 }
 
-function buildStaticHtml(route, baseHtml) {
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function buildStaticHtml(route, baseHtml, blogPost) {
   const title = route === "/"
     ? "EmploiPlus Group"
     : route.startsWith("/jobs/")
@@ -147,21 +159,32 @@ function buildStaticHtml(route, baseHtml) {
         : "EmploiPlus Group";
 
   const canonical = `https://emploiplus-group.com${route}`;
-  const description = "Trouvez votre prochain emploi ou stage en République du Congo. Découvrez les meilleures opportunités de recrutement à Brazzaville et Pointe-Noire sur Emploi+.";
+  const description = blogPost
+    ? (blogPost.excerpt || blogPost.content || "Articles, conseils carrière et actualités.")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 200)
+    : "Trouvez votre prochain emploi ou stage en République du Congo. Découvrez les meilleures opportunités de recrutement à Brazzaville et Pointe-Noire sur Emploi+.";
+  const image = blogPost?.og_image || blogPost?.image || "https://emploiplus-group.com/og-default.svg";
+  const socialTags = blogPost
+    ? `\n    <meta property="og:title" content="${escapeHtml(blogPost.title)} | EmploiPlus Group">\n    <meta property="og:description" content="${escapeHtml(description)}">\n    <meta property="og:image" content="${escapeHtml(image)}">\n    <meta property="og:image:secure_url" content="${escapeHtml(image)}">\n    <meta property="og:image:type" content="image/jpeg">\n    <meta property="og:image:width" content="1200">\n    <meta property="og:image:height" content="630">\n    <meta property="og:url" content="https://emploiplus-group.com${route}">\n    <meta property="og:type" content="article">\n    <meta name="twitter:card" content="summary_large_image">\n    <meta name="twitter:image" content="${escapeHtml(image)}">`
+    : "";
 
   return baseHtml
     .replace(/<title>.*?<\/title>/s, `<title>${title}</title>`)
     .replace(/<meta name="description" content=".*?"/s, `<meta name="description" content="${description}"`)
     .replace(/<meta name="robots" content=".*?"/s, '<meta name="robots" content="index,follow"')
-    .replace(/<link rel="canonical" href=".*?"/s, `<link rel="canonical" href="${canonical}" />`);
+    .replace(/<link rel="canonical" href=".*?"/s, `<link rel="canonical" href="${canonical}" />`)
+    .replace("</head>", `${socialTags}\n  </head>`);
 }
 
-async function renderRoute(page, baseUrl, route, outputDir, baseHtml, useBrowser) {
+async function renderRoute(page, baseUrl, route, outputDir, baseHtml, useBrowser, blogPost) {
   const targetPath = join(outputDir, route === "/" ? "index.html" : `${route.replace(/^\//, "")}/index.html`);
   mkdirSync(dirname(targetPath), { recursive: true });
 
   if (!useBrowser || !page) {
-    const html = buildStaticHtml(route, baseHtml);
+    const html = buildStaticHtml(route, baseHtml, blogPost);
     writeFileSync(targetPath, html, "utf8");
     console.log(`Prerendered ${route} -> ${targetPath} (static fallback)`);
     return;
@@ -187,8 +210,9 @@ export async function prerenderRoutes({ outputDir = "dist", routes = undefined }
     throw new Error(`Vite build output not found at ${resolvedOutputDir}. Run vite build first.`);
   }
 
-  const dynamicRoutes = await fetchDynamicRoutes();
-  const routeList = Array.from(new Set([...(routes ?? staticRoutes), ...dynamicRoutes]));
+  const dynamicData = await fetchDynamicRoutes();
+  const routeList = Array.from(new Set([...(routes ?? staticRoutes), ...dynamicData.routes]));
+  const blogPostsBySlug = new Map(dynamicData.blogPosts.map((post) => [post.slug, post]));
   const baseHtml = readFileSync(join(resolvedOutputDir, "index.html"), "utf8");
 
   const { server, port } = await createServer(resolvedOutputDir);
@@ -217,7 +241,15 @@ export async function prerenderRoutes({ outputDir = "dist", routes = undefined }
     const baseUrl = `http://127.0.0.1:${port}`;
 
     for (const route of routeList) {
-      await renderRoute(page, baseUrl, route, resolvedOutputDir, baseHtml, useBrowser);
+      await renderRoute(
+        page,
+        baseUrl,
+        route,
+        resolvedOutputDir,
+        baseHtml,
+        useBrowser,
+        blogPostsBySlug.get(route.startsWith("/blog/") ? route.slice("/blog/".length) : ""),
+      );
     }
   } finally {
     if (browser) {
