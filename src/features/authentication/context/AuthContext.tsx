@@ -99,6 +99,7 @@ function areSessionsEquivalent(current: Session | null, next: Session | null) {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
+  const sessionRef = useRef<Session | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const lastNotifiedAuthState = useRef<"AUTHENTICATED" | "SIGNED_OUT" | null>(null);
   /**
@@ -344,8 +345,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      const normalizedNextSession = nextSession ?? null;
+      const currentSession = sessionRef.current;
+      const identityChanged =
+        currentSession?.user?.id !== normalizedNextSession?.user?.id;
+
       setSession((current) => {
-        const normalizedNextSession = nextSession ?? null;
+        sessionRef.current = normalizedNextSession;
         if (areSessionsEquivalent(current, normalizedNextSession)) {
           return current;
         }
@@ -358,8 +364,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         notifyAuthStateToNative(null);
       }
 
-      // Reset candidateAccessResolved so detectCandidateAccess runs again
-      setCandidateAccessResolved(false);
+      // Keep protected pages mounted when Supabase re-emits an event for the same user.
+      if (identityChanged) {
+        setCandidateAccessResolved(false);
+      }
       setAuthLoading(false);
       setError(null);
     });

@@ -376,6 +376,13 @@ export function CandidateDashboardPage() {
       {/* Welcome Card */}
       <Card className="bg-gradient-to-r from-slate-900 to-slate-800 border-slate-700 text-white">
         <CardContent className="relative overflow-hidden p-6 sm:p-8">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+            <span className="welcome-ring welcome-ring-one" />
+            <span className="welcome-ring welcome-ring-two" />
+            <span className="welcome-ring welcome-ring-three" />
+            <span className="welcome-ring welcome-ring-four" />
+            <span className="welcome-ring welcome-ring-five" />
+          </div>
           <div className="relative z-10 flex items-center justify-between gap-6">
             <div className="max-w-2xl space-y-3">
               <div className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-200">
