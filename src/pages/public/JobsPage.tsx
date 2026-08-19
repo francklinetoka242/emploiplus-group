@@ -34,7 +34,8 @@ import { isMobileApp } from "@/lib/isMobileApp";
 export function JobsPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
-  const { user, isLoading } = useAuthContext();
+  const { user, isLoading, roles } = useAuthContext();
+  const isCandidateShell = Boolean(user && roles.includes("candidate"));
   const mobileApp = isMobileApp();
   const [searchInput, setSearchInput] = React.useState("");
   const [companyInput, setCompanyInput] = React.useState("");
@@ -143,9 +144,9 @@ export function JobsPage() {
         <div className="grid gap-8">
           <div className="space-y-6 text-foreground/90 leading-relaxed">
             <div
-              className="sticky z-40 mt-0 mb-0 w-full border-0 bg-white"
+              className="sticky z-40 isolate mt-0 mb-0 w-full self-start border-0 bg-white shadow-sm"
               style={{
-                top: mobileApp ? 0 : 64,
+                top: mobileApp || isCandidateShell ? 0 : 64,
                 backgroundColor: "#FFFFFF",
               }}
             >
