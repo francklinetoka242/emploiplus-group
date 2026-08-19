@@ -6,6 +6,7 @@ import { EcoImage } from '@/components/EcoImage';
 import { BASE_URL } from "@/features/seo";
 import { useBlogPostBySlug } from "@/hooks/usePublishedOffers";
 import { ShareButtons } from "@/components/site/ShareButtons";
+import { ArrowLeft, CalendarDays, Tag } from "lucide-react";
 
 function NotFoundPage() {
   return (
@@ -129,11 +130,11 @@ export function BlogPostDetailPage() {
         structuredData={blogPostingStructuredData}
       />
       <section className="container-page pb-20 md:pb-28">
-        <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
           <main className="space-y-8">
-            <article className="overflow-hidden rounded-3xl border border-border bg-card shadow-soft">
+            <article className="overflow-visible rounded-[28px] border border-border bg-card shadow-soft">
               {post.image ? (
-                <div className="h-72 w-full overflow-hidden bg-slate-100 md:h-[420px]">
+                <div className="relative h-56 w-full overflow-hidden rounded-t-[28px] bg-slate-100 sm:h-72 md:h-[360px]">
                   <EcoImage
                     src={post.image}
                     alt={post.title}
@@ -141,18 +142,31 @@ export function BlogPostDetailPage() {
                     height={720}
                     className="h-full w-full object-cover"
                   />
+                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/45 to-transparent" />
                 </div>
               ) : null}
-              <div className="p-8">
+              <div className="p-6 sm:p-8 md:p-10">
                 <div className="flex flex-col gap-3">
-                  <Link to="/blog" className="text-sm text-brand hover:underline">
-                    ← {t("blog.backToList")}
+                  <Link
+                    to="/blog"
+                    className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-brand transition hover:text-brand/75"
+                  >
+                    <ArrowLeft className="size-4" />
+                    {t("blog.backToList")}
                   </Link>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.24em] text-muted-foreground">
-                      {post.category && <span>{post.category}</span>}
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-y border-border/70 py-4">
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                      {post.category ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1.5 text-brand">
+                          <Tag className="size-3.5" />
+                          {post.category}
+                        </span>
+                      ) : null}
                       {post.publish_at && (
-                        <span>{new Date(post.publish_at).toLocaleDateString()}</span>
+                        <span className="inline-flex items-center gap-1.5">
+                          <CalendarDays className="size-3.5" />
+                          {new Date(post.publish_at).toLocaleDateString("fr-FR")}
+                        </span>
                       )}
                     </div>
                     <ShareButtons
@@ -165,9 +179,11 @@ export function BlogPostDetailPage() {
                       }}
                     />
                   </div>
-                  <h1 className="font-display text-4xl font-bold text-foreground">{post.title}</h1>
+                  <h1 className="max-w-4xl font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl">
+                    {post.title}
+                  </h1>
                   {post.excerpt ? (
-                    <p className="mt-4 max-w-3xl text-lg text-foreground/80 leading-relaxed">
+                    <p className="max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
                       {post.excerpt}
                     </p>
                   ) : null}
@@ -175,36 +191,42 @@ export function BlogPostDetailPage() {
               </div>
             </article>
 
-            <article className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-              <h2 className="font-display text-2xl font-semibold text-foreground">
+            <article className="rounded-[28px] border border-border bg-card p-6 shadow-soft sm:p-8 md:p-10">
+              <h2 className="border-l-4 border-brand pl-4 font-display text-2xl font-semibold text-foreground sm:text-3xl">
                 {t("blog.article.content")}
               </h2>
-              <div className="mt-6 space-y-6 text-foreground/90 leading-relaxed whitespace-pre-line max-w-none">
-                <p>{post.content}</p>
+              <div className="mt-8 max-w-3xl whitespace-pre-line text-base leading-8 text-foreground/85 sm:text-lg sm:leading-9">
+                {post.content}
               </div>
             </article>
           </main>
 
-          <aside className="space-y-6">
-            <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
-              <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+          <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+            <div className="rounded-[24px] border border-brand/15 bg-card p-6 shadow-soft sm:p-7">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand">
                 {t("blog.article.information")}
               </p>
-              <div className="mt-6 space-y-4 text-sm text-foreground/90">
+              <div className="mt-5 space-y-4 text-sm leading-6 text-foreground/90">
                 {post.category ? (
                   <div className="flex items-start gap-2">
-                    <span className="font-semibold text-foreground">
+                    <Tag className="mt-1 size-4 shrink-0 text-brand" />
+                    <span>
+                      <span className="font-semibold text-foreground">
                       {t("blog.article.category")} :
+                      </span>{" "}
+                      {post.category}
                     </span>
-                    <span>{post.category}</span>
                   </div>
                 ) : null}
                 {post.publish_at ? (
                   <div className="flex items-start gap-2">
-                    <span className="font-semibold text-foreground">
-                      {t("blog.article.publishedAt")} :
+                    <CalendarDays className="mt-1 size-4 shrink-0 text-brand" />
+                    <span>
+                      <span className="font-semibold text-foreground">
+                        {t("blog.article.publishedAt")} :
+                      </span>{" "}
+                      {new Date(post.publish_at).toLocaleDateString("fr-FR")}
                     </span>
-                    <span>{new Date(post.publish_at).toLocaleDateString()}</span>
                   </div>
                 ) : null}
                 {post.tags && post.tags.length > 0 ? (
