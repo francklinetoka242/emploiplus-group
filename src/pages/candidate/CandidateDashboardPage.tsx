@@ -366,6 +366,20 @@ export function CandidateDashboardPage() {
   });
 
   const profileCompletion = profileDataLoading ? 0 : completion.completionPercentage;
+  const [animatedProfileCompletion, setAnimatedProfileCompletion] = useState(0);
+
+  useEffect(() => {
+    if (profileDataLoading) {
+      setAnimatedProfileCompletion(0);
+      return;
+    }
+
+    const animationFrameId = window.requestAnimationFrame(() => {
+      setAnimatedProfileCompletion(profileCompletion);
+    });
+
+    return () => window.cancelAnimationFrame(animationFrameId);
+  }, [profileCompletion, profileDataLoading]);
 
   const firstName = profile?.first_name || "Candidat";
   const fullName = profile ? `${profile.first_name} ${profile.last_name}`.trim() : "Jean Dupont";
@@ -409,25 +423,27 @@ export function CandidateDashboardPage() {
             disabled={profileDataLoading}
           >
             <div className="min-w-0">
-              <CardTitle className="text-lg sm:text-xl">Complétude de votre profil</CardTitle>
-              <CardDescription className="mt-1 max-w-xl">
+              <CardTitle className="text-base sm:text-lg">Complétude de votre profil</CardTitle>
+              <CardDescription className="mt-1 max-w-xl text-xs sm:text-sm">
                 Complétez votre profil pour augmenter vos chances
               </CardDescription>
             </div>
             <div className="flex shrink-0 items-center gap-3">
-              <div className="flex min-w-[100px] flex-col items-end gap-1.5 sm:min-w-[150px]">
+              <div className="flex w-[132px] items-center gap-2 sm:w-[188px]">
                 {profileDataLoading ? (
                   <>
-                    <Skeleton className="h-8 w-20" />
-                    <Skeleton className="h-1.5 w-full" />
+                    <Skeleton className="h-1.5 flex-1 sm:h-2" />
+                    <Skeleton className="h-7 w-12 sm:h-8 sm:w-14" />
                   </>
                 ) : (
                   <>
-                    <div className="flex items-baseline gap-1">
-                      <p className="text-2xl font-bold leading-none text-primary">{profileCompletion}%</p>
-                      <span className="text-xs font-medium text-muted-foreground">complété</span>
-                    </div>
-                    <Progress value={profileCompletion} className="h-2 w-full" />
+                    <Progress
+                      value={animatedProfileCompletion}
+                      className="h-1.5 flex-1 [&>div]:duration-[2200ms] [&>div]:ease-out sm:h-2"
+                    />
+                    <p className="text-[0.875rem] font-bold tabular-nums leading-none text-primary sm:text-[1.05rem]">
+                      {profileCompletion}%
+                    </p>
                   </>
                 )}
               </div>

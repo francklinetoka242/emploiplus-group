@@ -87,6 +87,9 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
   const mobileApp =
     typeof window !== "undefined" &&
     (isMobileApp() || (window as Window & { isMobileApp?: boolean }).isMobileApp === true);
+  const sidebarHoverMotion = isEcoMode
+    ? ""
+    : "transition-transform duration-200 ease-out hover:translate-x-0.5";
 
   useEffect(() => applyTheme(isDarkMode), [isDarkMode]);
 
@@ -105,33 +108,6 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
   const [publicNavExpanded, setPublicNavExpanded] = useState(false);
   const candidateMenuItems = menuItems;
   const handleMenuClick = () => isDrawer && onOpenChange?.(false);
-
-  // Compact toggle for collapsed sidebar
-  function CompactCollapsedToggle() {
-    const { isEcoMode, toggleEcoMode } = useEcoMode();
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            onClick={toggleEcoMode}
-            aria-pressed={isEcoMode}
-            aria-label="Économie de données"
-            className={cn(
-              "h-10 w-10 rounded-lg transition-all duration-250 flex items-center justify-center",
-              isDarkMode ? "bg-slate-800/50 hover:bg-white/5 text-slate-100" : "bg-slate-100 hover:bg-slate-200 text-slate-900",
-            )}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isEcoMode ? "text-emerald-400" : isDarkMode ? "text-slate-300" : "text-slate-500"}`} viewBox="0 0 20 20" fill="currentColor">
-              <path d="M4 13c0-4 4-7 8-7V4c-5 0-9 4-9 9a1 1 0 001 1h1z" />
-            </svg>
-          </button>
-        </TooltipTrigger>
-        <TooltipContent side="right" className={cn("rounded-lg border text-xs font-medium", isDarkMode ? "border-white/10 bg-slate-900 text-slate-100" : "border-slate-200 bg-white text-slate-900")}>
-          Économie de données
-        </TooltipContent>
-      </Tooltip>
-    );
-  }
 
   // Mobile drawer rendering
   if (isDrawer) {
@@ -180,7 +156,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                           to={item.href}
                           onClick={handleMenuClick}
                           className={cn(
-                            "relative flex items-center gap-3 rounded-lg px-4 py-3",
+                            `relative flex items-center gap-3 rounded-lg px-4 py-3 ${sidebarHoverMotion}`,
                             active
                               ? "bg-secondary text-white"
                               : isDarkMode
@@ -207,7 +183,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                 to="/jobs"
                 onClick={handleMenuClick}
                 className={cn(
-                  "relative flex items-center gap-3 rounded-2xl px-4 py-3",
+                  `relative flex items-center gap-3 rounded-2xl px-4 py-3 ${sidebarHoverMotion}`,
                   isDarkMode
                     ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
                     : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
@@ -231,7 +207,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                         to={item.href}
                         onClick={handleMenuClick}
                         className={cn(
-                          "relative flex items-center gap-3 rounded-lg px-4 py-3",
+                          `relative flex items-center gap-3 rounded-lg px-4 py-3 ${sidebarHoverMotion}`,
                           active
                             ? "bg-secondary text-white"
                             : isDarkMode
@@ -303,7 +279,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
               to="/jobs"
               onClick={handleMenuClick}
               className={cn(
-                "relative flex items-center gap-3 rounded-lg px-3 py-2.5 md:px-3 md:py-2",
+                `relative flex items-center gap-3 rounded-lg px-3 py-2.5 ${sidebarHoverMotion} md:px-3 md:py-2`,
                 isDarkMode
                   ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
                   : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
@@ -328,7 +304,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                           to={item.href}
                           onClick={handleMenuClick}
                           className={cn(
-                            "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 md:px-3 md:py-2",
+                            `group relative flex items-center gap-3 rounded-lg px-3 py-2.5 ${sidebarHoverMotion} md:px-3 md:py-2`,
                             active
                               ? "bg-secondary text-white"
                               : isDarkMode
@@ -365,8 +341,7 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
               </Button>
             </>
           ) : (
-            <div className="flex items-center justify-between">
-              <CompactCollapsedToggle />
+            <div className="flex items-center justify-end">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button onClick={onLogout} size="icon" className={cn("h-10 w-10 rounded-lg", isDarkMode ? "bg-slate-800/50" : "bg-slate-100 text-slate-900") } variant="ghost"><LogOut className="h-5 w-5"/></Button>
