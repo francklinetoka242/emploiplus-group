@@ -127,7 +127,7 @@ export function BlogPostDetailPage() {
           { name: t("blog.title"), url: `${BASE_URL}/blog` },
           { name: post.title, url: canonical },
         ]}
-        structuredData={blogPostingStructuredData}
+        structuredData={blogPostingStructuredDataPost}
       />
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
