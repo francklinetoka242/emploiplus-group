@@ -1,16 +1,13 @@
 import { Link, NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Menu, X, Globe } from "lucide-react";
-import { useI18n, type Locale } from "@/i18n";
+import { Menu, X } from "lucide-react";
+import { useI18n } from "@/i18n";
 import { useCandidate } from "@/hooks/useCandidate";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-const AVAILABLE_LOCALES: Locale[] = ["fr", "en", "ln"];
-
 export function SiteHeader() {
-  const { t, locale, setLocale } = useI18n();
+  const { t } = useI18n();
   const { profile, loading } = useCandidate();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -96,23 +93,6 @@ export function SiteHeader() {
               </Button>
             </>
           )}
-          <div className="hidden sm:block">
-            <Select value={locale} onValueChange={(value) => setLocale(value as Locale)}>
-              <SelectTrigger
-                aria-label={t(`lang.${locale}`)}
-                className="w-10 rounded-md border border-border bg-background p-2 text-foreground shadow-sm hover:bg-accent transition-colors"
-              >
-                <Globe className="size-4" />
-              </SelectTrigger>
-              <SelectContent>
-                {AVAILABLE_LOCALES.map((code) => (
-                  <SelectItem key={code} value={code}>
-                    {t(`lang.${code}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
           <button
             type="button"
             className="lg:hidden p-2 rounded-md hover:bg-accent"

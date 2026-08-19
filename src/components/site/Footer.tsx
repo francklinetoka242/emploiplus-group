@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
-import { Facebook, Linkedin, MessageSquare } from "lucide-react";
-import { useI18n } from "@/i18n";
+import { Facebook, Linkedin, MessageSquare, Globe } from "lucide-react";
+import { useI18n, type Locale } from "@/i18n";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { openCookieBanner } from "@/components/site/CookieConsentBanner";
 
+const AVAILABLE_LOCALES: Locale[] = ["fr", "en", "ln"];
+
 export function SiteFooter() {
-  const { t } = useI18n();
+  const { t, locale, setLocale } = useI18n();
   const year = new Date().getFullYear();
   return (
     <footer className="border-t border-border bg-slate-950/95">
@@ -19,6 +22,21 @@ export function SiteFooter() {
             <div className="font-display text-lg font-bold text-white">EmploiPlus-Group</div>
           </div>
           <div className="text-sm text-slate-300">{t("footer.tagline")}</div>
+          <Select value={locale} onValueChange={(value) => setLocale(value as Locale)}>
+            <SelectTrigger
+              aria-label={t(`lang.${locale}`)}
+              className="w-12 rounded-md border-slate-700 bg-slate-900 p-2 text-slate-100 shadow-sm hover:bg-slate-800"
+            >
+              <Globe className="size-4" />
+            </SelectTrigger>
+            <SelectContent>
+              {AVAILABLE_LOCALES.map((code) => (
+                <SelectItem key={code} value={code}>
+                  {t(`lang.${code}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <div className="font-semibold mb-3 text-sm text-slate-100">{t("footer.links.services")}</div>
