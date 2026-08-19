@@ -29,12 +29,26 @@ function getCitiesForCountry(country: string) {
   return group?.cities ?? [];
 }
 
+function getCountryCode(country: string) {
+  return centralAfricaCityGroups.find((group) => group.country === country)?.countryCode ?? "";
+}
+
+function removeCountryCode(phone?: string | null) {
+  const value = (phone ?? "").trim();
+  const matchingCode = centralAfricaCityGroups
+    .map((group) => group.countryCode)
+    .sort((first, second) => second.length - first.length)
+    .find((code) => value.startsWith(code));
+
+  return matchingCode ? value.slice(matchingCode.length).trim() : value;
+}
+
 export function ProfileSection({ profile, onSave, loading, error }: ProfileSectionProps) {
   const [formData, setFormData] = useState({
     firstName: profile?.first_name ?? "",
     lastName: profile?.last_name ?? "",
     headline: profile?.headline ?? "",
-    phone: profile?.phone ?? "",
+    phone: removeCountryCode(profile?.phone),
     city: profile?.location_city ?? "",
     country: normalizeCountryValue(profile?.location_country),
     dateOfBirth: profile?.date_of_birth ?? "",
@@ -45,7 +59,7 @@ export function ProfileSection({ profile, onSave, loading, error }: ProfileSecti
       firstName: profile?.first_name ?? "",
       lastName: profile?.last_name ?? "",
       headline: profile?.headline ?? "",
-      phone: profile?.phone ?? "",
+      phone: removeCountryCode(profile?.phone),
       city: profile?.location_city ?? "",
       country: normalizeCountryValue(profile?.location_country),
       dateOfBirth: profile?.date_of_birth ?? "",
@@ -56,6 +70,7 @@ export function ProfileSection({ profile, onSave, loading, error }: ProfileSecti
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const availableCities = useMemo(() => getCitiesForCountry(formData.country), [formData.country]);
+  const countryCode = useMemo(() => getCountryCode(formData.country), [formData.country]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -66,7 +81,7 @@ export function ProfileSection({ profile, onSave, loading, error }: ProfileSecti
         first_name: formData.firstName || null,
         last_name: formData.lastName || null,
         headline: formData.headline || null,
-        phone: formData.phone || null,
+        phone: formData.phone ? `${countryCode} ${formData.phone}` : null,
         location_city: formData.city || null,
         location_country: formData.country || null,
         date_of_birth: formData.dateOfBirth || null,
@@ -113,7 +128,18 @@ export function ProfileSection({ profile, onSave, loading, error }: ProfileSecti
           </div>
           <div className="space-y-2">
             <Label>Téléphone</Label>
-            <Input type="tel" value={formData.phone} onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))} placeholder="+242 06 123 4567" />
+            <div className="flex h-10 overflow-hidden rounded-md border border-slate-200 bg-white focus-within:ring-2 focus-within:ring-primary/20">
+              <span className="flex shrink-0 items-center border-r border-slate-200 bg-primary/5 px-3 text-sm font-semibold text-slate-900">
+                {countryCode}
+              </span>
+              <Input
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value.replace(/^\+\d+\s*/, "") }))}
+                placeholder="06 123 4567"
+                className="h-full rounded-none border-0 focus-visible:ring-0"
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label>Date de naissance</Label>

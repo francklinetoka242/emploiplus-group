@@ -36,6 +36,7 @@ const pageToTitle: Record<string, string> = {
 };
 
 export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: CandidateAppShellProps) {
+  const location = useLocation();
   const { open, setOpen } = useCandidateSidebar();
   const { logout } = useCandidate();
   const mainRef = useRef<HTMLElement | null>(null);
@@ -44,7 +45,15 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   const [headerVisible, setHeaderVisible] = useState(true);
 
   useEffect(() => {
+    setHeaderVisible(true);
+    lastMainScrollTopRef.current = mainRef.current?.scrollTop ?? 0;
+    lastWindowScrollTopRef.current = window.scrollY;
+  }, [location.pathname]);
+
+  useEffect(() => {
     const scrollContainer = mainRef.current;
+    const canScrollContainer = () =>
+      Boolean(scrollContainer && scrollContainer.scrollHeight > scrollContainer.clientHeight + 1);
     const updateHeaderVisibility = (currentScrollTop: number, lastScrollTopRef: React.MutableRefObject<number>) => {
       const scrollDelta = currentScrollTop - lastScrollTopRef.current;
 
@@ -58,10 +67,15 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
     };
 
     const handleContainerScroll = () => updateHeaderVisibility(scrollContainer?.scrollTop ?? 0, lastMainScrollTopRef);
-    const handleWindowScroll = () => updateHeaderVisibility(window.scrollY, lastWindowScrollTopRef);
+    const handleWindowScroll = () => {
+      if (!canScrollContainer()) updateHeaderVisibility(window.scrollY, lastWindowScrollTopRef);
+    };
 
     scrollContainer?.addEventListener("scroll", handleContainerScroll, { passive: true });
     window.addEventListener("scroll", handleWindowScroll, { passive: true });
+
+    lastMainScrollTopRef.current = scrollContainer?.scrollTop ?? 0;
+    lastWindowScrollTopRef.current = window.scrollY;
 
     return () => {
       scrollContainer?.removeEventListener("scroll", handleContainerScroll);
