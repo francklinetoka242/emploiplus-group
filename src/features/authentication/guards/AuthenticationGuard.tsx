@@ -28,11 +28,11 @@ export function AuthenticationGuard({
   fallbackPath = "/candidate/login",
   loadingSkeleton,
 }: AuthenticationGuardProps) {
-  const { user, authLoading } = useAuth();
+  const { user, authLoading, rolesResolved } = useAuth();
   const hasValidFallbackSession = Boolean(getSessionTokenFromNativeOrStorage());
 
   // During initialization, show skeleton
-  if (authLoading) {
+  if (authLoading || !rolesResolved) {
     return <>{loadingSkeleton ?? <DashboardLayoutSkeleton />}</>;
   }
 
