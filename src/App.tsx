@@ -13,6 +13,7 @@ import { isMobileApp } from "@/lib/isMobileApp";
 import {
   DashboardLayoutSkeleton,
   CandidateDashboardSkeleton,
+  CandidateAuthFormSkeleton,
   PublicPageSkeleton,
   JobsPageSkeleton,
   JobOfferDetailSkeleton,
@@ -359,11 +360,11 @@ function AppContent() {
       {/* Candidate pages */}
       <Route
         path="/candidate/login"
-        element={withSuspense(<CandidateLoginPage />, <CandidateDashboardSkeleton />)}
+        element={withSuspense(<CandidateLoginPage />, <CandidateAuthFormSkeleton />)}
       />
       <Route
         path="/candidate/signup"
-        element={withSuspense(<CandidateSignupPage />, <CandidateDashboardSkeleton />)}
+        element={withSuspense(<CandidateSignupPage />, <CandidateAuthFormSkeleton />)}
       />
       <Route
         path="/candidate/forgot-password"
