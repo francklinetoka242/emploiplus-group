@@ -120,6 +120,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const user = session?.user ?? null;
   const [hasCandidateProfile, setHasCandidateProfile] = useState(false);
 
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
+
   // Normalize auth metadata (roles & permissions) from session
   const authMetadata = useMemo(() => getAuthMetadataFromSession(session), [session]);
 
