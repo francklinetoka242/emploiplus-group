@@ -182,6 +182,7 @@ export function ExperienceSection({
 
             <div className="flex items-center gap-2 md:col-span-2">
               <Checkbox
+                className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                 checked={formData.is_current}
                 onCheckedChange={(checked) =>
                   setFormData((prev) => ({
@@ -238,7 +239,7 @@ export function ExperienceSection({
 
               <div className="flex items-center gap-2">
                 {experience.is_current ? (
-                  <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                  <span className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
                     Poste actuel
                   </span>
                 ) : null}
@@ -277,7 +278,7 @@ export function ExperienceSection({
         <div className="flex items-center justify-between gap-2">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-cyan-600" />
+              <Briefcase className="h-4 w-4 text-primary" />
               Expériences professionnelles
             </CardTitle>
             <CardDescription>Votre parcours et vos postes successifs.</CardDescription>

@@ -42,16 +42,16 @@ export function SecuritySettingsCard({ onStatus }: SecuritySettingsCardProps) {
   };
 
   return (
-    <Card className="border-brand/10 shadow-sm">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-brand">
-          <Lock className="w-5 h-5" />
+    <Card className="border-primary/15 shadow-sm">
+      <CardHeader className="bg-primary/[0.03] pb-5">
+        <CardTitle className="flex items-center gap-2 text-primary">
+          <Lock className="h-5 w-5" />
           Sécurité
         </CardTitle>
-        <CardDescription>Gérez votre sécurité</CardDescription>
+        <CardDescription className="mt-1">Protégez l’accès à votre espace candidat.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-slate-600">Modifiez votre mot de passe pour sécuriser votre compte.</p>
+      <CardContent className="space-y-4 p-5 sm:p-6">
+        <p className="text-sm leading-6 text-muted-foreground">Modifiez votre mot de passe pour sécuriser votre compte.</p>
         {showPasswordForm ? (
           <form onSubmit={handlePasswordChange} className="space-y-3">
             <div className="space-y-2">
@@ -63,16 +63,16 @@ export function SecuritySettingsCard({ onStatus }: SecuritySettingsCardProps) {
               <Input id="confirmPassword" type="password" value={passwordForm.confirmPassword} onChange={(event) => setPasswordForm({ ...passwordForm, confirmPassword: event.target.value })} />
             </div>
             <div className="flex gap-2 pt-2">
-              <Button type="submit" disabled={isChangingPassword} className="bg-brand text-brand-foreground hover:bg-brand/90">
+              <Button type="submit" disabled={isChangingPassword} className="bg-primary text-primary-foreground hover:bg-primary/90">
                 {isChangingPassword ? "Mise à jour…" : "Enregistrer le mot de passe"}
               </Button>
-              <Button type="button" variant="outline" onClick={() => setShowPasswordForm(false)} disabled={isChangingPassword} className="border-brand/30 text-brand hover:bg-brand/5 hover:text-brand">
+              <Button type="button" variant="outline" onClick={() => setShowPasswordForm(false)} disabled={isChangingPassword} className="border-primary/30 text-primary hover:bg-primary/5 hover:text-primary">
                 Annuler
               </Button>
             </div>
           </form>
         ) : (
-          <Button variant="outline" className="gap-2 border-brand/30 text-brand hover:bg-brand/5 hover:text-brand" onClick={() => setShowPasswordForm(true)}>
+          <Button variant="outline" className="gap-2 border-primary/30 text-primary hover:bg-primary/5 hover:text-primary" onClick={() => setShowPasswordForm(true)}>
             <Lock className="w-4 h-4" />
             Modifier le mot de passe
           </Button>

@@ -3,14 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useJobs } from "@/features/jobs/hooks";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { SaasCard, SaasCardHeader, SaasCardContent } from "@/components/candidate/SaasCard";
 import { SaasGrid } from "@/components/candidate/SaasLayout";
 import {
   ArrowRight,
-  Briefcase,
   CheckCircle2,
   Circle,
   ChevronDown,
@@ -34,21 +32,6 @@ import { useCandidateProfileData } from "@/features/candidates/hooks/useCandidat
 import { diagnosticLogger } from "@/services/diagnosticLogger";
 import { isMobileApp } from "@/lib/isMobileApp";
 
-type DashboardOffer = {
-  id: string;
-  slug: string;
-  title: string;
-  company: string;
-  location: string;
-  postedDate: string;
-  type: string;
-  salary: string;
-  description?: string | null;
-  requirements?: string | null;
-  tags?: string[];
-  deadline?: string | null;
-};
-
 const quickActions = [
   {
     id: 1,
@@ -56,8 +39,9 @@ const quickActions = [
     description: "Remplissez vos informations personnelles",
     icon: CheckCircle2,
     href: "/candidate/profile",
-    borderColor: "border-blue-500",
-    bgGradient: "from-blue-50 to-blue-100",
+    accentColor: "text-primary",
+    accentBackground: "bg-primary/10",
+    accentBorder: "border-primary/30",
   },
   {
     id: 2,
@@ -65,8 +49,9 @@ const quickActions = [
     description: "Découvrez les fiches conseils utiles pour vos démarches",
     icon: BookOpen,
     href: "/candidate/guides",
-    borderColor: "border-emerald-500",
-    bgGradient: "from-emerald-50 to-emerald-100",
+    accentColor: "text-primary",
+    accentBackground: "bg-primary/10",
+    accentBorder: "border-primary/30",
   },
   {
     id: 3,
@@ -74,10 +59,24 @@ const quickActions = [
     description: "Suivez le statut de vos candidatures",
     icon: Send,
     href: "/candidate/applications",
-    borderColor: "border-purple-500",
-    bgGradient: "from-purple-50 to-purple-100",
+    accentColor: "text-primary",
+    accentBackground: "bg-primary/10",
+    accentBorder: "border-primary/30",
   },
 ];
+
+const completionItemRoutes: Record<string, string> = {
+  "Nom complet": "/candidate/profile?tab=profile",
+  "Titre professionnel": "/candidate/profile?tab=profile",
+  Localisation: "/candidate/profile?tab=profile",
+  "Résumé professionnel": "/candidate/profile?tab=presentation",
+  "Photo de profil": "/candidate/profile?tab=profile",
+  "Expérience professionnelle": "/candidate/profile?tab=experience",
+  Formation: "/candidate/profile?tab=education",
+  Compétence: "/candidate/profile?tab=skills",
+  Langue: "/candidate/profile?tab=languages",
+  "Préférences RH": "/candidate/profile?tab=preferences",
+};
 
 export function CandidateDashboardPage() {
   const navigate = useNavigate();
@@ -97,8 +96,6 @@ export function CandidateDashboardPage() {
     refetch,
   } = useCandidateProfileData();
   
-  const [offers, setOffers] = useState<DashboardOffer[]>([]);
-  const [offersLoading, setOffersLoading] = useState(true);
   const [isCompletionCollapsed, setIsCompletionCollapsed] = useState(true);
   
   // Diagnostic: Track renders
@@ -112,12 +109,6 @@ export function CandidateDashboardPage() {
     timestamp: new Date().toISOString(),
   }, 'CandidateDashboardPage');
 
-  const jobFilters = useMemo(
-    () => ({ status: "published", limit: 3, orderBy: "published_at", order: "desc" }),
-    [],
-  );
-
-  const { offers: publishedOffers, loading: publishedOffersLoading } = useJobs(jobFilters);
   const [candidateDocuments, setCandidateDocuments] = useState<{
     cv: { url?: string | null } | null;
     documents: Array<{ url?: string | null }>;
@@ -138,36 +129,6 @@ export function CandidateDashboardPage() {
     description: "Accédez à votre tableau de bord candidat",
     robots: "noindex,nofollow",
   });
-
-  useEffect(() => {
-    diagnosticLogger.log('EFFECT_START', {
-      effectName: 'publishedOffers',
-      offersCount: publishedOffers.length,
-      loading: publishedOffersLoading,
-    }, 'CandidateDashboardPage');
-    
-    setOffersLoading(publishedOffersLoading);
-    diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setOffersLoading', publishedOffersLoading);
-    
-    setOffers(
-      publishedOffers.map((offer) => ({
-        id: offer.id,
-        slug: offer.slug ?? offer.id,
-        title: offer.title ?? "Offre à découvrir",
-        company: offer.company ?? "Entreprise",
-        location: offer.location_city ?? "À distance",
-        postedDate: offer.publish_at ? new Date(offer.publish_at).toLocaleDateString("fr-FR") : "—",
-        type: offer.contract_type ?? "CDI",
-        salary: offer.salary ?? "Salaire à négocier",
-        description: offer.description ?? null,
-        requirements: offer.requirements ?? null,
-        tags: offer.tags ?? [],
-        deadline: offer.deadline ?? offer.expires_at ?? null,
-        application_email: offer.application_email ?? null,
-        external_link: offer.external_link ?? null,
-      })),
-    );
-  }, [publishedOffers, publishedOffersLoading]);
 
   // Fonction helper pour recharger les documents du localStorage
   const reloadCandidateDocuments = useCallback(async () => {
@@ -414,38 +375,40 @@ export function CandidateDashboardPage() {
     <div className={mobileApp ? "space-y-4 pt-0" : "space-y-8"}>
       {/* Welcome Card */}
       <Card className="bg-gradient-to-r from-slate-900 to-slate-800 border-slate-700 text-white">
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">Bienvenue, {firstName}!</h1>
-              <p className="text-slate-300">
+        <CardContent className="relative overflow-hidden p-6 sm:p-8">
+          <div className="relative z-10 flex items-center justify-between gap-6">
+            <div className="max-w-2xl space-y-3">
+              <div className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-200">
+                Espace candidat
+              </div>
+              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Bienvenue, {firstName} !</h1>
+              <p className="max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
                 Bienvenue dans votre espace de candidat. Trouvez le poste idéal et suivez vos
                 candidatures.
               </p>
-            </div>
-            <div className="hidden md:flex items-center justify-center w-24 h-24 bg-slate-700 rounded-full opacity-50">
-              <Briefcase className="w-12 h-12" />
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Profile Completion */}
-      <Card>
-        <CardHeader>
+      <Card className="overflow-hidden border-primary/15 shadow-sm">
+        <CardHeader className="bg-primary/[0.03] pb-5">
           <button
             type="button"
-            className="flex items-center justify-between gap-4 text-left"
+            className="flex w-full items-center justify-between gap-4 rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             onClick={() => setIsCompletionCollapsed((prev) => !prev)}
             aria-expanded={!isCompletionCollapsed}
             disabled={profileDataLoading}
           >
-            <div>
-              <CardTitle>Complétude de votre profil</CardTitle>
-              <CardDescription>Complétez votre profil pour augmenter vos chances</CardDescription>
+            <div className="min-w-0">
+              <CardTitle className="text-lg sm:text-xl">Complétude de votre profil</CardTitle>
+              <CardDescription className="mt-1 max-w-xl">
+                Complétez votre profil pour augmenter vos chances
+              </CardDescription>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex min-w-[120px] flex-col items-end gap-1">
+            <div className="flex shrink-0 items-center gap-3">
+              <div className="flex min-w-[100px] flex-col items-end gap-1.5 sm:min-w-[150px]">
                 {profileDataLoading ? (
                   <>
                     <Skeleton className="h-8 w-20" />
@@ -453,8 +416,11 @@ export function CandidateDashboardPage() {
                   </>
                 ) : (
                   <>
-                    <p className="text-2xl font-bold text-foreground">{profileCompletion}%</p>
-                    <Progress value={profileCompletion} className="h-1.5 w-full" />
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-2xl font-bold leading-none text-primary">{profileCompletion}%</p>
+                      <span className="text-xs font-medium text-muted-foreground">complété</span>
+                    </div>
+                    <Progress value={profileCompletion} className="h-2 w-full" />
                   </>
                 )}
               </div>
@@ -467,27 +433,29 @@ export function CandidateDashboardPage() {
           </button>
         </CardHeader>
         {!isCompletionCollapsed ? (
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-5">
             {profileDataLoading ? (
-              <div className="space-y-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <Skeleton key={i} className="h-10 w-full" />
+                  <Skeleton key={i} className="h-12 w-full rounded-xl" />
                 ))}
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 {completion.completionItems.map((item) => (
-                  <div
+                  <Link
                     key={item.label}
-                    className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${item.isCompleted ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-600"}`}
+                    to={completionItemRoutes[item.label] ?? "/candidate/profile?tab=profile"}
+                    className={`group flex min-h-12 items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 hover:-translate-y-0.5 hover:shadow-sm ${item.isCompleted ? "border-primary/20 bg-primary/5 text-foreground" : "border-border bg-muted/40 text-muted-foreground"}`}
                   >
                     {item.isCompleted ? (
-                      <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-emerald-600" />
+                      <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-primary" />
                     ) : (
-                      <Circle className="h-4 w-4 flex-shrink-0 text-slate-400" />
+                      <Circle className="h-5 w-5 flex-shrink-0 text-muted-foreground/60" />
                     )}
-                    <span>{item.label}</span>
-                  </div>
+                    <span className="flex-1 font-medium">{item.label}</span>
+                    <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                  </Link>
                 ))}
               </div>
             )}
@@ -498,27 +466,31 @@ export function CandidateDashboardPage() {
       {/* Quick Actions */}
       <div>
         <h2 className="text-2xl font-bold text-foreground mb-4">Actions rapides</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
-              <Link key={action.id} to={action.href}>
+              <Link
+                key={action.id}
+                to={action.href}
+                className="group rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              >
                 <Card
-                  className={`border-2 ${action.borderColor} hover:shadow-lg transition-all h-full`}
+                  className={`h-full border ${action.accentBorder} bg-card shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg`}
                 >
-                  <CardContent className={`py-4 bg-gradient-to-br ${action.bgGradient}`}>
-                    <div className="flex flex-col items-center text-center space-y-2">
-                      <div className="p-2.5 bg-card rounded-lg shadow-sm border border-border">
-                        <Icon className="w-5 h-5 text-foreground" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-foreground text-sm sm:text-base">
-                          {action.title}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-slate-600">{action.description}</p>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-slate-400" />
+                  <CardContent className="flex h-full items-center gap-4 p-5">
+                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${action.accentBackground}`}>
+                      <Icon className={`h-6 w-6 ${action.accentColor}`} />
                     </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-base font-semibold leading-tight text-foreground">
+                        {action.title}
+                      </h3>
+                      <p className="mt-1 text-sm leading-5 text-muted-foreground">
+                        {action.description}
+                      </p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-foreground" />
                   </CardContent>
                 </Card>
               </Link>
@@ -529,28 +501,31 @@ export function CandidateDashboardPage() {
 
       {/* Recent Offers */}
       {/* Recommended Jobs */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-foreground" />
-              <CardTitle>Offres recommandées pour votre profil</CardTitle>
+      <Card className="overflow-hidden border-primary/15 shadow-sm">
+        <CardHeader className="flex flex-col gap-4 bg-primary/[0.03] sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                <Target className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-lg sm:text-xl">Offres recommandées pour votre profil</CardTitle>
+                <CardDescription className="mt-1">
+                  Suggestions automatiques basées sur votre CV et votre profil
+                </CardDescription>
+              </div>
             </div>
-            <CardDescription>
-              Suggestions automatiques basées sur votre CV et votre profil
-            </CardDescription>
           </div>
-          <Link to="/jobs">
-            <Button variant="outline" size="sm">
+          <Link to="/jobs" className="shrink-0">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               Voir toutes les offres
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </Link>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        <CardContent className="space-y-5 pt-5">
             {recommendedLoading ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <Skeleton className="h-28 w-full rounded-2xl" />
                 <Skeleton className="h-28 w-full rounded-2xl" />
                 <Skeleton className="h-28 w-full rounded-2xl" />
@@ -594,29 +569,34 @@ export function CandidateDashboardPage() {
                     />
                   );
                 })}
-                <div className="mt-4 flex items-center justify-between gap-3">
+                <nav
+                  aria-label="Pagination des offres recommandées"
+                  className="flex items-center justify-between gap-2 rounded-2xl border border-primary/10 bg-primary/[0.03] p-2 sm:gap-4"
+                >
                   <Button
                     variant="outline"
                     size="sm"
-                    className="inline-flex items-center gap-2"
+                    className="h-10 rounded-xl border-primary/15 bg-background px-3 text-sm shadow-sm transition-colors hover:border-primary/30 hover:bg-primary/5 disabled:opacity-50 sm:px-4"
                     disabled={recommendedPage <= 1}
                     onClick={() => setRecommendedPage((prev) => Math.max(prev - 1, 1))}
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="h-4 w-4" />
                     Précédent
                   </Button>
-                  <p className="text-sm text-slate-600">Page {recommendedPage}</p>
+                  <span className="min-w-[76px] rounded-lg bg-primary/10 px-3 py-2 text-center text-xs font-semibold text-primary sm:text-sm">
+                    Page {recommendedPage}
+                  </span>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="inline-flex items-center gap-2"
+                    className="h-10 rounded-xl border-primary/15 bg-background px-3 text-sm shadow-sm transition-colors hover:border-primary/30 hover:bg-primary/5 disabled:opacity-50 sm:px-4"
                     disabled={!hasMoreRecommendedJobs}
                     onClick={() => setRecommendedPage((prev) => prev + 1)}
                   >
                     Suivant
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="h-4 w-4" />
                   </Button>
-                </div>
+                </nav>
               </>
             ) : (
               <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
@@ -630,68 +610,6 @@ export function CandidateDashboardPage() {
                 )}
               </div>
             )}
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Dernières offres publiées</CardTitle>
-            <CardDescription>Les 3 dernières offres d'emploi</CardDescription>
-          </div>
-          <Link to="/jobs">
-            <Button variant="outline" size="sm">
-              Voir toutes les offres
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </Link>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {offersLoading ? (
-              <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-                Chargement des offres…
-              </div>
-            ) : offers.length > 0 ? (
-              offers.map((offer, index) => {
-                const location = [offer.location, offer.company].filter(Boolean).join(" • ");
-                const previewText = (offer.description || offer.requirements || "")
-                  .replace(/\s+/g, " ")
-                  .trim();
-                const contractLabel = offer.type ?? null;
-                const tags = (offer.tags || []).filter(Boolean).slice(0, 3);
-                const deadlineValue = offer.deadline ?? null;
-                const isExpired = Boolean(
-                  deadlineValue && new Date(deadlineValue).getTime() < Date.now(),
-                );
-                return (
-                  <JobCard
-                    key={offer.id}
-                    job={{
-                      slug: offer.slug,
-                      title: offer.title,
-                      company: offer.company,
-                      application_email: offer.application_email,
-                      external_link: offer.external_link,
-                      salary: offer.salary,
-                    }}
-                    location={location}
-                    previewText={previewText}
-                    contractLabel={contractLabel}
-                    tags={tags}
-                    deadlineValue={deadlineValue}
-                    isExpired={isExpired}
-                    index={index}
-                    onApplyClick={() => navigate(`/candidate/jobs/${offer.slug}/apply`)}
-                  />
-                );
-              })
-            ) : (
-              <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-                Aucune offre publiée pour le moment.
-              </div>
-            )}
-          </div>
         </CardContent>
       </Card>
     </div>

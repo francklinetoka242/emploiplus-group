@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useI18n } from "@/i18n";
 import { usePageSEO } from "@/features/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Trash2, AlertCircle, Loader2 } from "lucide-react";
+import {
+  AlertCircle,
+  BadgeDollarSign,
+  Bookmark,
+  BriefcaseBusiness,
+  Building2,
+  Loader2,
+  MapPin,
+  Trash2,
+} from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCandidate } from "@/hooks/useCandidate";
 import { getCandidateSavedOffers, unsaveJobOffer } from "@/features/candidates/api/savedOffersApi";
@@ -30,12 +38,12 @@ interface SavedOffer {
 }
 
 export function CandidateSavedOffersPage() {
-  const { t } = useI18n();
   const { profile, loading: profileLoading } = useCandidate();
   const [savedOffers, setSavedOffers] = useState<SavedOffer[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [showLimitNotice, setShowLimitNotice] = useState(false);
 
   const MAX_SAVED_OFFERS = 5;
   const isFull = savedOffers.length >= MAX_SAVED_OFFERS;
@@ -94,25 +102,51 @@ export function CandidateSavedOffersPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-lg border border-border bg-card p-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold">Offres Enregistrées</h1>
-          <p className="text-sm text-muted-foreground">
-            Gérez vos offres d'emploi favorites. Vous pouvez en enregistrer jusqu'à {MAX_SAVED_OFFERS}.
-          </p>
+    <div className="space-y-4">
+      <div className="overflow-hidden rounded-3xl border border-primary/15 bg-card shadow-sm">
+        <div className="flex flex-col gap-3 bg-primary/[0.03] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <div className="flex min-w-0 items-start gap-2.5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <Bookmark className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">Offres enregistrées</h1>
+              <p className="max-w-xl text-xs leading-5 text-muted-foreground sm:text-sm">
+                Gérez vos offres d'emploi favorites. Vous pouvez en enregistrer jusqu'à {MAX_SAVED_OFFERS}.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {isFull ? (
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                aria-label="Afficher les informations sur la limite d'offres enregistrées"
+                aria-expanded={showLimitNotice}
+                onClick={() => setShowLimitNotice((visible) => !visible)}
+                className="h-9 w-9 rounded-lg border-yellow-300 bg-yellow-50 font-bold text-yellow-800 hover:bg-yellow-100"
+              >
+                !
+              </Button>
+            ) : null}
+            <div className="w-fit rounded-lg border border-primary/15 bg-background px-3 py-2">
+              <span className="block text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">Enregistrées</span>
+              <span className="block text-lg font-bold leading-tight text-primary">{savedOffers.length}/{MAX_SAVED_OFFERS}</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {error && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="rounded-2xl">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      {isFull && (
-        <Alert className="border-yellow-200 bg-yellow-50">
+      {isFull && showLimitNotice && (
+        <Alert className="rounded-2xl border-yellow-200 bg-yellow-50 px-3 py-2">
           <AlertCircle className="h-4 w-4 text-yellow-800" />
           <AlertDescription className="text-yellow-800">
             Vous ne pouvez pas enregistrer plus de {MAX_SAVED_OFFERS} offres. Veuillez supprimer des
@@ -123,9 +157,12 @@ export function CandidateSavedOffersPage() {
 
       {savedOffers.length === 0 ? (
         <Card>
-          <CardContent className="flex min-h-[200px] items-center justify-center">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">Aucune offre enregistrée pour le moment.</p>
+          <CardContent className="flex min-h-[240px] items-center justify-center p-6">
+            <div className="max-w-sm text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+                <Bookmark className="h-7 w-7 text-primary" />
+              </div>
+              <p className="text-base font-semibold text-foreground">Aucune offre enregistrée pour le moment</p>
               <p className="mt-2 text-xs text-muted-foreground">
                 Consultez les offres disponibles et enregistrez vos favorites.
               </p>
@@ -133,17 +170,16 @@ export function CandidateSavedOffersPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>{savedOffers.length} offre(s) enregistrée(s)</CardTitle>
-            <CardDescription>
-              Vos offres les plus récentes en premier
-            </CardDescription>
+        <Card className="overflow-hidden border-primary/15 shadow-sm">
+          <CardHeader className="bg-primary/[0.03] p-5 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl">{savedOffers.length} offre(s) enregistrée(s)</CardTitle>
+            <CardDescription className="mt-1">Vos offres les plus récentes en premier</CardDescription>
           </CardHeader>
-          <CardContent className="overflow-x-auto">
-            <Table>
+          <CardContent className="p-0">
+            <div className="hidden overflow-x-auto sm:block">
+              <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-muted/40 hover:bg-muted/40">
                   <TableHead>Titre</TableHead>
                   <TableHead>Entreprise</TableHead>
                   <TableHead>Localisation</TableHead>
@@ -154,16 +190,18 @@ export function CandidateSavedOffersPage() {
               </TableHeader>
               <TableBody>
                 {savedOffers.map((offer) => (
-                  <TableRow key={offer.id}>
-                    <TableCell className="font-medium">{offer.job_offers.title}</TableCell>
-                    <TableCell>{offer.job_offers.company}</TableCell>
-                    <TableCell>{offer.job_offers.location_city || "-"}</TableCell>
-                    <TableCell className="capitalize">
+                  <TableRow key={offer.id} className="transition-colors hover:bg-primary/[0.03]">
+                    <TableCell className="max-w-[260px] font-semibold text-foreground">
+                      <span className="line-clamp-2">{offer.job_offers.title}</span>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{offer.job_offers.company}</TableCell>
+                    <TableCell className="text-muted-foreground">{offer.job_offers.location_city || "-"}</TableCell>
+                    <TableCell className="capitalize text-muted-foreground">
                       {offer.job_offers.contract_type
                         ? offer.job_offers.contract_type.replace(/_/g, " ")
                         : "-"}
                     </TableCell>
-                    <TableCell>{offer.job_offers.salary || "-"}</TableCell>
+                    <TableCell className="text-muted-foreground">{offer.job_offers.salary || "-"}</TableCell>
                     <TableCell className="text-right">
                       <Button
                         size="sm"
@@ -180,8 +218,39 @@ export function CandidateSavedOffersPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-              </TableBody>
-            </Table>
+                </TableBody>
+              </Table>
+            </div>
+
+            <div className="space-y-3 p-4 sm:hidden">
+              {savedOffers.map((offer) => (
+                <div key={offer.id} className="rounded-2xl border border-border/80 bg-background p-4 shadow-sm">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="line-clamp-2 text-base font-semibold leading-tight text-foreground">{offer.job_offers.title}</h3>
+                      <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <Building2 className="h-3.5 w-3.5 shrink-0 text-primary" />
+                        <span className="truncate">{offer.job_offers.company}</span>
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(offer.id)}
+                      disabled={deleting === offer.id}
+                      aria-label={`Supprimer ${offer.job_offers.title}`}
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+                    >
+                      {deleting === offer.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2.5 py-1.5"><MapPin className="h-3.5 w-3.5 text-primary" />{offer.job_offers.location_city || "-"}</span>
+                    <span className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2.5 py-1.5"><BriefcaseBusiness className="h-3.5 w-3.5 text-primary" />{offer.job_offers.contract_type?.replace(/_/g, " ") || "-"}</span>
+                    {offer.job_offers.salary ? <span className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2.5 py-1.5"><BadgeDollarSign className="h-3.5 w-3.5 text-primary" />{offer.job_offers.salary}</span> : null}
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       )}

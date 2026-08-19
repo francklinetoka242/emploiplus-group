@@ -94,7 +94,7 @@ export function ProfileSection({ profile, onSave, loading, error }: ProfileSecti
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center gap-2">
-          <User className="h-5 w-5 text-cyan-600" />
+          <User className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold text-slate-900">Informations personnelles</h2>
         </div>
 
@@ -155,7 +155,7 @@ export function ProfileSection({ profile, onSave, loading, error }: ProfileSecti
             disabled={loading || saving}
             className="gap-2 bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary)]"
           >
-            <Save className="h-4 w-4" />
+            <Save className="h-4 w-4 text-primary-foreground" />
             {saving ? "Enregistrement..." : "Enregistrer"}
           </Button>
         </div>

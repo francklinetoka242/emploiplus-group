@@ -203,7 +203,7 @@ export function PreferencesSection({ preferences, loading, onSavePreferences }: 
             <Button variant="outline" onClick={handleCancel} disabled={saving}>
               Annuler
             </Button>
-            <Button onClick={handleSave} disabled={saving} className="bg-cyan-600 hover:bg-cyan-700">
+            <Button onClick={handleSave} disabled={saving} className="bg-primary text-primary-foreground hover:bg-primary/90">
               {saving ? "Enregistrement…" : "Enregistrer"}
             </Button>
           </div>
@@ -215,7 +215,7 @@ export function PreferencesSection({ preferences, loading, onSavePreferences }: 
       return (
         <div className="text-center py-6">
           <p className="text-sm text-slate-500 mb-4">Aucune préférence configurée.</p>
-          <Button size="sm" onClick={handleEditClick} className="bg-cyan-600 hover:bg-cyan-700">
+          <Button size="sm" onClick={handleEditClick} className="bg-primary text-primary-foreground hover:bg-primary/90">
             Configurer mes préférences
           </Button>
         </div>
@@ -231,7 +231,7 @@ export function PreferencesSection({ preferences, loading, onSavePreferences }: 
               {preferences.contract_types.map((ct) => {
                 const label = CONTRACT_TYPE_OPTIONS.find((o) => o.value === ct)?.label || ct;
                 return (
-                  <span key={ct} className="inline-flex items-center rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-sm font-medium text-cyan-700">
+                  <span key={ct} className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
                     {label}
                   </span>
                 );
@@ -247,7 +247,7 @@ export function PreferencesSection({ preferences, loading, onSavePreferences }: 
               {preferences.work_types.map((wt) => {
                 const label = WORK_TYPE_OPTIONS.find((o) => o.value === wt)?.label || wt;
                 return (
-                  <span key={wt} className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+                  <span key={wt} className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
                     {label}
                   </span>
                 );
@@ -275,7 +275,12 @@ export function PreferencesSection({ preferences, loading, onSavePreferences }: 
           </div>
         )}
 
-        <Button size="sm" variant="outline" onClick={handleEditClick}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleEditClick}
+          className="border-primary/30 text-primary hover:bg-primary/5 hover:text-primary"
+        >
           Modifier
         </Button>
       </div>
@@ -288,7 +293,7 @@ export function PreferencesSection({ preferences, loading, onSavePreferences }: 
         <div className="flex items-center justify-between gap-2">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <SlidersHorizontal className="h-4 w-4 text-cyan-600" />
+              <SlidersHorizontal className="h-4 w-4 text-primary" />
               Préférences RH
             </CardTitle>
             <CardDescription>Types de contrat, types de travail, salaire et niveau d'expérience.</CardDescription>

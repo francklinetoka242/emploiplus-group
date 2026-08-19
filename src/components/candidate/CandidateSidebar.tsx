@@ -40,7 +40,6 @@ interface CandidateSidebarProps {
 const publicMenuItems = [
   { id: "public-home", label: "Accueil", icon: Home, href: "/" },
   { id: "public-services", label: "Services", icon: BriefcaseBusiness, href: "/services" },
-  { id: "public-jobs", label: "Emplois", icon: Search, href: "/jobs" },
   { id: "public-blog", label: "Blog", icon: BookOpen, href: "/blog" },
   { id: "public-faq", label: "FAQ", icon: Info, href: "/faq" },
   { id: "public-about", label: "À propos", icon: Info, href: "/about" },
@@ -204,6 +203,22 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                 </div>
               )}
 
+              <Link
+                to="/jobs"
+                onClick={handleMenuClick}
+                className={cn(
+                  "relative flex items-center gap-3 rounded-2xl px-4 py-3",
+                  isDarkMode
+                    ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
+                    : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                )}
+              >
+                <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700")}>
+                  <Search className="h-5 w-5" />
+                </div>
+                <span className="truncate text-sm font-medium">Emplois</span>
+              </Link>
+
               <div className={cn("rounded-2xl p-2", isDarkMode ? "border border-white/10 bg-slate-950/60" : "border border-slate-200 bg-slate-50")}>
                 <p className={cn("px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em]", isDarkMode ? "text-slate-400" : "text-slate-500")}>Mon espace</p>
                 <div className="space-y-1">
@@ -284,6 +299,22 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
       <TooltipProvider delayDuration={200}>
         <nav className="flex-1 overflow-y-auto px-2 py-4 scrollbar-hide">
           <div className="space-y-4">
+            <Link
+              to="/jobs"
+              onClick={handleMenuClick}
+              className={cn(
+                "relative flex items-center gap-3 rounded-lg px-3 py-2.5 md:px-3 md:py-2",
+                isDarkMode
+                  ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+              )}
+            >
+              <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700")}>
+                <Search className="h-5 w-5" />
+              </div>
+              {open && <span className="truncate text-sm font-medium">Emplois</span>}
+            </Link>
+
             <div className={cn("rounded-2xl p-2", isDarkMode ? "border border-white/10 bg-slate-950/60" : "border border-slate-200 bg-slate-50")}>
               {open && <p className={cn("px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em]", isDarkMode ? "text-slate-400" : "text-slate-500")}>Mon espace</p>}
               <div className="space-y-1">

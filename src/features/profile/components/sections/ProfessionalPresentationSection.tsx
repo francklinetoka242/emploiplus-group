@@ -76,7 +76,11 @@ export function ProfessionalPresentationSection() {
             </div>
 
             <div className="flex justify-end">
-              <Button onClick={handleSave} disabled={saving} className="bg-cyan-600 text-white">
+              <Button
+                onClick={handleSave}
+                disabled={saving}
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
                 {saving ? "Enregistrement..." : "Enregistrer"}
               </Button>
             </div>

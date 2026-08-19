@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { useI18n } from "@/i18n";
 import { usePageSEO } from "@/features/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Trash2, AlertCircle } from "lucide-react";
+import { AlertCircle, Building2, CalendarDays, ClipboardList, Eye, MapPin, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Table,
@@ -69,7 +67,6 @@ const getStatusLabel = (status: string) => {
 };
 
 export function CandidateApplicationsPage() {
-  const { t } = useI18n();
   const { profile, loading: profileLoading } = useCandidate();
   usePageSEO({
     title: "Mes Candidatures - EmploiPlus Group",
@@ -112,34 +109,52 @@ export function CandidateApplicationsPage() {
   }
 
   return (
-    <div className="container-page py-8 md:py-12">
-      <Card className="w-full max-w-4xl mx-auto border border-border bg-card shadow-sm">
-        <CardHeader>
-          <CardTitle>Mes candidatures</CardTitle>
-          <CardDescription>
-            Récapitulatif des offres auxquelles vous avez postulé.
-            <br />
-            Après 30 jours, la candidature est supprimée de cette page.
-          </CardDescription>
+    <div className="mx-auto min-w-0 w-full max-w-5xl space-y-4 overflow-x-hidden pb-8 md:pb-12">
+      <div className="overflow-hidden rounded-3xl border border-primary/15 bg-card shadow-sm">
+        <div className="flex flex-col gap-2 bg-primary/[0.03] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <div className="flex min-w-0 items-start gap-2.5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <ClipboardList className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">Mes candidatures</h1>
+              <p className="max-w-xl text-xs leading-5 text-muted-foreground sm:text-sm">
+                Récapitulatif des offres auxquelles vous avez postulé. Les candidatures sont conservées pendant 30 jours.
+              </p>
+            </div>
+          </div>
+          {applications.length > 0 ? (
+            <div className="w-fit rounded-lg border border-primary/15 bg-background px-2.5 py-1.5">
+              <span className="block text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">Total</span>
+              <span className="block text-base font-bold leading-tight text-primary">{applications.length}</span>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <Card className="min-w-0 w-full overflow-hidden border-primary/15 bg-card shadow-sm">
+        <CardHeader className="bg-primary/[0.03] p-5 sm:p-6">
+          <CardTitle className="text-lg sm:text-xl">{applications.length} candidature(s)</CardTitle>
+          <CardDescription className="mt-1">Vos candidatures les plus récentes en premier</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="min-w-0 p-0">
           {applications.length === 0 ? (
-            <Alert>
+            <Alert className="m-4 border-primary/20 bg-primary/5 sm:m-6">
+              <AlertCircle className="h-5 w-5 text-primary" />
               <AlertDescription>
-                Fonctionnalité bientôt disponible
-                <br />
-                Cette section sera bientôt accessible depuis votre espace candidat.
-                <br />
-                Merci pour votre patience.
+                <span className="font-semibold text-foreground">Aucune candidature pour le moment</span>
+                <span className="mt-1 block text-muted-foreground">
+                  Vos candidatures apparaîtront ici dès que vous postulerez à une offre.
+                </span>
               </AlertDescription>
             </Alert>
           ) : (
             <>
               {/* Desktop / tablet: table */}
-              <div className="hidden sm:block overflow-x-auto">
+              <div className="hidden min-w-0 max-w-full overflow-x-auto sm:block">
                 <Table>
                   <TableHeader>
-                    <TableRow>
+                    <TableRow className="bg-muted/40 hover:bg-muted/40">
                       <TableHead>Offre</TableHead>
                       <TableHead>Entreprise</TableHead>
                       <TableHead>Localisation</TableHead>
@@ -151,26 +166,32 @@ export function CandidateApplicationsPage() {
                   </TableHeader>
                   <TableBody>
                     {applications.map((app: any) => (
-                      <TableRow key={app.id}>
-                        <TableCell>{app.job_offers?.title || "-"}</TableCell>
-                        <TableCell>{app.job_offers?.company || "-"}</TableCell>
-                        <TableCell>{app.job_offers?.location_city || "-"}</TableCell>
-                        <TableCell>{app.job_offers?.contract_type || "-"}</TableCell>
+                      <TableRow key={app.id} className="group transition-colors hover:bg-primary/[0.03]">
+                        <TableCell className="max-w-[240px] font-semibold text-foreground">
+                          <span className="line-clamp-2">{app.job_offers?.title || "-"}</span>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">{app.job_offers?.company || "-"}</TableCell>
+                        <TableCell className="text-muted-foreground">{app.job_offers?.location_city || "-"}</TableCell>
+                        <TableCell className="text-muted-foreground">{app.job_offers?.contract_type || "-"}</TableCell>
                         <TableCell>
-                          <span className={`inline-flex items-center px-2 py-1 text-xs rounded ${getStatusBadgeColor(app.status)}`}>
+                          <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusBadgeColor(app.status)}`}>
                             {getStatusLabel(app.status)}
                           </span>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="whitespace-nowrap text-muted-foreground">
                           {new Date(app.applied_at).toLocaleDateString("fr-FR", {
                             day: "2-digit",
-                            month: "long",
+                            month: "short",
                             year: "numeric",
                           })}
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => handleDelete(app.id)} className="gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => openDetails(app)} className="gap-2 text-primary hover:bg-primary/10 hover:text-primary">
+                              <Eye className="h-4 w-4" />
+                              Détails
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => handleDelete(app.id)} className="gap-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
                               <Trash2 className="h-4 w-4" />
                               Supprimer
                             </Button>
@@ -183,24 +204,36 @@ export function CandidateApplicationsPage() {
               </div>
 
               {/* Mobile: stacked cards */}
-              <div className="block sm:hidden space-y-4">
+              <div className="block space-y-4 p-4 sm:hidden">
                 {applications.map((app: any) => (
-                  <Card key={app.id} className="border-border">
-                    <CardHeader className="flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="text-sm font-semibold">{app.job_offers?.title || "-"}</h3>
-                        <p className="text-xs text-muted-foreground">{app.job_offers?.company || "-"}</p>
+                  <Card key={app.id} className="border-border/80 shadow-sm">
+                    <CardHeader className="space-y-3 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h3 className="line-clamp-2 text-base font-semibold leading-tight text-foreground">{app.job_offers?.title || "-"}</h3>
+                          <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                            <Building2 className="h-3.5 w-3.5 shrink-0 text-primary" />
+                            <span className="truncate">{app.job_offers?.company || "-"}</span>
+                          </p>
+                        </div>
+                        <span className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusBadgeColor(app.status)}`}>
+                          {getStatusLabel(app.status)}
+                        </span>
                       </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <button
-                          type="button"
-                          onClick={() => openDetails(app)}
-                          className="text-sm text-brand hover:underline"
-                        >
-                          Voir plus
-                        </button>
+                      <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-primary" />{app.job_offers?.location_city || "-"}</span>
+                        <span className="flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5 text-primary" />{new Date(app.applied_at).toLocaleDateString("fr-FR")}</span>
                       </div>
                     </CardHeader>
+                    <CardContent className="flex gap-2 border-t border-border/70 p-4 pt-3">
+                      <Button variant="outline" size="sm" onClick={() => openDetails(app)} className="flex-1 gap-2 border-primary/25 text-primary hover:bg-primary/5 hover:text-primary">
+                        <Eye className="h-4 w-4" />
+                        Voir les détails
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(app.id)} className="px-3 text-muted-foreground hover:bg-destructive/10 hover:text-destructive" aria-label="Supprimer la candidature">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </CardContent>
                   </Card>
                 ))}
               </div>

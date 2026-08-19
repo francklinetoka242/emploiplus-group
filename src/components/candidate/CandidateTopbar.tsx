@@ -33,7 +33,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
 
   const userName = useMemo(() => {
     if (!profile) return "Candidat";
-    return (profile.first_name || "").trim() || "Candidat";
+    return [profile.first_name, profile.last_name].filter(Boolean).join(" ").trim() || "Candidat";
   }, [profile]);
 
   const userEmail = useMemo(() => {
@@ -52,7 +52,6 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
   const publicLinks = [
     { to: "/", label: "Accueil" },
     { to: "/services", label: "Services" },
-    { to: "/jobs", label: "Emplois" },
     { to: "/blog", label: "Blog" },
     { to: "/about", label: "À propos" },
     { to: "/contact", label: "Contact" },
@@ -115,40 +114,40 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-3 pl-2 pr-1">
-                <Avatar className="w-8 h-8">
+              <Button
+                variant="ghost"
+                aria-label="Ouvrir le menu du compte"
+                className="h-12 gap-3 rounded-2xl border border-transparent bg-transparent px-2.5 pr-3 shadow-none transition-colors hover:bg-muted data-[state=open]:border-border/70 data-[state=open]:bg-card data-[state=open]:shadow-sm data-[state=open]:hover:border-primary/25 data-[state=open]:hover:bg-primary/[0.03]"
+              >
+                <Avatar className="h-9 w-9 border border-primary/20 bg-primary/5">
                   <AvatarImage src={avatarUrl} alt={userName} />
-                  <AvatarFallback className="bg-muted text-muted-foreground text-xs font-semibold flex items-center justify-center">
-                    <User className="w-5 h-5" />
+                  <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
+                    {initials}
                   </AvatarFallback>
                 </Avatar>
-                <div className="hidden sm:flex flex-col items-start">
-                  <p className="text-sm font-medium text-foreground">{userName}</p>
-                  {userEmail && <p className="text-xs text-muted-foreground">{userEmail}</p>}
+                <div className="flex max-w-[190px] flex-col items-start text-left">
+                  <p className="w-full truncate text-sm font-semibold text-foreground">{userName}</p>
+                  {userEmail && <p className="w-full truncate text-xs text-muted-foreground">{userEmail}</p>}
                 </div>
-                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <div className="px-2 py-1.5">
-                <p className="text-sm font-medium text-foreground">{userName}</p>
-                {userEmail && <p className="text-xs text-muted-foreground">{userEmail}</p>}
-              </div>
-              <DropdownMenuSeparator />
+            <DropdownMenuContent align="end" sideOffset={8} className="w-64 rounded-2xl border-border/80 p-2 shadow-lg">
               <DropdownMenuItem asChild>
-                <Link to="/candidate/profile" className="cursor-pointer">
+                <Link to="/candidate/profile" className="cursor-pointer rounded-xl py-2.5">
+                  <User className="mr-2 h-4 w-4 text-primary" />
                   Mon Profil
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/candidate/settings" className="cursor-pointer">
-                  <Settings className="w-4 h-4 mr-2" />
+                <Link to="/candidate/settings" className="cursor-pointer rounded-xl py-2.5">
+                  <Settings className="mr-2 h-4 w-4 text-primary" />
                   Compte
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer text-red-600">
-                <LogOut className="w-4 h-4 mr-2" />
+              <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer rounded-xl py-2.5 text-destructive focus:text-destructive">
+                <LogOut className="mr-2 h-4 w-4" />
                 Déconnexion
               </DropdownMenuItem>
             </DropdownMenuContent>

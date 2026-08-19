@@ -257,7 +257,7 @@ export function DocumentsSection({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-cyan-600" />
+            <FileText className="h-4 w-4 text-primary" />
             Documents
           </CardTitle>
           <CardDescription>Gérez vos documents importants pour votre candidature.</CardDescription>
@@ -275,7 +275,7 @@ export function DocumentsSection({
         <div className="flex items-center justify-between gap-2">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-cyan-600" />
+              <FileText className="h-4 w-4 text-primary" />
               Documents
             </CardTitle>
             <CardDescription>Gérez vos documents importants pour votre candidature.</CardDescription>
@@ -315,7 +315,7 @@ export function DocumentsSection({
                 <Button
                   type="button"
                   size="sm"
-                  className="bg-cyan-600 hover:bg-cyan-700"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={!canUploadDocument}
                 >
@@ -332,7 +332,7 @@ export function DocumentsSection({
               className="hidden"
               onChange={handleFileSelection}
             />
-            {feedbackMessage && <p className="mt-2 text-sm text-emerald-600">{feedbackMessage}</p>}
+            {feedbackMessage && <p className="mt-2 text-sm text-primary">{feedbackMessage}</p>}
             {feedbackError && <p className="mt-2 text-sm text-rose-600">{feedbackError}</p>}
           </div>
 
@@ -346,12 +346,12 @@ export function DocumentsSection({
                     key={type.value}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
                       isCompleted
-                        ? "bg-emerald-50 text-emerald-700"
+                        ? "bg-primary/10 text-primary"
                         : "bg-slate-50 text-slate-600"
                     }`}
                   >
                     {isCompleted ? (
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
                     ) : (
                       <Circle className="h-4 w-4 text-slate-400 flex-shrink-0" />
                     )}
@@ -372,7 +372,7 @@ export function DocumentsSection({
                     className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3 hover:bg-slate-50"
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <FileText className="h-5 w-5 text-cyan-600 flex-shrink-0" />
+                      <FileText className="h-5 w-5 text-primary flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm text-slate-900 truncate">
                           {doc.customType || DOCUMENT_TYPES.find((t) => t.value === doc.type)?.label || doc.type}

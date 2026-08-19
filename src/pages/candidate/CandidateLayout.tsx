@@ -55,7 +55,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
         {/* Contenu principal */}
         <div
           className={cn(
-            "flex flex-1 min-h-0 flex-col transition-all duration-300 ease-in-out",
+            "flex min-w-0 flex-1 min-h-0 flex-col transition-all duration-300 ease-in-out",
             open ? "md:ml-72" : "md:ml-20",
           )}
         >
@@ -63,8 +63,8 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
           <CandidateTopbar onMenuToggle={() => setOpen(!open)} onLogout={logout} />
 
           {/* Contenu avec scroll */}
-          <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
-            <div className="w-full">
+          <main className="min-w-0 flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+            <div className="min-w-0 w-full">
               <div className="mx-auto w-full px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10 max-w-7xl">
                 {children}
               </div>

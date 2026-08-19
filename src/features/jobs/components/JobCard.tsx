@@ -80,22 +80,22 @@ export function JobCard({
       style={{ animationDelay: `${index * 120}ms` }}
     >
       <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-brand via-brand/70 to-transparent" />
-      <div className="flex items-start justify-between gap-3">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand/80">
             <Building2 className="size-3.5" />
-            <span>{job.company}</span>
+            <span className="truncate">{job.company}</span>
           </div>
-          <h3 className="mt-2 font-display text-lg font-bold text-foreground">{job.title}</h3>
+          <h3 className="mt-2 font-display text-lg font-bold leading-tight text-foreground">{job.title}</h3>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           {typeof matchScore === "number" ? (
-            <span className="inline-flex items-center rounded-full bg-secondary/15 px-3 py-1 text-xs font-semibold text-secondary">
+            <span className="inline-flex items-center rounded-full border border-secondary/20 bg-secondary/10 px-3 py-1 text-xs font-semibold text-secondary">
               {Math.round(Math.max(0, Math.min(1, matchScore)) * 100)}% de match
             </span>
           ) : null}
           {contractLabel ? (
-            <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
+            <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-xs font-semibold uppercase text-brand">
               <BriefcaseBusiness className="size-3.5" />
               {contractLabel}
             </span>
