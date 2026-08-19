@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Handshake, Settings2, TrendingUp } from "lucide-react";
+import { BarChart3, BookOpen, Handshake, Settings2, TrendingUp } from "lucide-react";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
@@ -213,9 +213,21 @@ export function AboutPage() {
               viewport={{ once: true, amount: 0.3 }}
             >
               {[
-                { value: "1200+", label: t("about.stats.jobs"), icon: "📊" },
-                { value: "1", label: t("about.stats.companies"), icon: "🤝" },
-                { value: "455+", label: t("about.stats.readers"), icon: "📖" },
+                {
+                  value: "1200+",
+                  label: t("about.stats.jobs"),
+                  icon: <BarChart3 className="h-8 w-8 text-secondary md:h-10 md:w-10" />,
+                },
+                {
+                  value: "1",
+                  label: t("about.stats.companies"),
+                  icon: <Handshake className="h-8 w-8 text-secondary md:h-10 md:w-10" />,
+                },
+                {
+                  value: "455+",
+                  label: t("about.stats.readers"),
+                  icon: <BookOpen className="h-8 w-8 text-secondary md:h-10 md:w-10" />,
+                },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -223,7 +235,7 @@ export function AboutPage() {
                   className="flex flex-col items-center px-4 md:px-6"
                 >
                   <motion.div
-                    className="text-4xl md:text-5xl mb-4"
+                    className="mb-4 flex items-center justify-center"
                     initial={{ scale: 0, rotate: -180 }}
                     whileInView={{ scale: 1, rotate: 0 }}
                     viewport={{ once: true }}
@@ -232,7 +244,7 @@ export function AboutPage() {
                     {stat.icon}
                   </motion.div>
                   <motion.p 
-                    className="font-display text-4xl md:text-5xl font-extrabold text-secondary mb-3"
+                    className="mb-3 font-display text-2xl font-extrabold text-secondary md:text-3xl"
                     initial={{ scale: 0.5, opacity: 0 }}
                     whileInView={{ scale: 1, opacity: 1 }}
                     viewport={{ once: true }}
@@ -241,7 +253,7 @@ export function AboutPage() {
                     {stat.value}
                   </motion.p>
                   <motion.p 
-                    className="text-base md:text-lg font-semibold text-foreground"
+                    className="text-center text-sm font-semibold text-foreground md:text-base"
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}

@@ -199,7 +199,7 @@ async function renderRoute(page, baseUrl, route, outputDir, baseHtml, useBrowser
   );
 
   const html = await page.content();
-  writeFileSync(targetPath, html, "utf8");
+  writeFileSync(targetPath, buildStaticHtml(route, html, blogPost), "utf8");
 
   console.log(`Prerendered ${route} -> ${targetPath}`);
 }

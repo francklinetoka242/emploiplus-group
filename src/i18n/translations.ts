@@ -236,7 +236,7 @@ export const FR: Dict = {
     "Réponses rapides aux questions les plus fréquentes des candidats et des entreprises.",
   "faq.services.title": "Quels services propose EmploiPlus Group ?",
   "faq.services.answer":
-    "EmploiPlus Group propose des services de diffusion d’offres d’emploi, de recrutement, de gestion RH, de transformation digitale, de conseil et de formation pour les entreprises et les candidats en Afrique centrale.",
+    "Emploiplus Group est une entreprise spécialisée dans les services d'employabilité, le Business Process Outsourcing (BPO) et la gestion déléguée des ressources humaines basée en Afrique centrale.",
   "faq.apply.title": "Comment postuler à un emploi sur le site ?",
   "faq.apply.answer":
     "Pour postuler à une offre, rendez-vous sur la page Offre d'emploi, cliquez sur le bouton de candidature et utilisez les options proposées : email, WhatsApp ou lien externe selon l'annonce. Vous pouvez aussi créer un compte candidat pour suivre plus facilement vos candidatures.",
