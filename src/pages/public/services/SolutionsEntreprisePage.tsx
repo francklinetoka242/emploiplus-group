@@ -39,7 +39,7 @@ export default function SolutionsEntreprisePage() {
             </div>
 
             <div className="mt-10 space-y-8">
-              <article className="rounded-xl border border-border/80 p-6 shadow-none transition-colors duration-300 hover:border-border">
+              <article className="border-b border-border/80 py-6 transition-colors duration-300 first:pt-0 hover:border-secondary">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary">Vous avez un besoin</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
                   <BriefcaseBusiness className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
@@ -53,7 +53,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="rounded-xl border border-border/80 p-6 shadow-none transition-colors duration-300 hover:border-border">
+              <article className="border-b border-border/80 py-6 transition-colors duration-300 hover:border-secondary">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary">Nous analysons</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
                   <Users className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
@@ -67,7 +67,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="rounded-xl border border-border/80 p-6 shadow-none transition-colors duration-300 hover:border-border">
+              <article className="border-b border-border/80 py-6 transition-colors duration-300 hover:border-secondary">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary">Nous déployons</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
                   <FolderKanban className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
@@ -81,7 +81,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="rounded-xl border border-border/80 p-6 shadow-none transition-colors duration-300 hover:border-border">
+              <article className="border-b border-border/80 py-6 transition-colors duration-300 hover:border-secondary">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary">Nous pilotons</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
                   <BarChart3 className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
@@ -95,7 +95,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="rounded-xl border border-border/80 p-6 shadow-none transition-colors duration-300 hover:border-border">
+              <article className="border-b border-border/80 py-6 transition-colors duration-300 last:border-b-0 hover:border-secondary">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary">Vous gagnez du temps</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
                   <ShieldCheck className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />

@@ -64,7 +64,7 @@ export function ContactPage() {
             {t("contact.subtitle")}
           </motion.p>
           <motion.h1 
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6"
+            className="font-display text-4xl md:text-5xl font-extrabold text-white mb-6"
             variants={fadeUp}
           >
             {t("contact.title")}
@@ -95,14 +95,11 @@ export function ContactPage() {
             <div className="grid gap-6 mb-12">
               {/* Phone Card */}
               <motion.div 
-                className="rounded-2xl border border-secondary/20 bg-gradient-to-br from-secondary/5 to-secondary/10 p-6 md:p-8 hover:border-secondary/40 transition-all duration-300"
-                whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(232,169,0,0.1)" }}
+                className="border-b border-secondary/25 py-6 first:pt-0 last:border-b-0"
               >
                 <div className="flex gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-secondary/20 text-secondary">
-                      <Phone className="h-6 w-6" />
-                    </div>
+                  <div className="flex-shrink-0 pt-1 text-secondary">
+                    <Phone className="h-6 w-6" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
@@ -123,14 +120,11 @@ export function ContactPage() {
 
               {/* Email Card */}
               <motion.div 
-                className="rounded-2xl border border-secondary/20 bg-gradient-to-br from-secondary/5 to-secondary/10 p-6 md:p-8 hover:border-secondary/40 transition-all duration-300"
-                whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(232,169,0,0.1)" }}
+                className="border-b border-secondary/25 py-6 first:pt-0 last:border-b-0"
               >
                 <div className="flex gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-secondary/20 text-secondary">
-                      <Mail className="h-6 w-6" />
-                    </div>
+                  <div className="flex-shrink-0 pt-1 text-secondary">
+                    <Mail className="h-6 w-6" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
@@ -151,14 +145,11 @@ export function ContactPage() {
 
               {/* Location Card */}
               <motion.div 
-                className="rounded-2xl border border-secondary/20 bg-gradient-to-br from-secondary/5 to-secondary/10 p-6 md:p-8 hover:border-secondary/40 transition-all duration-300"
-                whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(232,169,0,0.1)" }}
+                className="border-b border-secondary/25 py-6 first:pt-0 last:border-b-0"
               >
                 <div className="flex gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-secondary/20 text-secondary">
-                      <MapPin className="h-6 w-6" />
-                    </div>
+                  <div className="flex-shrink-0 pt-1 text-secondary">
+                    <MapPin className="h-6 w-6" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">

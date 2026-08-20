@@ -144,14 +144,13 @@ export function JobsPage() {
         <div className="grid gap-8">
           <div className="space-y-6 text-foreground/90 leading-relaxed">
             <div
-              className="sticky z-40 isolate mt-0 mb-0 w-full self-start border-0 bg-white shadow-sm"
+              className="sticky z-40 isolate mt-0 mb-0 w-full self-start rounded-[1.25rem] border border-border/90 bg-card/95 shadow-sm backdrop-blur-sm"
               style={{
                 top: mobileApp || isCandidateShell ? 0 : 64,
-                backgroundColor: "#FFFFFF",
               }}
             >
-              <div className="overflow-hidden rounded-none border-0 border-b border-border bg-white shadow-none ring-0" style={{ backgroundColor: "#FFFFFF" }}>
-                <form onSubmit={handleSearchSubmit} className="flex items-center gap-3 bg-white p-3 sm:p-4" style={{ backgroundColor: "#FFFFFF" }}>
+              <div className="overflow-hidden rounded-[1.25rem] border-0 bg-card shadow-none ring-0">
+                <form onSubmit={handleSearchSubmit} className="flex items-center gap-3 bg-card/95 p-3 sm:p-4">
                   <div className="relative flex-1">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
@@ -170,7 +169,7 @@ export function JobsPage() {
                   <button
                     type="submit"
                     aria-label="Rechercher"
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-white text-foreground transition hover:bg-primary/5"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-foreground transition hover:bg-primary/5"
                   >
                     <Search className="h-4 w-4" />
                   </button>
@@ -180,19 +179,18 @@ export function JobsPage() {
                     aria-label="Afficher ou masquer les filtres"
                     aria-expanded={filtersOpen}
                     onClick={() => setFiltersOpen((prev) => !prev)}
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-white text-foreground transition hover:bg-primary/5"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-foreground transition hover:bg-primary/5"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                   </button>
                 </form>
 
                 <div
-                  className={`overflow-hidden border-t border-border bg-white transition-all duration-200 ${
+                  className={`overflow-hidden border-t border-border bg-card transition-all duration-200 ${
                     filtersOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
                   }`}
-                  style={{ backgroundColor: "#FFFFFF" }}
                 >
-                  <div className="grid gap-3 bg-white p-3 sm:grid-cols-2 sm:p-4" style={{ backgroundColor: "#FFFFFF" }}>
+                  <div className="grid gap-3 bg-card p-3 sm:grid-cols-2 sm:p-4">
                     <div>
                       <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                         Type de contrat
@@ -200,7 +198,7 @@ export function JobsPage() {
                       <select
                         value={contractTypeInput}
                         onChange={(e) => setContractTypeInput(e.target.value)}
-                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                        className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                       >
                         <option value="">Tous</option>
                         <option value="cdi">CDI</option>
@@ -221,7 +219,7 @@ export function JobsPage() {
                         value={companyInput}
                         onChange={(e) => setCompanyInput(e.target.value)}
                         placeholder="Nom de l'entreprise"
-                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                        className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                       />
                     </div>
 

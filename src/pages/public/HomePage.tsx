@@ -100,7 +100,7 @@ function HeroSection() {
               <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand">
                 <Link to="/jobs">{t("home.hero.cta.jobs")}</Link>
               </Button>
-              <Button asChild size="lg" className="bg-accent text-white hover:bg-accent/90 shadow-lg">
+              <Button asChild size="lg" className="bg-accent text-secondary-foreground hover:bg-accent/90 shadow-lg">
                 <Link to="/services">{t("home.hero.cta.services")}</Link>
               </Button>
             </motion.div>
@@ -268,7 +268,7 @@ export function HomePage() {
       </motion.section>
 
       <motion.section
-        className="relative z-30 overflow-visible bg-white"
+        className="relative z-30 overflow-visible bg-background"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
@@ -306,7 +306,7 @@ export function HomePage() {
                 return (
                   <motion.article
                     key={post.id}
-                    className="relative z-30 flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-white shadow-soft transition-all duration-300 hover:shadow-elev group-hover:border-brand"
+                    className="relative z-30 flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition-all duration-300 hover:shadow-elev group-hover:border-brand"
                     variants={staggerItem}
                     whileHover={{ y: -8, transition: { duration: 0.2 } }}
                     transition={{ delay: i * 0.08 }}
@@ -329,7 +329,7 @@ export function HomePage() {
                       )}
                       <div className="flex flex-1 flex-col p-6">
                         {post.is_featured ? (
-                          <span className="mb-3 inline-flex w-fit items-center gap-2 rounded-full bg-orange-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-orange-600">
+                          <span className="mb-3 inline-flex w-fit items-center gap-2 rounded-full bg-orange-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-orange-600">
                             <span className="size-2 rounded-full bg-orange-500" />À la une
                           </span>
                         ) : null}
@@ -406,7 +406,7 @@ export function HomePage() {
                 <div className={`flex h-full flex-col justify-between gap-6 ${i === 0 ? "py-2 pr-2 md:py-4 md:pr-6" : "p-6 md:p-7"}`}>
                   <div>
                     <div className="flex items-center justify-between gap-3">
-                      <span className="inline-flex items-center rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-foreground/90">
+                      <span className="inline-flex items-center rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-brand-foreground/90">
                         {item.heading}
                       </span>
                       {i === 1 ? (
@@ -419,7 +419,7 @@ export function HomePage() {
                     <h2 className="mt-5 font-display text-2xl font-bold text-white">
                       {item.title}
                     </h2>
-                    <p className="mt-4 text-sm leading-relaxed text-slate-300">
+                    <p className="mt-4 text-base leading-relaxed text-slate-300">
                       {item.description}
                     </p>
 
@@ -484,7 +484,7 @@ export function HomePage() {
             }}
           />
           <div className="relative">
-            <h2 className="font-display text-3xl md:text-5xl font-extrabold text-white">
+            <h2 className="font-display text-2xl md:text-3xl font-extrabold text-white">
               {t("home.cta.title")}
             </h2>
             <p className="mt-3 text-white/85 max-w-2xl mx-auto">

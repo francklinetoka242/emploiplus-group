@@ -369,7 +369,7 @@ export function JobOfferDetailPage() {
       <section className="container-page pb-20 md:pb-28">
         <div className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr]">
           <div className="space-y-6">
-            <div className="overflow-hidden rounded-[32px] border border-border/70 bg-gradient-to-br from-background via-card to-primary/5 p-8 shadow-soft">
+            <div className="overflow-hidden border-b border-border/70 bg-gradient-to-br from-background via-card to-primary/5 p-8">
               <div className="flex flex-col gap-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <Link
@@ -430,7 +430,7 @@ export function JobOfferDetailPage() {
               {overviewItems.map(({ icon: Icon, label, value }) => (
                 <div
                   key={label}
-                  className="rounded-2xl border border-border/70 bg-card/80 p-4 shadow-sm"
+                  className="border-b border-border/70 bg-card/40 p-4"
                 >
                   <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                     <Icon className="size-4 text-brand" />
@@ -441,7 +441,7 @@ export function JobOfferDetailPage() {
               ))}
             </div>
 
-            <div className="rounded-[28px] border border-border/70 bg-card p-8 shadow-soft">
+            <div className="border-t border-border/70 bg-card/40 p-8">
               <div className="flex items-center gap-3">
                 <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
                   <FileText className="size-5" />
@@ -461,7 +461,7 @@ export function JobOfferDetailPage() {
             </div>
 
             {job.requirements ? (
-              <div className="rounded-[28px] border border-border/70 bg-card p-8 shadow-soft">
+              <div className="border-t border-border/70 bg-card/40 p-8">
                 <div className="flex items-center gap-3">
                   <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
                     <BadgeCheck className="size-5" />
@@ -491,7 +491,7 @@ export function JobOfferDetailPage() {
           </div>
 
           <aside className="space-y-6">
-            <div className="rounded-[28px] border border-border/70 bg-card p-7 shadow-soft">
+            <div className="rounded-xl border border-border/70 bg-card p-7">
               <h3 className="font-display text-xl font-semibold text-foreground">{applyTitle}</h3>
               <p className="mt-2 text-sm leading-7 text-muted-foreground">{applyDescription}</p>
               <div className="mt-6 space-y-3">
@@ -517,7 +517,7 @@ export function JobOfferDetailPage() {
 
             {/* IA Evaluation: show disabled state for anonymous visitors */}
             {!profile?.id ? (
-              <div className="rounded-[28px] border border-border/70 bg-background/60 p-7 shadow-soft text-center text-muted-foreground">
+              <div className="rounded-xl border border-border/70 bg-background/60 p-7 text-center text-muted-foreground">
                 <div className="flex items-center gap-3 justify-center">
                   <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
                     <Sparkles className="size-5" />
@@ -547,7 +547,7 @@ export function JobOfferDetailPage() {
                 </div>
               </div>
             ) : (
-              <div className="rounded-[28px] border border-border/70 bg-card p-7 shadow-soft">
+              <div className="rounded-xl border border-border/70 bg-card p-7">
                 <div className="flex items-center gap-3">
                   <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
                     <Sparkles className="size-5" />
@@ -644,7 +644,7 @@ export function JobOfferDetailPage() {
               </div>
             )}
 
-            <div className="rounded-[28px] border border-border/70 bg-card p-7 shadow-soft">
+            <div className="border-t border-border/70 pt-7">
               <h3 className="font-display text-xl font-semibold text-foreground">
                 Informations utiles
               </h3>

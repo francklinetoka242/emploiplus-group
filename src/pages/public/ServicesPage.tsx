@@ -105,7 +105,7 @@ export function ServicesPage() {
         robots="index,follow"
       />
 
-      <main className="bg-slate-50 pb-20 pt-0">
+      <main className="bg-background pb-20 pt-0">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="space-y-24">
             <section className="mx-4 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center sm:mx-6 lg:mx-8">
@@ -114,10 +114,10 @@ export function ServicesPage() {
                   Candidat
                 </div>
                 <div className="space-y-4">
-                  <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+                  <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                     Un parcours candidat fluide et efficace
                   </h2>
-                  <p className="max-w-2xl text-base leading-8 text-slate-600">
+                  <p className="max-w-2xl text-base leading-8 text-muted-foreground">
                     Explorez les offres, préparez votre profil et postulez en quelques étapes. Tout est pensé pour gagner du temps et vous mettre en valeur.
                   </p>
                 </div>
@@ -144,7 +144,7 @@ export function ServicesPage() {
                     <div
                       key={label}
                       className={
-                        `rounded-xl border border-border bg-card px-5 py-4 text-slate-700 shadow-none transition-colors duration-200 hover:border-border/80 slide-in-up` +
+                        `border-b border-border px-1 py-4 text-foreground/80 transition-colors duration-200 hover:border-brand slide-in-up` +
                         ` slide-delay-${index + 2}`
                       }
                     >
@@ -158,7 +158,7 @@ export function ServicesPage() {
 
                 <Link
                   to="/services/hub-candidat-intelligent"
-                  className="inline-flex items-center justify-center rounded-full bg-brand px-7 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-brand-dark slide-in-up slide-delay-4"
+                  className="inline-flex items-center justify-center rounded-full bg-brand px-7 py-3 text-sm font-semibold text-brand-foreground transition duration-300 hover:bg-brand/90 slide-in-up slide-delay-4"
                 >
                   Découvrir l'espace candidat
                 </Link>
@@ -168,7 +168,7 @@ export function ServicesPage() {
             </section>
 
             <section className="grid gap-10 border-t border-slate-200/80 pt-16 lg:grid-cols-[0.95fr_1.05fr] lg:pt-20 items-center">
-              <div className="relative overflow-hidden rounded-[2rem] bg-white slide-in-left slide-delay-1">
+              <div className="relative overflow-hidden rounded-[2rem] bg-card slide-in-left slide-delay-1">
                 <img
                   src={enterpriseIllustration}
                   alt="Solutions entreprise et BPO"
@@ -182,10 +182,10 @@ export function ServicesPage() {
                   Entreprise
                 </div>
                 <div className="space-y-4">
-                  <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+                  <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                     Une solution d'externalisation globale et sur mesure
                   </h2>
-                  <p className="max-w-2xl text-base leading-8 text-slate-600">
+                  <p className="max-w-2xl text-base leading-8 text-muted-foreground">
                     BPO, gestion déléguée et pilotage opérationnel pour faire évoluer votre organisation avec sérénité.
                   </p>
                 </div>
@@ -212,7 +212,7 @@ export function ServicesPage() {
                     <div
                       key={label}
                       className={
-                        `rounded-xl border border-border bg-card px-5 py-4 text-slate-700 shadow-none transition-colors duration-200 hover:border-border/80 slide-in-up` +
+                        `border-b border-border px-1 py-4 text-foreground/80 transition-colors duration-200 hover:border-secondary slide-in-up` +
                         ` slide-delay-${index + 2}`
                       }
                     >
@@ -226,7 +226,7 @@ export function ServicesPage() {
 
                 <Link
                   to="/services/solutions-entreprises-bpo"
-                  className="inline-flex items-center justify-center rounded-full bg-secondary px-7 py-3 text-sm font-semibold text-white transition duration-300 hover:bg-secondary/90 slide-in-up slide-delay-4"
+                  className="inline-flex items-center justify-center rounded-full bg-secondary px-7 py-3 text-sm font-semibold text-secondary-foreground transition duration-300 hover:bg-secondary/90 slide-in-up slide-delay-4"
                 >
                   Découvrir nos solutions
                 </Link>

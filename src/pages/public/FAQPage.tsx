@@ -48,24 +48,24 @@ export default function FAQPage() {
             <p className="max-w-3xl text-lg leading-8 text-muted-foreground">{t("faq.subtitle")}</p>
           </header>
 
-          <article className="space-y-8">
+          <article className="divide-y divide-border">
             {loading ? (
               <p>Chargement…</p>
             ) : (
               faqs.map((f: FAQ) => (
-                <section key={f.id} className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+                <section key={f.id} className="py-8 first:pt-0">
                   <h2 className="font-display text-2xl font-semibold text-foreground">{f.question}</h2>
                   <p className="mt-4 text-foreground/90 leading-7">{f.answer}</p>
                 </section>
               ))
             )}
 
-            <section className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+            <section className="py-8">
               <h2 className="font-display text-2xl font-semibold text-foreground">{t("faq.services.title")}</h2>
               <p className="mt-4 text-foreground/90 leading-7">{t("faq.services.answer")}</p>
             </section>
 
-            <section className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+            <section className="py-8 last:pb-0">
               <h2 className="font-display text-2xl font-semibold text-foreground">{t("faq.stillNeedHelp.title")}</h2>
               <p className="mt-4 text-foreground/90 leading-7">{t("faq.stillNeedHelp.description")}</p>
               <Link to="/contact" className="mt-6 inline-flex rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90">
