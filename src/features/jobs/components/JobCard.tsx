@@ -84,7 +84,6 @@ export function JobCard({
       className={`relative flex h-full overflow-hidden border border-border/80 bg-card shadow-soft transition-all duration-300 hover:border-brand/30 hover:shadow-elev focus-within:border-brand/40 ${isList ? "flex-col gap-4 rounded-xl p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5" : "flex-col rounded-2xl p-5"} ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`}
       style={{ animationDelay: `${index * 120}ms` }}
     >
-      <div className="absolute inset-y-0 left-0 w-1 bg-brand" />
       <div className={`relative z-10 ${isList ? "min-w-0 flex-1" : ""}`}>
         <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1">
