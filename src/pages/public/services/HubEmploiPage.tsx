@@ -313,9 +313,9 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <article className="rounded-lg border border-border bg-white p-6 shadow-sm transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+    <article className="border-l-2 border-brand/40 bg-white/60 p-6 transition-colors duration-300 hover:border-brand">
       <div className="flex items-start gap-4">
-        <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-brand/5 text-brand">
+        <div className="pt-1 text-brand">
           {icon}
         </div>
         <div>

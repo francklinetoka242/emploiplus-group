@@ -70,6 +70,10 @@ export function JobCard({
   const shareText = `Offre d'emploi : ${job.title} chez ${job.company}\n\n${previewText.slice(0, 220)}\n\nOffre partagée depuis https://emploiplus-group.com`;
 
   const handleApplyClick = () => {
+    if (isExpired) {
+      return;
+    }
+
     if (onApplyClick) {
       onApplyClick();
     } else {
@@ -81,7 +85,7 @@ export function JobCard({
 
   return (
     <article
-      className={`relative flex h-full overflow-hidden border border-border/80 bg-card shadow-soft transition-all duration-300 hover:border-brand/30 hover:shadow-elev focus-within:border-brand/40 ${isList ? "flex-col gap-4 rounded-xl p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5" : "flex-col rounded-2xl p-5"} ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`}
+      className={`relative flex h-full overflow-hidden border border-border bg-card shadow-none transition-colors duration-200 hover:border-border/80 focus-within:border-brand/40 ${isList ? "flex-col gap-4 rounded-xl p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5" : "flex-col rounded-xl p-5"} ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`}
       style={{ animationDelay: `${index * 120}ms` }}
     >
       <div className={`relative z-10 ${isList ? "min-w-0 flex-1" : ""}`}>
@@ -202,6 +206,7 @@ export function JobCard({
             <Button
               type="button"
               size="sm"
+              disabled={isExpired}
               className="h-10 rounded-xl bg-brand px-4 font-semibold text-brand-foreground shadow-sm hover:bg-brand/90"
               onClick={handleApplyClick}
             >

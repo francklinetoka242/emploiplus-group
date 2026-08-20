@@ -92,7 +92,7 @@ export function AboutPage() {
               {t("about.values.title")}
             </motion.h3>
             <motion.div 
-              className="grid gap-4 md:grid-cols-3"
+              className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0"
               variants={staggerContainer}
               initial="hidden"
               whileInView="visible"
@@ -101,14 +101,11 @@ export function AboutPage() {
               {values.map((item) => (
                 <motion.div
                   key={item.title}
-                  className="group rounded-2xl border border-border bg-card p-6 text-left md:text-center transition-all duration-300 hover:shadow-md hover:-translate-y-2 hover:border-secondary/30"
+                  className="group px-0 py-5 text-left transition-colors duration-300 hover:text-brand md:px-6 md:py-2 md:text-center"
                   variants={staggerItem}
-                  whileHover={{ y: -8 }}
                 >
                   <motion.div 
                     className="flex justify-start md:justify-center"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   >
                     {item.icon}
                   </motion.div>

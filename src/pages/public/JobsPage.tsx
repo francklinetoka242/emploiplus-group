@@ -140,7 +140,7 @@ export function JobsPage() {
           { name: t("jobs.page.title"), url: `${BASE_URL}/jobs` },
         ]}
       />
-      <section className="container-page pb-20 md:pb-28">
+      <section className="container-page pb-32 md:pb-28">
         <div className="grid gap-8">
           <div className="space-y-6 text-foreground/90 leading-relaxed">
             <div
@@ -329,7 +329,7 @@ export function JobsPage() {
           </div>
         </div>
       </section>
-      <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
+      <div className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-40 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
         {whatsappOpen ? (
           <div
             role="dialog"

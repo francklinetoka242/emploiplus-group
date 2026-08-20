@@ -36,7 +36,7 @@ function HeroSection() {
     return (
       <section className="relative overflow-hidden min-h-[400px] md:min-h-[420px] bg-slate-100">
         <div className="relative z-10 container-page py-20 md:py-28">
-          <div className="grid gap-12 lg:grid-cols-[1fr_320px] items-center">
+          <div className="grid items-center gap-12">
             <div>
               <p className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-primary/10">
                 {t("home.hero.eyebrow")}
@@ -47,12 +47,7 @@ function HeroSection() {
               <p className="mt-6 max-w-2xl text-base text-slate-700 leading-relaxed">
                 {t("home.hero.subtitle")}
               </p>
-              <div className="mt-10 flex flex-wrap gap-3">
-                <div className="h-12 w-36 rounded-lg bg-slate-200" />
-                <div className="h-12 w-36 rounded-lg bg-slate-200" />
-              </div>
             </div>
-            <div className="hidden lg:block" />
           </div>
         </div>
       </section>
@@ -70,7 +65,7 @@ function HeroSection() {
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.65),rgba(2,6,23,0.9))]" />
       <div className="absolute inset-0 bg-black/40" />
       <div className="relative z-10 container-page py-20 md:py-28">
-        <div className="grid gap-12 lg:grid-cols-[1fr_320px] items-center">
+        <div className="grid items-center gap-12">
           <motion.div
             initial="hidden"
             animate="visible"
@@ -110,7 +105,6 @@ function HeroSection() {
               </Button>
             </motion.div>
           </motion.div>
-          <div className="hidden lg:block" />
         </div>
       </div>
     </motion.section>
@@ -128,18 +122,16 @@ function AnimatedStat({
 }) {
   return (
     <motion.div
-      className="rounded-3xl overflow-hidden transform"
+      className="rounded-xl overflow-hidden transform"
       variants={fadeUp}
-      whileHover={{ y: -6, scale: 1.02 }}
+      whileHover={{ y: -3, scale: 1.01 }}
       transition={{ duration: 0.2 }}
     >
-      <div className="p-[1px] rounded-3xl gradient-brand">
-        <article className="rounded-3xl bg-card p-8 text-center shadow-lg">
-          <div className="text-4xl font-display font-extrabold text-foreground">
-            <AnimatedCounter value={value} />
-          </div>
-          <div className="mt-3 text-sm text-muted-foreground">{t(label)}</div>
-        </article>
+      <div className="rounded-xl bg-card p-8 text-center shadow-sm ring-1 ring-border/80">
+        <div className="text-4xl font-display font-extrabold text-foreground">
+          <AnimatedCounter value={value} />
+        </div>
+        <div className="mt-3 text-sm text-muted-foreground">{t(label)}</div>
       </div>
     </motion.div>
   );
@@ -222,53 +214,56 @@ export function HomePage() {
         transition={{ duration: 0.6 }}
       >
         <motion.div 
-          className="rounded-3xl border border-secondary/20 bg-gradient-to-br from-secondary/8 via-card to-card p-8 md:p-16 shadow-sm"
-          whileInView={{ boxShadow: "0 25px 50px rgba(232,169,0,0.08)" }}
+          className="rounded-[28px] border border-secondary/15 bg-gradient-to-br from-secondary/8 via-card to-card p-6 md:p-10 shadow-sm"
+          whileInView={{ boxShadow: "0 18px 40px rgba(232,169,0,0.06)" }}
           transition={{ duration: 0.6 }}
         >
-          <motion.div 
-            className="grid gap-8 md:gap-12 md:grid-cols-3 divide-x divide-secondary/10"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-          >
-            {stats.map((item, i) => (
-              <motion.div 
-                key={item.label} 
-                variants={staggerItem}
-                className="flex flex-col items-center px-4 md:px-6"
-              >
-                <motion.div
-                  className="mb-4 flex items-center justify-center"
-                  initial={{ scale: 0, rotate: -180 }}
-                  whileInView={{ scale: 1, rotate: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ type: "spring", stiffness: 100, damping: 15, delay: i * 0.1 }}
+          <div className="grid gap-6 lg:items-center">
+            <motion.div 
+              className="grid gap-4 sm:grid-cols-3"
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+            >
+              {stats.map((item, i) => (
+                <motion.div 
+                  key={item.label} 
+                  variants={staggerItem}
+                  className="flex min-h-[170px] flex-col justify-between rounded-2xl border border-border bg-card/80 p-5"
                 >
-                  {item.icon}
+                  <motion.div
+                    className="flex items-center justify-between"
+                    initial={{ scale: 0, rotate: -180 }}
+                    whileInView={{ scale: 1, rotate: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ type: "spring", stiffness: 100, damping: 15, delay: i * 0.1 }}
+                  >
+                    <div className="flex items-center justify-center">{item.icon}</div>
+                    <span className="h-2.5 w-2.5 rounded-full bg-secondary/40" />
+                  </motion.div>
+                  <motion.p 
+                    className="font-display text-2xl md:text-3xl font-extrabold text-secondary"
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                  >
+                    {item.value}
+                  </motion.p>
+                  <motion.p 
+                    className="text-sm md:text-base font-semibold text-foreground"
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.1 + 0.1 }}
+                  >
+                    {t(item.label)}
+                  </motion.p>
                 </motion.div>
-                <motion.p 
-                  className="font-display text-2xl md:text-3xl font-extrabold text-secondary mb-3"
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  whileInView={{ scale: 1, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                >
-                  {item.value}
-                </motion.p>
-                <motion.p 
-                  className="text-center text-sm md:text-base font-semibold text-foreground"
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 + 0.1 }}
-                >
-                  {t(item.label)}
-                </motion.p>
-              </motion.div>
-            ))}
-          </motion.div>
+              ))}
+            </motion.div>
+          </div>
         </motion.div>
       </motion.section>
 
@@ -395,24 +390,30 @@ export function HomePage() {
             {services.map((item, i) => (
               <motion.article
                 key={item.title}
-                className="group relative overflow-hidden rounded-[28px] border border-white/10 bg-slate-900/70 shadow-[0_18px_50px_-20px_rgba(15,23,42,0.9)] backdrop-blur-sm"
+                className={`group relative overflow-hidden ${
+                  i === 0
+                    ? "border-l-2 border-secondary/70 pl-6 md:pl-8"
+                    : "rounded-[28px] border border-white/10 bg-slate-900/70 shadow-[0_18px_50px_-20px_rgba(15,23,42,0.9)] backdrop-blur-sm"
+                }`}
                 initial={{ opacity: 0, x: -80 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 variants={staggerItem}
-                whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                whileHover={i === 0 ? undefined : { y: -8, transition: { duration: 0.2 } }}
                 transition={{ delay: i * 0.08, duration: 0.55 }}
               >
-                <div className="absolute inset-x-0 top-0 h-1 bg-secondary" />
-                <div className="flex h-full flex-col justify-between gap-6 p-6 md:p-7">
+                {i === 1 ? <div className="absolute inset-x-0 top-0 h-1 bg-secondary" /> : null}
+                <div className={`flex h-full flex-col justify-between gap-6 ${i === 0 ? "py-2 pr-2 md:py-4 md:pr-6" : "p-6 md:p-7"}`}>
                   <div>
                     <div className="flex items-center justify-between gap-3">
                       <span className="inline-flex items-center rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-foreground/90">
                         {item.heading}
                       </span>
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-brand-foreground ring-1 ring-white/10">
-                        {i === 0 ? <Sparkles className="h-4 w-4" /> : <Building2 className="h-4 w-4" />}
-                      </div>
+                      {i === 1 ? (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-brand-foreground ring-1 ring-white/10">
+                          <Building2 className="h-4 w-4" />
+                        </div>
+                      ) : <Sparkles className="h-5 w-5 text-brand-foreground" />}
                     </div>
 
                     <h2 className="mt-5 font-display text-2xl font-bold text-white">
@@ -425,9 +426,7 @@ export function HomePage() {
                     <ul className="mt-6 space-y-3 text-sm text-slate-200">
                       {item.bullets.map((bullet) => (
                         <li key={bullet} className="flex items-start gap-3">
-                          <span className="mt-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand/15 text-brand-foreground">
-                            <span className="h-2 w-2 rounded-full bg-brand" />
-                          </span>
+                          <span className="mt-2 h-px w-4 shrink-0 bg-brand/70" />
                           <span>{bullet}</span>
                         </li>
                       ))}

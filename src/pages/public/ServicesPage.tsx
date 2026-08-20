@@ -107,9 +107,6 @@ export function ServicesPage() {
 
       <main className="bg-slate-50 pb-20 pt-0">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <header className="space-y-6 text-center">
-          </header>
-
           <div className="space-y-24">
             <section className="mx-4 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center sm:mx-6 lg:mx-8">
               <div className="space-y-8 slide-in-left slide-delay-1">
@@ -147,7 +144,7 @@ export function ServicesPage() {
                     <div
                       key={label}
                       className={
-                        `rounded-3xl bg-white px-6 py-5 text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md slide-in-up` +
+                        `rounded-xl border border-border bg-card px-5 py-4 text-slate-700 shadow-none transition-colors duration-200 hover:border-border/80 slide-in-up` +
                         ` slide-delay-${index + 2}`
                       }
                     >
@@ -215,7 +212,7 @@ export function ServicesPage() {
                     <div
                       key={label}
                       className={
-                        `rounded-3xl bg-white px-6 py-5 text-slate-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md slide-in-up` +
+                        `rounded-xl border border-border bg-card px-5 py-4 text-slate-700 shadow-none transition-colors duration-200 hover:border-border/80 slide-in-up` +
                         ` slide-delay-${index + 2}`
                       }
                     >

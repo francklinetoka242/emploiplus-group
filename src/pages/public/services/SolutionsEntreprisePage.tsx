@@ -39,7 +39,7 @@ export default function SolutionsEntreprisePage() {
             </div>
 
             <div className="mt-10 space-y-8">
-              <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-2 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
+              <article className="rounded-xl border border-border/80 p-6 shadow-none transition-colors duration-300 hover:border-border">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary">Vous avez un besoin</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
                   <BriefcaseBusiness className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
@@ -53,7 +53,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-3 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
+              <article className="rounded-xl border border-border/80 p-6 shadow-none transition-colors duration-300 hover:border-border">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary">Nous analysons</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
                   <Users className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
@@ -67,7 +67,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-4 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
+              <article className="rounded-xl border border-border/80 p-6 shadow-none transition-colors duration-300 hover:border-border">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary">Nous déployons</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
                   <FolderKanban className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
@@ -81,7 +81,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-5 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
+              <article className="rounded-xl border border-border/80 p-6 shadow-none transition-colors duration-300 hover:border-border">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary">Nous pilotons</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
                   <BarChart3 className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
@@ -95,7 +95,7 @@ export default function SolutionsEntreprisePage() {
                 </p>
               </article>
 
-              <article className="border border-border/80 p-6 shadow-sm slide-in-up slide-delay-6 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-xl hover:border-border/100">
+              <article className="rounded-xl border border-border/80 p-6 shadow-none transition-colors duration-300 hover:border-border">
                 <p className="text-sm uppercase tracking-[0.25em] text-secondary">Vous gagnez du temps</p>
                 <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold text-foreground">
                   <ShieldCheck className="h-6 w-6 shrink-0 text-secondary" aria-hidden="true" />
