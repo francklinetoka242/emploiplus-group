@@ -475,7 +475,7 @@ export function HomePage() {
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       >
-        <motion.div className="rounded-3xl bg-[var(--brand)] p-10 md:p-16 text-center shadow-brand relative overflow-hidden" whileHover={{ y: -3 }} transition={{ duration: 0.2 }} initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }}>
+        <motion.div className="relative overflow-hidden border-y border-white/20 bg-[var(--brand)] px-6 py-10 shadow-brand sm:px-10 md:px-16 md:py-14" initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }}>
           <div
             className="absolute inset-0 opacity-25"
             style={{
@@ -483,20 +483,26 @@ export function HomePage() {
                 "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.35), transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.2), transparent 40%)",
             }}
           />
-          <div className="relative">
-            <h2 className="font-display text-2xl md:text-3xl font-extrabold text-white">
-              {t("home.cta.title")}
-            </h2>
-            <p className="mt-3 text-white/85 max-w-2xl mx-auto">
-              {t("home.cta.subtitle")}
-            </p>
-            <Button
-              asChild
-              size="lg"
-              className="mt-7 bg-white text-[--brand-deep] hover:bg-white/90 font-semibold"
-            >
-              <Link to="/contact">{t("home.cta.button")}</Link>
-            </Button>
+          <div className="relative grid gap-8 md:grid-cols-[minmax(0,1fr)_220px] md:items-center md:gap-12">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/70">Échangeons sur votre projet</p>
+              <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white md:text-4xl">
+                {t("home.cta.title")}
+              </h2>
+              <p className="mt-4 max-w-xl text-base leading-7 text-white/85">
+                {t("home.cta.subtitle")}
+              </p>
+            </div>
+            <div className="md:border-l md:border-white/25 md:pl-8">
+              <Button
+                asChild
+                size="lg"
+                className="w-full bg-white font-semibold text-[--brand-deep] hover:bg-white/90 sm:w-auto"
+              >
+                <Link to="/contact">{t("home.cta.button")}</Link>
+              </Button>
+              <p className="mt-3 text-sm leading-6 text-white/65">Parlons de vos priorités et de la prochaine étape.</p>
+            </div>
           </div>
         </motion.div>
       </motion.section>
