@@ -11,18 +11,55 @@ export function ContactPage() {
   const { t } = useI18n();
   const [formData, setFormData] = React.useState({ name: "", email: "", subject: "", message: "" });
   const [submitted, setSubmitted] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setSubmitted(true);
-    setFormData({ name: "", email: "", subject: "", message: "" });
-    setTimeout(() => setSubmitted(false), 5000);
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitted(false);
+    setSubmitError("");
+
+    const escapeHtml = (value: string) =>
+      value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+    try {
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipient: "contact@emploiplus.group",
+          replyTo: formData.email.trim(),
+          subject: formData.subject.trim(),
+          text: `Nom : ${formData.name}\nEmail : ${formData.email}\n\n${formData.message}`,
+          html: `<p><strong>Nom :</strong> ${escapeHtml(formData.name)}</p><p><strong>Email :</strong> ${escapeHtml(formData.email)}</p><p>${escapeHtml(formData.message).replace(/\n/g, "<br />")}</p>`,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(typeof result?.error === "string" ? result.error : "Impossible d'envoyer votre message.");
+      }
+
+      setSubmitted(true);
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      window.setTimeout(() => setSubmitted(false), 5000);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Impossible d'envoyer votre message.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -196,6 +233,12 @@ export function ContactPage() {
                 </motion.div>
               )}
 
+              {submitError && (
+                <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-800">
+                  {submitError}
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid gap-6 md:grid-cols-2">
                   <motion.div variants={staggerItem}>
@@ -266,9 +309,10 @@ export function ContactPage() {
                     type="submit"
                     size="lg"
                     className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
+                    disabled={isSubmitting}
                   >
                     <Send className="h-4 w-4" />
-                    {t("contact.form.submit")}
+                    {isSubmitting ? "Envoi en cours..." : t("contact.form.submit")}
                   </Button>
                 </motion.div>
               </form>

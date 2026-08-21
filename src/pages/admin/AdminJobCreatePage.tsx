@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { centralAfricaCityGroups } from "@/data/locations";
 import type { JobOfferInsert } from "@/features/jobs/types";
+import type { Database } from "@/integrations/supabase/types";
 
 function createSlug(value: string) {
   return (
@@ -74,7 +75,7 @@ export function AdminJobCreatePage() {
     setSaving(true);
 
     const slug = createSlug(form.title || `${form.company}-${Date.now()}`);
-    const nextStatus: Database["public"]["Enums"]["job_status"] = "published";
+    const nextStatus = form.status as Database["public"]["Enums"]["job_status"];
     const payload = {
       slug,
       title: form.title.trim(),

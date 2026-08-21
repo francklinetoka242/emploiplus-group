@@ -7,6 +7,7 @@
 - `src/pages/public/BlogPostDetailPage.tsx`
 - `src/pages/public/JobsPage.tsx`
 - `src/pages/public/JobOfferDetailPage.tsx`
+- `src/components/candidate/NotificationsDropdown.tsx`
 
 Aucune route, API, requête, donnée ou logique métier n’a été modifiée.
 
@@ -17,6 +18,7 @@ Aucune route, API, requête, donnée ou logique métier n’a été modifiée.
 - Blog détail : colonnes, articles et sidebar rendus réductibles avec `min-w-0`; titre, extrait, contenu éditorial, métadonnées et liens longs acceptent la rupture sans élargir la page.
 - Jobs : champ de recherche passé de `bg-white` à `bg-background` pour suivre le dark mode sans changer la logique ou la structure.
 - Job detail : colonnes et enfants rendus `min-w-0`; grille large passée à des tracks `minmax(0,...)`; titre, entreprise et exigences acceptent les contenus longs sans débordement forcé.
+- Notifications candidat : popup limité à `calc(100vw - 2rem)` sur mobile avec `max-w-96` desktop; en-tête repliable, lignes et badges réductibles, état non lu compatible avec le thème et label accessible sur l’icône.
 
 ## 3. Problèmes volontairement laissés inchangés
 - Le rail featured Blog n’a pas été transformé en grille.
@@ -45,6 +47,7 @@ Mesure navigateur sur `/blog` et `/blog/G-DYM` : à 320, 360, 375, 390 et 430 px
 - Le champ de recherche Jobs utilise `bg-background`.
 - Le détail Blog n’impose plus de surface ou largeur intrinsèque susceptible de pousser le contenu en dark mode.
 - Blog, Job detail, cookie, dropdowns, drawer et tableaux conservent les tokens existants; leurs interactions visuelles complètes restent à confirmer sur écran réel.
+- Le popup notifications n’impose plus `w-96` sur mobile; sa largeur suit le viewport et son état non lu utilise `bg-primary/5`.
 
 ## 6. Overflow horizontal
 - Le footer login ne masque plus le contenu avec `overflow-hidden` et peut se replier.
@@ -72,7 +75,8 @@ Mesure navigateur sur `/blog` et `/blog/G-DYM` : à 320, 360, 375, 390 et 430 px
 - Header + filtres sticky + WhatsApp + cookie banner sur Jobs, notamment la pagination.
 - Clavier virtuel sur login, recherche, candidature et formulaires.
 - Tables candidat/admin, dropdowns, drawer candidat et contrastes dark mode.
+- Popup notifications candidat ouvert depuis la navbar mobile, avec session candidate réelle et notifications longues/non lues.
 - Vérification sur appareil physique et avec clavier virtuel, non couverte par la mesure navigateur locale.
 
 ## 10. Verdict final
-La passe corrige les défauts mobiles démontrables sans refonte : le footer login ne force plus une ligne coupée, les rails restent intentionnels mais mieux contenus, et les contenus longs des détails Blog et offre peuvent se réduire. Les deux routes Blog vérifiées ne présentent plus d’overflow horizontal global aux largeurs mobiles ciblées. Le build frontend est valide. Les risques liés à l’empilement d’éléments fixed/sticky et au rendu tactile/dark mode nécessitent encore une validation sur appareils physiques.
+La passe corrige les défauts mobiles démontrables sans refonte : le footer login ne force plus une ligne coupée, les rails restent intentionnels mais mieux contenus, les contenus longs des détails Blog et offre peuvent se réduire, et le popup notifications ne dépasse plus la largeur mobile par construction. Les deux routes Blog vérifiées ne présentent plus d’overflow horizontal global aux largeurs mobiles ciblées. Le build frontend est valide. L’ouverture du popup avec un compte candidat réel et des données de notification reste à valider sur appareil ou session authentifiée.

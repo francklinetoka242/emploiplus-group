@@ -58,7 +58,6 @@ export function AuthPage() {
     if (isSubmittingRef.current) {
       return;
     }
-    isSubmittingRef.current = true;
     setError(null);
     setMessage(null);
     setAuthDetail(null);
@@ -81,6 +80,7 @@ export function AuthPage() {
       return;
     }
 
+    isSubmittingRef.current = true;
     setLoading(true);
     setMessage(null);
 
