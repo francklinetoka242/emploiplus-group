@@ -31,6 +31,10 @@ const pageToTitle: Record<string, string> = {
   "/candidate/saved-jobs": "Offres enregistrées",
   "/candidate/saved-offers": "Offres enregistrées",
   "/candidate/notifications": "",
+  "/candidate/subscription": "Abonnement",
+  "/candidate/subscription/free": "Forfait Gratuit",
+  "/candidate/subscription/premium": "Premium",
+  "/candidate/subscription/premium-plus": "Premium+",
   "/candidate/account": "Compte",
   "/candidate/settings": "Compte",
 };
@@ -54,7 +58,10 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
     const scrollContainer = mainRef.current;
     const canScrollContainer = () =>
       Boolean(scrollContainer && scrollContainer.scrollHeight > scrollContainer.clientHeight + 1);
-    const updateHeaderVisibility = (currentScrollTop: number, lastScrollTopRef: React.MutableRefObject<number>) => {
+    const updateHeaderVisibility = (
+      currentScrollTop: number,
+      lastScrollTopRef: React.MutableRefObject<number>,
+    ) => {
       const scrollDelta = currentScrollTop - lastScrollTopRef.current;
 
       if (currentScrollTop <= 0 || scrollDelta < -4) {
@@ -66,7 +73,8 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
       lastScrollTopRef.current = currentScrollTop;
     };
 
-    const handleContainerScroll = () => updateHeaderVisibility(scrollContainer?.scrollTop ?? 0, lastMainScrollTopRef);
+    const handleContainerScroll = () =>
+      updateHeaderVisibility(scrollContainer?.scrollTop ?? 0, lastMainScrollTopRef);
     const handleWindowScroll = () => {
       if (!canScrollContainer()) updateHeaderVisibility(window.scrollY, lastWindowScrollTopRef);
     };
@@ -86,9 +94,18 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   return (
     <div className="h-screen min-h-screen flex flex-col bg-background text-foreground">
       {/* Mobile Header (visible uniquement sur mobile) */}
-      <div className={cn("transition-transform duration-300 md:hidden", headerVisible ? "translate-y-0" : "-translate-y-full")}>
+      <div
+        className={cn(
+          "transition-transform duration-300 md:hidden",
+          headerVisible ? "translate-y-0" : "-translate-y-full",
+        )}
+      >
         <div>
-          <CandidateMobileHeader title={pageTitle} onMenuOpen={() => setOpen(true)} onLogout={logout} />
+          <CandidateMobileHeader
+            title={pageTitle}
+            onMenuOpen={() => setOpen(true)}
+            onLogout={logout}
+          />
         </div>
       </div>
 
@@ -108,7 +125,12 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
           )}
         >
           {/* Topbar Desktop */}
-          <div className={cn("transition-transform duration-300", headerVisible ? "translate-y-0" : "-translate-y-full")}>
+          <div
+            className={cn(
+              "transition-transform duration-300",
+              headerVisible ? "translate-y-0" : "-translate-y-full",
+            )}
+          >
             <div>
               <CandidateTopbar onMenuToggle={() => setOpen(!open)} onLogout={logout} />
             </div>
@@ -142,7 +164,5 @@ export function CandidateLayout({ children }: CandidateLayoutProps) {
     robots: "noindex,nofollow",
   });
 
-  return (
-    <CandidateAppShell pageTitle={pageTitle}>{children ?? <Outlet />}</CandidateAppShell>
-  );
+  return <CandidateAppShell pageTitle={pageTitle}>{children ?? <Outlet />}</CandidateAppShell>;
 }

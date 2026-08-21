@@ -232,6 +232,26 @@ const CandidateLocalGuidesPage = lazy(() =>
     default: m.CandidateLocalGuidesPage,
   })),
 );
+const CandidateSubscriptionPage = lazy(() =>
+  import("@/pages/candidate/CandidateSubscriptionPage").then((m) => ({
+    default: m.CandidateSubscriptionPage,
+  })),
+);
+const CandidateFreeSubscriptionPage = lazy(() =>
+  import("@/pages/candidate/CandidateFreeSubscriptionPage").then((m) => ({
+    default: m.CandidateFreeSubscriptionPage,
+  })),
+);
+const CandidatePremiumSubscriptionPage = lazy(() =>
+  import("@/pages/candidate/CandidatePremiumSubscriptionPage").then((m) => ({
+    default: m.CandidatePremiumSubscriptionPage,
+  })),
+);
+const CandidatePremiumPlusSubscriptionPage = lazy(() =>
+  import("@/pages/candidate/CandidatePremiumPlusSubscriptionPage").then((m) => ({
+    default: m.CandidatePremiumPlusSubscriptionPage,
+  })),
+);
 const CandidateJobApplyPage = lazy(() =>
   import("@/pages/candidate/CandidateJobApplyPage").then((m) => ({
     default: m.CandidateJobApplyPage,
@@ -256,7 +276,10 @@ function SharedPublicRouteShell() {
   const showCandidateShell = isAuthenticated && roles.includes("candidate");
 
   if (showCandidateShell) {
-    return withSuspense(<CandidateLayout>{content}</CandidateLayout>, <CandidateDashboardSkeleton />);
+    return withSuspense(
+      <CandidateLayout>{content}</CandidateLayout>,
+      <CandidateDashboardSkeleton />,
+    );
   }
 
   return <PublicLayout>{content}</PublicLayout>;
@@ -266,20 +289,6 @@ function AppContent() {
   const location = useLocation();
   const mobileApp = isMobileApp();
   const { session } = useAuthContext();
-
-  if (mobileApp) {
-    const pathname = location.pathname;
-    const isAllowedMobilePath =
-      pathname === "/jobs" ||
-      pathname.startsWith("/jobs/") ||
-      pathname === "/candidate" ||
-      pathname === "/candidate/guides" ||
-      pathname.startsWith("/candidate/");
-
-    if (!isAllowedMobilePath) {
-      return <Navigate to="/jobs" replace />;
-    }
-  }
 
   // Scroll to top when route changes
   useEffect(() => {
@@ -309,6 +318,20 @@ function AppContent() {
 
     void validateCandidateSession();
   }, [session]);
+
+  if (mobileApp) {
+    const pathname = location.pathname;
+    const isAllowedMobilePath =
+      pathname === "/jobs" ||
+      pathname.startsWith("/jobs/") ||
+      pathname === "/candidate" ||
+      pathname === "/candidate/guides" ||
+      pathname.startsWith("/candidate/");
+
+    if (!isAllowedMobilePath) {
+      return <Navigate to="/jobs" replace />;
+    }
+  }
 
   const routes = (
     <Routes>
@@ -422,6 +445,28 @@ function AppContent() {
         <Route
           path="guides"
           element={withSuspense(<CandidateLocalGuidesPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="subscription"
+          element={withSuspense(<CandidateSubscriptionPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="subscription/free"
+          element={withSuspense(<CandidateFreeSubscriptionPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
+          path="subscription/premium"
+          element={withSuspense(
+            <CandidatePremiumSubscriptionPage />,
+            <CandidateDashboardSkeleton />,
+          )}
+        />
+        <Route
+          path="subscription/premium-plus"
+          element={withSuspense(
+            <CandidatePremiumPlusSubscriptionPage />,
+            <CandidateDashboardSkeleton />,
+          )}
         />
         {/* Backwards-compatible redirects */}
         <Route path="creation" element={<Navigate to="/candidate/documents" replace />} />

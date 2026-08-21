@@ -539,7 +539,7 @@ export function CandidateDashboardPage() {
               </div>
             </div>
           </div>
-          <Link to="/jobs" className="shrink-0">
+          <Link to="/jobs#recommended-for-you" className="shrink-0">
             <Button variant="outline" size="sm" className="w-full sm:w-auto">
               Voir toutes les offres
               <ArrowRight className="w-4 h-4 ml-2" />

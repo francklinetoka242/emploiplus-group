@@ -26,6 +26,7 @@ import {
   Bell,
   Heart,
   Send,
+  Crown,
 } from "lucide-react";
 import EcoModeToggle from "@/components/sidebar/EcoModeToggle";
 import { useEcoMode } from "@/contexts/EcoModeContext";
@@ -54,6 +55,7 @@ const menuItems = [
   { id: "applications", label: "Mes candidatures", icon: Send, href: "/candidate/applications" },
   { id: "saved", label: "Offres enregistrées", icon: Heart, href: "/candidate/saved-jobs" },
   { id: "notifications", label: "Notifications", icon: Bell, href: "/candidate/notifications" },
+  { id: "subscription", label: "Abonnement", icon: Crown, href: "/candidate/subscription" },
   { id: "settings", label: "Compte", icon: User, href: "/candidate/account" },
 ];
 
@@ -79,7 +81,12 @@ const applyTheme = (darkMode: boolean) => {
   }
 };
 
-export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer = false }: CandidateSidebarProps) {
+export function CandidateSidebar({
+  open = true,
+  onOpenChange,
+  onLogout,
+  isDrawer = false,
+}: CandidateSidebarProps) {
   const location = useLocation();
   const { profile } = useCandidate();
   const [isDarkMode, setIsDarkMode] = useState(getInitialDarkMode);
@@ -113,27 +120,65 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
   if (isDrawer) {
     return (
       <>
-        {open && <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={() => onOpenChange?.(false)} />}
-        <aside className={cn(
-          "fixed left-0 top-0 z-50 h-screen w-4/5 flex flex-col shadow-2xl md:hidden",
-          isDarkMode ? "bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100" : "bg-white text-slate-900",
-          open ? "translate-x-0" : "-translate-x-full",
-        )}>
-          <div className={cn("flex items-center justify-end px-4 py-3", isDarkMode ? "border-b border-white/5" : "border-b border-slate-200")}> 
-            <Button variant="ghost" size="icon" onClick={() => onOpenChange?.(false)} className={cn(
-              "rounded-lg p-2 hover:bg-white/10",
-              isDarkMode ? "text-slate-300 hover:text-white" : "text-slate-700 hover:text-slate-900",
-            )}>
+        {open && (
+          <div
+            className="fixed inset-0 z-40 bg-black/50 md:hidden"
+            onClick={() => onOpenChange?.(false)}
+          />
+        )}
+        <aside
+          className={cn(
+            "fixed left-0 top-0 z-50 h-screen w-4/5 flex flex-col shadow-2xl md:hidden",
+            isDarkMode
+              ? "bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100"
+              : "bg-white text-slate-900",
+            open ? "translate-x-0" : "-translate-x-full",
+          )}
+        >
+          <div
+            className={cn(
+              "flex items-center justify-end px-4 py-3",
+              isDarkMode ? "border-b border-white/5" : "border-b border-slate-200",
+            )}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onOpenChange?.(false)}
+              className={cn(
+                "rounded-lg p-2 hover:bg-white/10",
+                isDarkMode
+                  ? "text-slate-300 hover:text-white"
+                  : "text-slate-700 hover:text-slate-900",
+              )}
+            >
               <X className="h-5 w-5" />
             </Button>
           </div>
 
-          <nav className={cn("flex-1 overflow-y-auto px-2 py-4 scrollbar-hide", isDarkMode ? "" : "bg-white")}> 
+          <nav
+            className={cn(
+              "flex-1 overflow-y-auto px-2 py-4 scrollbar-hide",
+              isDarkMode ? "" : "bg-white",
+            )}
+          >
             <div className="space-y-4">
               {!mobileApp && (
-                <div className={cn("rounded-2xl p-2", isDarkMode ? "border border-white/10 bg-slate-950/60" : "border border-slate-200 bg-slate-50")}>
+                <div
+                  className={cn(
+                    "rounded-2xl p-2",
+                    isDarkMode
+                      ? "border border-white/10 bg-slate-950/60"
+                      : "border border-slate-200 bg-slate-50",
+                  )}
+                >
                   <div className="flex items-center justify-between px-2 pb-2">
-                    <p className={cn("text-[10px] font-semibold uppercase tracking-[0.24em]", isDarkMode ? "text-slate-400" : "text-slate-500")}>
+                    <p
+                      className={cn(
+                        "text-[10px] font-semibold uppercase tracking-[0.24em]",
+                        isDarkMode ? "text-slate-400" : "text-slate-500",
+                      )}
+                    >
                       Navigation publique
                     </p>
                     <Button
@@ -141,9 +186,19 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                       size="icon"
                       onClick={() => setPublicNavExpanded((value) => !value)}
                       aria-expanded={publicNavExpanded}
-                      className={cn("rounded-md p-1 transition", isDarkMode ? "text-slate-300 hover:bg-white/5" : "text-slate-700 hover:bg-slate-100")}
+                      className={cn(
+                        "rounded-md p-1 transition",
+                        isDarkMode
+                          ? "text-slate-300 hover:bg-white/5"
+                          : "text-slate-700 hover:bg-slate-100",
+                      )}
                     >
-                      <ChevronDown className={cn("h-4 w-4 transition-transform", publicNavExpanded && "rotate-180")} />
+                      <ChevronDown
+                        className={cn(
+                          "h-4 w-4 transition-transform",
+                          publicNavExpanded && "rotate-180",
+                        )}
+                      />
                     </Button>
                   </div>
                   <div className={cn(publicNavExpanded ? "space-y-1" : "hidden")}>
@@ -164,14 +219,33 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                                 : "bg-white text-slate-700 hover:bg-slate-50",
                           )}
                         >
-                          {active && <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />}
-                          <div className={cn(
-                            "flex h-9 w-9 items-center justify-center rounded-lg",
-                            active ? "bg-secondary text-white" : isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
-                          )}>
-                            <Icon className="h-5 w-5"/>
+                          {active && (
+                            <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
+                          )}
+                          <div
+                            className={cn(
+                              "flex h-9 w-9 items-center justify-center rounded-lg",
+                              active
+                                ? "bg-secondary text-white"
+                                : isDarkMode
+                                  ? "bg-slate-950/90 text-white"
+                                  : "bg-slate-100 text-slate-700",
+                            )}
+                          >
+                            <Icon className="h-5 w-5" />
                           </div>
-                          <span className={cn("truncate text-sm font-medium", active ? "text-white" : isDarkMode ? "text-slate-300" : "text-slate-700")}>{item.label}</span>
+                          <span
+                            className={cn(
+                              "truncate text-sm font-medium",
+                              active
+                                ? "text-white"
+                                : isDarkMode
+                                  ? "text-slate-300"
+                                  : "text-slate-700",
+                            )}
+                          >
+                            {item.label}
+                          </span>
                         </Link>
                       );
                     })}
@@ -189,14 +263,33 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                     : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
                 )}
               >
-                <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700")}>
+                <div
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-lg",
+                    isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
+                  )}
+                >
                   <Search className="h-5 w-5" />
                 </div>
                 <span className="truncate text-sm font-medium">Emplois</span>
               </Link>
 
-              <div className={cn("rounded-2xl p-2", isDarkMode ? "border border-white/10 bg-slate-950/60" : "border border-slate-200 bg-slate-50")}>
-                <p className={cn("px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em]", isDarkMode ? "text-slate-400" : "text-slate-500")}>Mon espace</p>
+              <div
+                className={cn(
+                  "rounded-2xl p-2",
+                  isDarkMode
+                    ? "border border-white/10 bg-slate-950/60"
+                    : "border border-slate-200 bg-slate-50",
+                )}
+              >
+                <p
+                  className={cn(
+                    "px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em]",
+                    isDarkMode ? "text-slate-400" : "text-slate-500",
+                  )}
+                >
+                  Mon espace
+                </p>
                 <div className="space-y-1">
                   {candidateMenuItems.map((item) => {
                     const Icon = item.icon;
@@ -215,39 +308,121 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                               : "bg-white text-slate-700 hover:bg-slate-50",
                         )}
                       >
-                        {active && <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />}
-                        <div className={cn(
-                          "flex h-9 w-9 items-center justify-center rounded-lg",
-                          active ? "bg-secondary text-white" : isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
-                        )}>
-                          <Icon className="h-5 w-5"/>
+                        {active && (
+                          <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
+                        )}
+                        <div
+                          className={cn(
+                            "flex h-9 w-9 items-center justify-center rounded-lg",
+                            active
+                              ? "bg-secondary text-white"
+                              : isDarkMode
+                                ? "bg-slate-950/90 text-white"
+                                : "bg-slate-100 text-slate-700",
+                          )}
+                        >
+                          <Icon className="h-5 w-5" />
                         </div>
-                        <span className={cn("truncate text-sm font-medium", active ? "text-white" : isDarkMode ? "text-slate-300" : "text-slate-700")}>{item.label}</span>
+                        <span
+                          className={cn(
+                            "truncate text-sm font-medium",
+                            active
+                              ? "text-white"
+                              : isDarkMode
+                                ? "text-slate-300"
+                                : "text-slate-700",
+                          )}
+                        >
+                          {item.label}
+                        </span>
                       </Link>
                     );
                   })}
                 </div>
               </div>
 
-              <div className={cn("mt-3 rounded-2xl p-2", isDarkMode ? "border border-white/10 bg-slate-950/60" : "border border-slate-200 bg-slate-50")}>
-                <button type="button" onClick={() => setIsDarkMode(v => !v)} className={cn("flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left", isDarkMode ? "hover:bg-white/10" : "hover:bg-slate-100")}>
-                  <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg border", isDarkMode ? "border-white/10 bg-slate-950/90 text-slate-200" : "border-slate-200 bg-slate-100 text-slate-700")}>
-                    {isDarkMode ? <Moon className="h-4 w-4"/> : <Sun className="h-4 w-4"/>}
+              <div
+                className={cn(
+                  "mt-3 rounded-2xl p-2",
+                  isDarkMode
+                    ? "border border-white/10 bg-slate-950/60"
+                    : "border border-slate-200 bg-slate-50",
+                )}
+              >
+                <button
+                  type="button"
+                  onClick={() => setIsDarkMode((v) => !v)}
+                  className={cn(
+                    "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left",
+                    isDarkMode ? "hover:bg-white/10" : "hover:bg-slate-100",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "flex h-9 w-9 items-center justify-center rounded-lg border",
+                      isDarkMode
+                        ? "border-white/10 bg-slate-950/90 text-slate-200"
+                        : "border-slate-200 bg-slate-100 text-slate-700",
+                    )}
+                  >
+                    {isDarkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
                   </div>
-                  <div className="min-w-0 flex-1"><p className={cn("text-sm font-medium", isDarkMode ? "text-slate-200" : "text-slate-800")}>Mode sombre</p><p className={cn("text-xs", isDarkMode ? "text-slate-400" : "text-slate-500")}>{isDarkMode ? 'Activé' : 'Désactivé'}</p></div>
-                  <div className={cn("flex h-6 w-11 items-center rounded-full p-1 transition-colors", isDarkMode ? "bg-secondary" : "bg-slate-300")}>{isDarkMode ? <ToggleRight className="h-4 w-4 text-white"/> : <ToggleLeft className="h-4 w-4 text-slate-700"/>}</div>
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={cn(
+                        "text-sm font-medium",
+                        isDarkMode ? "text-slate-200" : "text-slate-800",
+                      )}
+                    >
+                      Mode sombre
+                    </p>
+                    <p className={cn("text-xs", isDarkMode ? "text-slate-400" : "text-slate-500")}>
+                      {isDarkMode ? "Activé" : "Désactivé"}
+                    </p>
+                  </div>
+                  <div
+                    className={cn(
+                      "flex h-6 w-11 items-center rounded-full p-1 transition-colors",
+                      isDarkMode ? "bg-secondary" : "bg-slate-300",
+                    )}
+                  >
+                    {isDarkMode ? (
+                      <ToggleRight className="h-4 w-4 text-white" />
+                    ) : (
+                      <ToggleLeft className="h-4 w-4 text-slate-700" />
+                    )}
+                  </div>
                 </button>
               </div>
-              <div className={cn("rounded-2xl p-2", isDarkMode ? "border border-white/10 bg-slate-950/60" : "border border-slate-200 bg-slate-50")}>
+              <div
+                className={cn(
+                  "rounded-2xl p-2",
+                  isDarkMode
+                    ? "border border-white/10 bg-slate-950/60"
+                    : "border border-slate-200 bg-slate-50",
+                )}
+              >
                 <EcoModeToggle />
               </div>
             </div>
           </nav>
 
           {/* Footer - Logout (mobile) */}
-          <div className={cn("px-4 py-4", isDarkMode ? "border-t border-white/5" : "border-t border-slate-200")}>
-            <Button onClick={() => { onOpenChange?.(false); onLogout?.(); }} className="w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium text-white" variant="ghost">
-              <LogOut className="h-4 w-4 text-white"/> Déconnexion
+          <div
+            className={cn(
+              "px-4 py-4",
+              isDarkMode ? "border-t border-white/5" : "border-t border-slate-200",
+            )}
+          >
+            <Button
+              onClick={() => {
+                onOpenChange?.(false);
+                onLogout?.();
+              }}
+              className="w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium text-white"
+              variant="ghost"
+            >
+              <LogOut className="h-4 w-4 text-white" /> Déconnexion
             </Button>
           </div>
         </aside>
@@ -257,17 +432,32 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
 
   // Desktop sidebar
   return (
-    <aside className={cn(
-      "fixed left-0 top-0 z-40 hidden h-screen flex-col shadow-2xl md:flex",
-      isDarkMode ? "bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100" : "bg-white text-slate-900",
-      open ? "w-72" : "w-20",
-    )} style={{ minWidth: open ? 288 : 80 }}>
+    <aside
+      className={cn(
+        "fixed left-0 top-0 z-40 hidden h-screen flex-col shadow-2xl md:flex",
+        isDarkMode
+          ? "bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100"
+          : "bg-white text-slate-900",
+        open ? "w-72" : "w-20",
+      )}
+      style={{ minWidth: open ? 288 : 80 }}
+    >
       {/* Toggle Button */}
-      <div className={cn("flex items-center justify-end px-4 py-5", isDarkMode ? "border-b border-white/5" : "border-b border-slate-200")}>
-        <Button variant="ghost" size="icon" onClick={() => onOpenChange?.(!open)} className={cn(
-          "rounded-lg p-2 hover:bg-white/10",
-          isDarkMode ? "text-slate-300 hover:text-white" : "text-slate-700 hover:text-slate-900",
-        )}>
+      <div
+        className={cn(
+          "flex items-center justify-end px-4 py-5",
+          isDarkMode ? "border-b border-white/5" : "border-b border-slate-200",
+        )}
+      >
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onOpenChange?.(!open)}
+          className={cn(
+            "rounded-lg p-2 hover:bg-white/10",
+            isDarkMode ? "text-slate-300 hover:text-white" : "text-slate-700 hover:text-slate-900",
+          )}
+        >
           {open ? <ChevronLeft className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
       </div>
@@ -285,14 +475,35 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                   : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
               )}
             >
-              <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700")}>
+              <div
+                className={cn(
+                  "flex h-9 w-9 items-center justify-center rounded-lg",
+                  isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
+                )}
+              >
                 <Search className="h-5 w-5" />
               </div>
               {open && <span className="truncate text-sm font-medium">Emplois</span>}
             </Link>
 
-            <div className={cn("rounded-2xl p-2", isDarkMode ? "border border-white/10 bg-slate-950/60" : "border border-slate-200 bg-slate-50")}>
-              {open && <p className={cn("px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em]", isDarkMode ? "text-slate-400" : "text-slate-500")}>Mon espace</p>}
+            <div
+              className={cn(
+                "rounded-2xl p-2",
+                isDarkMode
+                  ? "border border-white/10 bg-slate-950/60"
+                  : "border border-slate-200 bg-slate-50",
+              )}
+            >
+              {open && (
+                <p
+                  className={cn(
+                    "px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em]",
+                    isDarkMode ? "text-slate-400" : "text-slate-500",
+                  )}
+                >
+                  Mon espace
+                </p>
+              )}
               <div className="space-y-1">
                 {candidateMenuItems.map((item) => {
                   const Icon = item.icon;
@@ -312,17 +523,60 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
                                 : "bg-white text-slate-700 hover:bg-slate-50",
                           )}
                         >
-                          {active && <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />}
-                          <div className={cn(
-                            "flex h-9 w-9 items-center justify-center rounded-lg",
-                            active ? "bg-secondary text-white" : isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
-                          )}>
-                            <Icon className={cn("h-5 w-5", active ? "text-white" : isDarkMode ? "text-slate-200" : "text-slate-700")} />
+                          {active && (
+                            <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
+                          )}
+                          <div
+                            className={cn(
+                              "flex h-9 w-9 items-center justify-center rounded-lg",
+                              active
+                                ? "bg-secondary text-white"
+                                : isDarkMode
+                                  ? "bg-slate-950/90 text-white"
+                                  : "bg-slate-100 text-slate-700",
+                            )}
+                          >
+                            <Icon
+                              className={cn(
+                                "h-5 w-5",
+                                active
+                                  ? "text-white"
+                                  : isDarkMode
+                                    ? "text-slate-200"
+                                    : "text-slate-700",
+                              )}
+                            />
                           </div>
-                          {open && <span className={cn("truncate text-sm font-medium", active ? "text-white" : isDarkMode ? "text-slate-300 group-hover:text-slate-100" : "text-slate-700 group-hover:text-slate-900")}>{item.label}</span>}
+                          {open && (
+                            <span
+                              className={cn(
+                                "truncate text-sm font-medium",
+                                active
+                                  ? "text-white"
+                                  : isDarkMode
+                                    ? "text-slate-300 group-hover:text-slate-100"
+                                    : "text-slate-700 group-hover:text-slate-900",
+                              )}
+                            >
+                              {item.label}
+                            </span>
+                          )}
                         </Link>
                       </TooltipTrigger>
-                      {!open && <TooltipContent side="right" align="center" className={cn("rounded-lg px-3 py-2 text-xs font-medium", isDarkMode ? "border border-white/10 bg-slate-900 text-slate-100" : "border border-slate-200 bg-white text-slate-900")}>{item.label}</TooltipContent>}
+                      {!open && (
+                        <TooltipContent
+                          side="right"
+                          align="center"
+                          className={cn(
+                            "rounded-lg px-3 py-2 text-xs font-medium",
+                            isDarkMode
+                              ? "border border-white/10 bg-slate-900 text-slate-100"
+                              : "border border-slate-200 bg-white text-slate-900",
+                          )}
+                        >
+                          {item.label}
+                        </TooltipContent>
+                      )}
                     </Tooltip>
                   );
                 })}
@@ -332,21 +586,52 @@ export function CandidateSidebar({ open = true, onOpenChange, onLogout, isDrawer
         </nav>
 
         {/* Footer - desktop */}
-        <div className={cn("px-2 py-4", isDarkMode ? "border-t border-white/5" : "border-t border-slate-200")}>
+        <div
+          className={cn(
+            "px-2 py-4",
+            isDarkMode ? "border-t border-white/5" : "border-t border-slate-200",
+          )}
+        >
           {open ? (
             <>
-              <div className="mb-3"><EcoModeToggle /></div>
-              <Button onClick={onLogout} className="w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium text-white" variant="ghost">
-                <LogOut className="h-4 w-4 text-white"/> Déconnexion
+              <div className="mb-3">
+                <EcoModeToggle />
+              </div>
+              <Button
+                onClick={onLogout}
+                className="w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium text-white"
+                variant="ghost"
+              >
+                <LogOut className="h-4 w-4 text-white" /> Déconnexion
               </Button>
             </>
           ) : (
             <div className="flex items-center justify-end">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button onClick={onLogout} size="icon" className={cn("h-10 w-10 rounded-lg", isDarkMode ? "bg-slate-800/50" : "bg-slate-100 text-slate-900") } variant="ghost"><LogOut className="h-5 w-5"/></Button>
+                  <Button
+                    onClick={onLogout}
+                    size="icon"
+                    className={cn(
+                      "h-10 w-10 rounded-lg",
+                      isDarkMode ? "bg-slate-800/50" : "bg-slate-100 text-slate-900",
+                    )}
+                    variant="ghost"
+                  >
+                    <LogOut className="h-5 w-5" />
+                  </Button>
                 </TooltipTrigger>
-                <TooltipContent side="right" className={cn("rounded-lg text-xs font-medium", isDarkMode ? "border border-white/10 bg-slate-900 text-slate-100" : "border border-slate-200 bg-white text-slate-900")}>Déconnexion</TooltipContent>
+                <TooltipContent
+                  side="right"
+                  className={cn(
+                    "rounded-lg text-xs font-medium",
+                    isDarkMode
+                      ? "border border-white/10 bg-slate-900 text-slate-100"
+                      : "border border-slate-200 bg-white text-slate-900",
+                  )}
+                >
+                  Déconnexion
+                </TooltipContent>
               </Tooltip>
             </div>
           )}
