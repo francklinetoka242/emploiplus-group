@@ -71,7 +71,11 @@ export function NotificationsDropdown({
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] max-w-96 p-0">
+      <DropdownMenuContent
+        align="center"
+        sideOffset={8}
+        className="w-[min(88vw,24rem)] max-w-[calc(100vw-1.25rem)] p-0"
+      >
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
           <h3 className="text-sm font-semibold text-foreground">Notifications</h3>

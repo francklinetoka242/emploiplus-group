@@ -85,6 +85,16 @@ export function SiteFooter() {
                 Gestion des cookies
               </button>
             </li>
+            <li>
+              <a
+                href="https://support.emploiplus-group.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors duration-200 hover:text-white"
+              >
+                Centre d'aide
+              </a>
+            </li>
           </ul>
         </div>
         <div>
