@@ -356,8 +356,8 @@ export function CandidateLoginPage() {
         </div>
       </main>
 
-      <footer className="w-full overflow-hidden px-3 py-4 text-[9px] text-muted-foreground sm:px-6 sm:text-xs">
-        <div className="flex w-full items-center justify-between gap-1 whitespace-nowrap sm:gap-3">
+      <footer className="w-full px-3 py-4 text-[9px] text-muted-foreground sm:px-6 sm:text-xs">
+        <div className="flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center leading-5 sm:flex-nowrap sm:justify-between sm:gap-3 sm:text-left">
             <Link to="/politique-de-confidentialite" className="transition-colors hover:text-foreground">
               Politique de Confidentialité
             </Link>

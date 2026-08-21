@@ -154,9 +154,9 @@ export function BlogPage() {
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.6 }}
               >
-                <div className="overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="max-w-full touch-pan-x overflow-x-auto overscroll-x-contain pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                   <motion.div 
-                    className="flex gap-6"
+                    className="flex min-w-0 gap-6"
                     variants={staggerContainer}
                     initial="hidden"
                     whileInView="visible"
@@ -167,7 +167,7 @@ export function BlogPage() {
                       return (
                         <motion.article
                           key={post.id}
-                          className="flex min-w-[min(360px,calc(100vw-2.5rem))] flex-col overflow-visible rounded-xl border border-border bg-card transition-colors duration-300 hover:border-secondary/50 sm:min-w-[360px]"
+                          className="flex min-w-[min(360px,calc(100vw-2.5rem))] shrink-0 flex-col overflow-visible rounded-xl border border-border bg-card transition-colors duration-300 hover:border-secondary/50 sm:min-w-[360px]"
                           variants={staggerItem}
                         >
                           <Link to={`/blog/${post.slug}`} className="group flex flex-1 flex-col">
@@ -210,10 +210,10 @@ export function BlogPage() {
                               </p>
                             </div>
                           </Link>
-                          <div className="flex items-center justify-between gap-3 border-t border-border/50 px-6 py-4">
+                          <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 border-t border-border/50 px-6 py-4">
                             <Link
                               to={`/blog/${post.slug}`}
-                              className="inline-flex items-center gap-2 text-sm font-semibold text-secondary transition hover:text-secondary/80"
+                              className="inline-flex min-w-0 items-center gap-2 break-words text-sm font-semibold text-secondary transition hover:text-secondary/80"
                             >
                               Lire l'article
                               <span aria-hidden="true">→</span>
@@ -300,10 +300,10 @@ export function BlogPage() {
                                 </p>
                               </div>
                             </Link>
-                            <div className="flex items-center justify-between gap-3 border-t border-border/50 px-6 py-4">
+                            <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 border-t border-border/50 px-6 py-4">
                               <Link
                                 to={`/blog/${post.slug}`}
-                                className="inline-flex items-center gap-2 text-sm font-semibold text-secondary transition hover:text-secondary/80"
+                                className="inline-flex min-w-0 items-center gap-2 break-words text-sm font-semibold text-secondary transition hover:text-secondary/80"
                               >
                                 Lire l'article
                                 <span aria-hidden="true">→</span>
@@ -361,10 +361,10 @@ export function BlogPage() {
                                 </p>
                               </div>
                             </Link>
-                            <div className="flex items-center justify-between gap-3 border-t border-border/50 px-6 py-4">
+                            <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 border-t border-border/50 px-6 py-4">
                               <Link
                                 to={`/blog/${post.slug}`}
-                                className="inline-flex items-center gap-2 text-sm font-semibold text-secondary transition hover:text-secondary/80"
+                                className="inline-flex min-w-0 items-center gap-2 break-words text-sm font-semibold text-secondary transition hover:text-secondary/80"
                               >
                                 Lire l'article
                                 <span aria-hidden="true">→</span>

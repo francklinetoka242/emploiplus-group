@@ -59,6 +59,7 @@ export function NotificationsDropdown({
         <Button
           variant="ghost"
           size="icon"
+          aria-label={hasUnread ? `Notifications, ${unreadCount} non lue${unreadCount > 1 ? "s" : ""}` : "Notifications"}
           className="relative text-muted-foreground hover:text-foreground"
         >
           <Bell className="w-5 h-5" />
@@ -70,16 +71,16 @@ export function NotificationsDropdown({
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-96 p-0">
+      <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] max-w-96 p-0">
         {/* Header */}
-        <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
           <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
           {hasUnread && (
             <Button
               variant="ghost"
               size="sm"
               onClick={onMarkAllAsRead}
-              className="text-xs text-muted-foreground hover:text-foreground"
+              className="h-auto max-w-full whitespace-normal px-2 py-1 text-left text-xs text-muted-foreground hover:text-foreground"
             >
               <Check className="w-3 h-3 mr-1" />
               Tout marquer comme lu
@@ -99,18 +100,18 @@ export function NotificationsDropdown({
                 <div
                   key={notification.id}
                   className={`px-4 py-3 hover:bg-muted transition-colors ${
-                    !notification.is_read ? "bg-blue-50" : ""
+                    !notification.is_read ? "bg-primary/5" : ""
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="text-sm font-medium text-foreground truncate">
+                      <div className="flex min-w-0 flex-wrap items-center gap-2 mb-1">
+                        <p className="min-w-0 flex-1 text-sm font-medium text-foreground truncate">
                           {notification.title}
                         </p>
                         <Badge
                           variant="outline"
-                          className={`text-xs ${typeColors[notification.type] || typeColors.admin}`}
+                          className={`shrink-0 text-xs ${typeColors[notification.type] || typeColors.admin}`}
                         >
                           {typeLabels[notification.type] || "Admin"}
                         </Badge>

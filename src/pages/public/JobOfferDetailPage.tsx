@@ -367,8 +367,8 @@ export function JobOfferDetailPage() {
         structuredData={seoStructuredData}
       />
       <section className="container-page pb-20 md:pb-28">
-        <div className="grid gap-8 lg:grid-cols-[1.3fr_0.7fr]">
-          <div className="space-y-6">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
+          <div className="min-w-0 space-y-6">
             <div className="overflow-hidden border-b border-border/70 bg-gradient-to-br from-background via-card to-primary/5 p-8">
               <div className="flex flex-col gap-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -403,10 +403,10 @@ export function JobOfferDetailPage() {
                       getLabel("jobs.detail.opportunity", "Opportunité")}
                   </div>
                   <div className="space-y-3">
-                    <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                    <h1 className="break-words font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                       {job.title}
                     </h1>
-                    <p className="text-base text-muted-foreground">
+                    <p className="break-words text-base text-muted-foreground">
                       {job.company} · {location}
                     </p>
                   </div>
@@ -482,7 +482,7 @@ export function JobOfferDetailPage() {
                       className="flex gap-3 rounded-2xl border border-border/60 bg-background/70 p-3 text-sm leading-7 text-foreground/90"
                     >
                       <span className="mt-2 size-2 rounded-full bg-brand" />
-                      <span>{item}</span>
+                      <span className="min-w-0 break-words">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -490,7 +490,7 @@ export function JobOfferDetailPage() {
             ) : null}
           </div>
 
-          <aside className="space-y-6">
+          <aside className="min-w-0 space-y-6">
             <div className="rounded-xl border border-border/70 bg-card p-7">
               <h3 className="font-display text-xl font-semibold text-foreground">{applyTitle}</h3>
               <p className="mt-2 text-sm leading-7 text-muted-foreground">{applyDescription}</p>

@@ -130,9 +130,9 @@ export function BlogPostDetailPage() {
         structuredData={blogPostingStructuredDataPost}
       />
       <section className="container-page pb-20 md:pb-28">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
-          <main className="space-y-8">
-            <article className="overflow-visible rounded-[28px] border border-border bg-card shadow-soft">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
+          <main className="min-w-0 space-y-8">
+            <article className="min-w-0 overflow-visible rounded-[28px] border border-border bg-card shadow-soft">
               {post.image ? (
                 <div className="relative h-56 w-full overflow-hidden rounded-t-[28px] bg-slate-100 sm:h-72 md:h-[360px]">
                   <EcoImage
@@ -154,8 +154,8 @@ export function BlogPostDetailPage() {
                     <ArrowLeft className="size-4" />
                     {t("blog.backToList")}
                   </Link>
-                  <div className="flex flex-wrap items-center justify-between gap-4 border-y border-border/70 py-4">
-                    <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  <div className="flex min-w-0 flex-wrap items-center justify-between gap-4 border-y border-border/70 py-4">
+                    <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                       {post.category ? (
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1.5 text-brand">
                           <Tag className="size-3.5" />
@@ -173,17 +173,18 @@ export function BlogPostDetailPage() {
                       url={canonical}
                       text={post.title}
                       variant="compact"
+                      className="shrink-0"
                       shareData={{
                         title: post.title,
                         description: post.excerpt || post.content,
                       }}
                     />
                   </div>
-                  <h1 className="max-w-4xl font-display text-2xl font-bold leading-tight text-foreground sm:text-3xl md:text-4xl">
+                  <h1 className="max-w-4xl break-words font-display text-2xl font-bold leading-tight text-foreground sm:text-3xl md:text-4xl">
                     {post.title}
                   </h1>
                   {post.excerpt ? (
-                    <p className="max-w-3xl text-base leading-7 text-muted-foreground sm:leading-8">
+                    <p className="max-w-3xl break-words text-base leading-7 text-muted-foreground sm:leading-8">
                       {post.excerpt}
                     </p>
                   ) : null}
@@ -191,18 +192,18 @@ export function BlogPostDetailPage() {
               </div>
             </article>
 
-            <article className="rounded-[28px] border border-border bg-card p-6 shadow-soft sm:p-8 md:p-10">
+            <article className="min-w-0 rounded-[28px] border border-border bg-card p-6 shadow-soft sm:p-8 md:p-10">
               <h2 className="border-l-4 border-brand pl-4 font-display text-xl font-semibold text-foreground sm:text-2xl">
                 {t("blog.article.content")}
               </h2>
-              <div className="mt-8 max-w-3xl whitespace-pre-line text-base leading-7 text-foreground/85 sm:leading-8">
+              <div className="mt-8 max-w-3xl break-words whitespace-pre-line text-base leading-7 text-foreground/85 [overflow-wrap:anywhere] sm:leading-8">
                 {post.content}
               </div>
             </article>
           </main>
 
-          <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-[24px] border border-brand/15 bg-card p-6 shadow-soft sm:p-7">
+          <aside className="min-w-0 space-y-6 lg:sticky lg:top-24 lg:self-start">
+            <div className="min-w-0 rounded-[24px] border border-brand/15 bg-card p-6 shadow-soft sm:p-7">
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand">
                 {t("blog.article.information")}
               </p>
@@ -210,7 +211,7 @@ export function BlogPostDetailPage() {
                 {post.category ? (
                   <div className="flex items-start gap-2">
                     <Tag className="mt-1 size-4 shrink-0 text-brand" />
-                    <span>
+                    <span className="min-w-0 break-words">
                       <span className="font-semibold text-foreground">
                       {t("blog.article.category")} :
                       </span>{" "}
@@ -221,7 +222,7 @@ export function BlogPostDetailPage() {
                 {post.publish_at ? (
                   <div className="flex items-start gap-2">
                     <CalendarDays className="mt-1 size-4 shrink-0 text-brand" />
-                    <span>
+                    <span className="min-w-0 break-words">
                       <span className="font-semibold text-foreground">
                         {t("blog.article.publishedAt")} :
                       </span>{" "}
@@ -250,7 +251,7 @@ export function BlogPostDetailPage() {
             </div>
 
             {post.external_link || post.video_url ? (
-              <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+              <div className="min-w-0 rounded-3xl border border-border bg-card p-8 shadow-soft">
                 <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
                   {t("blog.article.resources")}
                 </p>
@@ -260,7 +261,7 @@ export function BlogPostDetailPage() {
                       href={post.external_link}
                       target="_blank"
                       rel="noreferrer"
-                      className="block rounded-2xl border border-border/80 bg-background px-4 py-3 text-brand transition hover:bg-brand/5"
+                      className="block break-words rounded-2xl border border-border/80 bg-background px-4 py-3 text-brand transition hover:bg-brand/5"
                     >
                       {t("blog.article.externalLink")}
                     </a>
@@ -270,7 +271,7 @@ export function BlogPostDetailPage() {
                       href={post.video_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="block rounded-2xl border border-border/80 bg-background px-4 py-3 text-brand transition hover:bg-brand/5"
+                      className="block break-words rounded-2xl border border-border/80 bg-background px-4 py-3 text-brand transition hover:bg-brand/5"
                     >
                       {t("blog.article.watchVideo")}
                     </a>

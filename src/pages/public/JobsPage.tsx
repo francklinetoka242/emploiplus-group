@@ -162,7 +162,7 @@ export function JobsPage() {
                         }
                       }}
                       placeholder="Rechercher un emploi..."
-                      className="w-full rounded-xl border border-border bg-white py-3 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                      className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                     />
                   </div>
 
