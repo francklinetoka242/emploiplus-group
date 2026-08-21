@@ -8,6 +8,7 @@ import { uploadAndProcessCandidateCV, uploadCandidateDocument } from "@/features
 import { supabase } from "@/integrations/supabase/client";
 import { CANDIDATE_DOCUMENTS_BUCKET } from "@/services/storageService";
 import { toast } from "sonner";
+import { FilePreviewDialog } from "@/components/site/FilePreviewDialog";
 
 type DocumentTypeOption = CandidateDocument["type"] | "cv";
 
@@ -48,6 +49,7 @@ export function DocumentsSection({
   const [feedbackError, setFeedbackError] = useState("");
   const [resolvedServerCvUrl, setResolvedServerCvUrl] = useState<string | null>(null);
   const [serverCvUrlError, setServerCvUrlError] = useState<string | null>(null);
+  const [selectedPreviewDocument, setSelectedPreviewDocument] = useState<CandidateDocument | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const effectiveCv = useMemo(() => {
@@ -270,165 +272,177 @@ export function DocumentsSection({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between gap-2">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-primary" />
-              Documents
-            </CardTitle>
-            <CardDescription>Gérez vos documents importants pour votre candidature.</CardDescription>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <div className="flex flex-col gap-3 md:flex-row md:items-end">
-              <div className="flex-1">
-                <label className="mb-1 block text-sm font-medium text-slate-700">Type de document</label>
-                <select
-                  value={selectedType}
-                  onChange={(event) => setSelectedType(event.target.value as CandidateDocument["type"])}
-                  className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
-                >
-                  {DOCUMENT_TYPES.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {selectedType === "other" && (
-                <div className="flex-1">
-                  <label className="mb-1 block text-sm font-medium text-slate-700">Nom personnalisé</label>
-                  <input
-                    value={otherLabel}
-                    onChange={(event) => setOtherLabel(event.target.value)}
-                    placeholder="Ex. : Certificat de stage"
-                    className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
-                  />
-                </div>
-              )}
-              <div className="flex flex-col gap-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={!canUploadDocument}
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  {isUploading ? "Envoi…" : "Choisir un PDF"}
-                </Button>
-                <p className="text-xs text-slate-500">PDF jusqu’à 2 Mo</p>
-              </div>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept={ALLOWED_DOCUMENT_MIME_TYPES.join(",")}
-              className="hidden"
-              onChange={handleFileSelection}
-            />
-            {feedbackMessage && <p className="mt-2 text-sm text-primary">{feedbackMessage}</p>}
-            {feedbackError && <p className="mt-2 text-sm text-rose-600">{feedbackError}</p>}
-          </div>
-
-          <div>
-            <p className="mb-3 text-sm font-medium text-slate-700">État des documents</p>
-            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-              {DOCUMENT_TYPES.map((type) => {
-                const isCompleted = completedTypes.has(type.value);
-                return (
-                  <div
-                    key={type.value}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
-                      isCompleted
-                        ? "bg-primary/10 text-primary"
-                        : "bg-slate-50 text-slate-600"
-                    }`}
-                  >
-                    {isCompleted ? (
-                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
-                    ) : (
-                      <Circle className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                    )}
-                    <span className="text-sm">{type.label}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {allDocuments.length > 0 ? (
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between gap-2">
             <div>
-              <p className="mb-3 text-sm font-medium text-slate-700">Documents ajoutés</p>
-              <div className="space-y-2">
-                {allDocuments.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3 hover:bg-slate-50"
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-primary" />
+                Documents
+              </CardTitle>
+              <CardDescription>Gérez vos documents importants pour votre candidature.</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+              <div className="flex flex-col gap-3 md:flex-row md:items-end">
+                <div className="flex-1">
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Type de document</label>
+                  <select
+                    value={selectedType}
+                    onChange={(event) => setSelectedType(event.target.value as CandidateDocument["type"])}
+                    className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
                   >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <FileText className="h-5 w-5 text-primary flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-slate-900 truncate">
-                          {doc.customType || DOCUMENT_TYPES.find((t) => t.value === doc.type)?.label || doc.type}
-                        </p>
-                        <div className="flex flex-wrap gap-2 mt-1">
-                          <p className="text-xs text-slate-500">{formatDate(doc.date)}</p>
-                          {doc.size && (
-                            <>
-                              <span className="text-xs text-slate-400">•</span>
-                              <p className="text-xs text-slate-500">{formatFileSize(doc.size)}</p>
-                            </>
-                          )}
+                    {DOCUMENT_TYPES.map((type) => (
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {selectedType === "other" && (
+                  <div className="flex-1">
+                    <label className="mb-1 block text-sm font-medium text-slate-700">Nom personnalisé</label>
+                    <input
+                      value={otherLabel}
+                      onChange={(event) => setOtherLabel(event.target.value)}
+                      placeholder="Ex. : Certificat de stage"
+                      className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700"
+                    />
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={!canUploadDocument}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {isUploading ? "Envoi…" : "Choisir un PDF"}
+                  </Button>
+                  <p className="text-xs text-slate-500">PDF jusqu’à 2 Mo</p>
+                </div>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={ALLOWED_DOCUMENT_MIME_TYPES.join(",")}
+                className="hidden"
+                onChange={handleFileSelection}
+              />
+              {feedbackMessage && <p className="mt-2 text-sm text-primary">{feedbackMessage}</p>}
+              {feedbackError && <p className="mt-2 text-sm text-rose-600">{feedbackError}</p>}
+            </div>
+
+            <div>
+              <p className="mb-3 text-sm font-medium text-slate-700">État des documents</p>
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                {DOCUMENT_TYPES.map((type) => {
+                  const isCompleted = completedTypes.has(type.value);
+                  return (
+                    <div
+                      key={type.value}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                        isCompleted
+                          ? "bg-primary/10 text-primary"
+                          : "bg-slate-50 text-slate-600"
+                      }`}
+                    >
+                      {isCompleted ? (
+                        <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                      ) : (
+                        <Circle className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                      )}
+                      <span className="text-sm">{type.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {allDocuments.length > 0 ? (
+              <div>
+                <p className="mb-3 text-sm font-medium text-slate-700">Documents ajoutés</p>
+                <div className="space-y-2">
+                  {allDocuments.map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3 hover:bg-slate-50"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <FileText className="h-5 w-5 text-primary flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm text-slate-900 truncate">
+                            {doc.customType || DOCUMENT_TYPES.find((t) => t.value === doc.type)?.label || doc.type}
+                          </p>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            <p className="text-xs text-slate-500">{formatDate(doc.date)}</p>
+                            {doc.size && (
+                              <>
+                                <span className="text-xs text-slate-400">•</span>
+                                <p className="text-xs text-slate-500">{formatFileSize(doc.size)}</p>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
+                      <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                          title="Aperçu"
+                          onClick={() => setSelectedPreviewDocument(doc)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0"
+                          title="Télécharger"
+                          onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDelete(doc.id)}
+                          className="h-8 w-8 p-0 text-rose-600 hover:bg-rose-50"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 ml-2 flex-shrink-0">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0"
-                        title="Aperçu"
-                        onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0"
-                        title="Télécharger"
-                        onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDelete(doc.id)}
-                        className="h-8 w-8 p-0 text-rose-600 hover:bg-rose-50"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <FileText className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-sm text-slate-500">Aucun document ajouté.</p>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            ) : (
+              <div className="text-center py-8">
+                <FileText className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-sm text-slate-500">Aucun document ajouté.</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {selectedPreviewDocument && (
+        <FilePreviewDialog
+          open={Boolean(selectedPreviewDocument)}
+          onOpenChange={(open) => !open && setSelectedPreviewDocument(null)}
+          fileUrl={selectedPreviewDocument.url}
+          title={selectedPreviewDocument.customType || DOCUMENT_TYPES.find((t) => t.value === selectedPreviewDocument.type)?.label || selectedPreviewDocument.type || "Document"}
+          description="Prévisualisation du document dans une fenêtre centrée."
+        />
+      )}
+    </>
   );
 }

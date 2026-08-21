@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { FileText, Download, BookOpen, Eye, X } from "lucide-react";
+import { FileText, Download, BookOpen, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FilePreviewDialog } from "@/components/site/FilePreviewDialog";
 import { fetchLocalGuides } from "@/features/local-guides/localGuideService";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import type { LocalGuideRecord } from "@/features/local-guides/types";
@@ -146,40 +146,15 @@ export function CandidateLocalGuidesPage() {
         )}
       </div>
 
-      <Dialog open={Boolean(selectedGuide)} onOpenChange={(open) => !open && setSelectedGuide(null)}>
-        <DialogContent className="max-w-6xl w-[min(96vw,1200px)] p-0 overflow-hidden rounded-[28px] border border-border bg-background shadow-2xl">
-          <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6">
-            <div className="min-w-0 pr-4">
-              <DialogTitle className="truncate text-base font-semibold text-foreground sm:text-lg">
-                {selectedGuide?.title ?? "Aperçu du document"}
-              </DialogTitle>
-              <DialogDescription className="text-xs text-muted-foreground sm:text-sm">
-                Prévisualisation du PDF dans une fenêtre centrée.
-              </DialogDescription>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-full"
-              aria-label="Fermer la prévisualisation"
-              onClick={() => setSelectedGuide(null)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {selectedGuide && (
-            <div className="bg-muted/20 p-2 sm:p-3">
-              <iframe
-                src={selectedGuide.document_url}
-                title={selectedGuide.title}
-                className="h-[75vh] w-full rounded-2xl border-0 bg-white"
-              />
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {selectedGuide && (
+        <FilePreviewDialog
+          open={Boolean(selectedGuide)}
+          onOpenChange={(open) => !open && setSelectedGuide(null)}
+          fileUrl={selectedGuide.document_url}
+          title={selectedGuide.title}
+          description="Prévisualisation du PDF dans une fenêtre centrée."
+        />
+      )}
     </>
   );
 }
