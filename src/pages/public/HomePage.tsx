@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -24,6 +24,7 @@ import {
   BarChart3,
   Handshake,
   BookOpen,
+  ArrowUp,
 } from "lucide-react";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { JobCard } from "@/features/jobs/components";
@@ -142,6 +143,19 @@ export function HomePage() {
   const navigate = useNavigate();
   const { offers: homeJobs, loading: jobsLoading } = usePublishedJobOffers(2);
   const { posts: homePosts, loading: postsLoading } = usePublishedBlogPosts(3);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const nearBottom =
+        window.innerHeight + window.scrollY >= document.body.scrollHeight - 200;
+      setShowScrollTop(nearBottom);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const getContractLabel = (contractType?: string | null) => {
     if (!contractType) return null;
@@ -205,6 +219,17 @@ export function HomePage() {
     <div className="bg-background">
       <SEO {...DEFAULT_SEO} />
       <HeroSection />
+
+      {showScrollTop && (
+        <button
+          type="button"
+          aria-label="Retour en haut"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-5 right-5 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-lg shadow-slate-200/60 transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/40 md:bottom-7 md:right-7"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </button>
+      )}
 
       <motion.section 
         className="container-page py-16 md:py-16"
