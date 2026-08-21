@@ -367,6 +367,14 @@ export function CandidateLoginPage() {
             <Link to="/cgu" className="transition-colors hover:text-foreground">
               Conditions Générales d'Utilisation
             </Link>
+            <a
+              href="https://support.emploiplus-group.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-foreground"
+            >
+              Centre d'aide
+            </a>
             <button type="button" onClick={openCookieBanner} className="transition-colors hover:text-foreground">
               Gestion des cookies
             </button>
