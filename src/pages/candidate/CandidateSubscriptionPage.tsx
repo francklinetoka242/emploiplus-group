@@ -46,6 +46,7 @@ const plans = [
       "Toutes les recommandations disponibles",
       "Aucune limite artificielle",
       "Accès complet aux correspondances",
+      "Alertes e-mail",
     ],
     action: "Découvrir Premium+",
     href: "/candidate/subscription/premium-plus",
