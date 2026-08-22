@@ -191,6 +191,20 @@ export function useCandidate() {
     }
   }, [user?.id]);
 
+  useEffect(() => {
+    if (!user?.id || typeof window === "undefined") return;
+
+    const handleCvUploaded = (event: Event) => {
+      const candidateId = (event as CustomEvent<{ candidateId?: string }>).detail?.candidateId;
+      if (candidateId === profile?.id) {
+        void refetch();
+      }
+    };
+
+    window.addEventListener("cv-uploaded", handleCvUploaded);
+    return () => window.removeEventListener("cv-uploaded", handleCvUploaded);
+  }, [profile?.id, refetch, user?.id]);
+
   return {
     profile,
     loading,

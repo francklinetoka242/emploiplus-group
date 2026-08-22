@@ -16,3 +16,25 @@ export interface JobOfferFilters {
   orderBy?: keyof Database["public"]["Tables"]["job_offers"]["Row"];
   order?: "asc" | "desc";
 }
+
+export interface SavedJobSearch {
+  id: string;
+  candidate_id: string;
+  name: string;
+  criteria: JobSearchCriteria;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SearchHistoryItem {
+  id: string;
+  candidate_id: string;
+  criteria: JobSearchCriteria;
+  searched_at: string;
+}
+
+export interface JobSearchCriteria extends JobOfferFilters {
+  domain?: string;
+  salaryMin?: string;
+}

@@ -133,9 +133,9 @@ export function CandidateSignupPage() {
             )}
 
             {successMessage && (
-              <Alert className="mb-4 border-green-200 bg-green-50">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">{successMessage}</AlertDescription>
+              <Alert className="mb-4 border-secondary/40 bg-secondary/10">
+                <CheckCircle2 className="h-4 w-4 text-secondary-foreground" />
+                <AlertDescription className="text-secondary-foreground">{successMessage}</AlertDescription>
               </Alert>
             )}
 

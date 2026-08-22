@@ -12,7 +12,6 @@ const completionItemRoutes: Record<string, string> = {
   "Titre professionnel": "/candidate/profile?tab=profile",
   Localisation: "/candidate/profile?tab=profile",
   "Résumé professionnel": "/candidate/profile?tab=presentation",
-  "Photo de profil": "/candidate/profile?tab=profile",
   "Expérience professionnelle": "/candidate/profile?tab=experience",
   Formation: "/candidate/profile?tab=education",
   Compétence: "/candidate/profile?tab=skills",

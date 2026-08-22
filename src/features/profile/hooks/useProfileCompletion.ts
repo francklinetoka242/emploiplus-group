@@ -36,10 +36,6 @@ export function useProfileCompletion(summary: CandidateProfileSummary): ProfileC
         isCompleted: hasText(summary.profile?.bio),
       },
       {
-        label: "Photo de profil",
-        isCompleted: hasText(summary.profile?.avatar_url),
-      },
-      {
         label: "Expérience professionnelle",
         isCompleted: hasItems(summary.experiences),
       },

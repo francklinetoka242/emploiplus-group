@@ -20,8 +20,12 @@ export type NotificationRecord = {
   read_at?: string | null;
 };
 
-export type NotificationInsert = Omit<NotificationRecord, "id" | "created_at">;
-export type NotificationUpdate = Partial<Omit<NotificationRecord, "id" | "created_at">>;
+export type NotificationInsert = Omit<NotificationRecord, "id" | "created_at"> & {
+  link?: string | null;
+};
+export type NotificationUpdate = Partial<Omit<NotificationRecord, "id" | "created_at">> & {
+  link?: string | null;
+};
 
 type NotificationInsertPayload = Database["public"]["Tables"]["notifications"]["Insert"];
 type NotificationUpdatePayload = Database["public"]["Tables"]["notifications"]["Update"];
@@ -84,6 +88,7 @@ function buildInsertPayload(payload: NotificationInsert): NotificationInsertPayl
     user_id: payload.user_id,
     status: payload.status,
     is_read: payload.is_read,
+    link: payload.link ?? null,
   };
 }
 
@@ -95,7 +100,69 @@ function buildUpdatePayload(payload: NotificationUpdate): NotificationUpdatePayl
     user_id: payload.user_id,
     status: payload.status,
     is_read: payload.is_read,
+    link: payload.link ?? null,
   };
+}
+
+export async function getNotificationsForUser(userId: string): Promise<NotificationListResult> {
+  const { data, error } = await supabase
+    .from("notifications")
+    .select(NOTIFICATION_LIST_SELECT)
+    .eq("status", "active")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  return {
+    data: (data ?? []).map((row) => normalizeNotification(row as Record<string, unknown>)),
+    error: error ?? null,
+  };
+}
+
+export async function getUnreadNotificationCount(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "active")
+    .eq("user_id", userId)
+    .eq("is_read", false);
+
+  if (error) {
+    throw error;
+  }
+
+  return count ?? 0;
+}
+
+export async function createUniqueNotification(payload: NotificationInsert) {
+  if (!payload.user_id) {
+    return createNotification(payload);
+  }
+
+  const { data: existing, error: existingError } = await supabase
+    .from("notifications")
+    .select("id, title, body, link")
+    .eq("user_id", payload.user_id)
+    .eq("status", payload.status)
+    .eq("type", payload.type)
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (existingError) {
+    return { data: null, error: existingError };
+  }
+
+  const sameNotification = (existing ?? []).some((notification) => {
+    const sameTitle = notification.title === payload.title;
+    const sameBody = notification.body === (payload.content ?? null);
+    const sameLink = notification.link === payload.link;
+    return sameTitle && sameBody && sameLink;
+  });
+
+  if (sameNotification) {
+    return { data: null, error: null };
+  }
+
+  return createNotification(payload);
 }
 
 export async function fetchNotifications(): Promise<NotificationListResult> {
@@ -159,7 +226,7 @@ export async function createNotification(
             title: payload.title,
             body: payload.content ?? "",
             type: payload.type,
-            link: null,
+            link: payload.link ?? null,
             user_id: userId,
           }));
           const fallback = await supabase
@@ -226,6 +293,7 @@ export async function createNotification(
 export async function updateNotification(
   id: string,
   payload: NotificationUpdate,
+  userId?: string,
 ): Promise<NotificationSingleResult> {
   const primaryPayload = buildUpdatePayload(payload);
 
@@ -237,19 +305,31 @@ export async function updateNotification(
   };
 
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from("notifications")
       .update(primaryPayload)
-      .eq("id", id)
+      .eq("id", id);
+
+    if (userId) {
+      query = query.eq("user_id", userId);
+    }
+
+    const { data, error } = await query
       .select("id, user_id, type, title, body, is_read, status, created_at, link, read_at")
       .single();
 
     if (error) {
       if (isSchemaError(error)) {
-        const fallback = await supabase
+        let fallbackQuery = supabase
           .from("notifications")
           .update(legacyPayload)
-          .eq("id", id)
+          .eq("id", id);
+
+        if (userId) {
+          fallbackQuery = fallbackQuery.eq("user_id", userId);
+        }
+
+        const fallback = await fallbackQuery
           .select("id, user_id, type, title, body, is_read, status, created_at, link, read_at")
           .single();
         return {
@@ -267,12 +347,16 @@ export async function updateNotification(
       error: null,
     };
   } catch (error) {
-    const fallback = await supabase
+    let fallbackQuery = supabase
       .from("notifications")
       .update(legacyPayload)
-      .eq("id", id)
-      .select(NOTIFICATION_LIST_SELECT)
-      .single();
+      .eq("id", id);
+
+    if (userId) {
+      fallbackQuery = fallbackQuery.eq("user_id", userId);
+    }
+
+    const fallback = await fallbackQuery.select(NOTIFICATION_LIST_SELECT).single();
     return {
       data: fallback.data ? normalizeNotification(fallback.data as Record<string, unknown>) : null,
       error: fallback.error,
@@ -283,21 +367,34 @@ export async function updateNotification(
 export async function toggleNotificationVisibility(
   id: string,
   status: NotificationStatus,
+  userId?: string,
 ): Promise<NotificationSingleResult> {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from("notifications")
       .update({ status })
-      .eq("id", id)
+      .eq("id", id);
+
+    if (userId) {
+      query = query.eq("user_id", userId);
+    }
+
+    const { data, error } = await query
       .select("id, user_id, type, title, body, is_read, status, created_at, link, read_at")
       .single();
 
     if (error) {
       if (isSchemaError(error)) {
-        const fallback = await supabase
+        let fallbackQuery = supabase
           .from("notifications")
           .update({ title: "" })
-          .eq("id", id)
+          .eq("id", id);
+
+        if (userId) {
+          fallbackQuery = fallbackQuery.eq("user_id", userId);
+        }
+
+        const fallback = await fallbackQuery
           .select("id, user_id, type, title, body, is_read, status, created_at, link, read_at")
           .single();
         return {
@@ -319,6 +416,10 @@ export async function toggleNotificationVisibility(
   }
 }
 
-export async function deleteNotification(id: string) {
-  return supabase.from("notifications").delete().eq("id", id);
+export async function deleteNotification(id: string, userId?: string) {
+  const query = supabase.from("notifications").delete().eq("id", id);
+  if (userId) {
+    return query.eq("user_id", userId);
+  }
+  return query;
 }

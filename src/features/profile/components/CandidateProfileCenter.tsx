@@ -17,8 +17,10 @@ import { SkillsSection } from "./sections/SkillsSection";
 import { LanguagesSection } from "./sections/LanguagesSection";
 import { PreferencesSection } from "./sections/PreferencesSection";
 import { DocumentsSection } from "./sections/DocumentsSection";
+import { ProfessionalProfilePdfSection } from "./sections/ProfessionalProfilePdfSection";
 import { CompletionSection } from "./sections/CompletionSection";
 import ProfessionalPresentationSection from "./sections/ProfessionalPresentationSection";
+import { deleteCandidateCV } from "@/features/candidates/api/documentsApi";
 import type { ProfileTabValue } from "../types";
 
 export function CandidateProfileCenter() {
@@ -31,6 +33,12 @@ export function CandidateProfileCenter() {
   const { languages, loading: languagesLoading, createLanguage, updateLanguage, deleteLanguage } = useCandidateLanguages(profile?.id);
   const { preferences, loading: preferencesLoading, savePreferences } = useCandidatePreferences(profile?.id);
   const { cv, documents, loading: documentsLoading, deleteDocument, addDocument } = useCandidateDocuments(profile?.id);
+
+  const handleDeleteCv = async () => {
+    if (profile?.id) {
+      await deleteCandidateCV(profile.id);
+    }
+  };
 
   const [currentTab, setCurrentTab] = useState<ProfileTabValue>(activeTab);
 
@@ -58,7 +66,9 @@ export function CandidateProfileCenter() {
       case "completion":
         return <CompletionSection completion={completion} />;
       case "documents":
-        return <DocumentsSection cv={cv} documents={documents} loading={documentsLoading} candidateId={profile?.id} serverCvUrl={profile?.cv_url} onDeleteDocument={deleteDocument} onAddDocument={addDocument} />;
+        return <DocumentsSection cv={cv} documents={documents} loading={documentsLoading} candidateId={profile?.id} serverCvUrl={profile?.cv_url} onDeleteDocument={deleteDocument} onDeleteCv={handleDeleteCv} onAddDocument={addDocument} />;
+      case "pdf":
+        return <ProfessionalProfilePdfSection profile={profile} experiences={experiences} educations={educations} skills={skills} languages={languages} />;
         case "presentation":
           return <ProfessionalPresentationSection />;
       case "profile":

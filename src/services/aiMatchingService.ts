@@ -167,15 +167,27 @@ export async function extractTextFromPdf(file: File): Promise<string> {
  */
 export async function updateCandidateCvText(candidateId: string, cvText: string, cvUrl?: string): Promise<CandidateRow | null> {
   const normalizedText = cvText?.trim() ?? "";
+
+  const { data: candidateMeta, error: candidateMetaError } = await supabase
+    .from("candidates")
+    .select("user_id, cv_url, cv_last_updated_at")
+    .eq("id", candidateId)
+    .maybeSingle();
+
+  if (candidateMetaError && candidateMetaError.code !== "PGRST116") {
+    console.warn("Unable to resolve candidate user_id for CV notification cleanup:", candidateMetaError.message);
+  }
+
   const payload: Partial<CandidateRow> = {
     cv_text: normalizedText || null,
     embedding_vector: normalizedText ? createEmbeddingVectorString(normalizedText) : null,
+    cv_last_updated_at: normalizedText ? new Date().toISOString() : null,
   };
 
-  // Persist the CV storage URL when provided so the client can restore uploaded file references after logout/login
   if (typeof cvUrl === "string") {
-    // CandidateRow typing may not include cv_url yet; assign dynamically
     (payload as any).cv_url = cvUrl || null;
+  } else if (candidateMeta?.cv_url) {
+    (payload as any).cv_url = candidateMeta.cv_url;
   }
 
   const { data, error } = await supabase
@@ -184,6 +196,19 @@ export async function updateCandidateCvText(candidateId: string, cvText: string,
     .eq("id", candidateId)
     .select()
     .single();
+
+  if (candidateMeta?.user_id) {
+    try {
+      await supabase
+        .from("notifications")
+        .update({ status: "masked" })
+        .eq("user_id", candidateMeta.user_id)
+        .eq("type", "offre")
+        .eq("title", "Votre CV est ancien.");
+    } catch (notificationError) {
+      console.warn("Unable to suppress stale CV reminder after CV update:", notificationError);
+    }
+  }
 
   if (error) {
     console.error("Failed to update candidate cv_text:", error.message);

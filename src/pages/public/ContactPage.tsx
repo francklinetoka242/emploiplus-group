@@ -221,13 +221,13 @@ export function ContactPage() {
 
               {submitted && (
                 <motion.div 
-                  className="mb-6 rounded-xl bg-green-50 border border-green-200 p-4 flex items-center gap-3"
+                  className="mb-6 flex items-center gap-3 rounded-xl border border-secondary/40 bg-secondary/10 p-4"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                 >
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                  <p className="text-sm font-semibold text-green-800">
+                  <CheckCircle className="h-5 w-5 flex-shrink-0 text-secondary-foreground" />
+                  <p className="text-sm font-semibold text-secondary-foreground">
                     Merci ! Votre message a été envoyé avec succès.
                   </p>
                 </motion.div>

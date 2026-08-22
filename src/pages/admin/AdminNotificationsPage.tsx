@@ -282,7 +282,7 @@ export function AdminNotificationsPage() {
 
         {message && (
           <div
-            className={`rounded-2xl border px-4 py-3 text-sm ${message.type === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}
+            className={`rounded-2xl border px-4 py-3 text-sm ${message.type === "success" ? "border-secondary/40 bg-secondary/10 text-secondary-foreground" : "border-red-200 bg-red-50 text-red-800"}`}
           >
             {message.text}
           </div>

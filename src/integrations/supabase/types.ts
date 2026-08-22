@@ -374,6 +374,8 @@ export type Database = {
           status: Database["public"]["Enums"]["candidate_status"];
           cv_text: string | null;
           embedding_vector: string | null;
+          cv_url: string | null;
+          cv_last_updated_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -393,6 +395,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["candidate_status"];
           cv_text?: string | null;
           embedding_vector?: string | null;
+          cv_url?: string | null;
+          cv_last_updated_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -412,6 +416,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["candidate_status"];
           cv_text?: string | null;
           embedding_vector?: string | null;
+          cv_url?: string | null;
+          cv_last_updated_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -552,9 +558,15 @@ export type Database = {
           candidate_id: string;
           contract_types: string[];
           work_types: string[];
+          mobility_radius_km: number;
+          mobility_modes: string[];
           salary_min: number;
           salary_max: number;
           seniority_level: string;
+          availability_status: string;
+          availability_date: string | null;
+          job_alerts_enabled: boolean;
+          job_alert_frequency: string;
           created_at: string;
           updated_at: string;
         };
@@ -563,9 +575,15 @@ export type Database = {
           candidate_id: string;
           contract_types?: string[];
           work_types?: string[];
+          mobility_radius_km?: number;
+          mobility_modes?: string[];
           salary_min?: number;
           salary_max?: number;
           seniority_level?: string;
+          availability_status?: string;
+          availability_date?: string | null;
+          job_alerts_enabled?: boolean;
+          job_alert_frequency?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -574,11 +592,68 @@ export type Database = {
           candidate_id?: string;
           contract_types?: string[];
           work_types?: string[];
+          mobility_radius_km?: number;
+          mobility_modes?: string[];
           salary_min?: number;
           salary_max?: number;
           seniority_level?: string;
+          availability_status?: string;
+          availability_date?: string | null;
+          job_alerts_enabled?: boolean;
+          job_alert_frequency?: string;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      candidate_saved_searches: {
+        Row: {
+          id: string;
+          candidate_id: string;
+          name: string;
+          criteria: Json;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          candidate_id: string;
+          name: string;
+          criteria: Json;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          candidate_id?: string;
+          name?: string;
+          criteria?: Json;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      candidate_search_history: {
+        Row: {
+          id: string;
+          candidate_id: string;
+          criteria: Json;
+          searched_at: string;
+        };
+        Insert: {
+          id?: string;
+          candidate_id: string;
+          criteria: Json;
+          searched_at?: string;
+        };
+        Update: {
+          id?: string;
+          candidate_id?: string;
+          criteria?: Json;
+          searched_at?: string;
         };
         Relationships: [];
       };

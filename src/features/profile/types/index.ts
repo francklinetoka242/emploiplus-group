@@ -16,6 +16,7 @@ export type ProfileTabValue =
   | "presentation"
   | "preferences"
   | "documents"
+  | "pdf"
   | "completion";
 
 export interface CompletionItem {

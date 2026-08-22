@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface CandidateDocument {
   id: string;
@@ -47,29 +48,63 @@ export function useCandidateDocuments(profileId?: string | null) {
   useEffect(() => {
     if (!profileId) return;
 
-    try {
-      setLoading(true);
-      const raw = localStorage.getItem(`emploiplus-candidate-documents-${profileId}`);
-      if (!raw) {
-        setCv(null);
-        setDocuments([]);
-        return;
-      }
+    let isMounted = true;
 
-      const parsed = JSON.parse(raw) as { cv?: CandidateCVState; documents?: CandidateDocument[] };
-      setCv(parsed.cv ?? null);
-      setDocuments(parsed.documents ?? []);
-    } catch (error) {
-      console.error("Unable to restore candidate documents", error);
-    } finally {
-      setLoading(false);
-      setHasRestoredDocuments(true);
-    }
+    const hydrateFromServer = async () => {
+      try {
+        setLoading(true);
+        const { data } = await supabase
+          .from("candidates")
+          .select("cv_url, cv_last_updated_at")
+          .eq("id", profileId)
+          .maybeSingle();
+
+        const serverCv = data?.cv_url
+          ? {
+              id: `cv-server-${profileId}`,
+              name: "CV",
+              displayName: "Mon CV",
+              date: data.cv_last_updated_at ?? new Date().toISOString(),
+              size: "",
+              url: data.cv_url,
+            }
+          : null;
+
+        const raw = localStorage.getItem(`emploiplus-candidate-documents-${profileId}`);
+        const parsed = raw ? (JSON.parse(raw) as { cv?: CandidateCVState; documents?: CandidateDocument[] }) : null;
+
+        if (!isMounted) return;
+        setCv(serverCv ?? parsed?.cv ?? null);
+        setDocuments(parsed?.documents ?? []);
+      } catch (error) {
+        console.error("Unable to restore candidate documents", error);
+        if (isMounted) {
+          setCv(null);
+          setDocuments([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+          setHasRestoredDocuments(true);
+        }
+      }
+    };
+
+    void hydrateFromServer();
+    return () => {
+      isMounted = false;
+    };
   }, [profileId]);
 
   useEffect(() => {
     if (!profileId || !hasRestoredDocuments) return;
     localStorage.setItem(`emploiplus-candidate-documents-${profileId}`, JSON.stringify({ cv, documents }));
+    if (cv?.url) {
+      void supabase
+        .from("candidates")
+        .update({ cv_url: cv.url, cv_last_updated_at: new Date().toISOString() })
+        .eq("id", profileId);
+    }
   }, [profileId, cv, documents, hasRestoredDocuments]);
 
   return { cv, documents, setCv, setDocuments, loading, addDocument, deleteDocument };

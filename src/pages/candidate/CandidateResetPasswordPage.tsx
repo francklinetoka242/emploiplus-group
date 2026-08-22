@@ -230,7 +230,7 @@ export function CandidateResetPasswordPage() {
             <CardContent className="pt-6">
               <div className="text-center space-y-4">
                 <div className="flex justify-center">
-                  <CheckCircle2 className="w-12 h-12 text-green-500" />
+                  <CheckCircle2 className="w-12 h-12 text-secondary" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg text-foreground mb-2">

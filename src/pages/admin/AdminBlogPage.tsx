@@ -347,7 +347,7 @@ export function AdminBlogPage() {
 
         {message ? (
           <div
-            className={`rounded-3xl border px-4 py-3 text-sm ${message.type === "success" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600" : "border-destructive/30 bg-destructive/10 text-destructive"}`}
+            className={`rounded-3xl border px-4 py-3 text-sm ${message.type === "success" ? "border-secondary/40 bg-secondary/10 text-secondary-foreground" : "border-destructive/30 bg-destructive/10 text-destructive"}`}
           >
             {message.text}
           </div>

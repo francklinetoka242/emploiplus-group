@@ -1,5 +1,6 @@
+import { supabase } from "@/integrations/supabase/client";
 import { CANDIDATE_DOCUMENTS_BUCKET, uploadFileToStorage } from "@/services/storageService";
-import { processCandidateCvUpload, updateCandidateCvText } from "@/services/aiMatchingService";
+import { processCandidateCvUpload, updateCandidateCvText, clearCandidateCvText } from "@/services/aiMatchingService";
 
 export interface CandidateDocument {
   id: string;
@@ -21,8 +22,44 @@ export interface CandidateCVState {
   url: string;
 }
 
+function toCvStateFromServer(candidateId: string, candidate: { cv_url?: string | null; cv_last_updated_at?: string | null } | null): CandidateCVState | null {
+  if (!candidate?.cv_url) {
+    return null;
+  }
+
+  return {
+    id: `cv-server-${candidateId}`,
+    name: "CV",
+    displayName: "Mon CV",
+    date: candidate.cv_last_updated_at ?? new Date().toISOString(),
+    size: "",
+    url: candidate.cv_url,
+  };
+}
+
 export async function getCandidateDocuments(candidateId: string) {
   const storageKey = `emploiplus-candidate-documents-${candidateId}`;
+
+  try {
+    const { data: profile, error } = await supabase
+      .from("candidates")
+      .select("cv_url, cv_last_updated_at")
+      .eq("id", candidateId)
+      .maybeSingle();
+
+    if (!error && profile) {
+      const serverCv = toCvStateFromServer(candidateId, profile);
+      const raw = localStorage.getItem(storageKey);
+      const parsed = raw ? (JSON.parse(raw) as { documents?: CandidateDocument[] }) : null;
+      return {
+        cv: serverCv,
+        documents: parsed?.documents ?? [],
+      };
+    }
+  } catch (error) {
+    console.warn("[documentsApi] unable to resolve candidate CV from Supabase", error);
+  }
+
   const raw = localStorage.getItem(storageKey);
   if (!raw) {
     console.debug("[documentsApi] getCandidateDocuments: no local storage entry", { candidateId, storageKey });
@@ -45,6 +82,17 @@ export async function getCandidateDocuments(candidateId: string) {
 }
 
 export async function saveCandidateDocuments(candidateId: string, payload: { cv: CandidateCVState | null; documents: CandidateDocument[] }) {
+  if (payload.cv?.url) {
+    try {
+      await supabase
+        .from("candidates")
+        .update({ cv_url: payload.cv.url, cv_last_updated_at: new Date().toISOString() })
+        .eq("id", candidateId);
+    } catch (error) {
+      console.warn("[documentsApi] unable to persist CV url to Supabase", error);
+    }
+  }
+
   localStorage.setItem(`emploiplus-candidate-documents-${candidateId}`, JSON.stringify(payload));
   return payload;
 }
@@ -73,20 +121,18 @@ export async function uploadAndProcessCandidateCV(candidateId: string, file: Fil
     console.debug("Failed to persist candidate documents locally before dispatch:", localErr);
   }
 
+  // Refresh profile consumers as soon as the CV metadata is persisted.
+  try {
+    if (typeof window !== "undefined" && typeof CustomEvent !== "undefined") {
+      window.dispatchEvent(new CustomEvent("cv-uploaded", { detail: { candidateId, cvUrl: newCv.url } }));
+    }
+  } catch (eventError) {
+    console.debug("Failed to dispatch cv-uploaded event", eventError);
+  }
+
   try {
     // Pass the internal storage path to the server so it can regenerate signed URLs later
     const extraction = await processCandidateCvUpload(candidateId, file, path ?? url);
-
-    // Émettre un événement global pour notifier l'application qu'un CV a été uploadé
-    try {
-      if (typeof window !== "undefined" && typeof CustomEvent !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("cv-uploaded", { detail: { candidateId, cvUrl: newCv.url }, bubbles: true })
-        );
-      }
-    } catch (evErr) {
-      console.debug("Failed to dispatch cv-uploaded event", evErr);
-    }
 
     return { cv: newCv, extraction } as { cv: CandidateCVState; extraction: unknown };
   } catch (err) {
@@ -129,6 +175,12 @@ export async function deleteCandidateDocument(candidateId: string, documentId: s
 
 export async function deleteCandidateCV(candidateId: string) {
   const existing = await getCandidateDocuments(candidateId);
+  try {
+    await clearCandidateCvText(candidateId);
+    await supabase.from("candidates").update({ cv_url: null, cv_last_updated_at: null }).eq("id", candidateId);
+  } catch (error) {
+    console.warn("[documentsApi] unable to clear CV in Supabase", error);
+  }
   await saveCandidateDocuments(candidateId, { cv: null, documents: existing.documents });
   return null;
 }

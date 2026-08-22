@@ -273,9 +273,9 @@ export function CandidateCVPage() {
   return (
     <div className="space-y-6">
       {feedbackMessage && (
-        <Alert className="border-green-200 bg-green-50">
-          <AlertCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800">{feedbackMessage}</AlertDescription>
+        <Alert className="border-secondary/40 bg-secondary/10">
+          <AlertCircle className="h-4 w-4 text-secondary-foreground" />
+          <AlertDescription className="text-secondary-foreground">{feedbackMessage}</AlertDescription>
         </Alert>
       )}
 
@@ -379,7 +379,7 @@ export function CandidateCVPage() {
                     <Button
                       onClick={handleConfirmCvUpload}
                       disabled={isUploadingCv}
-                      className="bg-green-600 text-white"
+                      className="bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     >
                       {isUploadingCv ? "Chargement..." : "Confirmer"}
                     </Button>

@@ -11,6 +11,7 @@ const tabs: Array<{ value: ProfileTabValue; label: string }> = [
   { value: "experience", label: "Mon parcours" },
   { value: "presentation", label: "Ma présentation professionnelle" },
   { value: "documents", label: "Mes documents" },
+  { value: "pdf", label: "Profil PDF" },
   { value: "preferences", label: "Mes préférences" },
   { value: "completion", label: "Complétude" },
 ];

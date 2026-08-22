@@ -26,11 +26,37 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { useJobs } from "@/features/jobs/hooks";
+import {
+  clearSearchHistory,
+  deleteSavedJobSearch,
+  deleteSearchHistoryItem,
+  getSavedJobSearches,
+  getSearchHistory,
+  recordSearchHistory,
+  saveJobSearch,
+  updateSavedJobSearch,
+} from "@/features/jobs/api";
+import type { JobSearchCriteria, SavedJobSearch, SearchHistoryItem } from "@/features/jobs/types";
+import {
+  getSearchSuggestion,
+  interpretNaturalLanguageSearch,
+} from "@/features/jobs/search/naturalLanguageSearch";
 import { isMobileApp } from "@/lib/isMobileApp";
+import { centralAfricaCityGroups } from "@/data/locations";
 import { useCandidate } from "@/hooks/useCandidate";
+import { useCandidatePreferences as useCandidateJobPreferences } from "@/features/candidates/hooks/useCandidatePreferences";
 import { getRecommendedJobs, type RecommendedJob } from "@/services/aiMatchingService";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -46,17 +72,24 @@ export function JobsPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isLoading, roles } = useAuthContext();
-  const isCandidateShell = Boolean(user && roles.includes("candidate"));
   const { profile } = useCandidate();
+  const isCandidateShell = Boolean(user && (roles.includes("candidate") || profile?.id));
+  const { preferences } = useCandidateJobPreferences(profile?.id);
   const mobileApp = isMobileApp();
   const [searchInput, setSearchInput] = React.useState("");
   const [companyInput, setCompanyInput] = React.useState("");
   const [contractTypeInput, setContractTypeInput] = React.useState("");
-  const [appliedFilters, setAppliedFilters] = React.useState({
+  const [locationInput, setLocationInput] = React.useState("");
+  const [domainInput, setDomainInput] = React.useState("");
+  const [sortBy, setSortBy] = React.useState<"date" | "relevance" | "salary-high" | "salary-low">(
+    "date",
+  );
+  const [appliedFilters, setAppliedFilters] = React.useState<JobSearchCriteria>({
     status: "published" as const,
     limit: 100,
     query: "",
     company: "",
+    location: "",
     contractType: "",
   });
   const [filtersOpen, setFiltersOpen] = React.useState(false);
@@ -69,11 +102,36 @@ export function JobsPage() {
   const [recommendedPage, setRecommendedPage] = React.useState(1);
   const [hasMoreRecommendedJobs, setHasMoreRecommendedJobs] = React.useState(false);
   const [recommendationsOpen, setRecommendationsOpen] = React.useState(false);
+  const [interpretation, setInterpretation] = React.useState<ReturnType<
+    typeof interpretNaturalLanguageSearch
+  > | null>(null);
+  const [savedSearches, setSavedSearches] = React.useState<SavedJobSearch[]>([]);
+  const [searchHistory, setSearchHistory] = React.useState<SearchHistoryItem[]>([]);
+  const [searchesLoading, setSearchesLoading] = React.useState(false);
+  const [nearbyOnly, setNearbyOnly] = React.useState(false);
+  const [candidateToolsOpen, setCandidateToolsOpen] = React.useState(false);
   const recommendationContextRef = React.useRef<string | null>(null);
   const pageSize = 8;
   const recommendedPageSize = 3;
 
   const { offers, loading } = useJobs(appliedFilters);
+  const searchSuggestions = React.useMemo(() => getSearchSuggestion(searchInput), [searchInput]);
+
+  React.useEffect(() => {
+    if (!isCandidateShell || !profile?.id) {
+      setSavedSearches([]);
+      setSearchHistory([]);
+      return;
+    }
+    setSearchesLoading(true);
+    void Promise.all([getSavedJobSearches(profile.id), getSearchHistory(profile.id)])
+      .then(([saved, history]) => {
+        setSavedSearches(saved);
+        setSearchHistory(history);
+      })
+      .catch((error) => console.error("Impossible de charger les recherches candidat", error))
+      .finally(() => setSearchesLoading(false));
+  }, [isCandidateShell, profile?.id]);
 
   React.useEffect(() => {
     if (!isCandidateShell || !profile?.id) {
@@ -138,8 +196,32 @@ export function JobsPage() {
     };
   }, [isCandidateShell, profile?.id, profile?.cv_text, profile?.embedding_vector, recommendedPage]);
 
-  const q = appliedFilters.query.trim().toLowerCase();
-  const companyFilter = appliedFilters.company.trim().toLowerCase();
+  const q = (appliedFilters.query ?? "").trim().toLowerCase();
+  const companyFilter = (appliedFilters.company ?? "").trim().toLowerCase();
+  const locationFilter = (appliedFilters.location ?? "").trim().toLowerCase();
+  const availableDomains = React.useMemo(
+    () =>
+      Array.from(
+        new Set(
+          offers
+            .flatMap((job) => (Array.isArray(job.tags) ? job.tags.filter(Boolean) : []))
+            .map((tag) => String(tag).trim())
+            .filter(Boolean),
+        ),
+      ).sort((a, b) => a.localeCompare(b)),
+    [offers],
+  );
+
+  const extractSalaryValue = (value?: string | null) => {
+    if (!value) return null;
+    const numbers = value.match(/\d[\d\s.,]*/g);
+    if (!numbers || numbers.length === 0) return null;
+    const numericValue = Number(
+      numbers[0].replace(/\s+/g, "").replace(/\./g, "").replace(/,/g, "."),
+    );
+    return Number.isFinite(numericValue) ? numericValue : null;
+  };
+
   const getContractLabel = (contractType?: string | null) => {
     if (!contractType) return null;
     const translated = t(`jobs.contract.${contractType}`);
@@ -166,45 +248,241 @@ export function JobsPage() {
       `${job.title || ""} ${job.company || ""} ${job.description || ""} ${job.requirements || ""}`.toLowerCase();
     if (q && !hay.includes(q)) return false;
     if (companyFilter && !job.company?.toLowerCase().includes(companyFilter)) return false;
+    if (
+      locationFilter &&
+      ![job.location_city, job.location_country].join(" ").toLowerCase().includes(locationFilter)
+    )
+      return false;
     if (appliedFilters.contractType && job.contract_type !== appliedFilters.contractType)
       return false;
+    if (domainInput) {
+      const normalizedDomain = domainInput.toLowerCase();
+      const matchesDomain = (job.tags || []).some(
+        (tag) =>
+          String(tag).trim().toLowerCase() === normalizedDomain ||
+          String(tag).trim().toLowerCase().includes(normalizedDomain),
+      );
+      if (!matchesDomain) return false;
+    }
+    if (appliedFilters.salaryMin) {
+      const minimumSalary = Number(appliedFilters.salaryMin);
+      if (!Number.isFinite(minimumSalary)) return false;
+      const salaryValue = extractSalaryValue(job.salary);
+      if (salaryValue === null || salaryValue < minimumSalary) return false;
+    }
+    if (nearbyOnly && profile?.location_city) {
+      const candidateCity = profile.location_city.trim().toLowerCase();
+      const candidateCountry = profile.location_country?.trim().toLowerCase();
+      const jobCity = (job.location_city ?? "").trim().toLowerCase();
+      const jobCountry = (job.location_country ?? "").trim().toLowerCase();
+
+      const isSameCity = jobCity && candidateCity && jobCity === candidateCity;
+      const isSameCountry = !!candidateCountry && !!jobCountry && jobCountry === candidateCountry;
+      const isRemoteFriendly =
+        Array.isArray(preferences?.mobility_modes) &&
+        preferences.mobility_modes.includes("remote") &&
+        (!job.location_city && !job.location_country);
+
+      const withinRadius =
+        (preferences?.mobility_radius_km ?? 50) > 0 &&
+        (isSameCity || isSameCountry || isRemoteFriendly);
+
+      if (!withinRadius) return false;
+    }
     return true;
   });
 
+  const sortedOffers = React.useMemo(() => {
+    const items = [...filteredOffers];
+    const recommendedScores = new Map(
+      recommendedJobs.map((job) => [job.id, typeof job.score === "number" ? job.score : 0]),
+    );
+
+    items.sort((left, right) => {
+      switch (sortBy) {
+        case "relevance": {
+          const leftScore = recommendedScores.get(left.id) ?? 0;
+          const rightScore = recommendedScores.get(right.id) ?? 0;
+          if (leftScore !== rightScore) return rightScore - leftScore;
+          break;
+        }
+        case "salary-high": {
+          const leftSalary = extractSalaryValue(left.salary) ?? 0;
+          const rightSalary = extractSalaryValue(right.salary) ?? 0;
+          if (leftSalary !== rightSalary) return rightSalary - leftSalary;
+          break;
+        }
+        case "salary-low": {
+          const leftSalary = extractSalaryValue(left.salary) ?? 0;
+          const rightSalary = extractSalaryValue(right.salary) ?? 0;
+          if (leftSalary !== rightSalary) return leftSalary - rightSalary;
+          break;
+        }
+        case "date":
+        default: {
+          const leftDate = new Date(left.publish_at ?? left.created_at ?? 0).getTime();
+          const rightDate = new Date(right.publish_at ?? right.created_at ?? 0).getTime();
+          if (leftDate !== rightDate) return rightDate - leftDate;
+          break;
+        }
+      }
+
+      return (right.publish_at ?? right.created_at ?? "").localeCompare(
+        left.publish_at ?? left.created_at ?? "",
+      );
+    });
+
+    return items;
+  }, [filteredOffers, recommendedJobs, sortBy]);
+
   const handleSearchSubmit = (event?: React.FormEvent) => {
     event?.preventDefault();
-    setAppliedFilters({
+    const parsed = interpretNaturalLanguageSearch(searchInput);
+    const hasNaturalCriteria = parsed.detected.length > 0;
+    const nextCriteria: JobSearchCriteria = {
       status: "published",
       limit: 100,
-      query: searchInput.trim(),
+      query: hasNaturalCriteria ? parsed.criteria.query : searchInput.trim(),
       company: companyInput.trim(),
-      contractType: contractTypeInput,
+      location: locationInput.trim() || parsed.criteria.location || "",
+      contractType: contractTypeInput || parsed.criteria.contractType || "",
+      domain: domainInput || parsed.criteria.domain || "",
+      salaryMin: parsed.criteria.salaryMin || "",
+    };
+    setInterpretation(
+      hasNaturalCriteria ? { criteria: nextCriteria, detected: parsed.detected } : null,
+    );
+    setAppliedFilters({
+      ...nextCriteria,
     });
+    setSearchInput(nextCriteria.query ?? "");
+    setLocationInput(nextCriteria.location ?? "");
+    setContractTypeInput(nextCriteria.contractType ?? "");
+    setDomainInput(nextCriteria.domain ?? "");
     setFiltersOpen(false);
     setPage(1);
+    if (
+      profile?.id &&
+      (nextCriteria.query ||
+        nextCriteria.location ||
+        nextCriteria.contractType ||
+        nextCriteria.domain)
+    ) {
+      void recordSearchHistory(profile.id, nextCriteria)
+        .then((item) => setSearchHistory((current) => [item, ...current].slice(0, 10)))
+        .catch((error) => console.error("Impossible d'enregistrer la recherche", error));
+    }
+  };
+
+  const applyCriteria = (criteria: JobSearchCriteria) => {
+    setSearchInput(criteria.query ?? "");
+    setCompanyInput(criteria.company ?? "");
+    setLocationInput(criteria.location ?? "");
+    setContractTypeInput(criteria.contractType ?? "");
+    setDomainInput(criteria.domain ?? "");
+    setNearbyOnly(false);
+    setAppliedFilters({ ...criteria, status: "published", limit: 100 });
+    setPage(1);
+  };
+
+  const useCandidatePreferences = () => {
+    if (!profile || !preferences) return;
+    const criteria: JobSearchCriteria = {
+      status: "published",
+      limit: 100,
+      query: profile.headline ?? "",
+      location: profile.location_city ?? "",
+      contractType: preferences.contract_types?.[0] as JobSearchCriteria["contractType"],
+      domain: "",
+      salaryMin: preferences.salary_min ? String(preferences.salary_min) : "",
+    };
+    applyCriteria(criteria);
+  };
+
+  const saveCurrentSearch = async () => {
+    if (!profile?.id) return;
+    const name = window.prompt("Nom de cette recherche", searchInput || "Ma recherche");
+    if (!name?.trim()) return;
+    try {
+      const saved = await saveJobSearch(profile.id, name, {
+        ...appliedFilters,
+        domain: domainInput,
+        salaryMin: appliedFilters.salaryMin,
+      });
+      setSavedSearches((current) => [saved, ...current]);
+    } catch (error) {
+      console.error("Impossible de sauvegarder la recherche", error);
+    }
+  };
+
+  const toggleSavedSearch = async (saved: SavedJobSearch) => {
+    try {
+      const updated = await updateSavedJobSearch(saved.id, { is_active: !saved.is_active });
+      setSavedSearches((current) =>
+        current.map((item) => (item.id === updated.id ? updated : item)),
+      );
+    } catch (error) {
+      console.error("Impossible de modifier la recherche sauvegardée", error);
+    }
+  };
+
+  const editSavedSearch = async (saved: SavedJobSearch) => {
+    const name = window.prompt("Nom de cette recherche", saved.name);
+    if (!name?.trim() || name.trim() === saved.name) return;
+    try {
+      const updated = await updateSavedJobSearch(saved.id, { name: name.trim() });
+      setSavedSearches((current) =>
+        current.map((item) => (item.id === updated.id ? updated : item)),
+      );
+    } catch (error) {
+      console.error("Impossible de modifier la recherche sauvegardée", error);
+    }
   };
 
   const resetFilters = () => {
     setSearchInput("");
     setCompanyInput("");
     setContractTypeInput("");
+    setLocationInput("");
+    setDomainInput("");
+    setInterpretation(null);
+    setNearbyOnly(false);
     setAppliedFilters({
       status: "published",
       limit: 100,
       query: "",
       company: "",
+      location: "",
       contractType: "",
     });
     setFiltersOpen(false);
     setPage(1);
   };
 
-  React.useEffect(() => {
-    setPage(1);
-  }, [q, companyFilter, appliedFilters.contractType]);
+  const hasActiveSearchCriteria = Boolean(
+    appliedFilters.query ||
+      appliedFilters.company ||
+      appliedFilters.location ||
+      appliedFilters.contractType ||
+      appliedFilters.domain ||
+      appliedFilters.salaryMin ||
+      nearbyOnly ||
+      sortBy !== "date",
+  );
 
   React.useEffect(() => {
-    if (!isCandidateShell || location.hash !== "#recommended-for-you") {
+    setPage(1);
+  }, [
+    q,
+    companyFilter,
+    locationFilter,
+    appliedFilters.contractType,
+    domainInput,
+    sortBy,
+  ]);
+
+  React.useEffect(() => {
+    if (!isCandidateShell || location.hash !== "#recommended-for-you" || recommendationsOpen) {
       return;
     }
 
@@ -217,11 +495,11 @@ export function JobsPage() {
     }, 120);
 
     return () => window.clearTimeout(timer);
-  }, [isCandidateShell, location.hash]);
+  }, [isCandidateShell, location.hash, recommendationsOpen]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredOffers.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil(sortedOffers.length / pageSize));
   const safePage = Math.min(page, totalPages);
-  const paginatedOffers = filteredOffers.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const paginatedOffers = sortedOffers.slice((safePage - 1) * pageSize, safePage * pageSize);
   const loginRedirectPath = loginPromptSlug ? `/jobs/${loginPromptSlug}` : "/jobs";
 
   const handleApplyClick = (slug: string) => {
@@ -248,9 +526,9 @@ export function JobsPage() {
       />
       <section className="container-page pb-32 md:pb-28">
         <div className="grid gap-8">
-          <div className="space-y-6 text-foreground/90 leading-relaxed">
+          <div className="flex flex-col gap-6 text-foreground/90 leading-relaxed">
             <div
-              className="sticky z-40 isolate mt-0 mb-0 w-full self-start rounded-[1.25rem] border border-border/90 bg-card/95 shadow-sm backdrop-blur-sm"
+              className="order-1 sticky z-40 isolate mt-0 mb-0 w-full self-start rounded-[1.25rem] bg-card/95 backdrop-blur-sm"
               style={{
                 top: mobileApp || isCandidateShell ? 0 : 64,
               }}
@@ -258,11 +536,16 @@ export function JobsPage() {
               <div className="overflow-hidden rounded-[1.25rem] border-0 bg-card shadow-none ring-0">
                 <form
                   onSubmit={handleSearchSubmit}
-                  className="flex items-center gap-3 bg-card/95 p-3 sm:p-4"
+                  className="flex flex-col gap-3 bg-card/95 p-3 sm:p-4"
                 >
+                  <label className="text-sm font-semibold text-foreground" htmlFor="job-search-input">
+                    Rechercher un emploi
+                  </label>
+                  <div className="flex items-center gap-3">
                   <div className="relative flex-1">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
+                      id="job-search-input"
                       value={searchInput}
                       onChange={(e) => setSearchInput(e.target.value)}
                       onKeyDown={(e) => {
@@ -273,6 +556,25 @@ export function JobsPage() {
                       placeholder="Rechercher un emploi..."
                       className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                     />
+                    {searchSuggestions.length > 0 ? (
+                      <div className="absolute left-0 right-0 top-full z-10 mt-1 rounded-xl border border-border bg-card p-2 shadow-sm">
+                        <p className="px-2 py-1 text-xs text-muted-foreground">
+                          Suggestions métier
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {searchSuggestions.map((suggestion) => (
+                            <button
+                              key={suggestion}
+                              type="button"
+                              onClick={() => setSearchInput(suggestion)}
+                              className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground hover:border-primary hover:text-primary"
+                            >
+                              {suggestion}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
 
                   <button
@@ -292,7 +594,92 @@ export function JobsPage() {
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                   </button>
+                  </div>
                 </form>
+
+                {isCandidateShell ? (
+                  <button
+                    type="button"
+                    aria-expanded={candidateToolsOpen}
+                    onClick={() => setCandidateToolsOpen((open) => !open)}
+                    className="flex w-full items-center justify-between border-t border-border px-3 py-2.5 text-left text-sm font-semibold text-primary transition hover:bg-primary/5 sm:px-4"
+                  >
+                    <span>{candidateToolsOpen ? "Masquer les options candidat" : "Afficher les options candidat"}</span>
+                    <span aria-hidden="true" className="text-lg leading-none">{candidateToolsOpen ? "−" : "+"}</span>
+                  </button>
+                ) : null}
+
+                {isCandidateShell && candidateToolsOpen ? (
+                  <div className="grid gap-3 border-t border-border bg-muted/20 px-3 py-3 sm:grid-cols-2 sm:px-4">
+                    <button
+                      type="button"
+                      onClick={useCandidatePreferences}
+                      disabled={!preferences}
+                      className="rounded-xl border border-primary/20 bg-primary/5 px-3 py-2 text-left text-sm font-semibold text-primary transition hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <span className="block">Utiliser mes préférences</span>
+                      <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+                        Appliquer vos critères enregistrés au formulaire.
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!profile?.location_city) {
+                          setLocationInput("");
+                          setNearbyOnly(false);
+                          return;
+                        }
+                        applyCriteria({ ...appliedFilters, location: profile.location_city });
+                        setNearbyOnly(true);
+                      }}
+                      className="rounded-xl border border-border bg-background px-3 py-2 text-left text-sm font-semibold text-foreground transition hover:border-primary/40 hover:text-primary"
+                    >
+                      <span className="block">Offres proches de moi{profile?.location_city ? ` (${profile.location_city})` : ""}</span>
+                      <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+                        {profile?.location_city
+                          ? "Basées sur votre ville et vos préférences de mobilité."
+                          : "Ajoutez votre ville dans votre profil pour utiliser cette recherche."}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={resetFilters}
+                      className="sm:col-span-2 inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium text-foreground transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                      Réinitialiser la recherche
+                    </button>
+                  </div>
+                ) : null}
+
+                {interpretation ? (
+                  <div className="border-t border-border bg-muted/30 px-3 py-3 sm:px-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">Recherche comprise</p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {interpretation.detected.map((item) => (
+                            <span
+                              key={`${item.label}-${item.value}`}
+                              className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground"
+                            >
+                              <strong className="text-foreground">{item.label} :</strong>{" "}
+                              {item.value}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setFiltersOpen(true)}
+                        className="text-left text-sm font-semibold text-primary hover:underline sm:text-right"
+                      >
+                        Modifier les critères
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
 
                 <div
                   className={`overflow-hidden border-t border-border bg-card transition-all duration-200 ${
@@ -300,6 +687,10 @@ export function JobsPage() {
                   }`}
                 >
                   <div className="grid gap-3 bg-card p-3 sm:grid-cols-2 sm:p-4">
+                    <div className="sm:col-span-2">
+                      <h2 className="text-base font-semibold text-foreground">Critères de recherche</h2>
+                      <p className="mt-1 text-sm text-muted-foreground">Affinez les offres affichées selon vos priorités.</p>
+                    </div>
                     <div>
                       <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                         Type de contrat
@@ -322,6 +713,30 @@ export function JobsPage() {
 
                     <div>
                       <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                        Localisation
+                      </label>
+                      <Select value={locationInput} onValueChange={setLocationInput}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Sélectionner une ville ou un pays" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {centralAfricaCityGroups.map((group) => (
+                            <SelectGroup key={group.country}>
+                              <SelectLabel>{group.country}</SelectLabel>
+                              <SelectItem value={group.country}>{group.country}</SelectItem>
+                              {group.cities.map((city) => (
+                                <SelectItem key={city} value={city}>
+                                  {city}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                         Entreprise
                       </label>
                       <input
@@ -332,15 +747,47 @@ export function JobsPage() {
                       />
                     </div>
 
-                    <div className="flex items-center justify-end gap-2 pt-1 sm:col-span-2">
-                      <button
-                        type="button"
-                        onClick={resetFilters}
-                        className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-primary/5"
+                    {availableDomains.length > 0 ? (
+                      <div>
+                        <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                          Domaine
+                        </label>
+                        <select
+                          value={domainInput}
+                          onChange={(e) => setDomainInput(e.target.value)}
+                          className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                        >
+                          <option value="">Tous</option>
+                          {availableDomains.map((domain) => (
+                            <option key={domain} value={domain}>
+                              {domain}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : null}
+
+                    <div className="sm:col-span-2">
+                      <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                        Trier par
+                      </label>
+                      <select
+                        value={sortBy}
+                        onChange={(e) =>
+                          setSortBy(
+                            e.target.value as "date" | "relevance" | "salary-high" | "salary-low",
+                          )
+                        }
+                        className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                       >
-                        <X className="h-3.5 w-3.5" />
-                        Réinitialiser
-                      </button>
+                        <option value="date">Date de publication</option>
+                        <option value="relevance">Pertinence</option>
+                        <option value="salary-high">Salaire décroissant</option>
+                        <option value="salary-low">Salaire croissant</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-1 sm:col-span-2">
                       <button
                         type="button"
                         onClick={handleSearchSubmit}
@@ -352,17 +799,18 @@ export function JobsPage() {
                     </div>
                   </div>
                 </div>
-              </div>
             </div>
-
-            {isCandidateShell ? (
+                {isCandidateShell ? (
               <Sheet open={recommendationsOpen} onOpenChange={setRecommendationsOpen}>
                 <SheetContent
                   side="right"
                   className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl"
                 >
                   <SheetHeader className="border-b border-border px-5 py-5 pr-14 text-left sm:px-7">
-                    <SheetTitle id="recommended-for-you" className="flex items-center gap-2 text-xl">
+                    <SheetTitle
+                      id="recommended-for-you"
+                      className="flex items-center gap-2 text-xl"
+                    >
                       <Sparkles className="h-5 w-5 text-primary" />
                       Recommandé pour vous
                     </SheetTitle>
@@ -466,27 +914,184 @@ export function JobsPage() {
               </Sheet>
             ) : null}
 
-            {isCandidateShell ? (
-              <button
-                type="button"
-                onClick={() => setRecommendationsOpen(true)}
-                aria-label="Voir mes recommandations"
-                className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-3 z-30 inline-flex min-h-11 items-center gap-2 rounded-full border border-primary/20 bg-card px-3.5 py-2 text-sm font-semibold text-foreground shadow-lg transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:bottom-24 sm:right-5 sm:min-h-12 sm:px-4"
-              >
-                <Sparkles className="h-4 w-4 text-primary" />
-                <span className="hidden sm:inline">Recommandations</span>
-                <span className="sm:hidden">Recommandations</span>
-                <span className="text-primary">Voir</span>
-              </button>
+            {isCandidateShell && candidateToolsOpen ? (
+              <section className="order-4 pt-6" aria-label="Mes recherches">
+                <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold text-foreground">Mes recherches</h2>
+                    <p className="text-sm text-muted-foreground">Retrouvez vos critères sauvegardés et vos dernières recherches.</p>
+                  </div>
+                </div>
+                {!searchesLoading && savedSearches.length === 0 && searchHistory.length === 0 ? (
+                  <div className="flex flex-col gap-3 rounded-xl border border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-sm text-muted-foreground">Aucune recherche sauvegardée ou récente.</p>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void saveCurrentSearch()}
+                      disabled={!appliedFilters.query && !appliedFilters.location}
+                    >
+                      Sauvegarder la recherche
+                    </Button>
+                  </div>
+                ) : (
+                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="rounded-2xl border border-border bg-card p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <h2 className="text-base font-semibold text-foreground">
+                        Recherches sauvegardées
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        Relancez vos critères favoris.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void saveCurrentSearch()}
+                      disabled={!appliedFilters.query && !appliedFilters.location}
+                    >
+                      Sauvegarder
+                    </Button>
+                  </div>
+                  <div className="mt-4 space-y-3">
+                    {searchesLoading ? (
+                      <p className="text-sm text-muted-foreground">Chargement...</p>
+                    ) : savedSearches.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">Aucune recherche sauvegardée.</p>
+                    ) : (
+                      savedSearches.map((saved) => (
+                        <div
+                          key={saved.id}
+                          className="flex items-start justify-between gap-3 border-t border-border pt-3"
+                        >
+                          <button
+                            type="button"
+                            className="min-w-0 text-left"
+                            onClick={() => applyCriteria(saved.criteria)}
+                          >
+                            <p className="truncate text-sm font-semibold text-foreground">
+                              {saved.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {saved.criteria.query || "Tous les métiers"}
+                              {saved.criteria.location ? ` · ${saved.criteria.location}` : ""}
+                            </p>
+                          </button>
+                          <div className="flex shrink-0 gap-2 text-xs">
+                            <button
+                              type="button"
+                              className="text-foreground hover:text-primary"
+                              onClick={() => void editSavedSearch(saved)}
+                            >
+                              Modifier
+                            </button>
+                            <button
+                              type="button"
+                              className="text-primary hover:underline"
+                              onClick={() => void toggleSavedSearch(saved)}
+                            >
+                              {saved.is_active ? "Désactiver" : "Activer"}
+                            </button>
+                            <button
+                              type="button"
+                              className="text-destructive hover:underline"
+                              onClick={() =>
+                                void deleteSavedJobSearch(saved.id).then(() =>
+                                  setSavedSearches((current) =>
+                                    current.filter((item) => item.id !== saved.id),
+                                  ),
+                                )
+                              }
+                            >
+                              Supprimer
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-border bg-card p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <h2 className="text-base font-semibold text-foreground">
+                        Recherches récentes
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        Les 10 dernières recherches appliquées.
+                      </p>
+                    </div>
+                    {searchHistory.length > 0 ? (
+                      <button
+                        type="button"
+                        className="text-xs font-semibold text-primary hover:underline"
+                        onClick={() =>
+                          void clearSearchHistory(profile!.id).then(() => setSearchHistory([]))
+                        }
+                      >
+                        Effacer
+                      </button>
+                    ) : null}
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    {searchHistory.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">Aucun historique.</p>
+                    ) : (
+                      searchHistory.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center justify-between gap-3 border-t border-border pt-2"
+                        >
+                          <button
+                            type="button"
+                            className="truncate text-left text-sm text-foreground hover:text-primary"
+                            onClick={() => applyCriteria(item.criteria)}
+                          >
+                            {item.criteria.query || "Recherche filtrée"}
+                            {item.criteria.location ? ` · ${item.criteria.location}` : ""}
+                          </button>
+                          <button
+                            type="button"
+                            className="shrink-0 text-xs text-muted-foreground hover:text-destructive"
+                            onClick={() =>
+                              void deleteSearchHistoryItem(item.id).then(() =>
+                                setSearchHistory((current) =>
+                                  current.filter((entry) => entry.id !== item.id),
+                                ),
+                              )
+                            }
+                          >
+                            Supprimer
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+                </div>
+                )}
+              </section>
             ) : null}
 
-            {isCandidateShell ? (
-              <h2 className="pt-2 text-xl font-bold text-foreground sm:text-2xl">
-                Toutes les offres
-              </h2>
-            ) : null}
+            <div className="order-3 flex flex-col gap-3 pt-6 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-foreground sm:text-2xl">Offres disponibles</h2>
+                {hasActiveSearchCriteria ? (
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {sortedOffers.length} offre{sortedOffers.length > 1 ? "s" : ""} trouvée
+                    {sortedOffers.length > 1 ? "s" : ""}
+                  </p>
+                ) : null}
+              </div>
+              <p className="text-sm text-muted-foreground">Tri : {sortBy === "date" ? "plus récentes" : sortBy === "relevance" ? "pertinence" : sortBy === "salary-high" ? "salaire décroissant" : "salaire croissant"}</p>
+            </div>
 
-            <div className={mobileApp ? "mt-0 grid gap-3 pt-0" : "mt-0 grid gap-3 pt-4"}>
+            <div className={`order-3 ${mobileApp ? "mt-0 grid gap-3 pt-0" : "mt-0 grid gap-3 pt-0"}`}>
               {loading ? (
                 [1, 2, 3].map((index) => (
                   <article
@@ -494,7 +1099,7 @@ export function JobsPage() {
                     className="rounded-3xl border border-border bg-card p-6 shadow-soft animate-pulse"
                   />
                 ))
-              ) : filteredOffers.length > 0 ? (
+              ) : sortedOffers.length > 0 ? (
                 <>
                   {paginatedOffers.map((job, i) => {
                     const location =
@@ -533,7 +1138,7 @@ export function JobsPage() {
                     );
                   })}
                   {totalPages > 1 ? (
-                    <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card/80 px-4 py-3">
+                    <div className="mt-0 mb-0 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card/80 px-4 py-2">
                       <p className="text-sm text-muted-foreground">
                         Page {safePage} sur {totalPages}
                       </p>
@@ -560,11 +1165,20 @@ export function JobsPage() {
                 </>
               ) : (
                 <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">
-                  {t("jobs.none")}
+                  <div className="max-w-md space-y-3">
+                    <p className="text-base font-semibold text-foreground">
+                      Aucune offre ne correspond à ces critères.
+                    </p>
+                    <p className="text-sm leading-6">
+                      Modifiez les filtres ou réinitialisez la recherche pour afficher de nouvelles
+                      opportunités.
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
           </div>
+        </div>
         </div>
       </section>
       <div className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-40 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
@@ -611,15 +1225,32 @@ export function JobsPage() {
             </div>
           </div>
         ) : null}
-        <button
-          type="button"
-          onClick={() => setWhatsappOpen((open) => !open)}
-          aria-expanded={whatsappOpen}
-          aria-label={whatsappOpen ? "Fermer les chaînes WhatsApp" : "Ouvrir les chaînes WhatsApp"}
-          className="flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition hover:scale-105 hover:bg-[#1ea952] focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
-        >
-          <MessageCircle className="size-7" />
-        </button>
+
+        <div className="flex items-center gap-3">
+          {isCandidateShell && !recommendationsOpen ? (
+            <button
+              type="button"
+              onClick={() => setRecommendationsOpen(true)}
+              aria-label="Voir mes recommandations"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-primary/20 bg-card px-3.5 py-2 text-sm font-semibold text-foreground shadow-lg transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:min-h-12 sm:px-4"
+            >
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="hidden sm:inline">Recommandations</span>
+              <span className="sm:hidden">Recommandations</span>
+              <span className="text-primary">Voir</span>
+            </button>
+          ) : null}
+
+          <button
+            type="button"
+            onClick={() => setWhatsappOpen((open) => !open)}
+            aria-expanded={whatsappOpen}
+            aria-label={whatsappOpen ? "Fermer les chaînes WhatsApp" : "Ouvrir les chaînes WhatsApp"}
+            className="flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition hover:scale-105 hover:bg-[#1ea952] focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
+          >
+            <MessageCircle className="size-7" />
+          </button>
+        </div>
       </div>
       <Dialog
         open={Boolean(loginPromptSlug)}
@@ -629,7 +1260,8 @@ export function JobsPage() {
           <DialogHeader className="text-left">
             <DialogTitle className="text-xl text-foreground">Connexion requise</DialogTitle>
             <DialogDescription className="pt-2 text-base leading-6 text-muted-foreground">
-              Vous devez vous connecter pour postuler aux offres d'emploi
+              Créez votre espace candidat pour postuler, conserver vos candidatures et gérer votre
+              profil professionnel.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-3 flex-col gap-2 sm:flex-row sm:justify-start sm:space-x-0">

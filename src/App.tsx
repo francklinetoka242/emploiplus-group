@@ -266,10 +266,10 @@ function withSuspense(element: React.ReactNode, fallback: React.ReactNode) {
 }
 
 function SharedPublicRouteShell() {
-  const { authLoading, isAuthenticated, roles } = useAuthContext();
+  const { authLoading, isAuthenticated, roles, rolesResolved } = useAuthContext();
   const content = <Outlet />;
 
-  if (authLoading) {
+  if (authLoading || !rolesResolved) {
     return <PublicLayout>{content}</PublicLayout>;
   }
 

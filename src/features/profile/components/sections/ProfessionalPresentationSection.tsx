@@ -47,9 +47,9 @@ export function ProfessionalPresentationSection() {
   return (
     <div className="space-y-4">
       {success && (
-        <Alert className="border-emerald-200 bg-emerald-50">
-          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-          <AlertDescription className="text-emerald-800 ml-2">{success}</AlertDescription>
+        <Alert className="border-secondary/40 bg-secondary/10">
+          <CheckCircle2 className="h-4 w-4 text-secondary-foreground" />
+          <AlertDescription className="ml-2 text-secondary-foreground">{success}</AlertDescription>
         </Alert>
       )}
       {error && (

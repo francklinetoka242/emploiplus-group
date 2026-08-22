@@ -31,6 +31,7 @@ import { useProfileCompletion } from "@/features/profile/hooks/useProfileComplet
 import { useCandidateProfileData } from "@/features/candidates/hooks/useCandidateProfileData";
 import { diagnosticLogger } from "@/services/diagnosticLogger";
 import { isMobileApp } from "@/lib/isMobileApp";
+import { createUniqueNotification } from "@/integrations/supabase/notifications";
 
 const quickActions = [
   {
@@ -70,7 +71,6 @@ const completionItemRoutes: Record<string, string> = {
   "Titre professionnel": "/candidate/profile?tab=profile",
   Localisation: "/candidate/profile?tab=profile",
   "Résumé professionnel": "/candidate/profile?tab=presentation",
-  "Photo de profil": "/candidate/profile?tab=profile",
   "Expérience professionnelle": "/candidate/profile?tab=experience",
   Formation: "/candidate/profile?tab=education",
   Compétence: "/candidate/profile?tab=skills",
@@ -117,6 +117,9 @@ export function CandidateDashboardPage() {
   const [recommendedLoading, setRecommendedLoading] = useState<boolean>(false);
   const [recommendedPage, setRecommendedPage] = useState(1);
   const [hasMoreRecommendedJobs, setHasMoreRecommendedJobs] = useState(false);
+  const hasCreatedRecommendationAlertRef = useRef(false);
+  const hasCreatedProfileCompletionAlertRef = useRef(false);
+  const hasCreatedJobAlertSetupRef = useRef(false);
   const RECOMMENDED_JOBS_PAGE_SIZE = 3;
   const recommendationContextSignature = useMemo(
     () => `${profile?.id ?? "unknown"}:${profile?.cv_text ?? ""}:${String(profile?.embedding_vector ?? "")}`,
@@ -334,6 +337,43 @@ export function CandidateDashboardPage() {
   ]);
 
   useEffect(() => {
+    if (!profile?.id || !profile?.user_id || !recommendedJobs.length || hasCreatedRecommendationAlertRef.current) {
+      return;
+    }
+
+    hasCreatedRecommendationAlertRef.current = true;
+    void createUniqueNotification({
+      title: "Une nouvelle offre correspond à votre profil.",
+      content: "Découvrez les offres recommandées qui correspondent le mieux à votre profil.",
+      type: "offre",
+      user_id: profile.user_id,
+      status: "active",
+      is_read: false,
+      link: recommendedJobs[0].slug ? `/jobs/${recommendedJobs[0].slug}` : "/jobs#recommended-for-you",
+    });
+  }, [profile?.id, profile?.user_id, recommendedJobs]);
+
+  useEffect(() => {
+    if (!profile?.id || !profile?.user_id || !profile?.cv_last_updated_at || hasCreatedProfileCompletionAlertRef.current) {
+      return;
+    }
+
+    const cvLastUpdatedAt = new Date(profile.cv_last_updated_at).getTime();
+    const staleMs = 1000 * 60 * 60 * 24 * 180;
+    if (Date.now() - cvLastUpdatedAt > staleMs) {
+      void createUniqueNotification({
+        title: "Votre CV est ancien.",
+        content: "Mettez à jour votre CV pour améliorez vos recommandations et votre visibilité.",
+        type: "offre",
+        user_id: profile.user_id,
+        status: "active",
+        is_read: false,
+        link: "/candidate/profile?tab=documents",
+      });
+    }
+  }, [profile?.id, profile?.user_id, profile?.cv_last_updated_at]);
+
+  useEffect(() => {
     const nextContext = profile?.id ? recommendationContextSignature : "empty";
 
     if (lastRecommendationContextRef.current === nextContext) {
@@ -368,6 +408,83 @@ export function CandidateDashboardPage() {
   const profileCompletion = profileDataLoading ? 0 : completion.completionPercentage;
   const [animatedProfileCompletion, setAnimatedProfileCompletion] = useState(0);
 
+  const nextAction = useMemo(() => {
+    if (profileDataLoading) {
+      return {
+        title: "Préparation de votre tableau de bord",
+        description: "Nous calculons votre prochaine étape personnalisée.",
+        href: "/candidate/profile",
+      };
+    }
+
+    const cvLastUpdatedAt = profile?.cv_last_updated_at ? new Date(profile.cv_last_updated_at).getTime() : null;
+    const cvIsStale = Boolean(profile?.cv_text) && (!cvLastUpdatedAt || Date.now() - cvLastUpdatedAt > 1000 * 60 * 60 * 24 * 180);
+
+    if (cvIsStale) {
+      return {
+        title: "Mettre à jour votre CV",
+        description: "Votre CV n'a pas été mis à jour depuis plusieurs mois. Actualisez-le pour améliorer la qualité des recommandations.",
+        href: "/candidate/profile?tab=documents",
+      };
+    }
+
+    if (completion.missingItems.length > 0) {
+      const missingLabel = completion.missingItems[0];
+      return {
+        title: "Compléter votre profil",
+        description: `Ajoutez votre ${missingLabel.toLowerCase()} pour améliorer vos recommandations et gagner en visibilité.`,
+        href: completionItemRoutes[missingLabel] ?? "/candidate/profile",
+      };
+    }
+
+    if (preferences?.job_alerts_enabled === false) {
+      return {
+        title: "Activer les alertes emploi",
+        description: "Recevez les offres correspondantes à votre profil sans chercher activement.",
+        href: "/candidate/profile?tab=preferences",
+      };
+    }
+
+    if (preferences?.availability_status === "not_available") {
+      return {
+        title: "Mettre à jour votre disponibilité",
+        description: "Indiquez votre date de disponibilité pour aider les recruteurs à vous contacter au bon moment.",
+        href: "/candidate/profile?tab=preferences",
+      };
+    }
+
+    return {
+      title: "Consulter les offres recommandées",
+      description: "Explorez les opportunités qui correspondent le mieux à votre profil et à votre disponibilité.",
+      href: "/jobs#recommended-for-you",
+    };
+  }, [completion.missingItems, preferences?.job_alerts_enabled, preferences?.availability_status, profile?.cv_text, profile?.cv_last_updated_at, profileDataLoading]);
+
+  const actionCompletionLevel = profileDataLoading ? 0 : profileCompletion;
+  const nextActionSuccess = actionCompletionLevel >= 80 || !completion.missingItems.length;
+  const nextActionMode = profileDataLoading ? "loading" : nextActionSuccess ? "success" : "active";
+
+  useEffect(() => {
+    if (!profile?.id || !profile?.user_id || profileDataLoading || profileCompletion >= 100 || hasCreatedProfileCompletionAlertRef.current) {
+      return;
+    }
+
+    const missingItem = completion.missingItems[0];
+    const missingLabel = missingItem ?? "votre profil";
+    const route = completionItemRoutes[missingItem] ?? "/candidate/profile";
+
+    hasCreatedProfileCompletionAlertRef.current = true;
+    void createUniqueNotification({
+      title: `Votre profil est à ${profileCompletion} %. Ajoutez votre ${missingLabel.toLowerCase()} pour améliorer vos recommandations.`,
+      content: "Complétez les informations manquantes pour maximiser la qualité des recommandations.",
+      type: "offre",
+      user_id: profile.user_id,
+      status: "active",
+      is_read: false,
+      link: route,
+    });
+  }, [completion.missingItems, profile?.id, profile?.user_id, profileCompletion, profileDataLoading]);
+
   useEffect(() => {
     if (profileDataLoading) {
       setAnimatedProfileCompletion(0);
@@ -380,6 +497,25 @@ export function CandidateDashboardPage() {
 
     return () => window.cancelAnimationFrame(animationFrameId);
   }, [profileCompletion, profileDataLoading]);
+
+  useEffect(() => {
+    if (!profile?.user_id || !preferences || hasCreatedJobAlertSetupRef.current) {
+      return;
+    }
+
+    if (preferences.job_alerts_enabled) {
+      hasCreatedJobAlertSetupRef.current = true;
+      void createUniqueNotification({
+        title: "Vos alertes emploi sont actives.",
+        content: "Vous recevrez des offres correspondant à votre profil et à votre disponibilité.",
+        type: "offre",
+        user_id: profile.user_id,
+        status: "active",
+        is_read: false,
+        link: "/candidate/profile?tab=preferences",
+      });
+    }
+  }, [preferences?.job_alerts_enabled, profile?.user_id]);
 
   const firstName = profile?.first_name || "Candidat";
   const fullName = profile ? `${profile.first_name} ${profile.last_name}`.trim() : "Jean Dupont";
@@ -408,6 +544,63 @@ export function CandidateDashboardPage() {
                 candidatures.
               </p>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card
+        className={`next-action-card border-primary/15 shadow-sm ${
+          nextActionMode === "success"
+            ? "bg-gradient-to-r from-primary/10 via-emerald-50 to-amber-50"
+            : nextActionMode === "active"
+              ? "bg-gradient-to-r from-primary/5 via-white to-primary/10"
+              : "bg-gradient-to-r from-slate-100 via-white to-slate-50"
+        }`}
+      >
+        <CardContent className="relative overflow-hidden p-5 sm:p-6">
+          {nextActionMode === "success" ? (
+            <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+              {Array.from({ length: 10 }).map((_, index) => (
+                <span
+                  key={index}
+                  className="petal"
+                  style={{
+                    left: `${10 + index * 9}%`,
+                    top: `${18 + (index % 3) * 22}%`,
+                    animationDelay: `${index * 120}ms`,
+                    animationDuration: `${2400 + index * 180}ms`,
+                    transform: `rotate(${index * 36}deg)`,
+                  }}
+                />
+              ))}
+            </div>
+          ) : null}
+
+          <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Ma prochaine action</p>
+                {nextActionMode === "success" ? (
+                  <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                    Réussite
+                  </span>
+                ) : null}
+              </div>
+              <h2 className="text-xl font-bold text-foreground">{nextAction.title}</h2>
+              <p className="max-w-2xl text-sm text-muted-foreground">{nextAction.description}</p>
+            </div>
+
+            <Link to={nextAction.href ?? "/candidate/profile"}>
+              <Button
+                variant="default"
+                className={`whitespace-nowrap transition-all duration-500 ${
+                  nextActionMode === "success" ? "shadow-lg shadow-emerald-200/80" : ""
+                }`}
+              >
+                Continuer
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>

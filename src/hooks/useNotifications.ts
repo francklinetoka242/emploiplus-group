@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchNotifications, NotificationRecord } from "@/integrations/supabase/notifications";
+import { getNotificationsForUser, NotificationRecord, getUnreadNotificationCount } from "@/integrations/supabase/notifications";
 
 interface NotificationState {
   notifications: NotificationRecord[];
@@ -43,21 +43,23 @@ const loadNotifications = async () => {
       return;
     }
 
-    const { data, error: notifError } = await fetchNotifications();
+    const { data, error: notifError } = await getNotificationsForUser(user.id);
     if (notifError) throw notifError;
 
     const notifications = Array.isArray(data) ? data : [];
+    const allowedTypes = ["admin", "offre", "candidature", "evenement", "job", "contact", "blog"] as const;
     const userNotifications = notifications.filter(
       (notif: NotificationRecord) =>
         notif.status === "active" &&
-        (notif.type === "admin" || notif.type === "offre") &&
-        (notif.user_id === user.id || notif.user_id === null),
+        notif.user_id === user.id &&
+        allowedTypes.includes(notif.type as (typeof allowedTypes)[number]),
     );
 
-    const unread = userNotifications.filter((n: NotificationRecord) => !n.is_read).length;
+    const unreadCount = userNotifications.filter((n: NotificationRecord) => !n.is_read).length;
+
     updateState({
       notifications: userNotifications,
-      unreadCount: unread,
+      unreadCount,
       loading: false,
       error: null,
     });
@@ -87,17 +89,37 @@ export function useNotifications() {
 
   const markAsRead = useCallback(async (notificationId: string) => {
     try {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+      if (authError) throw authError;
+      if (!user) return;
+
+      const { data: ownedNotification, error: lookupError } = await supabase
+        .from("notifications")
+        .select("id, user_id")
+        .eq("id", notificationId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (lookupError) throw lookupError;
+      if (!ownedNotification) return;
+
       const { error: updateError } = await supabase
         .from("notifications")
         .update({ is_read: true, read_at: new Date().toISOString() })
-        .eq("id", notificationId);
+        .eq("id", notificationId)
+        .eq("user_id", user.id);
 
       if (updateError) throw updateError;
 
       const notifications = notificationState.notifications.map((notif) =>
         notif.id === notificationId ? { ...notif, is_read: true } : notif,
       );
-      const unreadCount = notifications.filter((notif) => !notif.is_read).length;
+      const unreadCount = notifications.filter(
+        (notif) => notif.user_id === user.id && !notif.is_read,
+      ).length;
       updateState({ notifications, unreadCount });
     } catch (err) {
       console.error("Error marking notification as read:", err);
@@ -114,21 +136,27 @@ export function useNotifications() {
 
       if (!user) return;
 
-      const unreadIds = notificationState.notifications.filter((n) => !n.is_read).map((n) => n.id);
+      const unreadIds = notificationState.notifications
+        .filter((n) => n.user_id === user.id && !n.is_read)
+        .map((n) => n.id);
       if (unreadIds.length === 0) return;
 
       const { error: updateError } = await supabase
         .from("notifications")
         .update({ is_read: true, read_at: new Date().toISOString() })
-        .in("id", unreadIds);
+        .in("id", unreadIds)
+        .eq("user_id", user.id);
 
       if (updateError) throw updateError;
 
       const notifications = notificationState.notifications.map((notif) => ({
         ...notif,
-        is_read: true,
+        is_read: notif.user_id === user.id ? true : notif.is_read,
       }));
-      updateState({ notifications, unreadCount: 0 });
+      const unreadCount = notifications.filter(
+        (notif) => notif.user_id === user.id && !notif.is_read,
+      ).length;
+      updateState({ notifications, unreadCount });
     } catch (err) {
       console.error("Error marking all notifications as read:", err);
     }
@@ -136,15 +164,25 @@ export function useNotifications() {
 
   const deleteNotification = useCallback(async (notificationId: string) => {
     try {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+      if (authError) throw authError;
+      if (!user) return;
+
       const { error: deleteError } = await supabase
         .from("notifications")
         .delete()
-        .eq("id", notificationId);
+        .eq("id", notificationId)
+        .eq("user_id", user.id);
 
       if (deleteError) throw deleteError;
 
       const notifications = notificationState.notifications.filter((n) => n.id !== notificationId);
-      const unreadCount = notifications.filter((notif) => !notif.is_read).length;
+      const unreadCount = notifications.filter(
+        (notif) => notif.user_id === user.id && !notif.is_read,
+      ).length;
       updateState({ notifications, unreadCount });
     } catch (err) {
       console.error("Error deleting notification:", err);

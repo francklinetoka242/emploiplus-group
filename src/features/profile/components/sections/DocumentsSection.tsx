@@ -30,6 +30,7 @@ interface DocumentsSectionProps {
   candidateId?: string | null;
   serverCvUrl?: string | null;
   onDeleteDocument?: (id: string) => void;
+  onDeleteCv?: () => Promise<void> | void;
   onAddDocument?: (document: CandidateDocument | CandidateCVState, isCV?: boolean) => void;
 }
 
@@ -40,6 +41,7 @@ export function DocumentsSection({
   candidateId,
   serverCvUrl,
   onDeleteDocument,
+  onDeleteCv,
   onAddDocument,
 }: DocumentsSectionProps) {
   const [selectedType, setSelectedType] = useState<DocumentTypeOption>("motivation");
@@ -50,13 +52,14 @@ export function DocumentsSection({
   const [resolvedServerCvUrl, setResolvedServerCvUrl] = useState<string | null>(null);
   const [serverCvUrlError, setServerCvUrlError] = useState<string | null>(null);
   const [selectedPreviewDocument, setSelectedPreviewDocument] = useState<CandidateDocument | null>(null);
+  const [isCvDeleted, setIsCvDeleted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const effectiveCv = useMemo(() => {
-    if (cv) {
+    if (cv && !isCvDeleted) {
       return cv;
     }
-    if (!resolvedServerCvUrl) {
+    if (!resolvedServerCvUrl || isCvDeleted) {
       return null;
     }
     return {
@@ -67,7 +70,7 @@ export function DocumentsSection({
       size: "",
       url: resolvedServerCvUrl,
     } satisfies CandidateCVState;
-  }, [cv, resolvedServerCvUrl]);
+  }, [cv, isCvDeleted, resolvedServerCvUrl]);
 
   const allDocuments = useMemo(() => {
     const docs: CandidateDocument[] = [];
@@ -113,13 +116,19 @@ export function DocumentsSection({
     (selectedType !== "other" || otherLabel.trim().length > 0);
 
   const handleDelete = useCallback(
-    (id: string) => {
-      if (!onDeleteDocument) return;
+    async (document: CandidateDocument) => {
+      const isCv = document.type === "cv";
+      if ((isCv && !onDeleteCv) || (!isCv && !onDeleteDocument)) return;
       if (window.confirm("Êtes-vous sûr de vouloir supprimer ce document ?")) {
-        onDeleteDocument(id);
+        if (isCv) {
+          await onDeleteCv?.();
+          setIsCvDeleted(true);
+        } else {
+          onDeleteDocument?.(document.id);
+        }
       }
     },
-    [onDeleteDocument],
+    [onDeleteCv, onDeleteDocument],
   );
 
   const handleFileSelection = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
@@ -148,6 +157,7 @@ export function DocumentsSection({
       if (selectedType === "cv") {
         const result = await uploadAndProcessCandidateCV(candidateId, file);
         const newCv = result.cv;
+        setIsCvDeleted(false);
         onAddDocument(newCv, true);
 
             // Notify user and fallback to local feedback messages
@@ -335,7 +345,11 @@ export function DocumentsSection({
                 className="hidden"
                 onChange={handleFileSelection}
               />
-              {feedbackMessage && <p className="mt-2 text-sm text-primary">{feedbackMessage}</p>}
+              {feedbackMessage && (
+                <p className="mt-2 rounded-md border border-secondary/40 bg-secondary/10 px-3 py-2 text-sm font-medium text-secondary-foreground">
+                  {feedbackMessage}
+                </p>
+              )}
               {feedbackError && <p className="mt-2 text-sm text-rose-600">{feedbackError}</p>}
             </div>
 
@@ -413,7 +427,7 @@ export function DocumentsSection({
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => handleDelete(doc.id)}
+                          onClick={() => void handleDelete(doc)}
                           className="h-8 w-8 p-0 text-rose-600 hover:bg-rose-50"
                           title="Supprimer"
                         >

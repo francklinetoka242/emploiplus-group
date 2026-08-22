@@ -15,6 +15,7 @@ export interface CandidateProfile {
   cv_text?: string | null;
   embedding_vector?: string | null;
   cv_url?: string | null;
+  cv_last_updated_at?: string | null;
   created_at: string;
   updated_at: string;
 }

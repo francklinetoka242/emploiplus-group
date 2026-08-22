@@ -1,10 +1,11 @@
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { usePageSEO } from "@/features/seo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { NotificationRecord } from "@/integrations/supabase/notifications";
-import { Trash2, CheckCircle2, Loader2 } from "lucide-react";
+import { Trash2, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
 import { useNotifications } from "@/hooks/useNotifications";
 
 const typeColors: Record<string, string> = {
@@ -53,6 +54,7 @@ export function CandidateNotificationsPage() {
       date: new Date(notif.created_at).toLocaleDateString("fr-FR"),
       fullDate: new Date(notif.created_at).toLocaleString("fr-FR"),
       read: notif.is_read,
+      link: notif.link ?? null,
     }));
   }, [notifications]);
 
@@ -132,18 +134,28 @@ export function CandidateNotificationsPage() {
                     </p>
                   </div>
 
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="self-start text-red-600 hover:text-red-700"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteNotification(notification.id);
-                    }}
-                    aria-label={`Supprimer la notification ${notification.title}`}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <div className="flex items-center gap-2 self-start">
+                    {notification.link ? (
+                      <Button asChild size="sm" variant="outline" className="border-primary/20 text-primary hover:bg-primary/5">
+                        <Link to={notification.link}>
+                          Voir
+                          <ArrowRight className="ml-1 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    ) : null}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-600 hover:text-red-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteNotification(notification.id);
+                      }}
+                      aria-label={`Supprimer la notification ${notification.title}`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

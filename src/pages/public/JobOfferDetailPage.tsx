@@ -3,6 +3,8 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   BadgeCheck,
+  Bookmark,
+  BookmarkCheck,
   BriefcaseBusiness,
   Building2,
   CalendarDays,
@@ -22,9 +24,15 @@ import { jobService } from "@/features/jobs/api";
 import type { JobOffer } from "@/features/jobs/types";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { analyzeCandidateForJob, type AiAnalysisResult } from "@/services/groqAnalysisService";
+import { findSimilarJobs } from "@/services/similarJobsService";
 import { useCandidate } from "@/hooks/useCandidate";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  getCandidateSavedOffers,
+  saveJobOffer,
+  unsaveJobOffer,
+} from "@/features/candidates/api/savedOffersApi";
 
 function NotFoundPage() {
   return (
@@ -62,6 +70,13 @@ export function JobOfferDetailPage() {
   const [analysisLoading, setAnalysisLoading] = React.useState(false);
   const [analysisError, setAnalysisError] = React.useState<string | null>(null);
   const [copiedLetter, setCopiedLetter] = React.useState(false);
+  const [savedOfferId, setSavedOfferId] = React.useState<string | null>(null);
+  const [savedOfferState, setSavedOfferState] = React.useState(false);
+  const [savingSavedOffer, setSavingSavedOffer] = React.useState(false);
+  const [savedOfferError, setSavedOfferError] = React.useState<string | null>(null);
+  const [similarJobs, setSimilarJobs] = React.useState<JobOffer[]>([]);
+  const [similarJobsLoading, setSimilarJobsLoading] = React.useState(false);
+  const [similarJobsError, setSimilarJobsError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (!slug) {
@@ -84,12 +99,89 @@ export function JobOfferDetailPage() {
     };
   }, [slug]);
 
+  React.useEffect(() => {
+    if (!profile?.id || !job?.id) {
+      setSavedOfferId(null);
+      setSavedOfferState(false);
+      return;
+    }
+
+    let mounted = true;
+    const loadSavedStatus = async () => {
+      try {
+        const rows = await getCandidateSavedOffers(profile.id);
+        if (!mounted) return;
+        const match = rows.find((row) => {
+          const savedJobOfferId = String(
+            (row as { job_offer_id?: string | null }).job_offer_id ?? "",
+          );
+          return savedJobOfferId === job.id;
+        });
+
+        setSavedOfferId((match as { id?: string } | undefined)?.id ?? null);
+        setSavedOfferState(Boolean(match));
+      } catch {
+        if (mounted) {
+          setSavedOfferId(null);
+          setSavedOfferState(false);
+        }
+      }
+    };
+
+    void loadSavedStatus();
+    return () => {
+      mounted = false;
+    };
+  }, [profile?.id, job?.id]);
+
+  const isExpired = Boolean(
+    job && (job.status === "expired" || (job.deadline && new Date(job.deadline).getTime() < Date.now())),
+  );
+
+  React.useEffect(() => {
+    if (!job?.id) {
+      setSimilarJobs([]);
+      setSimilarJobsError(null);
+      return;
+    }
+
+    let mounted = true;
+    const loadSimilarJobs = async () => {
+      setSimilarJobsLoading(true);
+      setSimilarJobsError(null);
+      try {
+        const matches = await findSimilarJobs(job, { limit: 3 });
+        if (!mounted) return;
+        setSimilarJobs(matches);
+      } catch (error) {
+        if (!mounted) return;
+        setSimilarJobs([]);
+        setSimilarJobsError(
+          error instanceof Error ? error.message : "Impossible de charger des offres similaires.",
+        );
+      } finally {
+        if (mounted) {
+          setSimilarJobsLoading(false);
+        }
+      }
+    };
+
+    void loadSimilarJobs();
+    return () => {
+      mounted = false;
+    };
+  }, [job?.id, job?.title, job?.company, job?.description, job?.requirements, job?.location_city, job?.location_country, job?.contract_type, isExpired]);
+
   const canonical = slug ? `${BASE_URL}/jobs/${slug}` : `${BASE_URL}/jobs`;
-  const title = job ? job.meta_title || `${job.title} | ${job.company}` : "Offre d'emploi | EmploiPlus Group";
+  const title = job
+    ? job.meta_title || `${job.title} | ${job.company}`
+    : "Offre d'emploi | EmploiPlus Group";
   const description = job
     ? job.meta_description || job.description?.slice(0, 160) || t("jobs.page.description")
     : t("jobs.loading");
-  const ogImage = job ? job.og_image || job.cover_image || `${BASE_URL}/og-default.svg` : `${BASE_URL}/og-default.svg`;
+  const ogImage = job
+    ? job.og_image || job.cover_image || `${BASE_URL}/og-default.svg`
+    : `${BASE_URL}/og-default.svg`;
 
   const getLabel = (key: string, fallback: string) => {
     const translated = t(key);
@@ -123,7 +215,8 @@ export function JobOfferDetailPage() {
   };
 
   const location = job
-    ? [job.location_city, job.location_country].filter(Boolean).join(", ") || t("jobs.location.remote")
+    ? [job.location_city, job.location_country].filter(Boolean).join(", ") ||
+      t("jobs.location.remote")
     : t("jobs.location.remote");
 
   const locationLocality = job?.location_city?.trim() || "Brazzaville";
@@ -162,7 +255,9 @@ export function JobOfferDetailPage() {
     : undefined;
 
   const validThrough = job
-    ? job.expires_at || job.deadline || (() => {
+    ? job.expires_at ||
+      job.deadline ||
+      (() => {
         const baseDate = new Date(job.publish_at || job.created_at || new Date().toISOString());
         baseDate.setDate(baseDate.getDate() + 60);
         return baseDate.toISOString();
@@ -252,7 +347,63 @@ export function JobOfferDetailPage() {
 
   // Navigate to the candidate apply flow (same behavior as the jobs listing)
   const handleApplyClick = () => {
-    if (job?.slug) navigate(`/candidate/jobs/${job.slug}/apply`);
+    if (!job?.slug) return;
+    if (isExpired) {
+      return;
+    }
+    const applyPath = `/candidate/jobs/${job.slug}/apply`;
+    if (profile?.id) {
+      navigate(applyPath);
+      return;
+    }
+    navigate("/candidate/login", {
+      state: {
+        from: applyPath,
+        notification:
+          "Créez votre espace candidat pour postuler, conserver vos candidatures et gérer votre profil professionnel.",
+      },
+    });
+  };
+
+  const handleToggleSavedOffer = async () => {
+    if (!job?.id) return;
+
+    if (!profile?.id) {
+      navigate("/candidate/login", {
+        state: {
+          from: `/jobs/${job.slug}`,
+          notification:
+            "Connectez-vous pour enregistrer cette offre et retrouver vos favoris plus tard.",
+        },
+      });
+      return;
+    }
+
+    setSavingSavedOffer(true);
+    setSavedOfferError(null);
+
+    try {
+      if (savedOfferState && savedOfferId) {
+        await unsaveJobOffer(savedOfferId);
+        setSavedOfferId(null);
+        setSavedOfferState(false);
+        return;
+      }
+
+      const saved = await saveJobOffer(profile.id, job.id);
+      const nextSavedOfferId =
+        typeof (saved as { id?: string } | null)?.id === "string"
+          ? (saved as { id: string }).id
+          : null;
+      setSavedOfferId(nextSavedOfferId);
+      setSavedOfferState(true);
+    } catch (error) {
+      setSavedOfferError(
+        error instanceof Error ? error.message : "Impossible d'enregistrer cette offre.",
+      );
+    } finally {
+      setSavingSavedOffer(false);
+    }
   };
 
   const handleAnalyzeClick = async () => {
@@ -269,7 +420,9 @@ export function JobOfferDetailPage() {
       const result = await analyzeCandidateForJob(profile.id, job.id);
       setAnalysis(result);
     } catch (error) {
-      setAnalysisError(error instanceof Error ? error.message : "Une erreur est survenue pendant l’analyse.");
+      setAnalysisError(
+        error instanceof Error ? error.message : "Une erreur est survenue pendant l’analyse.",
+      );
       setAnalysis(null);
     } finally {
       setAnalysisLoading(false);
@@ -302,11 +455,103 @@ export function JobOfferDetailPage() {
           modifiedTime={job?.updated_at || undefined}
           structuredData={seoStructuredData}
         />
-        <div className="container-page py-20 md:py-28">
-          <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-            <p className="text-muted-foreground">{t("jobs.loading")}</p>
+        <section className="container-page pb-20 md:pb-28">
+          <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
+            <div className="min-w-0 space-y-6">
+              <div className="overflow-hidden border-b border-border/70 bg-gradient-to-br from-background via-card to-primary/5 p-8">
+                <div className="flex flex-col gap-6">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <Skeleton className="h-5 w-36 rounded-full" />
+                    <Skeleton className="h-10 w-28 rounded-full" />
+                  </div>
+
+                  <div className="space-y-4">
+                    <Skeleton className="h-8 w-40 rounded-full" />
+                    <Skeleton className="h-10 w-3/4 rounded-xl" />
+                    <Skeleton className="h-5 w-56 rounded-xl" />
+                    <Skeleton className="h-5 w-full rounded-xl" />
+                    <Skeleton className="h-5 w-full rounded-xl" />
+                    <Skeleton className="h-5 w-2/3 rounded-xl" />
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <Skeleton key={index} className="h-8 w-20 rounded-full" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="border-b border-border/70 bg-card/40 p-4">
+                    <Skeleton className="h-4 w-28 rounded-md" />
+                    <Skeleton className="mt-3 h-4 w-full rounded-md" />
+                    <Skeleton className="mt-2 h-4 w-2/3 rounded-md" />
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t border-border/70 bg-card/40 p-8">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-11 w-11 rounded-2xl" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-6 w-56 rounded-xl" />
+                    <Skeleton className="h-4 w-40 rounded-xl" />
+                  </div>
+                </div>
+                <div className="mt-6 space-y-3">
+                  <Skeleton className="h-5 w-full rounded-xl" />
+                  <Skeleton className="h-5 w-full rounded-xl" />
+                  <Skeleton className="h-5 w-5/6 rounded-xl" />
+                  <Skeleton className="h-5 w-full rounded-xl" />
+                  <Skeleton className="h-5 w-2/3 rounded-xl" />
+                </div>
+              </div>
+
+              <div className="border-t border-border/70 bg-card/40 p-8">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-11 w-11 rounded-2xl" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-6 w-52 rounded-xl" />
+                    <Skeleton className="h-4 w-40 rounded-xl" />
+                  </div>
+                </div>
+                <div className="mt-6 space-y-3">
+                  {Array.from({ length: 4 }).map((_, index) => (
+                    <Skeleton key={index} className="h-12 w-full rounded-2xl" />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <aside className="min-w-0 space-y-6">
+              <div className="rounded-xl border border-border/70 bg-card p-7">
+                <Skeleton className="h-7 w-32 rounded-xl" />
+                <Skeleton className="mt-3 h-4 w-full rounded-xl" />
+                <Skeleton className="mt-2 h-4 w-3/4 rounded-xl" />
+                <div className="mt-6 space-y-3">
+                  <Skeleton className="h-12 w-full rounded-2xl" />
+                  <Skeleton className="h-12 w-full rounded-2xl" />
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-border/70 bg-card p-7">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-11 w-11 rounded-2xl" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-6 w-52 rounded-xl" />
+                    <Skeleton className="h-4 w-40 rounded-xl" />
+                  </div>
+                </div>
+                <div className="mt-5 space-y-3">
+                  <Skeleton className="h-12 w-full rounded-2xl" />
+                  <Skeleton className="h-12 w-full rounded-2xl" />
+                </div>
+              </div>
+            </aside>
           </div>
-        </div>
+        </section>
       </>
     );
   }
@@ -428,10 +673,7 @@ export function JobOfferDetailPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               {overviewItems.map(({ icon: Icon, label, value }) => (
-                <div
-                  key={label}
-                  className="border-b border-border/70 bg-card/40 p-4"
-                >
+                <div key={label} className="border-b border-border/70 bg-card/40 p-4">
                   <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                     <Icon className="size-4 text-brand" />
                     {label}
@@ -488,25 +730,135 @@ export function JobOfferDetailPage() {
                 </ul>
               </div>
             ) : null}
+
+            {isExpired ? (
+              <div className="border-t border-border/70 bg-card/40 p-8">
+                <h3 className="font-display text-2xl font-semibold text-foreground">
+                  Voici des offres similaires actuellement disponibles.
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Retrouvez des opportunités proches de cette mission et de ce secteur.
+                </p>
+                {similarJobsLoading ? (
+                  <div className="mt-5 space-y-3">
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                  </div>
+                ) : similarJobsError ? (
+                  <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                    {similarJobsError}
+                  </div>
+                ) : similarJobs.length > 0 ? (
+                  <div className="mt-5 space-y-3">
+                    {similarJobs.map((similarJob) => (
+                      <Link
+                        key={similarJob.id}
+                        to={`/jobs/${similarJob.slug}`}
+                        className="block rounded-2xl border border-border/70 bg-background/70 p-4 transition hover:border-brand/30 hover:bg-primary/5"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="text-sm font-semibold text-foreground">{similarJob.title}</div>
+                            <div className="mt-1 text-sm text-muted-foreground">{similarJob.company}</div>
+                          </div>
+                          <span className="rounded-full border border-brand/20 bg-brand/10 px-2 py-1 text-[11px] font-semibold uppercase text-brand">
+                            {getContractLabel(similarJob.contract_type)}
+                          </span>
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
+                          {similarJob.location_city ? <span>{similarJob.location_city}</span> : null}
+                          {similarJob.salary ? <span>{similarJob.salary}</span> : null}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-4 rounded-2xl border border-dashed border-border/70 bg-background/60 p-4 text-sm text-muted-foreground">
+                    Aucune alternative active n'est actuellement disponible pour ce poste.
+                  </div>
+                )}
+              </div>
+            ) : similarJobs.length > 0 ? (
+              <div className="border-t border-border/70 bg-card/40 p-8">
+                <h3 className="font-display text-2xl font-semibold text-foreground">
+                  Vous pourriez également être intéressé
+                </h3>
+                <div className="mt-5 space-y-3">
+                  {similarJobs.map((similarJob) => (
+                    <Link
+                      key={similarJob.id}
+                      to={`/jobs/${similarJob.slug}`}
+                      className="block rounded-2xl border border-border/70 bg-background/70 p-4 transition hover:border-brand/30 hover:bg-primary/5"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="text-sm font-semibold text-foreground">{similarJob.title}</div>
+                          <div className="mt-1 text-sm text-muted-foreground">{similarJob.company}</div>
+                        </div>
+                        <span className="rounded-full border border-brand/20 bg-brand/10 px-2 py-1 text-[11px] font-semibold uppercase text-brand">
+                          {getContractLabel(similarJob.contract_type)}
+                        </span>
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
+                        {similarJob.location_city ? <span>{similarJob.location_city}</span> : null}
+                        {similarJob.salary ? <span>{similarJob.salary}</span> : null}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <aside className="min-w-0 space-y-6">
             <div className="rounded-xl border border-border/70 bg-card p-7">
               <h3 className="font-display text-xl font-semibold text-foreground">{applyTitle}</h3>
               <p className="mt-2 text-sm leading-7 text-muted-foreground">{applyDescription}</p>
+              {isExpired ? (
+                <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                  Cette offre n'est plus disponible.
+                </div>
+              ) : null}
               <div className="mt-6 space-y-3">
                 {applyOptions.length > 0 ? (
                   <div>
                     <button
                       type="button"
                       onClick={handleApplyClick}
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90"
+                      disabled={isExpired}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <Send className="size-4" />
-                      {applyTitle}
+                      {isExpired ? "Offre expirée" : applyTitle}
                     </button>
                   </div>
                 ) : null}
+
+                {profile?.id ? (
+                  <div className="mt-3">
+                    <button
+                      type="button"
+                      onClick={() => void handleToggleSavedOffer()}
+                      disabled={savingSavedOffer}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      {savedOfferState ? (
+                        <BookmarkCheck className="size-4 text-primary" />
+                      ) : (
+                        <Bookmark className="size-4" />
+                      )}
+                      {savingSavedOffer
+                        ? "Traitement..."
+                        : savedOfferState
+                          ? "Offre enregistrée"
+                          : "Enregistrer l'offre"}
+                    </button>
+                    {savedOfferError ? (
+                      <p className="mt-2 text-xs text-red-600">{savedOfferError}</p>
+                    ) : null}
+                  </div>
+                ) : null}
+
                 {!job.application_email && !job.application_whatsapp && !job.external_link ? (
                   <div className="rounded-2xl border border-dashed border-border/70 bg-background/60 p-4 text-sm text-muted-foreground">
                     Veuillez retrouver l'adresse mail de cette entreprise en bas dans la description
@@ -589,8 +941,12 @@ export function JobOfferDetailPage() {
                   <div className="mt-5 space-y-4">
                     <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-foreground">Score de compatibilité</span>
-                        <span className="text-2xl font-bold text-secondary">{analysis.match_score}%</span>
+                        <span className="text-sm font-semibold text-foreground">
+                          Score de compatibilité
+                        </span>
+                        <span className="text-2xl font-bold text-secondary">
+                          {analysis.match_score}%
+                        </span>
                       </div>
                       <div className="mt-3 h-2 rounded-full bg-border">
                         <div
@@ -599,7 +955,9 @@ export function JobOfferDetailPage() {
                         />
                       </div>
                       {analysis.experienceVerified ? (
-                        <p className="mt-3 text-sm text-muted-foreground">{analysis.experienceVerified}</p>
+                        <p className="mt-3 text-sm text-muted-foreground">
+                          {analysis.experienceVerified}
+                        </p>
                       ) : null}
                     </div>
 
@@ -616,7 +974,9 @@ export function JobOfferDetailPage() {
                         </ul>
                       </div>
                       <div className="rounded-2xl border border-orange-200 bg-orange-50/70 p-4">
-                        <h4 className="text-sm font-semibold text-orange-700">Axes d’amélioration</h4>
+                        <h4 className="text-sm font-semibold text-orange-700">
+                          Axes d’amélioration
+                        </h4>
                         <ul className="mt-3 space-y-2 text-sm text-orange-800">
                           {analysis.gaps.map((item) => (
                             <li key={item} className="flex gap-2">
@@ -630,8 +990,15 @@ export function JobOfferDetailPage() {
 
                     <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
                       <div className="flex items-center justify-between gap-3">
-                        <h4 className="text-sm font-semibold text-foreground">Brouillon de lettre de motivation</h4>
-                        <Button type="button" variant="outline" size="sm" onClick={handleCopyLetter}>
+                        <h4 className="text-sm font-semibold text-foreground">
+                          Brouillon de lettre de motivation
+                        </h4>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleCopyLetter}
+                        >
                           {copiedLetter ? "Copié !" : "Copier la lettre"}
                         </Button>
                       </div>

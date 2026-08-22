@@ -28,7 +28,7 @@ export async function getCandidateProfile(candidateId: string): Promise<Candidat
   const { data, error } = await supabase
     .from("candidates")
     .select(
-      "id, user_id, first_name, last_name, email, phone, avatar_url, bio, headline, location_city, location_country, date_of_birth, status, cv_text, embedding_vector, cv_url, created_at, updated_at",
+      "id, user_id, first_name, last_name, email, phone, avatar_url, bio, headline, location_city, location_country, date_of_birth, status, cv_text, embedding_vector, cv_url, cv_last_updated_at, created_at, updated_at",
     )
     .eq("id", candidateId)
     .maybeSingle();
@@ -47,7 +47,7 @@ export async function getCandidateProfileByUserId(userId: string): Promise<Candi
   const { data, error } = await supabase
     .from("candidates")
     .select(
-      "id, user_id, first_name, last_name, email, phone, avatar_url, bio, headline, location_city, location_country, date_of_birth, status, cv_text, embedding_vector, cv_url, created_at, updated_at",
+      "id, user_id, first_name, last_name, email, phone, avatar_url, bio, headline, location_city, location_country, date_of_birth, status, cv_text, embedding_vector, cv_url, cv_last_updated_at, created_at, updated_at",
     )
     .eq("user_id", userId)
     .maybeSingle();
@@ -88,7 +88,7 @@ export async function createCandidateProfile(
       },
     ])
     .select(
-      "id, user_id, first_name, last_name, email, phone, avatar_url, bio, headline, location_city, location_country, date_of_birth, status, cv_text, embedding_vector, cv_url, created_at, updated_at",
+      "id, user_id, first_name, last_name, email, phone, avatar_url, bio, headline, location_city, location_country, date_of_birth, status, cv_text, embedding_vector, cv_url, cv_last_updated_at, created_at, updated_at",
     )
     .single();
 
@@ -125,7 +125,7 @@ export async function updateCandidateProfile(
     .update(payload)
     .eq("id", candidateId)
     .select(
-      "id, user_id, first_name, last_name, email, phone, avatar_url, bio, headline, location_city, location_country, date_of_birth, status, cv_text, embedding_vector, cv_url, created_at, updated_at",
+      "id, user_id, first_name, last_name, email, phone, avatar_url, bio, headline, location_city, location_country, date_of_birth, status, cv_text, embedding_vector, cv_url, cv_last_updated_at, created_at, updated_at",
     )
     .single();
 

@@ -1052,11 +1052,11 @@ export function CandidateJobApplyPage() {
           )}
           {submitFeedback && (
             <Alert
-              className={`border ${submitFeedback.type === "success" ? "border-emerald-200 bg-emerald-50" : "border-rose-200 bg-rose-50"}`}
+              className={`border ${submitFeedback.type === "success" ? "border-secondary/40 bg-secondary/10" : "border-rose-200 bg-rose-50"}`}
             >
               <AlertDescription
                 className={
-                  submitFeedback.type === "success" ? "text-emerald-800" : "text-rose-800"
+                  submitFeedback.type === "success" ? "text-secondary-foreground" : "text-rose-800"
                 }
               >
                 {submitFeedback.message}
