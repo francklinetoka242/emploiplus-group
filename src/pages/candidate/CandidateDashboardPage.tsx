@@ -581,7 +581,7 @@ export function CandidateDashboardPage() {
               <div className="flex items-center gap-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Ma prochaine action</p>
                 {nextActionMode === "success" ? (
-                  <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">
+                  <span className="inline-flex items-center rounded-full border border-secondary/40 bg-secondary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-secondary">
                     Réussite
                   </span>
                 ) : null}

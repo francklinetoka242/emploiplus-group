@@ -14,6 +14,7 @@ import { parseAuthErrorMessage, resendConfirmationEmail } from "@/features/authe
 import { useAuth } from "@/features/authentication/hooks/useAuth";
 import { loginSchema, type LoginFormValues } from "@/features/forms/schemas/auth.schemas";
 import { openCookieBanner } from "@/components/site/CookieConsentBanner";
+import { createCandidateWelcomeNotification } from "@/integrations/supabase/notifications";
 
 const CANDIDATE_ONBOARDING_PENDING_KEY = "emploiplus_candidate_onboarding_pending";
 const CANDIDATE_ONBOARDING_COMPLETED_KEY = "emploiplus_candidate_onboarding_completed";
@@ -83,6 +84,14 @@ export function CandidateLoginPage() {
     setIsLoading(true);
     try {
       await login(values.email, values.password);
+      try {
+        const { error: welcomeError } = await createCandidateWelcomeNotification();
+        if (welcomeError) {
+          console.error("Welcome notification creation failed:", welcomeError);
+        }
+      } catch (welcomeError) {
+        console.error("Welcome notification creation failed:", welcomeError);
+      }
       setSuccessMessage("Connexion réussie! Redirection en cours...");
       // Redirection will be handled by orchestration below (rolesResolved watch)
     } catch (error: unknown) {

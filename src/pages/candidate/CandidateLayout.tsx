@@ -137,7 +137,10 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
           </div>
 
           {/* Contenu avec scroll */}
-          <main ref={mainRef} className="min-w-0 flex-1 min-h-0 overflow-y-auto overflow-x-clip">
+          <main
+            ref={mainRef}
+            className="min-w-0 flex-1 min-h-0 touch-pan-y overflow-y-auto overflow-x-clip overscroll-y-contain"
+          >
             <div className="min-w-0 w-full">
               <div className="mx-auto w-full px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10 max-w-7xl">
                 {children}

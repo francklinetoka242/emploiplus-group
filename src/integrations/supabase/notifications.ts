@@ -165,6 +165,52 @@ export async function createUniqueNotification(payload: NotificationInsert) {
   return createNotification(payload);
 }
 
+export async function createCandidateWelcomeNotification(): Promise<NotificationSingleResult> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError) {
+    return { data: null, error: authError };
+  }
+
+  if (!user) {
+    return { data: null, error: null };
+  }
+
+  const { data: candidate, error: candidateError } = await supabase
+    .from("candidates")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (candidateError) {
+    return { data: null, error: candidateError };
+  }
+
+  if (!candidate) {
+    return { data: null, error: null };
+  }
+
+  const result = await createUniqueNotification({
+    user_id: user.id,
+    type: "evenement",
+    title: "Bienvenue dans votre espace candidat 👋",
+    content:
+      "Bienvenue sur votre espace candidat EMPLOI+ ! Votre compte vous permet de découvrir des offres adaptées à votre profil, de gérer vos candidatures et de profiter pleinement des fonctionnalités de la plateforme. Prenez le temps de compléter votre profil pour mieux valoriser votre parcours.",
+    status: "active",
+    is_read: false,
+    link: "/candidate/notifications",
+  });
+
+  if (result.error?.code === "23505") {
+    return { data: null, error: null };
+  }
+
+  return result;
+}
+
 export async function fetchNotifications(): Promise<NotificationListResult> {
   const { data, error } = await supabase
     .from("notifications")
