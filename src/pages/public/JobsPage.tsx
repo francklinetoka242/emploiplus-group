@@ -5,6 +5,7 @@ import {
   BriefcaseBusiness,
   Building2,
   CalendarDays,
+  CircleAlert,
   MapPin,
   MessageCircle,
   Search,
@@ -59,6 +60,7 @@ import { useCandidate } from "@/hooks/useCandidate";
 import { useCandidatePreferences as useCandidateJobPreferences } from "@/features/candidates/hooks/useCandidatePreferences";
 import { getRecommendedJobs, type RecommendedJob } from "@/services/aiMatchingService";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Sheet,
   SheetContent,
@@ -74,6 +76,7 @@ export function JobsPage() {
   const { user, isLoading, roles } = useAuthContext();
   const { profile } = useCandidate();
   const isCandidateShell = Boolean(user && (roles.includes("candidate") || profile?.id));
+  const canUseAdvancedFilters = Boolean(user);
   const { preferences } = useCandidateJobPreferences(profile?.id);
   const mobileApp = isMobileApp();
   const [searchInput, setSearchInput] = React.useState("");
@@ -81,6 +84,8 @@ export function JobsPage() {
   const [contractTypeInput, setContractTypeInput] = React.useState("");
   const [locationInput, setLocationInput] = React.useState("");
   const [domainInput, setDomainInput] = React.useState("");
+  const [locationOpen, setLocationOpen] = React.useState(false);
+  const [advancedFiltersPromptOpen, setAdvancedFiltersPromptOpen] = React.useState(false);
   const [sortBy, setSortBy] = React.useState<"date" | "relevance" | "salary-high" | "salary-low">(
     "date",
   );
@@ -459,6 +464,13 @@ export function JobsPage() {
     setPage(1);
   };
 
+  const clearSearchInput = () => {
+    setSearchInput("");
+    setInterpretation(null);
+    setAppliedFilters((current) => ({ ...current, query: "" }));
+    setPage(1);
+  };
+
   const hasActiveSearchCriteria = Boolean(
     appliedFilters.query ||
       appliedFilters.company ||
@@ -554,8 +566,18 @@ export function JobsPage() {
                         }
                       }}
                       placeholder="Rechercher un emploi..."
-                      className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                      className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                     />
+                    {searchInput ? (
+                      <button
+                        type="button"
+                        aria-label="Réinitialiser la recherche"
+                        onClick={clearSearchInput}
+                        className="absolute right-3 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    ) : null}
                     {searchSuggestions.length > 0 ? (
                       <div className="absolute left-0 right-0 top-full z-10 mt-1 rounded-xl border border-border bg-card p-2 shadow-sm">
                         <p className="px-2 py-1 text-xs text-muted-foreground">
@@ -585,15 +607,81 @@ export function JobsPage() {
                     <Search className="h-4 w-4" />
                   </button>
 
-                  <button
-                    type="button"
-                    aria-label="Afficher ou masquer les filtres"
-                    aria-expanded={filtersOpen}
-                    onClick={() => setFiltersOpen((prev) => !prev)}
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-foreground transition hover:bg-primary/5"
-                  >
-                    <SlidersHorizontal className="h-4 w-4" />
-                  </button>
+                  {!canUseAdvancedFilters ? (
+                    <Select
+                      value={locationInput}
+                      onValueChange={setLocationInput}
+                      open={locationOpen}
+                      onOpenChange={setLocationOpen}
+                    >
+                      <SelectTrigger
+                        aria-label="Rechercher par pays ou ville"
+                        title="Rechercher par pays ou ville"
+                        className="h-11 w-11 justify-center rounded-xl border-border bg-background p-0 text-foreground [&>span]:sr-only"
+                      >
+                        <MapPin className="h-4 w-4" aria-hidden="true" />
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {centralAfricaCityGroups.map((group) => (
+                          <SelectGroup key={group.country}>
+                            <SelectLabel>{group.country}</SelectLabel>
+                            <SelectItem value={group.country}>{group.country}</SelectItem>
+                            {group.cities.map((city) => (
+                              <SelectItem key={city} value={city}>
+                                {city}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : null}
+
+                  {canUseAdvancedFilters ? (
+                    <button
+                      type="button"
+                      aria-label="Afficher ou masquer les filtres"
+                      aria-expanded={filtersOpen}
+                      onClick={() => setFiltersOpen((prev) => !prev)}
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-foreground transition hover:bg-primary/5"
+                    >
+                      <SlidersHorizontal className="h-4 w-4" />
+                    </button>
+                  ) : (
+                    <Popover
+                      open={advancedFiltersPromptOpen}
+                      onOpenChange={setAdvancedFiltersPromptOpen}
+                    >
+                      <PopoverTrigger asChild>
+                        <button
+                          type="button"
+                          title="Connectez-vous pour avoir plus de filtres"
+                          aria-label="Connectez-vous pour avoir plus de filtres"
+                          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted/50 text-muted-foreground transition hover:bg-primary/5 hover:text-primary"
+                        >
+                          <CircleAlert className="h-5 w-5" aria-hidden="true" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent side="bottom" align="end" className="w-64 p-4">
+                        <p className="text-sm font-semibold text-foreground">
+                          Connectez-vous pour avoir plus de filtres.
+                        </p>
+                        <Button
+                          asChild
+                          size="sm"
+                          className="mt-3 w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90"
+                        >
+                          <Link
+                            to="/candidate/login"
+                            onClick={() => setAdvancedFiltersPromptOpen(false)}
+                          >
+                            Se connecter
+                          </Link>
+                        </Button>
+                      </PopoverContent>
+                    </Popover>
+                  )}
                   </div>
                 </form>
 
@@ -653,7 +741,7 @@ export function JobsPage() {
                   </div>
                 ) : null}
 
-                {interpretation ? (
+                {canUseAdvancedFilters && interpretation ? (
                   <div className="border-t border-border bg-muted/30 px-3 py-3 sm:px-4">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
@@ -681,11 +769,12 @@ export function JobsPage() {
                   </div>
                 ) : null}
 
-                <div
-                  className={`overflow-hidden border-t border-border bg-card transition-all duration-200 ${
-                    filtersOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
-                  }`}
-                >
+                {canUseAdvancedFilters ? (
+                  <div
+                    className={`overflow-hidden border-t border-border bg-card transition-all duration-200 ${
+                      filtersOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
                   <div className="grid gap-3 bg-card p-3 sm:grid-cols-2 sm:p-4">
                     <div className="sm:col-span-2">
                       <h2 className="text-base font-semibold text-foreground">Critères de recherche</h2>
@@ -798,7 +887,8 @@ export function JobsPage() {
                       </button>
                     </div>
                   </div>
-                </div>
+                  </div>
+                ) : null}
             </div>
                 {isCandidateShell ? (
               <Sheet open={recommendationsOpen} onOpenChange={setRecommendationsOpen}>
