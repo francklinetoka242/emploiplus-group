@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, CheckCircle2, Facebook, Linkedin, MessageSquare } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { parseAuthErrorMessage } from "@/features/authentication/api/authApi";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { signupSchema, type SignupFormValues } from "@/features/forms/schemas/auth.schemas";
@@ -289,71 +289,6 @@ export function CandidateSignupPage() {
         </div>
       </main>
 
-      <footer className="w-full overflow-hidden px-3 py-4 text-[9px] text-muted-foreground sm:px-6 sm:text-xs">
-        <div className="flex w-full items-center justify-between gap-1 whitespace-nowrap sm:gap-3">
-          <Link to="/politique-de-confidentialite" className="transition-colors hover:text-foreground">
-            Politique de Confidentialité
-          </Link>
-          <Link to="/mentions-legales" className="transition-colors hover:text-foreground">
-            Mentions Légales
-          </Link>
-          <Link to="/cgu" className="transition-colors hover:text-foreground">
-            Conditions Générales d'Utilisation
-          </Link>
-          <a
-            href="https://support.emploiplus-group.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-foreground"
-          >
-            Centre d'aide
-          </a>
-          <button type="button" onClick={openCookieBanner} className="transition-colors hover:text-foreground">
-            Gestion des cookies
-          </button>
-          <a href="tel:+242067311033" className="transition-colors hover:text-foreground">
-            Contact
-          </a>
-          <a
-            href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
-          >
-            <MessageSquare className="size-3.5" />
-            WhatsApp
-          </a>
-          <a
-            href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
-          >
-            <MessageSquare className="size-3.5" />
-            WhatsApp
-          </a>
-          <span className="h-3 w-px bg-border" aria-hidden="true" />
-          <a
-            href="https://www.facebook.com/EmploiplusConsulting"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Facebook"
-            className="transition-colors hover:text-foreground"
-          >
-            <Facebook className="size-4" />
-          </a>
-          <a
-            href="https://www.linkedin.com/company/emploiplus-consulting/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn"
-            className="transition-colors hover:text-foreground"
-          >
-            <Linkedin className="size-4" />
-          </a>
-          <span className="text-center">© {new Date().getFullYear()} EmploiPlus Group. Tous droits réservés.</span>
-        </div>
-      </footer>
     </div>
   );
 }

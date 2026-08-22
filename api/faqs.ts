@@ -74,6 +74,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const method = String(req.method || "GET").toUpperCase();
   const query = req.query as Record<string, unknown> & { get?: (key: string) => string | null };
   const id = typeof query?.get === "function" ? query.get("id") ?? undefined : typeof query?.id === "string" ? query.id : undefined;
+  const resource = typeof query?.get === "function" ? query.get("resource") : query?.resource;
 
   const restHeaders = {
     "Content-Type": "application/json",
@@ -81,6 +82,68 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     Authorization: `Bearer ${serviceRoleKey}`,
     Prefer: "return=representation",
   };
+
+  if (resource === "categories") {
+    if (method === "GET") {
+      const response = await fetch(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/faq_categories?select=id,name,sort_order,created_at,updated_at&order=sort_order.asc,name.asc`, {
+        method: "GET",
+        headers: restHeaders,
+      });
+
+      const body = await readResponseBody(response);
+      if (!response.ok) {
+        return res.status(response.status).json({ error: normalizeErrorMessage(body) });
+      }
+
+      return res.status(200).json({ data: Array.isArray(body) ? body : [] });
+    }
+
+    if (method === "POST") {
+      const payload = requestBody && typeof requestBody === "object" && !Array.isArray(requestBody)
+        ? (requestBody as UnknownRecord)
+        : {};
+      const cleanedPayload = {
+        name: typeof payload.name === "string" ? payload.name.trim() : "",
+        sort_order: typeof payload.sort_order === "number" ? payload.sort_order : 1,
+      };
+
+      if (!cleanedPayload.name) {
+        return res.status(400).json({ error: "Category name is required" });
+      }
+
+      const response = await fetch(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/faq_categories`, {
+        method: "POST",
+        headers: restHeaders,
+        body: JSON.stringify([cleanedPayload]),
+      });
+      const body = await readResponseBody(response);
+      if (!response.ok) {
+        return res.status(response.status).json({ error: normalizeErrorMessage(body) });
+      }
+
+      return res.status(201).json({ data: Array.isArray(body) ? body[0] ?? null : body ?? null });
+    }
+
+    if (method === "DELETE") {
+      if (!id) {
+        return res.status(400).json({ error: "Missing category id" });
+      }
+
+      const response = await fetch(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/faq_categories?id=eq.${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        headers: restHeaders,
+      });
+      const body = await readResponseBody(response);
+      if (!response.ok) {
+        return res.status(response.status).json({ error: normalizeErrorMessage(body) });
+      }
+
+      return res.status(200).json({ data: body ?? null });
+    }
+
+    res.setHeader("Allow", "GET,POST,DELETE");
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
   if (method === "GET") {
     const response = await fetch(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/faqs?select=id,question,answer,category,sort_order,created_at,updated_at&order=sort_order.asc`, {

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle2, Facebook, Linkedin, MessageSquare } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 import { parseAuthErrorMessage, resendConfirmationEmail } from "@/features/authentication/api/authApi";
@@ -206,9 +206,7 @@ export function CandidateLoginPage() {
                 <CheckCircle2 className="h-4 w-4 text-secondary-foreground" />
                 <AlertDescription className="text-secondary-foreground">
                   <div className="flex flex-col gap-2">
-                    <span className="font-semibold">
-                      ✅ Votre adresse e-mail a été confirmée avec succès.
-                    </span>
+                    <span className="font-semibold">Votre adresse e-mail a été confirmée avec succès.</span>
                     <span>Vous pouvez maintenant vous connecter.</span>
                   </div>
                 </AlertDescription>
@@ -241,14 +239,16 @@ export function CandidateLoginPage() {
             {successMessage && (
               <Alert className="mb-4 border-secondary/40 bg-secondary/10">
                 <CheckCircle2 className="h-4 w-4 text-secondary-foreground" />
-                <AlertDescription className="text-secondary-foreground">{successMessage}</AlertDescription>
+                <AlertDescription className="text-secondary-foreground">
+                  {successMessage}
+                </AlertDescription>
               </Alert>
             )}
 
             {showPendingResend && pendingEmail && !emailNotConfirmed && (
-              <Alert className="mb-4 border-yellow-200 bg-yellow-50">
-                <AlertCircle className="h-4 w-4 text-yellow-600" />
-                <AlertDescription className="text-yellow-800">
+              <Alert className="mb-4 border-secondary/40 bg-secondary/10">
+                <AlertCircle className="h-4 w-4 text-secondary-foreground" />
+                <AlertDescription className="text-secondary-foreground">
                   Vous n'avez pas encore confirmé votre email. Si vous n'avez pas reçu le message,
                   renvoyez-le ci-dessous.
                   <div className="mt-3">
@@ -258,7 +258,7 @@ export function CandidateLoginPage() {
                       size="sm"
                       disabled={resending}
                       onClick={handleResendEmail}
-                      className="text-yellow-600 border-yellow-300 hover:bg-yellow-50"
+                      className="border-secondary/40 text-secondary-foreground hover:bg-secondary/10"
                     >
                       {resending ? "Envoi en cours..." : "Renvoyer l'email de confirmation"}
                     </Button>
@@ -373,71 +373,6 @@ export function CandidateLoginPage() {
         </div>
       </main>
 
-      <footer className="w-full px-3 py-4 text-[9px] text-muted-foreground sm:px-6 sm:text-xs">
-        <div className="flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center leading-5 sm:flex-nowrap sm:justify-between sm:gap-3 sm:text-left">
-            <Link to="/politique-de-confidentialite" className="transition-colors hover:text-foreground">
-              Politique de Confidentialité
-            </Link>
-            <Link to="/mentions-legales" className="transition-colors hover:text-foreground">
-              Mentions Légales
-            </Link>
-            <Link to="/cgu" className="transition-colors hover:text-foreground">
-              Conditions Générales d'Utilisation
-            </Link>
-            <a
-              href="https://support.emploiplus-group.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:text-foreground"
-            >
-              Centre d'aide
-            </a>
-            <button type="button" onClick={openCookieBanner} className="transition-colors hover:text-foreground">
-              Gestion des cookies
-            </button>
-            <a href="tel:+242067311033" className="transition-colors hover:text-foreground">
-              Contact
-            </a>
-            <a
-              href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
-            >
-              <MessageSquare className="size-3.5" />
-              WhatsApp
-            </a>
-            <a
-              href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
-            >
-              <MessageSquare className="size-3.5" />
-              WhatsApp
-            </a>
-            <span className="h-3 w-px bg-border" aria-hidden="true" />
-            <a
-              href="https://www.facebook.com/EmploiplusConsulting"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-              className="transition-colors hover:text-foreground"
-            >
-              <Facebook className="size-4" />
-            </a>
-            <a
-              href="https://www.linkedin.com/company/emploiplus-consulting/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              className="transition-colors hover:text-foreground"
-            >
-              <Linkedin className="size-4" />
-            </a>
-            <span className="text-center">© {new Date().getFullYear()} EmploiPlus Group. Tous droits réservés.</span>
-        </div>
-      </footer>
     </div>
   );
 }

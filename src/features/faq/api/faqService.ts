@@ -40,7 +40,7 @@ export const faqService = {
 
   async listCategories(): Promise<FAQCategory[]> {
     try {
-      const data = await request<FAQCategory[]>("/api/faq-categories");
+      const data = await request<FAQCategory[]>("/api/faqs?resource=categories");
       return data?.length ? data : DEFAULT_FAQ_CATEGORIES;
     } catch {
       return DEFAULT_FAQ_CATEGORIES;
@@ -49,7 +49,7 @@ export const faqService = {
 
   async createCategory(name: string, sortOrder = 1): Promise<FAQCategory | null> {
     try {
-      const data = await request<FAQCategory>("/api/faq-categories", {
+      const data = await request<FAQCategory>("/api/faqs?resource=categories", {
         method: "POST",
         body: JSON.stringify({ name, sort_order: sortOrder }),
       });
@@ -65,7 +65,7 @@ export const faqService = {
 
   async removeCategory(id: string) {
     try {
-      await request<null>(`/api/faq-categories?id=${encodeURIComponent(id)}`, {
+      await request<null>(`/api/faqs?resource=categories&id=${encodeURIComponent(id)}`, {
         method: "DELETE",
       });
       return true;

@@ -82,6 +82,10 @@ export function CandidateOnboardingPage() {
       return;
     }
 
+    // Consume the one-time onboarding as soon as it is displayed.
+    window.localStorage.removeItem(CANDIDATE_ONBOARDING_PENDING_KEY);
+    window.localStorage.setItem(CANDIDATE_ONBOARDING_COMPLETED_KEY, "true");
+
     const intervalId = window.setInterval(() => {
       setActiveIndex((previousIndex) => (previousIndex + 1) % onboardingImages.length);
     }, 2800);
