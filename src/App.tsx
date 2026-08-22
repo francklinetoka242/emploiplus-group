@@ -152,6 +152,11 @@ const CandidateDashboardPage = lazy(() =>
     default: m.CandidateDashboardPage,
   })),
 );
+const CandidateOnboardingPage = lazy(() =>
+  import("@/pages/candidate/CandidateOnboardingPage").then((m) => ({
+    default: m.CandidateOnboardingPage,
+  })),
+);
 const CandidateProfilePage = lazy(() =>
   import("@/pages/candidate/CandidateProfilePage").then((m) => ({
     default: m.CandidateProfilePage,
@@ -285,6 +290,27 @@ function SharedPublicRouteShell() {
   return <PublicLayout>{content}</PublicLayout>;
 }
 
+const CANDIDATE_ONBOARDING_PENDING_KEY = "emploiplus_candidate_onboarding_pending";
+
+function CandidateOnboardingGate() {
+  const { isAuthenticated, session } = useAuthContext();
+  const hasPendingOnboarding =
+    typeof window !== "undefined" &&
+    window.localStorage.getItem(CANDIDATE_ONBOARDING_PENDING_KEY) === "true";
+
+  const hasConfirmedEmail = Boolean(session?.user?.email_confirmed_at);
+
+  if (!isAuthenticated || !hasConfirmedEmail) {
+    return <Navigate to="/candidate/login" replace />;
+  }
+
+  if (!hasPendingOnboarding) {
+    return <Navigate to={isAuthenticated ? "/candidate/dashboard" : "/candidate/login"} replace />;
+  }
+
+  return <CandidateOnboardingPage />;
+}
+
 function AppContent() {
   const location = useLocation();
   const mobileApp = isMobileApp();
@@ -400,6 +426,10 @@ function AppContent() {
       <Route
         path="/candidate/confirm"
         element={withSuspense(<CandidateConfirmPage />, <CandidateDashboardSkeleton />)}
+      />
+      <Route
+        path="/candidate/onboarding"
+        element={withSuspense(<CandidateOnboardingGate />, <CandidateDashboardSkeleton />)}
       />
       <Route
         path="/candidate"

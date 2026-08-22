@@ -15,6 +15,9 @@ import { useAuth } from "@/features/authentication/hooks/useAuth";
 import { loginSchema, type LoginFormValues } from "@/features/forms/schemas/auth.schemas";
 import { openCookieBanner } from "@/components/site/CookieConsentBanner";
 
+const CANDIDATE_ONBOARDING_PENDING_KEY = "emploiplus_candidate_onboarding_pending";
+const CANDIDATE_ONBOARDING_COMPLETED_KEY = "emploiplus_candidate_onboarding_completed";
+
 export function CandidateLoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -139,8 +142,22 @@ export function CandidateLoginPage() {
     }
 
     redirectAttemptedRef.current = true;
+
+    const hasConfirmedEmail = Boolean(user?.email_confirmed_at);
+    const hasCompletedOnboarding =
+      typeof window !== "undefined" &&
+      window.localStorage.getItem(CANDIDATE_ONBOARDING_COMPLETED_KEY) === "true";
+
+    if (hasConfirmedEmail && !hasCompletedOnboarding) {
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(CANDIDATE_ONBOARDING_PENDING_KEY, "true");
+      }
+      navigate("/candidate/onboarding", { replace: true });
+      return;
+    }
+
     navigate(state?.from || "/candidate/dashboard", { replace: true });
-  }, [isAuthenticated, rolesResolved, location.pathname, navigate, state?.from]);
+  }, [isAuthenticated, rolesResolved, location.pathname, navigate, state?.from, user?.email_confirmed_at]);
 
   const handleResendEmail = async () => {
     setResending(true);

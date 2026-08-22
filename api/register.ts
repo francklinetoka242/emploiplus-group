@@ -176,14 +176,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const fromEmail = process.env.FROM_EMAIL || smtpUser;
     const fromName = process.env.FROM_NAME || "EmploiPlus Group";
 
-    const transporter = smtpHost && smtpUser && smtpPass
-      ? nodemailer.createTransport({
-          host: smtpHost,
-          port: smtpPort,
-          secure: smtpPort === 465,
-          auth: { user: smtpUser, pass: smtpPass },
-        })
-      : null;
+    if (!smtpHost || !smtpUser || !smtpPass || !fromEmail) {
+      console.error("Confirmation email cannot be sent: SMTP configuration is incomplete", {
+        hasSmtpHost: Boolean(smtpHost),
+        hasSmtpUser: Boolean(smtpUser),
+        hasSmtpPass: Boolean(smtpPass),
+        hasFromEmail: Boolean(fromEmail),
+      });
+      return res.status(503).json({
+        error: "Le service d'envoi d'e-mails est temporairement indisponible. Réessayez plus tard.",
+      });
+    }
+
+    const transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
+      auth: { user: smtpUser, pass: smtpPass },
+    });
 
     const tokenPayload = {
       sub: userId,
@@ -204,29 +214,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log("[CONFIRM-DEBUG][register] confirmationBaseUrl", confirmationBaseUrl);
 
     try {
-      if (transporter && fromEmail) {
-        const logoUrl = `${confirmationBaseUrl}/Logo.png`;
-        await transporter.sendMail({
-          from: `"${fromName}" <${fromEmail}>`,
-          to: email,
-          replyTo: fromEmail,
-          subject: "Confirmez votre adresse e-mail",
-          text: `Bonjour ${firstName},\n\nMerci pour votre inscription sur EmploiPlus Group. Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le lien ci-dessous :\n${confirmLink}\n\n✓ Ce lien est valable 24 heures.\n✓ Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.\n✓ Si vous n'êtes pas à l'origine de cette demande, ignorez simplement ce message.`,
-          html: renderTransactionalEmail({
-            title: "Confirmation de votre inscription",
-            intro: `Merci pour votre inscription sur EmploiPlus Group. Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous.`,
-            ctaLabel: "Confirmer mon adresse email",
-            ctaUrl: confirmLink,
-            logoUrl,
-            fromName,
-            bodyHtml: `<p style="margin:0 0 8px;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Bonjour ${firstName},</p><p style="margin:0;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Ce lien est valable 24 heures. Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.</p>`,
-          }),
-        });
-      } else {
-        console.warn("SMTP not configured, skipping confirmation email send.");
-      }
+      const logoUrl = `${confirmationBaseUrl}/Logo.png`;
+      await transporter.sendMail({
+        from: `"${fromName}" <${fromEmail}>`,
+        to: email,
+        replyTo: fromEmail,
+        subject: "Confirmez votre adresse e-mail",
+        text: `Bonjour ${firstName},\n\nMerci pour votre inscription sur EmploiPlus Group. Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le lien ci-dessous :\n${confirmLink}\n\n✓ Ce lien est valable 24 heures.\n✓ Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.\n✓ Si vous n'êtes pas à l'origine de cette demande, ignorez simplement ce message.`,
+        html: renderTransactionalEmail({
+          title: "Confirmation de votre inscription",
+          intro: `Merci pour votre inscription sur EmploiPlus Group. Pour activer votre compte candidat, veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous.`,
+          ctaLabel: "Confirmer mon adresse email",
+          ctaUrl: confirmLink,
+          logoUrl,
+          fromName,
+          bodyHtml: `<p style="margin:0 0 8px;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Bonjour ${firstName},</p><p style="margin:0;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Ce lien est valable 24 heures. Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.</p>`,
+        }),
+      });
     } catch (mailError) {
       console.error("Confirmation email send failed", mailError);
+      return res.status(502).json({
+        error: "Impossible d'envoyer l'e-mail de confirmation. Vérifiez la configuration SMTP.",
+      });
     }
 
     return res.status(201).json({

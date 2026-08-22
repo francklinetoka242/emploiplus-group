@@ -124,6 +124,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const fromEmail = process.env.FROM_EMAIL || smtpUser;
     const fromName = process.env.FROM_NAME || 'EmploiPlus Group';
 
+    if (!smtpHost || !smtpUser || !smtpPass || !fromEmail) {
+      console.error('Confirmation email resend unavailable: SMTP configuration is incomplete');
+      return res.status(503).json({
+        error: "Le service d'envoi d'e-mails est temporairement indisponible. Réessayez plus tard.",
+      });
+    }
+
     const transporter = nodemailer.createTransport({
       host: smtpHost,
       port: smtpPort,

@@ -5,6 +5,7 @@ export { CandidateForgotPasswordPage } from "./CandidateForgotPasswordPage";
 export { CandidateResetPasswordPage } from "./CandidateResetPasswordPage";
 export { CandidateLayout } from "./CandidateLayout";
 export { CandidateDashboardPage } from "./CandidateDashboardPage";
+export { CandidateOnboardingPage } from "./CandidateOnboardingPage";
 export { CandidateProfilePage } from "./CandidateProfilePage";
 export { CandidateCVPage } from "./CandidateCVPage";
 export { CandidateCreateCVPage } from "./CandidateCreateCVPage";
