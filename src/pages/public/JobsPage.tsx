@@ -545,10 +545,10 @@ export function JobsPage() {
                 top: mobileApp || isCandidateShell ? 0 : 64,
               }}
             >
-              <div className="overflow-hidden rounded-[1.25rem] border-0 bg-card shadow-none ring-0">
+              <div className="flex flex-col overflow-hidden rounded-[1.25rem] border-0 bg-card shadow-none ring-0">
                 <form
                   onSubmit={handleSearchSubmit}
-                  className="flex flex-col gap-3 bg-card/95 p-3 sm:p-4"
+                  className="order-1 flex flex-col gap-3 bg-card/95 p-3 sm:p-4"
                 >
                   <label className="text-sm font-semibold text-foreground" htmlFor="job-search-input">
                     Rechercher un emploi
@@ -642,11 +642,17 @@ export function JobsPage() {
                     <button
                       type="button"
                       aria-label="Afficher ou masquer les filtres"
+                      title="Afficher ou masquer les filtres"
                       aria-expanded={filtersOpen}
                       onClick={() => setFiltersOpen((prev) => !prev)}
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-foreground transition hover:bg-primary/5"
+                      className={`inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-3 text-sm font-semibold transition hover:bg-primary/5 ${
+                        filtersOpen
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border bg-background text-foreground"
+                      }`}
                     >
-                      <SlidersHorizontal className="h-4 w-4" />
+                      <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+                      <span>Filtres</span>
                     </button>
                   ) : (
                     <Popover
@@ -690,7 +696,7 @@ export function JobsPage() {
                     type="button"
                     aria-expanded={candidateToolsOpen}
                     onClick={() => setCandidateToolsOpen((open) => !open)}
-                    className="flex w-full items-center justify-between border-t border-border px-3 py-2.5 text-left text-sm font-semibold text-primary transition hover:bg-primary/5 sm:px-4"
+                    className="order-3 flex w-full items-center justify-between border-t border-border px-3 py-2.5 text-left text-sm font-semibold text-primary transition hover:bg-primary/5 sm:px-4"
                   >
                     <span>{candidateToolsOpen ? "Masquer les options candidat" : "Afficher les options candidat"}</span>
                     <span aria-hidden="true" className="text-lg leading-none">{candidateToolsOpen ? "−" : "+"}</span>
@@ -698,7 +704,7 @@ export function JobsPage() {
                 ) : null}
 
                 {isCandidateShell && candidateToolsOpen ? (
-                  <div className="grid gap-3 border-t border-border bg-muted/20 px-3 py-3 sm:grid-cols-2 sm:px-4">
+                  <div className="order-4 grid gap-3 border-t border-border bg-muted/20 px-3 py-3 sm:grid-cols-2 sm:px-4">
                     <button
                       type="button"
                       onClick={useCandidatePreferences}
@@ -742,7 +748,7 @@ export function JobsPage() {
                 ) : null}
 
                 {canUseAdvancedFilters && interpretation ? (
-                  <div className="border-t border-border bg-muted/30 px-3 py-3 sm:px-4">
+                  <div className="order-5 border-t border-border bg-muted/30 px-3 py-3 sm:px-4">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="text-sm font-semibold text-foreground">Recherche comprise</p>
@@ -771,23 +777,19 @@ export function JobsPage() {
 
                 {canUseAdvancedFilters ? (
                   <div
-                    className={`overflow-hidden border-t border-border bg-card transition-all duration-200 ${
+                    className={`order-2 overflow-hidden border-t border-border bg-card transition-all duration-200 ${
                       filtersOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
                     }`}
                   >
-                  <div className="grid gap-3 bg-card p-3 sm:grid-cols-2 sm:p-4">
-                    <div className="sm:col-span-2">
-                      <h2 className="text-base font-semibold text-foreground">Critères de recherche</h2>
-                      <p className="mt-1 text-sm text-muted-foreground">Affinez les offres affichées selon vos priorités.</p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  <div className="flex items-end gap-2 overflow-x-auto bg-card px-3 py-2.5 sm:px-4">
+                    <div className="shrink-0">
+                      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                         Type de contrat
                       </label>
                       <select
                         value={contractTypeInput}
                         onChange={(e) => setContractTypeInput(e.target.value)}
-                        className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                        className="h-9 w-[9.5rem] rounded-lg border border-border bg-background px-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                       >
                         <option value="">Tous</option>
                         <option value="cdi">CDI</option>
@@ -800,12 +802,12 @@ export function JobsPage() {
                       </select>
                     </div>
 
-                    <div>
-                      <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    <div className="shrink-0">
+                      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                         Localisation
                       </label>
                       <Select value={locationInput} onValueChange={setLocationInput}>
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className="h-9 w-[9.5rem] rounded-lg border-border bg-background px-2.5 text-sm">
                           <SelectValue placeholder="Sélectionner une ville ou un pays" />
                         </SelectTrigger>
                         <SelectContent>
@@ -824,27 +826,15 @@ export function JobsPage() {
                       </Select>
                     </div>
 
-                    <div>
-                      <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                        Entreprise
-                      </label>
-                      <input
-                        value={companyInput}
-                        onChange={(e) => setCompanyInput(e.target.value)}
-                        placeholder="Nom de l'entreprise"
-                        className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                      />
-                    </div>
-
                     {availableDomains.length > 0 ? (
-                      <div>
-                        <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                      <div className="shrink-0">
+                        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                           Domaine
                         </label>
                         <select
                           value={domainInput}
                           onChange={(e) => setDomainInput(e.target.value)}
-                          className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                          className="h-9 w-[5.5rem] rounded-lg border border-border bg-background px-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                         >
                           <option value="">Tous</option>
                           {availableDomains.map((domain) => (
@@ -856,8 +846,8 @@ export function JobsPage() {
                       </div>
                     ) : null}
 
-                    <div className="sm:col-span-2">
-                      <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    <div className="shrink-0">
+                      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                         Trier par
                       </label>
                       <select
@@ -867,7 +857,7 @@ export function JobsPage() {
                             e.target.value as "date" | "relevance" | "salary-high" | "salary-low",
                           )
                         }
-                        className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                        className="h-9 w-[9rem] rounded-lg border border-border bg-background px-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                       >
                         <option value="date">Date de publication</option>
                         <option value="relevance">Pertinence</option>
@@ -876,14 +866,15 @@ export function JobsPage() {
                       </select>
                     </div>
 
-                    <div className="flex items-center justify-end gap-2 pt-1 sm:col-span-2">
+                    <div className="flex shrink-0 items-end justify-end gap-2">
                       <button
                         type="button"
                         onClick={handleSearchSubmit}
-                        className="inline-flex items-center gap-2 rounded-full bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground"
+                        aria-label="Rechercher avec ces critères"
+                        title="Rechercher avec ces critères"
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand text-brand-foreground transition hover:bg-brand/90"
                       >
-                        <Search className="h-3.5 w-3.5" />
-                        Rechercher
+                        <Search className="h-4 w-4" aria-hidden="true" />
                       </button>
                     </div>
                   </div>
