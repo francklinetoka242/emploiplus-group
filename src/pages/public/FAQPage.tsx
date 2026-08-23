@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, MessageSquareText, Search } from "lucide-react";
+import { ArrowRight, LifeBuoy, MessageSquareText, Search } from "lucide-react";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -111,6 +111,27 @@ export default function FAQPage() {
                 className="h-12 w-full rounded-full border border-border bg-background pl-11 pr-4 text-sm text-foreground shadow-sm outline-none transition focus:border-brand/40 focus:ring-4 focus:ring-brand/10"
               />
             </label>
+
+            <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-brand/20 bg-brand/[0.06] p-5 shadow-sm md:flex-row md:items-center md:justify-between md:p-6">
+              <div className="flex items-start gap-3">
+                <LifeBuoy className="mt-0.5 h-5 w-5 shrink-0 text-brand" aria-hidden="true" />
+                <div>
+                  <h2 className="font-display text-lg font-semibold text-foreground">Besoin d’un accompagnement ?</h2>
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                    Retrouvez nos ressources et toutes les réponses dans le centre d’aide.
+                  </p>
+                </div>
+              </div>
+              <a
+                href="https://support.emploiplus-group.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-brand px-5 py-3 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90"
+              >
+                Ouvrir le centre d’aide
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </div>
           </header>
 
           <nav className="border-b border-border pb-2">
