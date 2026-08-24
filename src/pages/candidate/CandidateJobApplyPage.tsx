@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   Building2,
@@ -32,11 +32,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES } from "@/services/storageService";
-import {
-  getCandidateDocumentsList,
-  loadCandidateDocuments,
-  type CandidateDocument,
-} from "@/lib/candidate-documents";
+import { getCandidateDocuments, getCandidateDocumentsList, type CandidateDocument } from "@/features/candidates/api/documentsApi";
 
 interface TemporaryDocument {
   id: string;
@@ -363,6 +359,7 @@ function DocumentCard({
 export function CandidateJobApplyPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
+  const location = useLocation();
   const { slug } = useParams<{ slug: string }>();
   const { job, loading: jobLoading } = useJobOfferBySlug(slug);
   const { profile, loading: profileLoading, updateProfile, refetch: refetchCandidateProfile } = useCandidate();
@@ -391,6 +388,13 @@ export function CandidateJobApplyPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dragZoneRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const coverLetter = (location.state as { coverLetter?: string } | null)?.coverLetter;
+    if (coverLetter) {
+      setMessage(coverLetter);
+    }
+  }, [location.state]);
+
   usePageSEO({
     title: "Postuler à une offre - EmploiPlus Group",
     description: "Postulez à cette offre d'emploi",
@@ -401,8 +405,18 @@ export function CandidateJobApplyPage() {
   useEffect(() => {
     if (!profile?.id) return;
 
-    const storedDocuments = loadCandidateDocuments(profile.id);
-    setSavedDocuments(getCandidateDocumentsList(storedDocuments));
+    let isMounted = true;
+    const loadDocuments = async () => {
+      const serverDocuments = await getCandidateDocuments(profile.id);
+
+      if (!isMounted) return;
+      setSavedDocuments(getCandidateDocumentsList(serverDocuments));
+    };
+
+    void loadDocuments();
+    return () => {
+      isMounted = false;
+    };
   }, [profile?.id]);
 
   useEffect(() => {

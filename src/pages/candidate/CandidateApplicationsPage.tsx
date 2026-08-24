@@ -40,13 +40,10 @@ const getStatusBadgeColor = (status: string) => {
     case "submitted":
       return "bg-blue-50 text-blue-800 border-blue-200";
     case "reviewed":
-      return "bg-purple-50 text-purple-800 border-purple-200";
     case "shortlisted":
-      return "bg-green-50 text-green-800 border-green-200";
     case "rejected":
-      return "bg-red-50 text-red-800 border-red-200";
     case "accepted":
-      return "bg-green-50 text-green-800 border-green-200";
+      return "bg-slate-50 text-slate-800 border-slate-200";
     case "withdrawn":
       return "bg-gray-50 text-gray-800 border-gray-200";
     default:
@@ -57,10 +54,10 @@ const getStatusBadgeColor = (status: string) => {
 const getStatusLabel = (status: string) => {
   const labels: Record<string, string> = {
     submitted: "Envoyée",
-    reviewed: "Examinée",
-    shortlisted: "Pré-sélectionnée",
-    rejected: "Rejetée",
-    accepted: "Acceptée",
+    reviewed: "Statut mis à jour",
+    shortlisted: "Statut mis à jour",
+    rejected: "Statut mis à jour",
+    accepted: "Statut mis à jour",
     withdrawn: "Retirée",
   };
   return labels[status] || status;

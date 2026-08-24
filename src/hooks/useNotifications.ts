@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { getNotificationsForUser, NotificationRecord, getUnreadNotificationCount } from "@/integrations/supabase/notifications";
+import { deleteNotification as deleteNotificationFromApi, getNotificationsForUser, getUnreadNotificationCount, markNotificationsAsRead, NotificationRecord, updateNotification } from "@/integrations/supabase/notifications";
 
 interface NotificationState {
   notifications: NotificationRecord[];
@@ -43,7 +43,10 @@ const loadNotifications = async () => {
       return;
     }
 
-    const { data, error: notifError } = await getNotificationsForUser(user.id);
+    const [{ data, error: notifError }, unreadCount] = await Promise.all([
+      getNotificationsForUser(user.id),
+      getUnreadNotificationCount(user.id),
+    ]);
     if (notifError) throw notifError;
 
     const notifications = Array.isArray(data) ? data : [];
@@ -51,11 +54,9 @@ const loadNotifications = async () => {
     const userNotifications = notifications.filter(
       (notif: NotificationRecord) =>
         notif.status === "active" &&
-        notif.user_id === user.id &&
+        (notif.user_id === user.id || notif.user_id === null) &&
         allowedTypes.includes(notif.type as (typeof allowedTypes)[number]),
     );
-
-    const unreadCount = userNotifications.filter((n: NotificationRecord) => !n.is_read).length;
 
     updateState({
       notifications: userNotifications,
@@ -96,22 +97,9 @@ export function useNotifications() {
       if (authError) throw authError;
       if (!user) return;
 
-      const { data: ownedNotification, error: lookupError } = await supabase
-        .from("notifications")
-        .select("id, user_id")
-        .eq("id", notificationId)
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (lookupError) throw lookupError;
-      if (!ownedNotification) return;
-
-      const { error: updateError } = await supabase
-        .from("notifications")
-        .update({ is_read: true, read_at: new Date().toISOString() })
-        .eq("id", notificationId)
-        .eq("user_id", user.id);
-
+      const notification = notificationState.notifications.find((item) => item.id === notificationId);
+      if (!notification || notification.user_id !== user.id) return;
+      const { error: updateError } = await updateNotification(notificationId, { is_read: true, read_at: new Date().toISOString() }, user.id);
       if (updateError) throw updateError;
 
       const notifications = notificationState.notifications.map((notif) =>
@@ -141,12 +129,7 @@ export function useNotifications() {
         .map((n) => n.id);
       if (unreadIds.length === 0) return;
 
-      const { error: updateError } = await supabase
-        .from("notifications")
-        .update({ is_read: true, read_at: new Date().toISOString() })
-        .in("id", unreadIds)
-        .eq("user_id", user.id);
-
+      const { error: updateError } = await markNotificationsAsRead(unreadIds, user.id);
       if (updateError) throw updateError;
 
       const notifications = notificationState.notifications.map((notif) => ({
@@ -171,12 +154,7 @@ export function useNotifications() {
       if (authError) throw authError;
       if (!user) return;
 
-      const { error: deleteError } = await supabase
-        .from("notifications")
-        .delete()
-        .eq("id", notificationId)
-        .eq("user_id", user.id);
-
+      const { error: deleteError } = await deleteNotificationFromApi(notificationId, user.id);
       if (deleteError) throw deleteError;
 
       const notifications = notificationState.notifications.filter((n) => n.id !== notificationId);

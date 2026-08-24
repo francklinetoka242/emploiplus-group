@@ -5,6 +5,16 @@ import type { JobOffer, JobOfferFilters, JobOfferInsert, JobOfferUpdate } from "
 const DEFAULT_ORDER_BY = "publish_at" as const;
 const JOB_LIST_SELECT = "id, slug, title, company, contract_type, location_city, location_country, salary, description, requirements, publish_at, deadline, expires_at, status, cover_image, tags";
 
+export function isPublishedAndEligibleOffer(offer: Pick<JobOffer, "status" | "publish_at" | "deadline" | "expires_at">, now = new Date().toISOString()): boolean {
+  return isPublishedAndVisibleOffer(offer, now) &&
+    (!offer.deadline || offer.deadline >= now) &&
+    (!offer.expires_at || offer.expires_at >= now);
+}
+
+export function isPublishedAndVisibleOffer(offer: Pick<JobOffer, "status" | "publish_at">, now = new Date().toISOString()): boolean {
+  return offer.status === "published" && (!offer.publish_at || offer.publish_at <= now);
+}
+
 export const jobService = {
   async getPublishedOffers(limit = 10, offset = 0): Promise<JobOffer[]> {
     const now = new Date().toISOString();
@@ -16,6 +26,7 @@ export const jobService = {
       .from("job_offers")
       .select(JOB_LIST_SELECT)
       .eq("status", "published")
+      .or(`publish_at.is.null,publish_at.lte.${now}`)
       .order(DEFAULT_ORDER_BY, { ascending: false })
       .range(start, end)
       .limit(safeLimit);
@@ -25,7 +36,7 @@ export const jobService = {
     }
 
     const offers = (data ?? []) as JobOffer[];
-    return offers.filter((offer) => !offer.publish_at || offer.publish_at <= now);
+    return offers.filter((offer) => isPublishedAndVisibleOffer(offer, now));
   },
 
   async getOfferBySlug(slug: string): Promise<JobOffer | null> {
@@ -44,7 +55,13 @@ export const jobService = {
       throw error;
     }
 
-    return data as JobOffer | null;
+    const offer = data as JobOffer | null;
+    const now = new Date().toISOString();
+    if (offer && !isPublishedAndVisibleOffer(offer, now)) {
+      return null;
+    }
+
+    return offer;
   },
 
   async searchOffers(filters: JobOfferFilters = {}): Promise<JobOffer[]> {
@@ -52,6 +69,9 @@ export const jobService = {
 
     if (filters.status) {
       query = query.eq("status", filters.status);
+      if (filters.status === "published") {
+        query = query.or(`publish_at.is.null,publish_at.lte.${new Date().toISOString()}`);
+      }
     }
 
     if (filters.query) {
@@ -91,7 +111,7 @@ export const jobService = {
       throw error;
     }
 
-    return (data ?? []) as JobOffer[];
+    return (data ?? []).filter((offer) => filters.status !== "published" || isPublishedAndVisibleOffer(offer as JobOffer)) as JobOffer[];
   },
 
   async createOffer(data: JobOfferInsert): Promise<JobOffer> {

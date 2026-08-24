@@ -76,6 +76,24 @@ export async function getJobApplicationCooldown(candidateId: string, jobOfferId:
 }
 
 export async function applyToJob(candidateId: string, jobOfferId: string, coverLetter?: string, subject?: string) {
+  const { data: offer, error: offerError } = await supabase
+    .from("job_offers")
+    .select("status, publish_at, deadline, expires_at")
+    .eq("id", jobOfferId)
+    .maybeSingle();
+
+  if (offerError) throw offerError;
+  const now = new Date().toISOString();
+  if (
+    !offer ||
+    offer.status !== "published" ||
+    (offer.publish_at && offer.publish_at > now) ||
+    (offer.deadline && offer.deadline < now) ||
+    (offer.expires_at && offer.expires_at < now)
+  ) {
+    throw new Error("Cette offre n'est plus disponible pour une candidature.");
+  }
+
   const { data: currentApplication, error: currentError } = await supabase
     .from("job_applications")
     .select("id, applied_at")

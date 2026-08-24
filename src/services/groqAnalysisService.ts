@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { extractTextFromPdfData, updateCandidateCvText } from "@/services/aiMatchingService";
 import { buildGroqAnalysisPrompt } from "@/services/groqAnalysisPrompt";
 import { parseYears } from "@/services/matchScoreUtils";
 
@@ -244,48 +243,6 @@ async function persistAnalysis(candidateId: string, jobId: string, payload: AiAn
   }
 }
 
-async function resolveCandidateCvTextFromLocalCandidate(candidateId: string): Promise<string> {
-  if (typeof window === "undefined" || !window.localStorage) {
-    return "";
-  }
-
-  try {
-    const raw = window.localStorage.getItem(`emploiplus-candidate-documents-${candidateId}`);
-    if (!raw) {
-      return "";
-    }
-
-    const parsed = JSON.parse(raw) as { cv?: { url?: string | null } | null };
-    const url = parsed.cv?.url;
-    if (!url) {
-      return "";
-    }
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.warn("Unable to fetch candidate CV from storage URL", response.statusText);
-      return "";
-    }
-
-    const arrayBuffer = await response.arrayBuffer();
-    const text = await extractTextFromPdfData(arrayBuffer);
-    if (!text.trim()) {
-      return "";
-    }
-
-    try {
-      await updateCandidateCvText(candidateId, text);
-    } catch (error) {
-      console.warn("Unable to persist candidate cv_text from local CV fallback:", error);
-    }
-
-    return text;
-  } catch (error) {
-    console.warn("Unable to extract candidate CV text from local storage fallback:", error);
-    return "";
-  }
-}
-
 export async function analyzeCandidateForJob(candidateId: string, jobId: string): Promise<AiAnalysisResult> {
   const cached = await fetchCachedAnalysis(candidateId, jobId);
   if (cached) {
@@ -312,10 +269,6 @@ export async function analyzeCandidateForJob(candidateId: string, jobId: string)
 
   let candidateCvText = candidateResponse.data?.cv_text ?? "";
   const job = jobResponse.data;
-
-  if (!candidateCvText.trim()) {
-    candidateCvText = await resolveCandidateCvTextFromLocalCandidate(candidateId);
-  }
 
   if (!candidateCvText.trim()) {
     throw new Error("Le candidat n’a pas encore de CV analysable pour cette offre.");
@@ -348,7 +301,7 @@ export async function analyzeCandidateForJob(candidateId: string, jobId: string)
       },
       signal: controller.signal,
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: "openai/gpt-oss-20b",
         temperature: 0.2,
         messages: [
           {
@@ -386,7 +339,17 @@ export async function analyzeCandidateForJob(candidateId: string, jobId: string)
       throw new Error(errorMessage);
     }
     
-    throw new Error(`Le service Groq a retourné une erreur ${statusCode}. Veuillez réessayer.`);
+    let errorMessage = `Le service Groq a retourné une erreur ${statusCode}. Veuillez réessayer.`;
+    try {
+      const errorData = await response.json() as Record<string, unknown>;
+      const errorObject = errorData.error as Record<string, unknown> | undefined;
+      if (typeof errorObject?.message === "string" && errorObject.message.trim()) {
+        errorMessage = errorObject.message;
+      }
+    } catch {
+      // Conserver le message générique si Groq ne renvoie pas de JSON.
+    }
+    throw new Error(errorMessage);
   }
 
   const result = await response.json() as { choices?: Array<{ message?: { content?: string } }> };

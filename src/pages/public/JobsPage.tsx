@@ -59,6 +59,7 @@ import { centralAfricaCityGroups } from "@/data/locations";
 import { useCandidate } from "@/hooks/useCandidate";
 import { useCandidatePreferences as useCandidateJobPreferences } from "@/features/candidates/hooks/useCandidatePreferences";
 import { getRecommendedJobs, type RecommendedJob } from "@/services/aiMatchingService";
+import { hasAnalyzableCandidateCv, hasCandidateCv } from "@/features/candidates/api/cvApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -148,8 +149,8 @@ export function JobsPage() {
       return;
     }
 
-    const hasCandidateCv = Boolean(profile.cv_text || profile.embedding_vector);
-    if (!hasCandidateCv) {
+    const candidateHasCv = hasCandidateCv(profile);
+    if (!candidateHasCv || !hasAnalyzableCandidateCv(profile)) {
       recommendationContextRef.current = null;
       setRecommendedJobs([]);
       setRecommendedLoading(false);
@@ -184,6 +185,10 @@ export function JobsPage() {
       })
       .catch((error) => {
         if (!mounted) return;
+        console.error("[JobsPage] Unable to load recommended jobs", {
+          candidateId: profile.id,
+          error,
+        });
         setRecommendedJobs([]);
         setHasMoreRecommendedJobs(false);
         setRecommendedError(
@@ -882,7 +887,15 @@ export function JobsPage() {
                 ) : null}
             </div>
                 {isCandidateShell ? (
-              <Sheet open={recommendationsOpen} onOpenChange={setRecommendationsOpen}>
+              <Sheet
+                open={recommendationsOpen}
+                onOpenChange={(open) => {
+                  if (!open && location.hash === "#recommended-for-you") {
+                    navigate(`${location.pathname}${location.search}`, { replace: true });
+                  }
+                  setRecommendationsOpen(open);
+                }}
+              >
                 <SheetContent
                   side="right"
                   className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl"
@@ -910,8 +923,9 @@ export function JobsPage() {
                       </div>
                     ) : recommendedError ? (
                       <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm leading-6 text-destructive">
-                        Impossible de charger vos recommandations pour le moment. Vous pouvez
-                        continuer à consulter toutes les offres ci-dessous.
+                        <p>Impossible de charger vos recommandations pour le moment.</p>
+                        <p className="mt-1">{recommendedError}</p>
+                        <p className="mt-1">Vous pouvez continuer à consulter toutes les offres ci-dessous.</p>
                       </div>
                     ) : recommendedJobs.length > 0 ? (
                       <div className="space-y-4">
@@ -977,10 +991,10 @@ export function JobsPage() {
                       </div>
                     ) : (
                       <div className="rounded-xl border border-dashed border-border p-5 text-sm leading-6 text-muted-foreground">
-                        {profile?.id && !(profile.cv_text || profile.embedding_vector)
+                        {profile?.id && !hasCandidateCv(profile)
                           ? "Ajoutez votre CV pour recevoir des recommandations adaptées à votre parcours."
                           : "Aucune recommandation pour le moment. Consultez les offres disponibles ou complétez votre profil."}
-                        {profile?.id && !(profile.cv_text || profile.embedding_vector) ? (
+                        {profile?.id && !hasCandidateCv(profile) ? (
                           <Link
                             to="/candidate/profile"
                             className="mt-3 inline-flex font-semibold text-primary hover:underline"

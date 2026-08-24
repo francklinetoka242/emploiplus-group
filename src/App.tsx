@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { I18nProvider } from "@/i18n";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +10,10 @@ import { PublicLayout } from "@/components/site/PublicLayout";
 import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 import { ProtectedRoute } from "@/features/authentication/guards";
 import { isMobileApp } from "@/lib/isMobileApp";
+import {
+  getCandidateOnboardingForUser,
+  getOrInitializeCandidateOnboarding,
+} from "@/features/candidates/api/candidateOnboardingApi";
 import {
   DashboardLayoutSkeleton,
   CandidateDashboardSkeleton,
@@ -290,22 +294,58 @@ function SharedPublicRouteShell() {
   return <PublicLayout>{content}</PublicLayout>;
 }
 
-const CANDIDATE_ONBOARDING_PENDING_KEY = "emploiplus_candidate_onboarding_pending";
-
 function CandidateOnboardingGate() {
   const { isAuthenticated, session } = useAuthContext();
-  const hasPendingOnboarding =
-    typeof window !== "undefined" &&
-    window.localStorage.getItem(CANDIDATE_ONBOARDING_PENDING_KEY) === "true";
+  const [state, setState] = useState<"loading" | "onboarding" | "completed" | "error">("loading");
 
   const hasConfirmedEmail = Boolean(session?.user?.email_confirmed_at);
+
+  useEffect(() => {
+    if (!isAuthenticated || !hasConfirmedEmail || !session?.user?.id) return;
+
+    let isMounted = true;
+    const resolveOnboarding = async () => {
+      try {
+        const candidateState = await getCandidateOnboardingForUser(session.user.id);
+        if (!candidateState.candidateId) throw new Error("Profil candidat introuvable");
+
+        const onboarding = await getOrInitializeCandidateOnboarding(
+          candidateState.candidateId,
+          {
+            current_step: 0,
+            completed: window.localStorage.getItem("emploiplus_candidate_onboarding_completed") === "true",
+          },
+        );
+
+        window.localStorage.removeItem("emploiplus_candidate_onboarding_pending");
+        window.localStorage.removeItem("emploiplus_candidate_onboarding_completed");
+        if (isMounted) setState(onboarding.completed ? "completed" : "onboarding");
+      } catch (error) {
+        console.error("Candidate onboarding gate resolution failed:", error);
+        if (isMounted) setState("error");
+      }
+    };
+
+    void resolveOnboarding();
+    return () => {
+      isMounted = false;
+    };
+  }, [hasConfirmedEmail, isAuthenticated, session?.user?.id]);
 
   if (!isAuthenticated || !hasConfirmedEmail) {
     return <Navigate to="/candidate/login" replace />;
   }
 
-  if (!hasPendingOnboarding) {
-    return <Navigate to={isAuthenticated ? "/candidate/dashboard" : "/candidate/login"} replace />;
+  if (state === "loading") {
+    return <PageLoadingFallback />;
+  }
+
+  if (state === "completed") {
+    return <Navigate to="/candidate/dashboard" replace />;
+  }
+
+  if (state === "error") {
+    return <Navigate to="/candidate/login" replace />;
   }
 
   return <CandidateOnboardingPage />;

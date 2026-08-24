@@ -124,12 +124,72 @@ export function DocumentsSection({
           await onDeleteCv?.();
           setIsCvDeleted(true);
         } else {
-          onDeleteDocument?.(document.id);
+          await onDeleteDocument?.(document.id);
         }
       }
     },
     [onDeleteCv, onDeleteDocument],
   );
+
+  const resolveDocumentUrl = useCallback(async (documentUrl: string) => {
+    if (!documentUrl) {
+      throw new Error("URL du document introuvable.");
+    }
+
+    let storagePath = documentUrl;
+    let storageBucket = CANDIDATE_DOCUMENTS_BUCKET;
+    if (/^https?:\/\//i.test(documentUrl)) {
+      try {
+        const parsedUrl = new URL(documentUrl);
+        const objectMarker = "/storage/v1/object/";
+        const markerIndex = parsedUrl.pathname.indexOf(objectMarker);
+        if (markerIndex >= 0) {
+          const objectParts = parsedUrl.pathname.slice(markerIndex + objectMarker.length).split("/");
+          if (objectParts.length > 2) {
+            storageBucket = objectParts[1];
+            storagePath = objectParts.slice(2).map((part) => decodeURIComponent(part)).join("/");
+          } else {
+            return documentUrl;
+          }
+        } else {
+          return documentUrl;
+        }
+      } catch {
+        return documentUrl;
+      }
+    }
+
+    const { data, error } = await supabase.storage
+      .from(storageBucket)
+      .createSignedUrl(storagePath, 60 * 60);
+    if (error || !data?.signedUrl) {
+      throw error ?? new Error("Impossible de générer l'URL du document.");
+    }
+    return data.signedUrl;
+  }, []);
+
+  const handlePreview = useCallback(async (document: CandidateDocument) => {
+    try {
+      const url = await resolveDocumentUrl(document.url);
+      setSelectedPreviewDocument({ ...document, url });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Impossible d'ouvrir le document.");
+    }
+  }, [resolveDocumentUrl]);
+
+  const handleDownload = useCallback(async (document: CandidateDocument) => {
+    try {
+      const url = await resolveDocumentUrl(document.url);
+      const anchor = window.document.createElement("a");
+      anchor.href = url;
+      anchor.download = document.name || document.displayName || "document.pdf";
+      anchor.target = "_blank";
+      anchor.rel = "noopener noreferrer";
+      anchor.click();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Impossible de télécharger le document.");
+    }
+  }, [resolveDocumentUrl]);
 
   const handleFileSelection = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -163,14 +223,18 @@ export function DocumentsSection({
             // Notify user and fallback to local feedback messages
             if ((result as any).extraction) {
               setFeedbackMessage("Le CV a été ajouté et son contenu a été extrait pour l’IA.");
-              toast.success("Votre CV a été mis à jour avec succès. Vos scores de compatibilité avec les offres sont en cours de recalcul.");
+              toast.success("Votre CV a été mis à jour avec succès. Vos scores de compatibilité avec les offres sont en cours de recalcul.", {
+                className: "!bg-secondary !text-secondary-foreground !border-secondary",
+              });
             } else if ((result as any).error) {
               setFeedbackMessage("Votre CV a été ajouté, mais l’extraction du contenu a échoué.");
               setFeedbackError((result as any).error);
               toast.error("Votre CV a été ajouté mais l’extraction a échoué.");
             } else {
               setFeedbackMessage("Votre CV a été ajouté.");
-              toast.success("Votre CV a été mis à jour avec succès. Vos scores de compatibilité avec les offres sont en cours de recalcul.");
+              toast.success("Votre CV a été mis à jour avec succès. Vos scores de compatibilité avec les offres sont en cours de recalcul.", {
+                className: "!bg-secondary !text-secondary-foreground !border-secondary",
+              });
             }
       } else {
         const newDocument = await uploadCandidateDocument(candidateId, file, selectedType as any, selectedType === "other" ? otherLabel : undefined);
@@ -411,7 +475,7 @@ export function DocumentsSection({
                           variant="ghost"
                           className="h-8 w-8 p-0"
                           title="Aperçu"
-                          onClick={() => setSelectedPreviewDocument(doc)}
+                          onClick={() => void handlePreview(doc)}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -420,7 +484,7 @@ export function DocumentsSection({
                           variant="ghost"
                           className="h-8 w-8 p-0"
                           title="Télécharger"
-                          onClick={() => window.open(doc.url, "_blank", "noopener,noreferrer")}
+                          onClick={() => void handleDownload(doc)}
                         >
                           <Download className="h-4 w-4" />
                         </Button>

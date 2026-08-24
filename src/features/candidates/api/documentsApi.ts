@@ -22,6 +22,25 @@ export interface CandidateCVState {
   url: string;
 }
 
+export interface CandidateDocumentsState {
+  cv: CandidateCVState | null;
+  documents: CandidateDocument[];
+}
+
+export function getCandidateDocumentsList(state: CandidateDocumentsState): CandidateDocument[] {
+  const documents = state.documents ?? [];
+  if (!state.cv) return documents;
+
+  return [
+    {
+      ...state.cv,
+      type: "cv",
+      customType: "Mon CV",
+    } as unknown as CandidateDocument,
+    ...documents,
+  ];
+}
+
 function toCvStateFromServer(candidateId: string, candidate: { cv_url?: string | null; cv_last_updated_at?: string | null } | null): CandidateCVState | null {
   if (!candidate?.cv_url) {
     return null;
@@ -37,64 +56,50 @@ function toCvStateFromServer(candidateId: string, candidate: { cv_url?: string |
   };
 }
 
-export async function getCandidateDocuments(candidateId: string) {
-  const storageKey = `emploiplus-candidate-documents-${candidateId}`;
-
-  try {
-    const { data: profile, error } = await supabase
-      .from("candidates")
-      .select("cv_url, cv_last_updated_at")
-      .eq("id", candidateId)
-      .maybeSingle();
-
-    if (!error && profile) {
-      const serverCv = toCvStateFromServer(candidateId, profile);
-      const raw = localStorage.getItem(storageKey);
-      const parsed = raw ? (JSON.parse(raw) as { documents?: CandidateDocument[] }) : null;
-      return {
-        cv: serverCv,
-        documents: parsed?.documents ?? [],
-      };
-    }
-  } catch (error) {
-    console.warn("[documentsApi] unable to resolve candidate CV from Supabase", error);
-  }
-
-  const raw = localStorage.getItem(storageKey);
-  if (!raw) {
-    console.debug("[documentsApi] getCandidateDocuments: no local storage entry", { candidateId, storageKey });
-    return { cv: null as CandidateCVState | null, documents: [] as CandidateDocument[] };
-  }
-
-  try {
-    const parsed = JSON.parse(raw) as { cv?: CandidateCVState; documents?: CandidateDocument[] };
-    console.debug("[documentsApi] getCandidateDocuments: loaded local documents", {
-      candidateId,
-      storageKey,
-      cv: parsed.cv,
-      documents: parsed.documents,
-    });
-    return { cv: parsed.cv ?? null, documents: parsed.documents ?? [] };
-  } catch (error) {
-    console.error("[documentsApi] getCandidateDocuments: failed to parse local storage", { candidateId, storageKey, error });
-    return { cv: null as CandidateCVState | null, documents: [] as CandidateDocument[] };
-  }
+async function resolveStorageUrl(path: string) {
+  if (path.startsWith("http")) return path;
+  const { data, error } = await supabase.storage
+    .from(CANDIDATE_DOCUMENTS_BUCKET)
+    .createSignedUrl(path, 60 * 60);
+  if (error || !data?.signedUrl) return path;
+  return data.signedUrl;
 }
 
-export async function saveCandidateDocuments(candidateId: string, payload: { cv: CandidateCVState | null; documents: CandidateDocument[] }) {
-  if (payload.cv?.url) {
-    try {
-      await supabase
-        .from("candidates")
-        .update({ cv_url: payload.cv.url, cv_last_updated_at: new Date().toISOString() })
-        .eq("id", candidateId);
-    } catch (error) {
-      console.warn("[documentsApi] unable to persist CV url to Supabase", error);
-    }
-  }
+async function toDocumentState(row: {
+  id: string;
+  type: string;
+  name: string;
+  display_name: string;
+  storage_path: string;
+  size_bytes: number | null;
+  custom_type: string | null;
+  created_at: string;
+}) {
+  return {
+    id: row.id,
+    type: row.type as CandidateDocument["type"],
+    name: row.name,
+    displayName: row.display_name,
+    date: row.created_at,
+    size: row.size_bytes == null ? undefined : String(row.size_bytes),
+    url: await resolveStorageUrl(row.storage_path),
+    customType: row.custom_type ?? undefined,
+  } satisfies CandidateDocument;
+}
 
-  localStorage.setItem(`emploiplus-candidate-documents-${candidateId}`, JSON.stringify(payload));
-  return payload;
+export async function getCandidateDocuments(candidateId: string) {
+  const [{ data: profile, error: profileError }, { data: rows, error: documentsError }] = await Promise.all([
+    supabase.from("candidates").select("cv_url, cv_last_updated_at").eq("id", candidateId).maybeSingle(),
+    supabase.from("candidate_documents").select("id, type, name, display_name, storage_path, size_bytes, custom_type, created_at").eq("candidate_id", candidateId).order("created_at", { ascending: false }),
+  ]);
+
+  if (profileError) throw profileError;
+  if (documentsError) throw documentsError;
+
+  return {
+    cv: toCvStateFromServer(candidateId, profile),
+    documents: await Promise.all((rows ?? []).map(toDocumentState)),
+  };
 }
 
 export async function uploadCandidateCV(candidateId: string, file: File) {
@@ -112,27 +117,12 @@ export async function uploadAndProcessCandidateCV(candidateId: string, file: Fil
     url,
   };
 
-  // Persist local client copy before dispatch so listeners can read it immediately
-  try {
-    const existing = await getCandidateDocuments(candidateId);
-    await saveCandidateDocuments(candidateId, { cv: newCv, documents: existing.documents ?? [] });
-  } catch (localErr) {
-    // Non-fatal: continue even if local save fails
-    console.debug("Failed to persist candidate documents locally before dispatch:", localErr);
-  }
-
-  // Refresh profile consumers as soon as the CV metadata is persisted.
-  try {
-    if (typeof window !== "undefined" && typeof CustomEvent !== "undefined") {
-      window.dispatchEvent(new CustomEvent("cv-uploaded", { detail: { candidateId, cvUrl: newCv.url } }));
-    }
-  } catch (eventError) {
-    console.debug("Failed to dispatch cv-uploaded event", eventError);
-  }
-
   try {
     // Pass the internal storage path to the server so it can regenerate signed URLs later
     const extraction = await processCandidateCvUpload(candidateId, file, path ?? url);
+    if (typeof window !== "undefined" && typeof CustomEvent !== "undefined") {
+      window.dispatchEvent(new CustomEvent("cv-uploaded", { detail: { candidateId, cvUrl: newCv.url } }));
+    }
 
     return { cv: newCv, extraction } as { cv: CandidateCVState; extraction: unknown };
   } catch (err) {
@@ -140,6 +130,9 @@ export async function uploadAndProcessCandidateCV(candidateId: string, file: Fil
     // Ensure the uploaded CV path or URL is persisted in Supabase even if extraction fails
     try {
       await updateCandidateCvText(candidateId, "", path ?? newCv.url);
+      if (typeof window !== "undefined" && typeof CustomEvent !== "undefined") {
+        window.dispatchEvent(new CustomEvent("cv-uploaded", { detail: { candidateId, cvUrl: newCv.url } }));
+      }
     } catch (dbErr) {
       console.debug("Failed to persist cv_url after extraction failure:", dbErr);
     }
@@ -153,34 +146,52 @@ export async function uploadAndProcessCandidateCV(candidateId: string, file: Fil
 }
 
 export async function uploadCandidateDocument(candidateId: string, file: File, type: CandidateDocument["type"], customType?: string) {
-  const { url } = await uploadFileToStorage(file, `candidates/${candidateId}/documents`, CANDIDATE_DOCUMENTS_BUCKET, true);
-  return {
-    id: `doc-${Date.now()}`,
-    type,
-    name: file.name,
-    displayName: type === "other" && customType?.trim() ? customType.trim() : file.name,
-    date: new Date().toISOString(),
-    size: file.size.toString(),
-    url,
-    customType: type === "other" ? customType?.trim() : undefined,
-  } satisfies CandidateDocument;
+  const { path } = await uploadFileToStorage(file, `candidates/${candidateId}/documents`, CANDIDATE_DOCUMENTS_BUCKET, true);
+  const { data, error } = await supabase
+    .from("candidate_documents")
+    .insert({
+      candidate_id: candidateId,
+      type,
+      name: file.name,
+      display_name: type === "other" && customType?.trim() ? customType.trim() : file.name,
+      storage_path: path,
+      size_bytes: file.size,
+      custom_type: type === "other" ? customType?.trim() || null : null,
+    })
+    .select("id, type, name, display_name, storage_path, size_bytes, custom_type, created_at")
+    .single();
+  if (error) throw error;
+  return toDocumentState(data);
 }
 
 export async function deleteCandidateDocument(candidateId: string, documentId: string) {
-  const existing = await getCandidateDocuments(candidateId);
-  const filtered = existing.documents.filter((document) => document.id !== documentId);
-  await saveCandidateDocuments(candidateId, { cv: existing.cv, documents: filtered });
-  return filtered;
+  const { data: document, error: fetchError } = await supabase
+    .from("candidate_documents")
+    .select("storage_path")
+    .eq("id", documentId)
+    .eq("candidate_id", candidateId)
+    .maybeSingle();
+  if (fetchError) throw fetchError;
+  if (!document) return (await getCandidateDocuments(candidateId)).documents;
+
+  const { error: deleteError } = await supabase
+    .from("candidate_documents")
+    .delete()
+    .eq("id", documentId)
+    .eq("candidate_id", candidateId);
+  if (deleteError) throw deleteError;
+
+  const { error: storageError } = await supabase.storage.from(CANDIDATE_DOCUMENTS_BUCKET).remove([document.storage_path]);
+  if (storageError) console.warn("Unable to remove candidate document from Storage", storageError.message);
+  return (await getCandidateDocuments(candidateId)).documents;
 }
 
 export async function deleteCandidateCV(candidateId: string) {
-  const existing = await getCandidateDocuments(candidateId);
   try {
     await clearCandidateCvText(candidateId);
     await supabase.from("candidates").update({ cv_url: null, cv_last_updated_at: null }).eq("id", candidateId);
   } catch (error) {
     console.warn("[documentsApi] unable to clear CV in Supabase", error);
   }
-  await saveCandidateDocuments(candidateId, { cv: null, documents: existing.documents });
   return null;
 }

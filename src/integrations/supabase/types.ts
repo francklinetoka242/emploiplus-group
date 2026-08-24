@@ -324,7 +324,9 @@ export type Database = {
           created_at: string;
           id: string;
           is_read: boolean;
+          job_offer_id: string | null;
           link: string | null;
+          expiration_at: string | null;
           read_at: string | null;
           status: Database["public"]["Enums"]["notification_status"];
           title: string;
@@ -336,7 +338,9 @@ export type Database = {
           created_at?: string;
           id?: string;
           is_read?: boolean;
+          job_offer_id?: string | null;
           link?: string | null;
+          expiration_at?: string | null;
           read_at?: string | null;
           status?: Database["public"]["Enums"]["notification_status"];
           title: string;
@@ -348,7 +352,9 @@ export type Database = {
           created_at?: string;
           id?: string;
           is_read?: boolean;
+          job_offer_id?: string | null;
           link?: string | null;
+          expiration_at?: string | null;
           read_at?: string | null;
           status?: Database["public"]["Enums"]["notification_status"];
           title?: string;
@@ -418,6 +424,75 @@ export type Database = {
           embedding_vector?: string | null;
           cv_url?: string | null;
           cv_last_updated_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      candidate_documents: {
+        Row: {
+          id: string;
+          candidate_id: string;
+          type: string;
+          name: string;
+          display_name: string;
+          storage_path: string;
+          size_bytes: number | null;
+          custom_type: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          candidate_id: string;
+          type: string;
+          name: string;
+          display_name: string;
+          storage_path: string;
+          size_bytes?: number | null;
+          custom_type?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          candidate_id?: string;
+          type?: string;
+          name?: string;
+          display_name?: string;
+          storage_path?: string;
+          size_bytes?: number | null;
+          custom_type?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      candidate_onboarding: {
+        Row: {
+          id: string;
+          candidate_id: string;
+          current_step: number;
+          completed: boolean;
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          candidate_id: string;
+          current_step?: number;
+          completed?: boolean;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          candidate_id?: string;
+          current_step?: number;
+          completed?: boolean;
+          completed_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -815,6 +890,7 @@ export type Database = {
     };
     Functions: {
       expire_jobs: { Args: never; Returns: number };
+      notify_saved_offer_expirations: { Args: never; Returns: number };
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"];

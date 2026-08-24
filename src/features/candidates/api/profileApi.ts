@@ -2,6 +2,12 @@ import { supabase } from "@/integrations/supabase/client";
 import type { CandidateProfile } from "@/features/candidates/types";
 import { buildCandidateProfileUpdatePayload } from "./profileUpdateUtils";
 
+export async function getCurrentCandidate(): Promise<CandidateProfile | null> {
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error) throw error;
+  return user ? getCandidateProfileByUserId(user.id) : null;
+}
+
 const ALLOWED_PROFILE_FIELDS = [
   "first_name",
   "last_name",

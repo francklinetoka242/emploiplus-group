@@ -15,9 +15,10 @@ import { useAuth } from "@/features/authentication/hooks/useAuth";
 import { loginSchema, type LoginFormValues } from "@/features/forms/schemas/auth.schemas";
 import { openCookieBanner } from "@/components/site/CookieConsentBanner";
 import { createCandidateWelcomeNotification } from "@/integrations/supabase/notifications";
-
-const CANDIDATE_ONBOARDING_PENDING_KEY = "emploiplus_candidate_onboarding_pending";
-const CANDIDATE_ONBOARDING_COMPLETED_KEY = "emploiplus_candidate_onboarding_completed";
+import {
+  getCandidateOnboardingForUser,
+  getOrInitializeCandidateOnboarding,
+} from "@/features/candidates/api/candidateOnboardingApi";
 
 export function CandidateLoginPage() {
   const navigate = useNavigate();
@@ -152,20 +153,45 @@ export function CandidateLoginPage() {
 
     redirectAttemptedRef.current = true;
 
-    const hasConfirmedEmail = Boolean(user?.email_confirmed_at);
-    const hasCompletedOnboarding =
-      typeof window !== "undefined" &&
-      window.localStorage.getItem(CANDIDATE_ONBOARDING_COMPLETED_KEY) === "true";
+    let isMounted = true;
 
-    if (hasConfirmedEmail && !hasCompletedOnboarding) {
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(CANDIDATE_ONBOARDING_PENDING_KEY, "true");
+    const resolveOnboarding = async () => {
+      try {
+        const candidateState = await getCandidateOnboardingForUser(user!.id);
+        if (!candidateState.candidateId) {
+          throw new Error("Profil candidat introuvable");
+        }
+
+        const legacyState = {
+          current_step: 0,
+          completed: window.localStorage.getItem("emploiplus_candidate_onboarding_completed") === "true",
+        };
+        const onboarding = await getOrInitializeCandidateOnboarding(
+          candidateState.candidateId,
+          legacyState,
+        );
+
+        window.localStorage.removeItem("emploiplus_candidate_onboarding_pending");
+        window.localStorage.removeItem("emploiplus_candidate_onboarding_completed");
+
+        if (!isMounted) return;
+        const hasConfirmedEmail = Boolean(user?.email_confirmed_at);
+        if (hasConfirmedEmail && !onboarding.completed) {
+          navigate("/candidate/onboarding", { replace: true });
+          return;
+        }
+
+        navigate(state?.from || "/candidate/dashboard", { replace: true });
+      } catch (error) {
+        redirectAttemptedRef.current = false;
+        console.error("Candidate onboarding state resolution failed:", error);
       }
-      navigate("/candidate/onboarding", { replace: true });
-      return;
-    }
+    };
 
-    navigate(state?.from || "/candidate/dashboard", { replace: true });
+    void resolveOnboarding();
+    return () => {
+      isMounted = false;
+    };
   }, [isAuthenticated, rolesResolved, location.pathname, navigate, state?.from, user?.email_confirmed_at]);
 
   const handleResendEmail = async () => {

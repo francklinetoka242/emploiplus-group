@@ -23,9 +23,8 @@ import {
   Send,
 } from "lucide-react";
 import { JobCard } from "@/features/jobs/components";
-import { getRecommendedJobs, RecommendedJob } from "@/services/aiMatchingService";
-import { supabase } from "@/integrations/supabase/client";
-import { CANDIDATE_DOCUMENTS_BUCKET } from "@/services/storageService";
+import { getRecommendedJobsWithStatus, RecommendedJob } from "@/services/aiMatchingService";
+import { getCandidateCvAnalysisState, hasAnalyzableCandidateCv, hasCandidateCv } from "@/features/candidates/api/cvApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfileCompletion } from "@/features/profile/hooks/useProfileCompletion";
 import { useCandidateProfileData } from "@/features/candidates/hooks/useCandidateProfileData";
@@ -76,6 +75,7 @@ const completionItemRoutes: Record<string, string> = {
   Compétence: "/candidate/profile?tab=skills",
   Langue: "/candidate/profile?tab=languages",
   "Préférences RH": "/candidate/profile?tab=preferences",
+  CV: "/candidate/profile?tab=documents",
 };
 
 export function CandidateDashboardPage() {
@@ -109,15 +109,12 @@ export function CandidateDashboardPage() {
     timestamp: new Date().toISOString(),
   }, 'CandidateDashboardPage');
 
-  const [candidateDocuments, setCandidateDocuments] = useState<{
-    cv: { url?: string | null } | null;
-    documents: Array<{ url?: string | null }>;
-  }>({ cv: null, documents: [] });
   const [recommendedJobs, setRecommendedJobs] = useState<RecommendedJob[]>([]);
   const [recommendedLoading, setRecommendedLoading] = useState<boolean>(false);
   const [recommendedPage, setRecommendedPage] = useState(1);
+  const [recommendedStatus, setRecommendedStatus] = useState<"no_cv" | "cv_processing" | "cv_analysis_failed" | "success" | "no_results" | "error">("no_cv");
+  const [recommendedError, setRecommendedError] = useState<string | null>(null);
   const [hasMoreRecommendedJobs, setHasMoreRecommendedJobs] = useState(false);
-  const hasCreatedRecommendationAlertRef = useRef(false);
   const hasCreatedProfileCompletionAlertRef = useRef(false);
   const hasCreatedJobAlertSetupRef = useRef(false);
   const RECOMMENDED_JOBS_PAGE_SIZE = 3;
@@ -133,81 +130,6 @@ export function CandidateDashboardPage() {
     robots: "noindex,nofollow",
   });
 
-  // Fonction helper pour recharger les documents du localStorage
-  const reloadCandidateDocuments = useCallback(async () => {
-    diagnosticLogger.log('RELOAD_DOCS_START', {
-      profileId: profile?.id,
-      hasProfile: !!profile,
-    }, 'CandidateDashboardPage');
-    
-    if (!profile?.id) {
-      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setCandidateDocuments', 'empty');
-      setCandidateDocuments({ cv: null, documents: [] });
-      return;
-    }
-
-    try {
-      const raw = localStorage.getItem(`emploiplus-candidate-documents-${profile.id}`);
-      if (!raw) {
-        // Fallback: if server knows the cv_url, hydrate local state from profile
-        const serverCvUrl = profile?.cv_url as string | undefined;
-        if (serverCvUrl) {
-          let resolved = serverCvUrl;
-          if (!serverCvUrl.startsWith("http")) {
-            try {
-              const { data: signed, error } = await supabase.storage
-                .from(CANDIDATE_DOCUMENTS_BUCKET)
-                .createSignedUrl(serverCvUrl, 60 * 60);
-              if (!error && signed?.signedUrl) resolved = signed.signedUrl;
-            } catch (e) {
-              console.debug("Failed to generate signed URL for dashboard CV", e);
-            }
-          }
-          diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setCandidateDocuments', 'from-server');
-          setCandidateDocuments({
-            cv: {
-              id: `cv-server-${profile.id}`,
-              name: "CV",
-              displayName: "Mon CV",
-              date: new Date().toISOString(),
-              size: "",
-              url: resolved,
-            },
-            documents: [],
-          });
-          return;
-        }
-
-        setCandidateDocuments({ cv: null, documents: [] });
-        return;
-      }
-
-      const parsed = JSON.parse(raw) as {
-        cv?: { url?: string | null } | null;
-        documents?: Array<{ url?: string | null }>;
-      };
-
-      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setCandidateDocuments', 'from-storage');
-      setCandidateDocuments({
-        cv: parsed.cv ?? null,
-        documents: parsed.documents ?? [],
-      });
-    } catch (error) {
-      console.error("Unable to restore candidate documents for dashboard", error);
-      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setCandidateDocuments', 'empty-error');
-      setCandidateDocuments({ cv: null, documents: [] });
-    }
-  }, [profile?.id]);
-
-  // Charger les documents au démarrage
-  useEffect(() => {
-    diagnosticLogger.log('EFFECT_START', {
-      effectName: 'reloadCandidateDocuments',
-    }, 'CandidateDashboardPage');
-    reloadCandidateDocuments();
-  }, [reloadCandidateDocuments]);
-
-  // Écouter l'événement de téléversement de CV pour se re-synchroniser
   useEffect(() => {
     const handleCvUploaded = (event: Event) => {
       const customEvent = event as CustomEvent;
@@ -216,9 +138,6 @@ export function CandidateDashboardPage() {
       // Vérifier que c'est pour ce candidat
       if (candidateId === profile?.id) {
         console.debug("[Dashboard] CV uploaded event detected, reloading documents and profile...");
-        // Re-charger les documents du localStorage
-        reloadCandidateDocuments();
-        // Forcer un refresh du profil pour récupérer cv_text mis à jour
         if (refetch) {
           void refetch();
         }
@@ -229,20 +148,80 @@ export function CandidateDashboardPage() {
     return () => {
       window.removeEventListener("cv-uploaded", handleCvUploaded);
     };
-  }, [profile?.id, reloadCandidateDocuments, refetch]);
+  }, [profile?.id, refetch]);
 
   useEffect(() => {
     diagnosticLogger.log('EFFECT_START', {
       effectName: 'loadRecommendedJobs',
       profileId: profile?.id,
       hasProfile: !!profile,
-      hasCvUrlInDocuments: !!candidateDocuments.cv?.url,
       cvText: !!profile?.cv_text,
       embedding: !!profile?.embedding_vector,
       recommendedPage,
     }, 'CandidateDashboardPage');
     
     if (!profile?.id) {
+      if (!profileDataReady && !profileDataError) {
+        setRecommendedStatus('cv_processing');
+        setRecommendedLoading(true);
+        return;
+      }
+
+      if (profileDataError) {
+        setRecommendedStatus('error');
+        setRecommendedError(profileDataError);
+        setRecommendedJobs([]);
+        setHasMoreRecommendedJobs(false);
+        setRecommendedLoading(false);
+        return;
+      }
+
+      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedJobs', 'empty');
+      setRecommendedJobs([]);
+      setRecommendedStatus('no_cv');
+      setRecommendedError(null);
+      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedLoading', false);
+      setRecommendedLoading(false);
+      return;
+    }
+
+    if (!profileDataReady) {
+      setRecommendedStatus('cv_processing');
+      setRecommendedLoading(true);
+      return;
+    }
+
+    if (profileDataError) {
+      setRecommendedStatus('error');
+      setRecommendedError(profileDataError);
+      setRecommendedJobs([]);
+      setHasMoreRecommendedJobs(false);
+      setRecommendedLoading(false);
+      return;
+    }
+
+    const candidateCvText = profile?.cv_text;
+    const candidateEmbedding = profile?.embedding_vector;
+    const cvState = getCandidateCvAnalysisState(profile);
+    const hasCvUploaded = hasCandidateCv(profile);
+    const hasAnalyzableCv = hasAnalyzableCandidateCv(profile);
+
+    console.debug("[Dashboard] Preparing recommended jobs", {
+      candidateId: profile.id,
+      hasCvUploaded,
+      cv_text: candidateCvText,
+      embedding: candidateEmbedding ? "present" : "absent",
+      cvStatus: cvState.status,
+    });
+
+    if (!hasCvUploaded) {
+      diagnosticLogger.log('RECOMMENDED_JOBS_SKIPPED', {
+        reason: 'no-cv-uploaded',
+        hasCvText: !!candidateCvText,
+        hasEmbedding: !!candidateEmbedding,
+      }, 'CandidateDashboardPage');
+      setRecommendedStatus('no_cv');
+      setRecommendedError(null);
       diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedJobs', 'empty');
       setRecommendedJobs([]);
       diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedLoading', false);
@@ -250,30 +229,16 @@ export function CandidateDashboardPage() {
       return;
     }
 
-    const candidateCvText = profile?.cv_text;
-    const candidateEmbedding = profile?.embedding_vector;
-    const hasCvUploaded = Boolean(
-      candidateDocuments.cv?.url || candidateCvText || candidateEmbedding,
-    );
-
-    console.debug("[Dashboard] Preparing recommended jobs", {
-      candidateId: profile.id,
-      hasCvUploaded,
-      candidateDocuments,
-      cv_text: candidateCvText,
-      embedding: candidateEmbedding ? "present" : "absent",
-    });
-
-    if (!hasCvUploaded) {
+    if (!hasAnalyzableCv) {
+      const nextStatus = cvState.status === 'cv_processing' ? 'cv_processing' : 'cv_analysis_failed';
       diagnosticLogger.log('RECOMMENDED_JOBS_SKIPPED', {
-        reason: 'no-cv-uploaded',
-        hasCvUrl: !!candidateDocuments.cv?.url,
+        reason: nextStatus,
         hasCvText: !!candidateCvText,
         hasEmbedding: !!candidateEmbedding,
       }, 'CandidateDashboardPage');
-      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedJobs', 'empty');
+      setRecommendedStatus(nextStatus);
+      setRecommendedError(null);
       setRecommendedJobs([]);
-      diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedLoading', false);
       setRecommendedLoading(false);
       return;
     }
@@ -282,38 +247,39 @@ export function CandidateDashboardPage() {
     const loadRecommended = async () => {
       diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedLoading', true);
       setRecommendedLoading(true);
+      setRecommendedError(null);
       try {
         console.debug(
           `[Dashboard] Calling getRecommendedJobs for candidate ${profile.id}, page ${recommendedPage}`,
         );
-        const jobs = await getRecommendedJobs(
+        const result = await getRecommendedJobsWithStatus(
           profile.id,
           0.0,
           RECOMMENDED_JOBS_PAGE_SIZE,
           (recommendedPage - 1) * RECOMMENDED_JOBS_PAGE_SIZE,
         );
         console.debug(
-          `[Dashboard] getRecommendedJobs returned ${Array.isArray(jobs) ? jobs.length : 0} jobs`,
+          `[Dashboard] getRecommendedJobsWithStatus returned ${result.status}`,
           {
             candidateId: profile.id,
             requestedCount: RECOMMENDED_JOBS_PAGE_SIZE,
             page: recommendedPage,
-            jobs,
+            result,
           },
         );
         if (!mounted) return;
-        diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedJobs', jobs?.length ?? 0);
-        setRecommendedJobs(jobs || []);
-        diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setHasMoreRecommendedJobs', (jobs?.length ?? 0) === RECOMMENDED_JOBS_PAGE_SIZE);
-        setHasMoreRecommendedJobs((jobs?.length ?? 0) === RECOMMENDED_JOBS_PAGE_SIZE);
+        setRecommendedStatus(result.status);
+        setRecommendedError(result.error ?? null);
+        setRecommendedJobs(result.jobs || []);
+        setHasMoreRecommendedJobs(result.status === 'success' && (result.jobs?.length ?? 0) === RECOMMENDED_JOBS_PAGE_SIZE);
       } catch (error) {
         console.error("Unable to load recommended jobs:", error, { candidateId: profile.id });
         if (mounted) {
-          diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setRecommendedJobs', 'empty-error');
+          setRecommendedStatus('error');
+          setRecommendedError(error instanceof Error ? error.message : 'Impossible de charger les recommandations.');
           setRecommendedJobs([]);
         }
         if (mounted) {
-          diagnosticLogger.recordSetterCall('CandidateDashboardPage', 'setHasMoreRecommendedJobs', false);
           setHasMoreRecommendedJobs(false);
         }
       } finally {
@@ -330,28 +296,13 @@ export function CandidateDashboardPage() {
     };
   }, [
     profile?.id,
-    candidateDocuments.cv?.url,
     profile?.cv_text,
     profile?.embedding_vector,
+    profile?.cv_last_updated_at,
     recommendedPage,
+    profileDataReady,
+    profileDataError,
   ]);
-
-  useEffect(() => {
-    if (!profile?.id || !profile?.user_id || !recommendedJobs.length || hasCreatedRecommendationAlertRef.current) {
-      return;
-    }
-
-    hasCreatedRecommendationAlertRef.current = true;
-    void createUniqueNotification({
-      title: "Une nouvelle offre correspond à votre profil.",
-      content: "Découvrez les offres recommandées qui correspondent le mieux à votre profil.",
-      type: "offre",
-      user_id: profile.user_id,
-      status: "active",
-      is_read: false,
-      link: recommendedJobs[0].slug ? `/jobs/${recommendedJobs[0].slug}` : "/jobs#recommended-for-you",
-    });
-  }, [profile?.id, profile?.user_id, recommendedJobs]);
 
   useEffect(() => {
     if (!profile?.id || !profile?.user_id || !profile?.cv_last_updated_at || hasCreatedProfileCompletionAlertRef.current) {
@@ -428,12 +379,29 @@ export function CandidateDashboardPage() {
       };
     }
 
-    if (completion.missingItems.length > 0) {
-      const missingLabel = completion.missingItems[0];
+    const profileMissingItems = completion.missingItems.filter((item) => item !== "CV");
+    if (profileMissingItems.length > 0) {
+      const missingLabel = profileMissingItems[0];
       return {
         title: "Compléter votre profil",
         description: `Ajoutez votre ${missingLabel.toLowerCase()} pour améliorer vos recommandations et gagner en visibilité.`,
         href: completionItemRoutes[missingLabel] ?? "/candidate/profile",
+      };
+    }
+
+    if (!hasCandidateCv(profile)) {
+      return {
+        title: "Ajouter votre CV",
+        description: "Ajoutez votre CV pour améliorer vos recommandations et votre visibilité.",
+        href: "/candidate/profile?tab=documents",
+      };
+    }
+
+    if (!hasAnalyzableCandidateCv(profile)) {
+      return {
+        title: "Analyser votre CV",
+        description: "Analysez votre CV pour recevoir des recommandations adaptées à votre parcours.",
+        href: "/candidate/profile?tab=documents",
       };
     }
 
@@ -458,10 +426,9 @@ export function CandidateDashboardPage() {
       description: "Explorez les opportunités qui correspondent le mieux à votre profil et à votre disponibilité.",
       href: "/jobs#recommended-for-you",
     };
-  }, [completion.missingItems, preferences?.job_alerts_enabled, preferences?.availability_status, profile?.cv_text, profile?.cv_last_updated_at, profileDataLoading]);
+  }, [completion.missingItems, preferences?.job_alerts_enabled, preferences?.availability_status, profile, profileDataLoading]);
 
-  const actionCompletionLevel = profileDataLoading ? 0 : profileCompletion;
-  const nextActionSuccess = actionCompletionLevel >= 80 || !completion.missingItems.length;
+  const nextActionSuccess = !profileDataLoading && hasAnalyzableCandidateCv(profile) && recommendedJobs.length > 0;
   const nextActionMode = profileDataLoading ? "loading" : nextActionSuccess ? "success" : "active";
 
   useEffect(() => {
@@ -816,11 +783,16 @@ export function CandidateDashboardPage() {
               </>
             ) : (
               <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-                {profile?.id && !(candidateDocuments.cv?.url || profile?.cv_text) ? (
+                {recommendedStatus === 'no_cv' && profile?.id ? (
                   <div>
-                    Vous n'avez pas encore téléversé de CV. Téléversez un CV pour obtenir des
-                    recommandations personnalisées.
+                    Ajoutez votre CV pour recevoir des recommandations personnalisées.
                   </div>
+                ) : recommendedStatus === 'cv_processing' ? (
+                  <div>Analyse de votre CV en cours...</div>
+                ) : recommendedStatus === 'cv_analysis_failed' ? (
+                  <div>Votre CV n'a pas pu être analysé. Veuillez le téléverser à nouveau.</div>
+                ) : recommendedStatus === 'error' ? (
+                  <div>Impossible de charger les recommandations. Réessayez.</div>
                 ) : (
                   <div>Aucune recommandation disponible pour le moment.</div>
                 )}

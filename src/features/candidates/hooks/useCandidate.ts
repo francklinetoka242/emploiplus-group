@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { CandidateProfile } from "@/features/candidates/types";
 import {
-  getCandidateProfileByUserId,
+  getCurrentCandidate,
   updateCandidateProfile,
 } from "@/features/candidates/api/profileApi";
 import { logoutCandidate } from "@/features/authentication/api/authApi";
@@ -38,7 +38,7 @@ function loadSharedProfile(userId: string, force = false) {
   const existingRequest = profileRequests.get(userId);
   if (existingRequest) return existingRequest;
 
-  const request = getCandidateProfileByUserId(userId)
+  const request = getCurrentCandidate()
     .then((nextProfile) => {
       profileCache.set(userId, nextProfile);
       notifyProfileListeners(userId);

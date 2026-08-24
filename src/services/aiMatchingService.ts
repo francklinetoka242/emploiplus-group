@@ -1,5 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { computeStructuredMatchScore, type CandidateMatchingProfile } from "@/services/matchScoreUtils";
+import { getCandidateCvAnalysisState, hasAnalyzableCandidateCv } from "@/features/candidates/api/cvApi";
+import { maskNotificationsForUser } from "@/integrations/supabase/notifications";
 
 type CandidateRow = Database["public"]["Tables"]["candidates"]["Row"];
 type JobOfferRow = Database["public"]["Tables"]["job_offers"]["Row"];
@@ -199,12 +202,7 @@ export async function updateCandidateCvText(candidateId: string, cvText: string,
 
   if (candidateMeta?.user_id) {
     try {
-      await supabase
-        .from("notifications")
-        .update({ status: "masked" })
-        .eq("user_id", candidateMeta.user_id)
-        .eq("type", "offre")
-        .eq("title", "Votre CV est ancien.");
+      await maskNotificationsForUser(candidateMeta.user_id, "offre", "Votre CV est ancien.");
     } catch (notificationError) {
       console.warn("Unable to suppress stale CV reminder after CV update:", notificationError);
     }
@@ -241,22 +239,57 @@ export async function processCandidateCvUpload(candidateId: string, file: File, 
     console.warn("Error while invalidating ai_analysis_cache for candidate", candidateId, err);
   }
 
-  // Invalidate client-side local cache as well
-  try {
-    if (typeof window !== "undefined" && window.localStorage) {
-      const key = `emploiplus-candidate-documents-${candidateId}`;
-      localStorage.removeItem(key);
-      console.log(`Removed localStorage key ${key}`);
-    }
-  } catch (err) {
-    console.warn("Failed to remove client localStorage cache for candidate", candidateId, err);
-  }
-
   return { cvText, candidate };
 }
 
 export async function clearCandidateCvText(candidateId: string): Promise<CandidateRow | null> {
   return updateCandidateCvText(candidateId, "");
+}
+
+export type RecommendedJobsStatus = "no_cv" | "cv_processing" | "cv_analysis_failed" | "success" | "no_results" | "error";
+
+export interface RecommendedJobsResult {
+  status: RecommendedJobsStatus;
+  jobs: RecommendedJob[];
+  error?: string;
+}
+
+export async function getRecommendedJobsWithStatus(
+  candidateId: string,
+  matchThreshold = 0.0,
+  matchCount = 10,
+  matchOffset = 0,
+): Promise<RecommendedJobsResult> {
+  const { data: candidateData, error: candidateError } = await supabase
+    .from("candidates")
+    .select("cv_url, cv_text, embedding_vector, cv_last_updated_at")
+    .eq("id", candidateId)
+    .maybeSingle();
+
+  if (candidateError) {
+    return { status: "error", jobs: [], error: candidateError.message };
+  }
+
+  const cvState = getCandidateCvAnalysisState(candidateData ?? null);
+  if (cvState.status === "no_cv") {
+    return { status: "no_cv", jobs: [] };
+  }
+
+  if (cvState.status === "cv_processing") {
+    return { status: "cv_processing", jobs: [] };
+  }
+
+  if (cvState.status === "cv_analysis_failed") {
+    return { status: "cv_analysis_failed", jobs: [] };
+  }
+
+  try {
+    const jobs = await getRecommendedJobs(candidateId, matchThreshold, matchCount, matchOffset);
+    return jobs.length > 0 ? { status: "success", jobs } : { status: "no_results", jobs: [] };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return { status: "error", jobs: [], error: message };
+  }
 }
 
 /**
@@ -279,92 +312,97 @@ export async function getRecommendedJobs(
 
   console.debug("[getRecommendedJobs] candidateId=", candidateId, "params=", params);
 
-  const { data, error } = await supabase.rpc("match_job_offers_for_candidate", params);
-  console.debug("[getRecommendedJobs] RPC raw response for candidate", candidateId, { data, error });
-
-  if (error) {
-    console.error("RPC match_job_offers_for_candidate failed for candidate", candidateId, error.message);
-    throw error;
+  const now = new Date().toISOString();
+  const [{ data: rpcData, error: rpcError }, { data: eligibleOffers, error: eligibleOffersError }] = await Promise.all([
+    supabase.rpc("match_job_offers_for_candidate", { ...params, match_count: 1000, match_offset: 0 }),
+    supabase
+      .from("job_offers")
+      .select("*")
+      .eq("status", "published")
+      .or(`publish_at.is.null,publish_at.lte.${now}`)
+      .or(`deadline.is.null,deadline.gte.${now}`)
+      .or(`expires_at.is.null,expires_at.gte.${now}`)
+      .order("publish_at", { ascending: false })
+      .limit(1000),
+  ]);
+  if (eligibleOffersError) throw eligibleOffersError;
+  if (rpcError) {
+    console.error("RPC matching failed:", rpcError.message, { candidateId });
+    throw rpcError;
   }
 
-  const offers = (data ?? []) as RecommendedJob[];
-  console.debug("[getRecommendedJobs] RPC match_job_offers_for_candidate returned", offers.length, "offers for candidate", candidateId);
+  const rpcOffers = (rpcData ?? []) as RecommendedJob[];
+  const rpcScoreById = new Map(rpcOffers.map((offer) => [offer.id, Number((offer as any).score)]));
+  // SQL performs eligibility filtering only; the hash vector cannot exclude an offer.
+  const offers = ((eligibleOffers ?? []) as JobOfferRow[]).map((offer) => ({
+    ...offer,
+    score: rpcScoreById.get(offer.id) ?? 0,
+  })) as RecommendedJob[];
+  console.debug("[getRecommendedJobs] Eligible offers evaluated structurally", offers.length, "for candidate", candidateId);
 
-  // Fetch candidate cv_text to validate extracted text
-  const { data: candidateData, error: candError } = await supabase
-    .from("candidates")
-    .select("id, cv_text")
-    .eq("id", candidateId)
-    .single();
-
-  if (candError) {
-    console.warn("Unable to fetch candidate cv_text for debug:", candError.message);
+  const [
+    { data: candidateData, error: candidateError },
+    { data: skills, error: skillsError },
+    { data: experiences, error: experiencesError },
+    { data: education, error: educationError },
+    { data: languages, error: languagesError },
+    { data: preferences, error: preferencesError },
+  ] = await Promise.all([
+    supabase.from("candidates").select("headline, bio, location_city, location_country, cv_url, cv_text, embedding_vector").eq("id", candidateId).single(),
+    supabase.from("candidate_skills").select("skill_name, proficiency_level").eq("candidate_id", candidateId),
+    supabase.from("candidate_experience").select("job_title, description, start_date, end_date, is_current").eq("candidate_id", candidateId),
+    supabase.from("candidate_education").select("degree, field_of_study").eq("candidate_id", candidateId),
+    supabase.from("candidate_languages").select("language_name, proficiency_level").eq("candidate_id", candidateId),
+    supabase.from("candidate_preferences").select("contract_types, work_types, salary_min, salary_max, mobility_modes").eq("candidate_id", candidateId).maybeSingle(),
+  ]);
+  if (candidateError) throw candidateError;
+  if (skillsError) throw skillsError;
+  if (experiencesError) throw experiencesError;
+  if (educationError) throw educationError;
+  if (languagesError) throw languagesError;
+  if (preferencesError) throw preferencesError;
+  if (!hasAnalyzableCandidateCv(candidateData)) {
+    throw new Error("Candidate CV is no longer analyzable; reload the profile before matching.");
   }
 
-  const cvText = (candidateData && (candidateData as CandidateRow).cv_text) ?? "";
-  console.debug("[getRecommendedJobs] Texte extrait du CV (length):", typeof cvText === 'string' ? cvText.length : 0);
+  const profile: CandidateMatchingProfile = {
+    title: candidateData.headline,
+    summary: candidateData.bio,
+    locationCity: candidateData.location_city,
+    locationCountry: candidateData.location_country,
+    cvText: candidateData.cv_text,
+    skills: (skills ?? []).map((item) => ({ name: item.skill_name, level: item.proficiency_level })),
+    experiences: (experiences ?? []).map((item) => ({ title: item.job_title, description: item.description, startDate: item.start_date, endDate: item.end_date, isCurrent: item.is_current })),
+    education: (education ?? []).map((item) => ({ degree: item.degree, field: item.field_of_study })),
+    languages: (languages ?? []).map((item) => ({ name: item.language_name, level: item.proficiency_level })),
+    preferences: preferences ? { contractTypes: preferences.contract_types, workTypes: preferences.work_types, salaryMin: preferences.salary_min, salaryMax: preferences.salary_max, mobilityModes: preferences.mobility_modes } : null,
+  };
 
-  if (!cvText || cvText.trim().length === 0) {
-    console.warn("[getRecommendedJobs] Aucun texte de CV disponible pour le candidat", candidateId, "- retour des résultats RPC sans fallback local");
+  const uniqueOffers = new Map<string, RecommendedJob>();
+  for (const offer of offers) {
+    const fullOffer = offer as JobOfferRow;
+    const rpcScore = Number((offer as any).score);
+    const result = computeStructuredMatchScore(profile, fullOffer, Number.isFinite(rpcScore) ? rpcScore / 100 : 0);
+    uniqueOffers.set(offer.id, { ...offer, ...fullOffer, score: result.score });
   }
 
-  // If RPC returned identical or missing scores, compute a dynamic fallback per-offer
-  const scores = offers.map((o) => (o as any).score ?? (o as any).match_score ?? null);
-  const allSame = scores.length > 0 && scores.every((s) => s === scores[0] && s !== null);
-
-  if (allSame || scores.some((s) => s === null)) {
-    // compute fallback scores locally and attach to offers
-    if (!cvText || cvText.trim().length === 0) {
-      console.warn("[getRecommendedJobs] Fallback local non exécuté car le CV est manquant pour le candidat", candidateId);
-    } else {
-      for (const offer of offers) {
-        try {
-          const jobOffer: JobOfferRow = {
-            id: offer.id,
-            title: (offer.title as string) ?? "",
-            company: (offer.company as string) ?? "",
-            description: (offer.description as string) ?? "",
-            requirements: (offer.requirements as string) ?? "",
-            location_city: (offer.location_city as string) ?? "",
-            contract_type: (offer.contract_type as string) ?? "",
-            // fill other optional fields with sensible defaults
-            created_at: (offer as any).created_at ?? null,
-            salary_min: (offer as any).salary_min ?? null,
-            salary_max: (offer as any).salary_max ?? null,
-            // @ts-ignore - not all fields are required for this local match calculation
-          } as unknown as JobOfferRow;
-
-          const { score, details } = computeMatchScore(cvText, jobOffer);
-          (offer as any).score = score;
-          console.log(`[Matching] Offre: ${jobOffer.title}, Score Final: ${score}, Détails: ${JSON.stringify(details)}`);
-        } catch (innerErr) {
-          console.warn("Fallback scoring failed for offer", offer.id, innerErr);
-        }
-      }
-    }
-  } else {
-    // Log existing scores for debugging
-    for (const offer of offers) {
-      const score = (offer as any).score ?? (offer as any).match_score ?? null;
-      console.log(`[Matching] Offre: ${offer.title ?? offer.id}, Score Final: ${score}, Détails: {}`);
-    }
-  }
-
-  return offers;
+  return [...uniqueOffers.values()]
+    .sort((left, right) => right.score - left.score)
+    .slice(Math.max(0, matchOffset), Math.max(0, matchOffset) + matchCount);
 }
 
 /**
  * Compute a lightweight fallback match score between CV text and a job offer.
  * Returns a score 0-100 and details for debugging.
  */
-import { computeMatchScoreFromText } from "@/services/matchScoreUtils";
-
-export function computeMatchScore(cvText: string, jobOffer: JobOfferRow): { score: number; details: Record<string, any> } {
-  const result = computeMatchScoreFromText(cvText, {
-    title: jobOffer.title,
-    description: jobOffer.description,
-    requirements: jobOffer.requirements,
-  });
+export function computeMatchScore(
+  cvText: string,
+  jobOffer: JobOfferRow,
+  profile?: CandidateMatchingProfile,
+): { score: number; details: Record<string, any> } {
+  const result = profile
+    ? computeStructuredMatchScore(profile, jobOffer)
+    : computeStructuredMatchScore({ cvText, skills: [], experiences: [], education: [], languages: [] }, jobOffer);
 
   return {
     score: result.score,

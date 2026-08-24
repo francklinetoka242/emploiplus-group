@@ -70,6 +70,7 @@ export function JobOfferDetailPage() {
   const [analysisLoading, setAnalysisLoading] = React.useState(false);
   const [analysisError, setAnalysisError] = React.useState<string | null>(null);
   const [copiedLetter, setCopiedLetter] = React.useState(false);
+  const [isLetterExpanded, setIsLetterExpanded] = React.useState(false);
   const [savedOfferId, setSavedOfferId] = React.useState<string | null>(null);
   const [savedOfferState, setSavedOfferState] = React.useState(false);
   const [savingSavedOffer, setSavingSavedOffer] = React.useState(false);
@@ -353,7 +354,9 @@ export function JobOfferDetailPage() {
     }
     const applyPath = `/candidate/jobs/${job.slug}/apply`;
     if (profile?.id) {
-      navigate(applyPath);
+      navigate(applyPath, {
+        state: { coverLetter: analysis?.cover_letter_draft || undefined },
+      });
       return;
     }
     navigate("/candidate/login", {
@@ -415,6 +418,7 @@ export function JobOfferDetailPage() {
     setAnalysisLoading(true);
     setAnalysisError(null);
     setCopiedLetter(false);
+    setIsLetterExpanded(false);
 
     try {
       const result = await analyzeCandidateForJob(profile.id, job.id);
@@ -455,7 +459,7 @@ export function JobOfferDetailPage() {
           modifiedTime={job?.updated_at || undefined}
           structuredData={seoStructuredData}
         />
-        <section className="container-page pb-20 md:pb-28">
+        <section className="container-page mt-0 pt-0 pb-20 md:pb-28">
           <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
             <div className="min-w-0 space-y-6">
               <div className="overflow-hidden border-b border-border/70 bg-gradient-to-br from-background via-card to-primary/5 p-8">
@@ -611,7 +615,7 @@ export function JobOfferDetailPage() {
         ]}
         structuredData={seoStructuredData}
       />
-      <section className="container-page pb-20 md:pb-28">
+      <section className="container-page mt-0 pt-0 pb-20 md:pb-28">
         <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
           <div className="min-w-0 space-y-6">
             <div className="overflow-hidden border-b border-border/70 bg-gradient-to-br from-background via-card to-primary/5 p-8">
@@ -810,7 +814,7 @@ export function JobOfferDetailPage() {
             ) : null}
           </div>
 
-          <aside className="min-w-0 space-y-6">
+          <aside className="min-w-0 space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:overscroll-contain">
             <div className="rounded-xl border border-border/70 bg-card p-7">
               <h3 className="font-display text-xl font-semibold text-foreground">{applyTitle}</h3>
               <p className="mt-2 text-sm leading-7 text-muted-foreground">{applyDescription}</p>
@@ -1002,9 +1006,29 @@ export function JobOfferDetailPage() {
                           {copiedLetter ? "Copié !" : "Copier la lettre"}
                         </Button>
                       </div>
-                      <p className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground">
+                      <p
+                        className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground"
+                        style={
+                          isLetterExpanded
+                            ? undefined
+                            : {
+                                display: "-webkit-box",
+                                WebkitBoxOrient: "vertical",
+                                WebkitLineClamp: 8,
+                                overflow: "hidden",
+                              }
+                        }
+                      >
                         {analysis.cover_letter_draft}
                       </p>
+                      <button
+                        type="button"
+                        className="mt-2 text-sm font-semibold text-primary hover:underline"
+                        aria-expanded={isLetterExpanded}
+                        onClick={() => setIsLetterExpanded((expanded) => !expanded)}
+                      >
+                        {isLetterExpanded ? "Voir moins" : "Voir plus"}
+                      </button>
                     </div>
                   </div>
                 ) : null}

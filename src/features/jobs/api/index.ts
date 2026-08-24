@@ -1,4 +1,4 @@
-export { jobService, jobsApi } from "./jobsApi";
+export { jobService, jobsApi, isPublishedAndEligibleOffer, isPublishedAndVisibleOffer } from "./jobsApi";
 export {
   clearSearchHistory,
   deleteSavedJobSearch,

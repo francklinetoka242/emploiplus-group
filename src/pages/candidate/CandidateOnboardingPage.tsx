@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useCandidate } from "@/features/candidates/hooks/useCandidate";
+import {
+  completeCandidateOnboarding,
+  getOrInitializeCandidateOnboarding,
+  updateCandidateOnboarding,
+} from "@/features/candidates/api/candidateOnboardingApi";
 import image1 from "@/assets/ImgOnboarding/1.svg";
 import image2 from "@/assets/ImgOnboarding/2.svg";
 import image3 from "@/assets/ImgOnboarding/3.svg";
 import image4 from "@/assets/ImgOnboarding/4.svg";
 import image5 from "@/assets/ImgOnboarding/5.svg";
-
-const CANDIDATE_ONBOARDING_PENDING_KEY = "emploiplus_candidate_onboarding_pending";
-const CANDIDATE_ONBOARDING_COMPLETED_KEY = "emploiplus_candidate_onboarding_completed";
 
 const onboardingImages = [image1, image2, image3, image4, image5];
 
@@ -73,33 +76,67 @@ const onboardingSteps = [
 
 export function CandidateOnboardingPage() {
   const navigate = useNavigate();
+  const { profile, loading: profileLoading } = useCandidate();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [onboardingReady, setOnboardingReady] = useState(false);
 
   useEffect(() => {
-    const hasPendingOnboarding = window.localStorage.getItem(CANDIDATE_ONBOARDING_PENDING_KEY) === "true";
-    if (!hasPendingOnboarding) {
-      navigate("/candidate/dashboard", { replace: true });
-      return;
-    }
+    if (profileLoading || !profile?.id) return;
 
-    // Consume the one-time onboarding as soon as it is displayed.
-    window.localStorage.removeItem(CANDIDATE_ONBOARDING_PENDING_KEY);
-    window.localStorage.setItem(CANDIDATE_ONBOARDING_COMPLETED_KEY, "true");
+    let isMounted = true;
+    const loadOnboarding = async () => {
+      try {
+        const onboarding = await getOrInitializeCandidateOnboarding(profile.id);
+        if (onboarding.completed) {
+          navigate("/candidate/dashboard", { replace: true });
+          return;
+        }
+
+        if (isMounted) {
+          setActiveIndex(Math.min(onboarding.current_step, onboardingImages.length - 1));
+          setOnboardingReady(true);
+        }
+      } catch (error) {
+        console.error("Candidate onboarding state loading failed:", error);
+      }
+    };
+
+    void loadOnboarding();
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate, profile?.id, profileLoading]);
+
+  useEffect(() => {
+    if (!onboardingReady || !profile?.id) return;
 
     const intervalId = window.setInterval(() => {
       setActiveIndex((previousIndex) => (previousIndex + 1) % onboardingImages.length);
     }, 2800);
 
     return () => window.clearInterval(intervalId);
-  }, [navigate]);
+  }, [onboardingReady, profile?.id]);
+
+  useEffect(() => {
+    if (!onboardingReady || !profile?.id) return;
+    void updateCandidateOnboarding(profile.id, { current_step: activeIndex }).catch((error) => {
+      console.error("Candidate onboarding progress update failed:", error);
+    });
+  }, [activeIndex, onboardingReady, profile?.id]);
 
   const currentStep = onboardingSteps[activeIndex];
 
-  const handleStart = () => {
-    window.localStorage.removeItem(CANDIDATE_ONBOARDING_PENDING_KEY);
-    window.localStorage.setItem(CANDIDATE_ONBOARDING_COMPLETED_KEY, "true");
-    navigate("/candidate/dashboard", { replace: true });
+  const handleStart = async () => {
+    if (!profile?.id) return;
+    try {
+      await completeCandidateOnboarding(profile.id);
+      navigate("/candidate/dashboard", { replace: true });
+    } catch (error) {
+      console.error("Candidate onboarding completion failed:", error);
+    }
   };
+
+  if (!onboardingReady) return null;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#eef1f5] px-4 py-8 sm:px-6 lg:px-8">

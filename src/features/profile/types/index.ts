@@ -20,7 +20,10 @@ export type ProfileTabValue =
   | "completion";
 
 export interface CompletionItem {
+  id: string;
   label: string;
+  route: string;
+  weight: number;
   isCompleted: boolean;
 }
 

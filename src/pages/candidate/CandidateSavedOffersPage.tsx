@@ -31,7 +31,7 @@ import {
   unsaveJobOffer,
 } from "@/features/candidates/api/savedOffersApi";
 import { getCandidateApplications } from "@/features/candidates/api/applicationsApi";
-import { createUniqueNotification } from "@/integrations/supabase/notifications";
+import { notifySavedOfferExpirations } from "@/integrations/supabase/notifications";
 
 interface SavedOffer {
   id: string;
@@ -110,30 +110,7 @@ export function CandidateSavedOffersPage() {
         }));
 
         setSavedOffers(hydratedOffers);
-
-        const expiringOffers = hydratedOffers.filter((offer) => {
-          const deadlineValue = offer.job_offers?.deadline ?? offer.job_offers?.expires_at ?? null;
-          if (!deadlineValue) return false;
-          const expiryDate = new Date(deadlineValue);
-          if (Number.isNaN(expiryDate.getTime())) return false;
-          const diffMs = expiryDate.getTime() - Date.now();
-          const nowPlusSevenDays = 7 * 24 * 60 * 60 * 1000;
-          return diffMs > 0 && diffMs <= nowPlusSevenDays;
-        });
-
-        await Promise.all(
-          expiringOffers.map((offer) =>
-            createUniqueNotification({
-              title: `L’offre « ${offer.job_offers.title} » expire bientôt.`,
-              content: "Pensez à postuler avant sa clôture.",
-              type: "offre",
-              user_id: profile.user_id,
-              status: "active",
-              is_read: false,
-              link: `/jobs/${offer.job_offers.slug}`,
-            }),
-          ),
-        );
+        void notifySavedOfferExpirations();
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Erreur lors du chargement des offres enregistrées",

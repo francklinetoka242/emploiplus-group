@@ -3,6 +3,7 @@ import { useCandidate } from "@/hooks/useCandidate";
 import { useCandidateDocuments } from "@/features/candidates/hooks/useCandidateDocuments";
 import { DocumentsSection } from "@/features/profile/components/sections/DocumentsSection";
 import { usePageSEO } from "@/features/seo";
+import { deleteCandidateCV } from "@/features/candidates/api/documentsApi";
 
 export function CandidateDocumentsPage() {
   const { profile, loading } = useCandidate();
@@ -23,6 +24,10 @@ export function CandidateDocumentsPage() {
       return <p className="text-sm text-slate-500">Veuillez vous reconnecter pour accéder à vos documents.</p>;
     }
 
+    const handleDeleteCv = async () => {
+      await deleteCandidateCV(profile.id);
+    };
+
     return (
       <DocumentsSection
         cv={cv}
@@ -31,6 +36,7 @@ export function CandidateDocumentsPage() {
         candidateId={profile.id}
         serverCvUrl={profile?.cv_url}
         onDeleteDocument={deleteDocument}
+        onDeleteCv={handleDeleteCv}
         onAddDocument={addDocument}
       />
     );

@@ -6,7 +6,7 @@ export const BLOG_IMAGES_BUCKET = import.meta.env.VITE_SUPABASE_BLOG_BUCKET || S
 export const CANDIDATE_DOCUMENTS_BUCKET =
   import.meta.env.VITE_SUPABASE_CANDIDATE_BUCKET ||
   import.meta.env.VITE_SUPABASE_STORAGE_BUCKET ||
-  "public";
+  "candidat-doc";
 export const MAX_DOCUMENT_SIZE_BYTES = 2 * 1024 * 1024;
 export const ALLOWED_DOCUMENT_MIME_TYPES = ["application/pdf"];
 export const ALLOWED_IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];

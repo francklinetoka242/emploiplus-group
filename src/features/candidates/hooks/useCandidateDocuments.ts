@@ -1,31 +1,11 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-
-export interface CandidateDocument {
-  id: string;
-  type: "motivation" | "diploma" | "certificate" | "attestation" | "portfolio" | "other" | "recepisse";
-  name: string;
-  displayName: string;
-  date: string;
-  size?: string;
-  url: string;
-  customType?: string;
-}
-
-export interface CandidateCVState {
-  id: string;
-  name: string;
-  displayName: string;
-  date: string;
-  size?: string;
-  url: string;
-}
+import { getCandidateDocuments, type CandidateCVState, type CandidateDocument } from "@/features/candidates/api/documentsApi";
+export type { CandidateCVState, CandidateDocument } from "@/features/candidates/api/documentsApi";
 
 export function useCandidateDocuments(profileId?: string | null) {
   const [cv, setCv] = useState<CandidateCVState | null>(null);
   const [documents, setDocuments] = useState<CandidateDocument[]>([]);
   const [loading, setLoading] = useState(false);
-  const [hasRestoredDocuments, setHasRestoredDocuments] = useState(false);
 
   const addDocument = (document: CandidateDocument | CandidateCVState, isCV = false) => {
     if (isCV) {
@@ -42,10 +22,6 @@ export function useCandidateDocuments(profileId?: string | null) {
   };
 
   useEffect(() => {
-    setHasRestoredDocuments(false);
-  }, [profileId]);
-
-  useEffect(() => {
     if (!profileId) return;
 
     let isMounted = true;
@@ -53,29 +29,11 @@ export function useCandidateDocuments(profileId?: string | null) {
     const hydrateFromServer = async () => {
       try {
         setLoading(true);
-        const { data } = await supabase
-          .from("candidates")
-          .select("cv_url, cv_last_updated_at")
-          .eq("id", profileId)
-          .maybeSingle();
-
-        const serverCv = data?.cv_url
-          ? {
-              id: `cv-server-${profileId}`,
-              name: "CV",
-              displayName: "Mon CV",
-              date: data.cv_last_updated_at ?? new Date().toISOString(),
-              size: "",
-              url: data.cv_url,
-            }
-          : null;
-
-        const raw = localStorage.getItem(`emploiplus-candidate-documents-${profileId}`);
-        const parsed = raw ? (JSON.parse(raw) as { cv?: CandidateCVState; documents?: CandidateDocument[] }) : null;
+        const result = await getCandidateDocuments(profileId);
 
         if (!isMounted) return;
-        setCv(serverCv ?? parsed?.cv ?? null);
-        setDocuments(parsed?.documents ?? []);
+        setCv(result.cv);
+        setDocuments(result.documents);
       } catch (error) {
         console.error("Unable to restore candidate documents", error);
         if (isMounted) {
@@ -85,7 +43,6 @@ export function useCandidateDocuments(profileId?: string | null) {
       } finally {
         if (isMounted) {
           setLoading(false);
-          setHasRestoredDocuments(true);
         }
       }
     };
@@ -95,17 +52,6 @@ export function useCandidateDocuments(profileId?: string | null) {
       isMounted = false;
     };
   }, [profileId]);
-
-  useEffect(() => {
-    if (!profileId || !hasRestoredDocuments) return;
-    localStorage.setItem(`emploiplus-candidate-documents-${profileId}`, JSON.stringify({ cv, documents }));
-    if (cv?.url) {
-      void supabase
-        .from("candidates")
-        .update({ cv_url: cv.url, cv_last_updated_at: new Date().toISOString() })
-        .eq("id", profileId);
-    }
-  }, [profileId, cv, documents, hasRestoredDocuments]);
 
   return { cv, documents, setCv, setDocuments, loading, addDocument, deleteDocument };
 }

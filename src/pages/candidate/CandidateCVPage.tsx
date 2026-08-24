@@ -16,7 +16,7 @@ import {
   CANDIDATE_DOCUMENTS_BUCKET,
 } from "@/services/storageService";
 import { supabase } from "@/integrations/supabase/client";
-import { deleteCandidateCV, deleteCandidateDocument, getCandidateDocuments, saveCandidateDocuments, uploadAndProcessCandidateCV, uploadCandidateDocument, type CandidateCVState, type CandidateDocument } from "@/features/candidates/api/documentsApi";
+import { deleteCandidateCV, deleteCandidateDocument, getCandidateDocuments, uploadAndProcessCandidateCV, uploadCandidateDocument, type CandidateCVState, type CandidateDocument } from "@/features/candidates/api/documentsApi";
 
 const documentTypes = {
   motivation: { label: "Lettre de motivation" },
@@ -124,11 +124,6 @@ export function CandidateCVPage() {
     }
   }, [location.hash, location.search]);
 
-  useEffect(() => {
-    if (!profile?.id || !hasRestoredDocuments) return;
-    void saveCandidateDocuments(profile.id, { cv, documents });
-  }, [profile?.id, cv, documents, hasRestoredDocuments]);
-
   const resetDocumentDialog = () => {
     setSelectedType("motivation");
     setOtherLabel("");
@@ -170,7 +165,6 @@ export function CandidateCVPage() {
       const newCv = result.cv;
 
       setCv(newCv);
-      await saveCandidateDocuments(profile.id, { cv: newCv, documents });
 
       if ((result as any).extraction) {
         await refetch?.();
@@ -249,7 +243,6 @@ export function CandidateCVPage() {
 
     try {
       await deleteCandidateCV(profile.id);
-      await clearCandidateCvText(profile.id);
       await refetch?.();
       setCv(null);
       setFeedbackMessage("Votre CV a été supprimé et le texte du CV a été effacé de la base.");

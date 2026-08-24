@@ -17,6 +17,7 @@ import type { Permission } from "@/features/authentication/permissions/permissio
 import { getPermissionsForRole } from "@/features/authentication/permissions/rolePermissions";
 import { diagnosticLogger } from "@/services/diagnosticLogger";
 import { sendSessionToNative } from "@/lib/sendSessionToNative";
+import { getCandidateProfileByUserId } from "@/features/candidates/api/profileApi";
 
 /**
  * Core authentication state interface.
@@ -145,12 +146,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const { data, error } = await supabase
-          .from("candidates")
-          .select("id")
-          .eq("user_id", session.user.id)
-          .limit(1)
-          .maybeSingle();
+        const { data, error } = await getCandidateProfileByUserId(session.user.id)
+          .then((profile) => ({ data: profile, error: null }))
+          .catch((candidateError) => ({ data: null, error: candidateError }));
 
         if (!isMounted) {
           return;

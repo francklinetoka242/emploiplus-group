@@ -5,4 +5,6 @@ export * from "./skillsApi";
 export * from "./languagesApi";
 export * from "./preferencesApi";
 export * from "./documentsApi";
+export * from "./cvApi";
+export * from "./candidateOnboardingApi";
 export * from "./types";

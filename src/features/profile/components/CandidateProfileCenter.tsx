@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useCandidate } from "@/features/candidates/hooks/useCandidate";
 import { useCandidateExperiences } from "../hooks/useCandidateExperiences";
@@ -26,7 +26,7 @@ import type { ProfileTabValue } from "../types";
 export function CandidateProfileCenter() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get("tab") as ProfileTabValue | null) ?? "profile";
-  const { profile, loading: profileLoading, error: profileError, updateProfile } = useCandidate();
+  const { profile, loading: profileLoading, error: profileError, updateProfile, refetch } = useCandidate();
   const { experiences, loading: experiencesLoading, createExperience, updateExperience, deleteExperience } = useCandidateExperiences(profile?.id);
   const { educations, loading: educationsLoading, createEducation, updateEducation, deleteEducation } = useCandidateEducation(profile?.id);
   const { skills, loading: skillsLoading, createSkill, deleteSkill } = useCandidateSkills(profile?.id);
@@ -37,8 +37,19 @@ export function CandidateProfileCenter() {
   const handleDeleteCv = async () => {
     if (profile?.id) {
       await deleteCandidateCV(profile.id);
+      await refetch();
     }
   };
+
+  useEffect(() => {
+    const handleCvUploaded = (event: Event) => {
+      const candidateId = (event as CustomEvent<{ candidateId?: string }>).detail?.candidateId;
+      if (candidateId === profile?.id) void refetch();
+    };
+
+    window.addEventListener("cv-uploaded", handleCvUploaded);
+    return () => window.removeEventListener("cv-uploaded", handleCvUploaded);
+  }, [profile?.id, refetch]);
 
   const [currentTab, setCurrentTab] = useState<ProfileTabValue>(activeTab);
 

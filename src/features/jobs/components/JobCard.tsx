@@ -102,7 +102,7 @@ export function JobCard({
           <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           {typeof matchScore === "number" ? (
             <span className="inline-flex items-center rounded-full border border-secondary/20 bg-secondary/10 px-2.5 py-1 text-xs font-semibold text-secondary">
-              {Math.round(Math.max(0, Math.min(1, matchScore)) * 100)}% de match
+              {Math.round(Math.max(0, Math.min(100, matchScore)))}% de match
             </span>
           ) : null}
           {contractLabel ? (
