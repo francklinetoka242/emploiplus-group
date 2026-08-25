@@ -198,7 +198,16 @@ type CandidateContextResult = {
   permissionUpdatedAt: string | null;
 };
 
-const permissionForIntent: Partial<Record<MaeliseIntent, string>> = {
+type PermissionCategory =
+  | "identity_contact"
+  | "cv"
+  | "career_profile"
+  | "preferences"
+  | "applications"
+  | "saved_offers_searches"
+  | "alerts";
+
+const permissionForIntent: Partial<Record<MaeliseIntent, PermissionCategory>> = {
   offres_recommandees: "preferences",
   statut_candidature: "applications",
   infos_compte: "identity_contact",
@@ -242,8 +251,12 @@ async function candidateContextForIntent(
     )
     .eq("candidate_id", candidateId)
     .maybeSingle();
-  const permissionUpdatedAt = (permissions?.updated_at as string | undefined) ?? null;
-  if (permissions?.[permission] !== true) {
+  const permissionRow = permissions as
+    | (Record<PermissionCategory, unknown> & { updated_at?: unknown })
+    | null;
+  const permissionUpdatedAt =
+    typeof permissionRow?.updated_at === "string" ? permissionRow.updated_at : null;
+  if (permissionRow?.[permission] !== true) {
     return {
       data: null,
       unavailable: [`La catégorie de données « ${permission} » n'est pas accessible.`],
@@ -568,7 +581,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   );
   const candidateResult = user
     ? await candidateContextForIntent(supabase, user.id, intent)
-    : { data: null, unavailable: [], permissionUpdatedAt: null };
+    : ({
+        data: null,
+        unavailable: [],
+        unavailableCategories: [],
+        permissionUpdatedAt: null,
+      } satisfies CandidateContextResult);
   const publicData = await publicContext(
     supabase,
     message,
