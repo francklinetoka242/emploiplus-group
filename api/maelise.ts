@@ -12,7 +12,7 @@ import {
   type MaeliseIntent,
   type MaeliseResponse,
   type MaeliseSource,
-} from "./lib/maelise.js";
+} from "../server/maelise.js";
 
 const MAX_MESSAGE_LENGTH = 550;
 const MAX_HISTORY_MESSAGES = 4;

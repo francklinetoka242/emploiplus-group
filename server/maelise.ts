@@ -53,52 +53,16 @@ const PROHIBITED_CONTENT_PATTERN =
 export function classifyIntent(message: string): MaeliseIntent {
   const normalized = message.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   if (PROHIBITED_CONTENT_PATTERN.test(normalized)) return "contenu_prohibe";
-  if (
-    /\b(offre|offres)\s+(sauvegard|enregistr|mises? de cote)|\b(favoris|recherche enregistr|recherche sauvegard)/i.test(
-      normalized,
-    )
-  )
-    return "offres_sauvegardees";
-  if (/\b(candidature|candidatures|postul|statut|recruteur|entretien)\b/i.test(normalized))
-    return "statut_candidature";
+  if (/\b(offre|offres)\s+(sauvegard|enregistr|mises? de cote)|\b(favoris|recherche enregistr|recherche sauvegard)/i.test(normalized)) return "offres_sauvegardees";
+  if (/\b(candidature|candidatures|postul|statut|recruteur|entretien)\b/i.test(normalized)) return "statut_candidature";
   if (/\b(cv|curriculum|resume|lettre de motivation)\b/i.test(normalized)) return "cv";
-  if (
-    /\b(experience|experiences|diplome|diplomes|formation|formations|competence|competences|langue|langues|parcours professionnel|langue parle)\b/i.test(
-      normalized,
-    )
-  )
-    return "parcours_professionnel";
-  if (
-    /\b(preference|preferences|contrat|teletravail|mobilite|salaire|disponibilite|recherche)\b/i.test(
-      normalized,
-    )
-  )
-    return "preferences_recherche";
+  if (/\b(experience|experiences|diplome|diplomes|formation|formations|competence|competences|langue|langues|parcours professionnel|langue parle)\b/i.test(normalized)) return "parcours_professionnel";
+  if (/\b(preference|preferences|contrat|teletravail|mobilite|salaire|disponibilite|recherche)\b/i.test(normalized)) return "preferences_recherche";
   if (/\b(alerte|alertes|notification|notifications)\b/i.test(normalized)) return "alertes";
-  if (
-    /\b(compte|connexion|inscription|mot de passe|profil|email|telephone|donnees personnelles)\b/i.test(
-      normalized,
-    )
-  )
-    return "infos_compte";
-  if (
-    /\b(emploiplus|service|services|plateforme|aide|fonctionnalite|fonctionnement)\b/i.test(
-      normalized,
-    )
-  )
-    return "services_emploiplus";
-  if (
-    /\b(offre|offres|emploi|emplois|poste|postes|job|jobs|recommand|matching|correspond|profil professionnel)\b/i.test(
-      normalized,
-    )
-  )
-    return "offres_recommandees";
-  if (
-    /\b(bonjour|salut|bonsoir|coucou|hello|merci|au revoir|a bientot|a bientôt|ca va|comment vas tu|comment va tu|comment ca va|comment ça va|qui es tu|qui tu es|qui t['’]a (cree|créé|concu|conçu)|es tu une ia|es tu un robot|comment tu t['’]appelles|comment t['’]appelles|a quoi tu sers|que peux tu faire|que peux-tu faire|presente toi|présente toi)\b/i.test(
-      normalized,
-    )
-  )
-    return "conversation_generale";
+  if (/\b(compte|connexion|inscription|mot de passe|profil|email|telephone|donnees personnelles)\b/i.test(normalized)) return "infos_compte";
+  if (/\b(emploiplus|service|services|plateforme|aide|fonctionnalite|fonctionnement)\b/i.test(normalized)) return "services_emploiplus";
+  if (/\b(offre|offres|emploi|emplois|poste|postes|job|jobs|recommand|matching|correspond|profil professionnel)\b/i.test(normalized)) return "offres_recommandees";
+  if (/\b(bonjour|salut|bonsoir|coucou|hello|merci|au revoir|a bientot|a bientôt|ca va|comment vas tu|comment va tu|comment ca va|comment ça va|qui es tu|qui tu es|qui t['’]a (cree|créé|concu|conçu)|es tu une ia|es tu un robot|comment tu t['’]appelles|comment t['’]appelles|a quoi tu sers|que peux tu faire|que peux-tu faire|presente toi|présente toi)\b/i.test(normalized)) return "conversation_generale";
   return "conversation_generale";
 }
 
@@ -108,14 +72,8 @@ export interface MaeliseSummaryInput {
 }
 
 /** Builds a short local session summary from only the currently authorized fields. */
-export function generateSessionSummary({
-  candidateName,
-  availabilityStatus,
-}: MaeliseSummaryInput): string {
-  const lines = [
-    candidateName ? `Candidat : ${candidateName}` : null,
-    availabilityStatus ? `Statut de recherche : ${availabilityStatus}` : null,
-  ].filter((line): line is string => Boolean(line));
+export function generateSessionSummary({ candidateName, availabilityStatus }: MaeliseSummaryInput): string {
+  const lines = [candidateName ? `Candidat : ${candidateName}` : null, availabilityStatus ? `Statut de recherche : ${availabilityStatus}` : null].filter((line): line is string => Boolean(line));
   return lines.length > 0 ? lines.slice(0, 2).join("\n") : "Aucune donnée candidat autorisée.";
 }
 

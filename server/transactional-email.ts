@@ -47,53 +47,20 @@ export function renderTransactionalEmail(options: TransactionalEmailOptions) {
                 <tr>
                   <td style="background-color:${brandColor};padding:28px 32px;text-align:center;">
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-                      <tr>
-                        <td align="center" style="padding-bottom:10px;">
-                          <img src="${options.logoUrl}" alt="${fromName}" width="56" height="56" style="display:block;margin:0 auto;max-width:56px;height:auto;border-radius:12px;background-color:#ffffff;padding:4px;" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td align="center" style="font-size:24px;line-height:1.3;font-weight:700;color:#ffffff;font-family:Inter, Segoe UI, Arial, sans-serif;">
-                          ${fromName}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td align="center" style="font-size:14px;line-height:1.5;color:#e9ecff;padding-top:6px;font-family:Inter, Segoe UI, Arial, sans-serif;">
-                          Email transactionnel
-                        </td>
-                      </tr>
+                      <tr><td align="center" style="padding-bottom:10px;"><img src="${options.logoUrl}" alt="${fromName}" width="56" height="56" style="display:block;margin:0 auto;max-width:56px;height:auto;border-radius:12px;background-color:#ffffff;padding:4px;" /></td></tr>
+                      <tr><td align="center" style="font-size:24px;line-height:1.3;font-weight:700;color:#ffffff;font-family:Inter, Segoe UI, Arial, sans-serif;">${fromName}</td></tr>
+                      <tr><td align="center" style="font-size:14px;line-height:1.5;color:#e9ecff;padding-top:6px;font-family:Inter, Segoe UI, Arial, sans-serif;">Email transactionnel</td></tr>
                     </table>
                   </td>
                 </tr>
                 <tr>
                   <td style="padding:32px 32px 20px 32px;background-color:#ffffff;">
-                    <p style="margin:0 0 14px;font-size:18px;line-height:1.5;color:#0f172a;font-family:Inter, Segoe UI, Arial, sans-serif;">
-                      Bonjour,
-                    </p>
-                    <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">
-                      <strong style="color:${brandColor};">${options.title}</strong>
-                    </p>
-                    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">
-                      ${options.intro}
-                    </p>
+                    <p style="margin:0 0 14px;font-size:18px;line-height:1.5;color:#0f172a;font-family:Inter, Segoe UI, Arial, sans-serif;">Bonjour,</p>
+                    <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;"><strong style="color:${brandColor};">${options.title}</strong></p>
+                    <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">${options.intro}</p>
                     ${bodySection}
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0 24px 0;">
-                      <tr>
-                        <td align="center" bgcolor="${accentColor}" style="border-radius:10px;">
-                          <a href="${options.ctaUrl}" target="_blank" rel="noreferrer" style="display:inline-block;padding:14px 30px;font-size:15px;line-height:1.2;font-weight:700;color:${brandColor};text-decoration:none;font-family:Inter, Segoe UI, Arial, sans-serif;">
-                            ${options.ctaLabel}
-                          </a>
-                        </td>
-                      </tr>
-                    </table>
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 18px 0;border-top:1px solid #e5e7eb;padding-top:16px;">
-                      <tr>
-                        <td style="font-size:14px;line-height:1.7;color:#334155;font-family:Inter, Segoe UI, Arial, sans-serif;">
-                          <div style="margin-bottom:8px;">✓ Si vous n'êtes pas à l'origine de cette demande, ignorez simplement ce message.</div>
-                          <div>✓ Pour toute aide, vous pouvez nous contacter via les coordonnées ci-dessous.</div>
-                        </td>
-                      </tr>
-                    </table>
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0 24px 0;"><tr><td align="center" bgcolor="${accentColor}" style="border-radius:10px;"><a href="${options.ctaUrl}" target="_blank" rel="noreferrer" style="display:inline-block;padding:14px 30px;font-size:15px;line-height:1.2;font-weight:700;color:${brandColor};text-decoration:none;font-family:Inter, Segoe UI, Arial, sans-serif;">${options.ctaLabel}</a></td></tr></table>
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 18px 0;border-top:1px solid #e5e7eb;padding-top:16px;"><tr><td style="font-size:14px;line-height:1.7;color:#334155;font-family:Inter, Segoe UI, Arial, sans-serif;"><div style="margin-bottom:8px;">✓ Si vous n'êtes pas à l'origine de cette demande, ignorez simplement ce message.</div><div>✓ Pour toute aide, vous pouvez nous contacter via les coordonnées ci-dessous.</div></td></tr></table>
                   </td>
                 </tr>
                 <tr>
