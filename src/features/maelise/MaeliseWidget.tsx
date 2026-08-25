@@ -69,7 +69,7 @@ const permissionLabels: Record<MaelisePermissionColumn, string> = {
 export function MaeliseWidget() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { session } = useAuthContext();
+  const { session, roles } = useAuthContext();
   const { t } = useI18n();
   const { messages, isOpen, isLoading, error, canRetry, open, close, clear, send, retry } =
     useMaelise();
@@ -85,7 +85,6 @@ export function MaeliseWidget() {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const previousPathRef = useRef(location.pathname);
   const excluded =
-    location.pathname.startsWith("/admin") ||
     location.pathname === "/auth" ||
     location.pathname.startsWith("/candidate/login") ||
     location.pathname.startsWith("/candidate/signup") ||
@@ -202,7 +201,9 @@ export function MaeliseWidget() {
     }
   };
 
-  if (excluded || (!session && location.pathname.startsWith("/candidate/"))) return null;
+  const isAdmin = roles.includes("admin") || roles.includes("super_admin");
+
+  if (excluded || !session || !isAdmin) return null;
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
