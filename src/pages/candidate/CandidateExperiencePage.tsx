@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { DateInput } from "@/components/ui/date-input";
 import {
   Dialog,
   DialogContent,
@@ -216,7 +217,7 @@ export function CandidateExperiencePage() {
                       <FormItem>
                         <FormLabel>Date de début</FormLabel>
                         <FormControl>
-                          <Input {...field} type="month" />
+                          <DateInput value={field.value} onChange={field.onChange} dateFormat="Y-m" placeholder="YYYY-MM" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -229,12 +230,12 @@ export function CandidateExperiencePage() {
                       <FormItem>
                         <FormLabel>Date de fin</FormLabel>
                         <FormControl>
-                          <Input
-                            {...field}
-                            type="month"
+                          <DateInput
                             value={field.value ?? ""}
+                            onChange={(value) => field.onChange(value || null)}
+                            dateFormat="Y-m"
+                            placeholder="YYYY-MM"
                             disabled={Boolean(form.watch("is_current"))}
-                            onChange={(event) => field.onChange(event.target.value || null)}
                           />
                         </FormControl>
                         <FormMessage />

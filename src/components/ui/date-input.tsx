@@ -16,6 +16,7 @@ interface DateInputProps {
   className?: string;
   minDate?: string;
   maxDate?: string;
+  dateFormat?: "Y-m-d" | "Y-m" | "Y-m-d\\TH:i";
 }
 
 export function DateInput({
@@ -29,6 +30,7 @@ export function DateInput({
   className,
   minDate,
   maxDate,
+  dateFormat = "Y-m-d",
 }: DateInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const instanceRef = useRef<Instance | null>(null);
@@ -38,7 +40,9 @@ export function DateInput({
   useEffect(() => {
     if (!inputRef.current) return;
     const options: Options = {
-      dateFormat: "Y-m-d",
+      dateFormat,
+      enableTime: dateFormat === "Y-m-d\\TH:i",
+      time_24hr: true,
       allowInput: true,
       monthSelectorType: "static",
       minDate: minDate || undefined,
@@ -52,16 +56,16 @@ export function DateInput({
       instanceRef.current?.destroy();
       instanceRef.current = null;
     };
-  }, [maxDate, minDate]);
+  }, [dateFormat, maxDate, minDate]);
 
   useEffect(() => {
     const instance = instanceRef.current;
     if (!instance) return;
     const nextValue = value || "";
     if (instance.input.value !== nextValue) {
-      instance.setDate(nextValue, false, "Y-m-d");
+      instance.setDate(nextValue, false, dateFormat);
     }
-  }, [value]);
+  }, [dateFormat, value]);
 
   useEffect(() => {
     instanceRef.current?.set({ minDate: minDate || undefined, maxDate: maxDate || undefined });

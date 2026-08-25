@@ -338,11 +338,12 @@ export function AdminJobCreatePage() {
               <label className="block text-sm font-semibold text-foreground mb-2">
                 {t("admin.jobs.create.field.publishAt")}
               </label>
-              <Input
+              <DateInput
                 name="publish_at"
-                type="datetime-local"
                 value={form.publish_at}
-                onChange={handleChange}
+                onChange={(value) => setForm((prev) => ({ ...prev, publish_at: value }))}
+                dateFormat="Y-m-d\\TH:i"
+                placeholder="YYYY-MM-DDTHH:mm"
               />
             </div>
             <div>

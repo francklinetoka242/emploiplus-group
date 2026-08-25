@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { DateInput } from "@/components/ui/date-input";
 import {
   Select,
   SelectContent,
@@ -245,11 +246,12 @@ export function AdminBlogCreatePage() {
               <label className="block text-sm font-semibold text-foreground mb-2">
                 Date de publication
               </label>
-              <Input
+              <DateInput
                 name="publish_at"
-                type="datetime-local"
                 value={form.publish_at}
-                onChange={handleChange}
+                onChange={(value) => setForm((prev) => ({ ...prev, publish_at: value }))}
+                dateFormat="Y-m-d\\TH:i"
+                placeholder="YYYY-MM-DDTHH:mm"
               />
             </div>
             <div className="rounded-2xl border border-border bg-background/60 p-4">

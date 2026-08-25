@@ -13,6 +13,7 @@ import { Download, Calendar, Filter, RotateCw } from "lucide-react";
 import { useAnalyticsOffres } from "@/features/admin/hooks/useAnalyticsOffres";
 import type { AnalyticsFilter, DatePreset } from "@/features/admin/types/analytics";
 import { getDateRangeForPreset } from "@/features/admin/utils/datePresets";
+import { DateInput } from "@/components/ui/date-input";
 import {
   AnalyticsKPICards,
   AnalyticsTrendChart,
@@ -173,8 +174,7 @@ export default function AdminAnalyticsOffresPage() {
               <label className="block text-sm font-medium mb-2">Du</label>
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <input
-                  type="date"
+                <DateInput
                   value={filter.dateFrom?.toISOString().split("T")[0] || ""}
                   onChange={handleDateFromChange}
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
@@ -187,11 +187,10 @@ export default function AdminAnalyticsOffresPage() {
               <label className="block text-sm font-medium mb-2">Au</label>
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <input
-                  type="date"
+                <DateInput
                   value={filter.dateTo?.toISOString().split("T")[0] || ""}
                   onChange={handleDateToChange}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed"
                 />
               </div>
             </div>
