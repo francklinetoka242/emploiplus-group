@@ -8,6 +8,8 @@ import {
   BriefcaseBusiness,
   Building2,
   CalendarDays,
+  Clipboard,
+  ClipboardCheck,
   Clock3,
   DollarSign,
   ExternalLink,
@@ -997,14 +999,23 @@ export function JobOfferDetailPage() {
                         <h4 className="text-sm font-semibold text-foreground">
                           Brouillon de lettre de motivation
                         </h4>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={handleCopyLetter}
-                        >
-                          {copiedLetter ? "Copié !" : "Copier la lettre"}
-                        </Button>
+                        <div className="inline-flex items-center gap-1 rounded-xl border border-border bg-background/70 p-1 shadow-sm">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleCopyLetter}
+                            aria-label={copiedLetter ? "Lettre copiée" : "Copier la lettre"}
+                            title={copiedLetter ? "Lettre copiée" : "Copier la lettre"}
+                            className="size-9 text-brand hover:bg-brand/10 hover:text-brand"
+                          >
+                            {copiedLetter ? (
+                              <ClipboardCheck className="size-5" aria-hidden="true" />
+                            ) : (
+                              <Clipboard className="size-5" aria-hidden="true" />
+                            )}
+                          </Button>
+                        </div>
                       </div>
                       <p
                         className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground"

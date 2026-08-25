@@ -434,7 +434,7 @@ export function AdminNotificationsPage() {
           </section>
         )}
 
-        <div className="overflow-x-auto rounded-[2rem] border border-border bg-background p-6 shadow-soft">
+        <div className="data-table-shell overflow-x-auto p-4 sm:p-6">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <h2 className="text-lg font-semibold text-slate-900">Notifications enregistrées</h2>
             <div className="flex flex-wrap gap-3">
@@ -463,8 +463,8 @@ export function AdminNotificationsPage() {
               </select>
             </div>
           </div>
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50">
+          <table className="min-w-full divide-y divide-border text-sm">
+            <thead className="bg-muted/40">
               <tr>
                 <th className="px-4 py-3 text-left font-medium text-slate-600">Titre</th>
                 <th className="px-4 py-3 text-left font-medium text-slate-600">Type</th>
@@ -474,11 +474,11 @@ export function AdminNotificationsPage() {
                 <th className="px-4 py-3 text-right font-medium text-slate-600">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className="divide-y divide-border">
               {filteredNotifications.map((notification) => (
                 <tr
                   key={notification.id}
-                  className={notification.status === "masked" ? "bg-slate-50/70" : ""}
+                  className={`transition-colors hover:bg-muted/50 ${notification.status === "masked" ? "bg-muted/30" : ""}`}
                 >
                   <td className="px-4 py-4">
                     <div className="font-medium text-slate-900">{notification.title}</div>

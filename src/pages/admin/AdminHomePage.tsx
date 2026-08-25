@@ -14,6 +14,7 @@ import {
   Sparkles,
   Users2,
 } from "lucide-react";
+import { AdminDashboardCharts } from "./components/AdminDashboardCharts";
 
 function AdminDashboardView() {
   const { t } = useI18n();
@@ -249,6 +250,15 @@ function AdminDashboardView() {
           );
         })}
       </div>
+
+      <AdminDashboardCharts
+        activeJobs={counts.activeJobs}
+        publishedPosts={counts.publishedPosts}
+        featuredPosts={counts.featuredPosts}
+        receivedRequests={counts.receivedRequests}
+        activeAdmins={adminStats.active}
+        totalAdmins={adminStats.total}
+      />
 
       <div className="grid gap-4 sm:gap-5 xl:grid-cols-[1.2fr_0.8fr]">
         <Link to="/admin/jobs" className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.35rem] sm:p-5">

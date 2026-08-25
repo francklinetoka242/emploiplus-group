@@ -2,7 +2,7 @@
 import { usePageSEO } from "@/features/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Settings } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { ThemeSwitch } from "@/components/ui/theme-switch";
 
 export function CandidatePreferencesPage() {
   const [darkMode, setDarkMode] = useState<boolean>(() => {
@@ -52,7 +52,7 @@ export function CandidatePreferencesPage() {
                 <p className="text-sm text-muted-foreground">Activez le mode sombre pour tout le compte candidat.</p>
               </div>
             </div>
-            <Switch checked={darkMode} onCheckedChange={(value) => setDarkMode(Boolean(value))} />
+            <ThemeSwitch checked={darkMode} onCheckedChange={setDarkMode} />
           </div>
         </CardContent>
       </Card>

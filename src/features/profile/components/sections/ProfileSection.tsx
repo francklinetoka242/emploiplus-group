@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, Save, User } from "lucide-react";
 import type { CandidateProfile } from "@/features/candidates/api/types";
 import { centralAfricaCityGroups } from "@/data/locations";
+import { DateInput } from "@/components/ui/date-input";
 
 interface ProfileSectionProps {
   profile: CandidateProfile | null;
@@ -143,7 +144,7 @@ export function ProfileSection({ profile, onSave, loading, error }: ProfileSecti
           </div>
           <div className="space-y-2">
             <Label>Date de naissance</Label>
-            <Input type="date" value={formData.dateOfBirth} onChange={(e) => setFormData((prev) => ({ ...prev, dateOfBirth: e.target.value }))} />
+            <DateInput value={formData.dateOfBirth} onChange={(value) => setFormData((prev) => ({ ...prev, dateOfBirth: value }))} />
           </div>
           <div className="space-y-2">
             <Label>Pays</Label>

@@ -85,21 +85,21 @@ export function JobCard({
 
   return (
     <article
-      className={`relative flex h-full overflow-hidden border border-border bg-card shadow-none transition-colors duration-200 hover:border-border/80 focus-within:border-brand/40 ${isList ? "flex-col gap-4 rounded-xl p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5" : "flex-col rounded-xl p-5"} ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`}
+      className={`relative flex h-full min-w-0 w-full max-w-full overflow-hidden border border-border bg-card shadow-none transition-colors duration-200 hover:border-border/80 focus-within:border-brand/40 ${isList ? "flex-col gap-4 rounded-xl p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5" : "flex-col rounded-xl p-5"} ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`}
       style={{ animationDelay: `${index * 120}ms` }}
     >
-      <div className={`relative z-10 ${isList ? "min-w-0 flex-1" : ""}`}>
+      <div className={`relative z-10 min-w-0 ${isList ? "flex-1" : ""}`}>
         <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground">
               <Building2 className="size-4 shrink-0 text-brand" />
               <span className="truncate">{job.company || "Entreprise non renseignée"}</span>
             </div>
-            <h3 className="mt-1 block line-clamp-2 text-lg font-bold leading-snug !text-foreground sm:text-xl">
+            <h3 className="mt-1 block min-w-0 max-w-full overflow-hidden break-words text-lg font-bold leading-snug !text-foreground [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] sm:text-xl">
               {job.title || "Offre d'emploi"}
             </h3>
           </div>
-          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 sm:justify-end">
           {typeof matchScore === "number" ? (
             <span className="inline-flex items-center rounded-full border border-secondary/20 bg-secondary/10 px-2.5 py-1 text-xs font-semibold text-secondary">
               {Math.round(Math.max(0, Math.min(100, matchScore)))}% de match
@@ -115,15 +115,15 @@ export function JobCard({
         </div>
 
         {isList ? (
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
+          <div className="mt-3 flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-4">
             <span className="flex min-w-0 items-center gap-2">
               <MapPin className="size-4 shrink-0 text-brand" />
-              <span className="truncate">{location}</span>
+              <span className="break-words">{location}</span>
             </span>
             {job.salary ? (
               <span className="flex min-w-0 items-center gap-2">
                 <BadgeDollarSign className="size-4 shrink-0 text-brand" />
-                <span className="truncate">{job.salary}</span>
+                <span className="break-words">{job.salary}</span>
               </span>
             ) : null}
             {deadlineValue ? (
@@ -136,7 +136,7 @@ export function JobCard({
         ) : null}
 
         {previewText && isList ? (
-          <p className="mt-3 line-clamp-2 max-w-3xl text-sm leading-relaxed text-foreground/75">
+          <p className="mt-3 line-clamp-3 max-w-3xl break-words text-sm leading-relaxed text-foreground/75">
             {previewText.length > 180 ? `${previewText.slice(0, 177)}...` : previewText}
           </p>
         ) : null}
@@ -192,7 +192,7 @@ export function JobCard({
         </div>
       ) : null}
 
-      <div className={`${isList ? "shrink-0" : "mt-auto border-t border-border/60 pt-4"} flex flex-wrap items-center gap-2`}>
+      <div className={`${isList ? "mt-1 shrink-0 border-t border-border/60 pt-3 sm:mt-0 sm:border-0 sm:pt-0" : "mt-auto border-t border-border/60 pt-4"} flex flex-wrap items-center gap-2`}>
         <Link
           to={detailUrl}
           className="inline-flex min-h-10 items-center justify-center gap-1 rounded-xl border border-border px-3.5 py-2 text-sm font-semibold text-foreground transition hover:border-brand/40 hover:bg-brand/5 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:ring-offset-2"

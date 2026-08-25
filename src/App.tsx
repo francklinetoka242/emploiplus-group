@@ -10,6 +10,7 @@ import { PublicLayout } from "@/components/site/PublicLayout";
 import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 import { ProtectedRoute } from "@/features/authentication/guards";
 import { isMobileApp } from "@/lib/isMobileApp";
+import { MaeliseProvider, MaeliseWidget } from "@/features/maelise";
 import {
   getCandidateOnboardingForUser,
   getOrInitializeCandidateOnboarding,
@@ -309,13 +310,11 @@ function CandidateOnboardingGate() {
         const candidateState = await getCandidateOnboardingForUser(session.user.id);
         if (!candidateState.candidateId) throw new Error("Profil candidat introuvable");
 
-        const onboarding = await getOrInitializeCandidateOnboarding(
-          candidateState.candidateId,
-          {
-            current_step: 0,
-            completed: window.localStorage.getItem("emploiplus_candidate_onboarding_completed") === "true",
-          },
-        );
+        const onboarding = await getOrInitializeCandidateOnboarding(candidateState.candidateId, {
+          current_step: 0,
+          completed:
+            window.localStorage.getItem("emploiplus_candidate_onboarding_completed") === "true",
+        });
 
         window.localStorage.removeItem("emploiplus_candidate_onboarding_pending");
         window.localStorage.removeItem("emploiplus_candidate_onboarding_completed");
@@ -788,8 +787,11 @@ function AppContent() {
   return (
     <I18nProvider>
       <CandidateSidebarProvider>
-        <Suspense fallback={<PageLoadingFallback />}>{routes}</Suspense>
-        <Toaster richColors position="top-right" />
+        <MaeliseProvider>
+          <Suspense fallback={<PageLoadingFallback />}>{routes}</Suspense>
+          <MaeliseWidget />
+          <Toaster richColors position="top-right" />
+        </MaeliseProvider>
       </CandidateSidebarProvider>
     </I18nProvider>
   );

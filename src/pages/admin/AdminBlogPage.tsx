@@ -19,6 +19,7 @@ import { uploadImageToStorage } from "@/services/storageService";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { PaginationNav } from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -692,37 +693,13 @@ export function AdminBlogPage() {
                 })}
               </div>
 
-              <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-200 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handlePageChange(page - 1)}
-                  disabled={page === 1 || loading}
-                  className="h-9 w-9 rounded-full"
-                  aria-label="Page précédente"
-                  title="Page précédente"
-                >
-                  <span className="text-base">‹</span>
-                </Button>
-
-                <div className="text-xs font-medium text-slate-500">
-                  Page {page}/{totalPages}
-                </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={page >= totalPages || loading}
-                  className="h-9 w-9 rounded-full"
-                  aria-label="Page suivante"
-                  title="Page suivante"
-                >
-                  <span className="text-base">›</span>
-                </Button>
-              </div>
+              <PaginationNav
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                disabled={loading}
+                className="mt-5 border-t border-slate-200 pt-4"
+              />
             </>
           )}
         </div>

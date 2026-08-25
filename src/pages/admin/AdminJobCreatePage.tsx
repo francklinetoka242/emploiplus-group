@@ -7,6 +7,7 @@ import { jobService } from "@/features/jobs/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { DateInput } from "@/components/ui/date-input";
 import {
   Select,
   SelectContent,
@@ -348,7 +349,7 @@ export function AdminJobCreatePage() {
               <label className="block text-sm font-semibold text-foreground mb-2">
                 {t("admin.jobs.field.deadline")}
               </label>
-              <Input name="deadline" type="date" value={form.deadline} onChange={handleChange} />
+              <DateInput name="deadline" value={form.deadline} onChange={(value) => setForm((prev) => ({ ...prev, deadline: value }))} />
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">

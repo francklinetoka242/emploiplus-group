@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, useMemo, useRef } from "react"
 import { Link, useNavigate } from "react-router-dom";
 import { usePageSEO } from "@/features/seo";
 import { Button } from "@/components/ui/button";
+import { PaginationNav } from "@/components/ui/pagination";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -356,7 +357,7 @@ export function CandidateDashboardPage() {
     preferences,
   });
 
-  const profileCompletion = profileDataLoading ? 0 : completion.completionPercentage;
+  const profileCompletion = profileDataLoading || !profileDataReady ? 0 : completion.completionPercentage;
   const [animatedProfileCompletion, setAnimatedProfileCompletion] = useState(0);
 
   const nextAction = useMemo(() => {
@@ -432,7 +433,7 @@ export function CandidateDashboardPage() {
   const nextActionMode = profileDataLoading ? "loading" : nextActionSuccess ? "success" : "active";
 
   useEffect(() => {
-    if (!profile?.id || !profile?.user_id || profileDataLoading || profileCompletion >= 100 || hasCreatedProfileCompletionAlertRef.current) {
+    if (!profile?.id || !profile?.user_id || profileDataLoading || !profileDataReady || profileCompletion >= 100 || hasCreatedProfileCompletionAlertRef.current) {
       return;
     }
 
@@ -450,7 +451,7 @@ export function CandidateDashboardPage() {
       is_read: false,
       link: route,
     });
-  }, [completion.missingItems, profile?.id, profile?.user_id, profileCompletion, profileDataLoading]);
+  }, [completion.missingItems, profile?.id, profile?.user_id, profileCompletion, profileDataLoading, profileDataReady]);
 
   useEffect(() => {
     if (profileDataLoading) {
@@ -752,34 +753,12 @@ export function CandidateDashboardPage() {
                     />
                   );
                 })}
-                <nav
-                  aria-label="Pagination des offres recommandées"
-                  className="flex items-center justify-between gap-2 rounded-2xl border border-primary/10 bg-primary/[0.03] p-2 sm:gap-4"
-                >
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-10 rounded-xl border-primary/15 bg-background px-3 text-sm shadow-sm transition-colors hover:border-primary/30 hover:bg-primary/5 disabled:opacity-50 sm:px-4"
-                    disabled={recommendedPage <= 1}
-                    onClick={() => setRecommendedPage((prev) => Math.max(prev - 1, 1))}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Précédent
-                  </Button>
-                  <span className="min-w-[76px] rounded-lg bg-primary/10 px-3 py-2 text-center text-xs font-semibold text-primary sm:text-sm">
-                    Page {recommendedPage}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-10 rounded-xl border-primary/15 bg-background px-3 text-sm shadow-sm transition-colors hover:border-primary/30 hover:bg-primary/5 disabled:opacity-50 sm:px-4"
-                    disabled={!hasMoreRecommendedJobs}
-                    onClick={() => setRecommendedPage((prev) => prev + 1)}
-                  >
-                    Suivant
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </nav>
+                <PaginationNav
+                  currentPage={recommendedPage}
+                  totalPages={recommendedPage + (hasMoreRecommendedJobs ? 1 : 0)}
+                  onPageChange={setRecommendedPage}
+                  className="justify-center rounded-2xl border border-primary/10 bg-primary/[0.03] p-2"
+                />
               </>
             ) : (
               <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">

@@ -64,6 +64,131 @@
   --shadow-brand: 0 12px 32px oklch(0.38 0.18 260 / 0.18);
 }
 
+@keyframes maelise-neon-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px var(--primary),
+      0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent),
+      0 0 10px color-mix(in srgb, var(--primary) 42%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px var(--primary),
+      0 0 0 3px color-mix(in srgb, var(--primary) 32%, transparent),
+      0 0 18px color-mix(in srgb, var(--primary) 68%, transparent);
+  }
+}
+
+.data-table-shell {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--card);
+  box-shadow: var(--shadow-soft);
+}
+
+.data-table-shell table {
+  min-width: 100%;
+}
+
+.data-table-shell th,
+.data-table-shell td {
+  white-space: nowrap;
+}
+
+.data-table-shell th:first-child,
+.data-table-shell td:first-child {
+  padding-left: 1rem;
+}
+
+.data-table-shell th:last-child,
+.data-table-shell td:last-child {
+  padding-right: 1rem;
+}
+
+@keyframes notification-bell-ring {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  15% {
+    transform: rotate(12deg);
+  }
+  30% {
+    transform: rotate(-10deg);
+  }
+  45% {
+    transform: rotate(7deg);
+  }
+  60% {
+    transform: rotate(-4deg);
+  }
+}
+
+.notification-bell-ring {
+  animation: notification-bell-ring 500ms ease-in-out;
+  transform-origin: top center;
+}
+
+.maelise-input-shell {
+  border-radius: var(--radius);
+  transition: box-shadow 180ms ease-out;
+}
+
+.maelise-input-shell--loading {
+  animation: maelise-neon-pulse 1.35s ease-in-out infinite;
+}
+
+@keyframes maelise-loading-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+.maelise-loading-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 1rem;
+}
+
+.maelise-loading-dots > span {
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background-color: currentColor;
+  animation: maelise-loading-dot 1.2s ease-in-out infinite;
+}
+
+.maelise-loading-dots > span:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.maelise-loading-dots > span:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .maelise-input-shell--loading,
+  .maelise-loading-dots > span {
+    animation: none;
+  }
+
+  .maelise-input-shell--loading {
+    box-shadow:
+      0 0 0 1px var(--primary),
+      0 0 0 3px color-mix(in srgb, var(--primary) 24%, transparent),
+      0 0 12px color-mix(in srgb, var(--primary) 50%, transparent);
+  }
+}
+
 :root {
   --radius: 0.625rem;
 

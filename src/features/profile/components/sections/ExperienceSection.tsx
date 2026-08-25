@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import type { CandidateExperience, CandidateExperienceInsert } from "@/features/candidates/api/types";
 import { Briefcase, Trash2, Edit2, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { DateInput } from "@/components/ui/date-input";
 
 interface ExperienceSectionProps {
   experiences: CandidateExperience[];
@@ -153,19 +154,17 @@ export function ExperienceSection({
 
             <div className="space-y-2">
               <Label className="text-sm font-medium text-slate-700">Date de début *</Label>
-              <Input
-                type="date"
+              <DateInput
                 value={formData.start_date}
-                onChange={(e) => setFormData((prev) => ({ ...prev, start_date: e.target.value }))}
+                onChange={(value) => setFormData((prev) => ({ ...prev, start_date: value }))}
               />
             </div>
 
             <div className="space-y-2">
               <Label className="text-sm font-medium text-slate-700">Date de fin</Label>
-              <Input
-                type="date"
+              <DateInput
                 value={formData.end_date || ""}
-                onChange={(e) => setFormData((prev) => ({ ...prev, end_date: e.target.value || null }))}
+                onChange={(value) => setFormData((prev) => ({ ...prev, end_date: value || null }))}
                 disabled={formData.is_current}
               />
             </div>

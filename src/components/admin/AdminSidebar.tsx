@@ -16,12 +16,10 @@ import {
   ShieldCheck,
   Sparkles,
   Users,
-  Moon,
-  Sun,
   BarChart3,
   type LucideIcon,
 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { ThemeSwitch } from "@/components/ui/theme-switch";
 
 type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "privacy" | "legal" | "cgu" | "candidates" | "guides" | "faq" | "analytics-offres";
 
@@ -105,7 +103,7 @@ export function AdminSidebar({
         scrollbarColor: "rgba(148, 163, 184, 0.8) transparent",
       }}
     >
-      <div className="flex items-center justify-between gap-2 px-2 pt-2 pb-2">
+      <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-2">
 <div className={cn("flex min-w-0 items-center gap-2 sm:gap-3", !open && "justify-center")}> 
           {!open && (
             <button
@@ -144,29 +142,26 @@ export function AdminSidebar({
         </button>
       </div>
 
-      <div
-        className={cn(
-          "relative z-10 overflow-hidden border border-slate-200 bg-slate-50/80 p-3 transition-all duration-300",
-          open ? "max-h-[12rem] opacity-100" : "max-h-0 opacity-0 lg:max-h-0",
+        {open && (
+          <div className="flex shrink-0 items-center gap-3 border-b border-border bg-muted/40 p-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-800">
+              {avatar ? (
+                <img src={avatar} alt={name} className="h-full w-full object-cover" />
+              ) : (
+                <span className="text-xs font-semibold text-slate-200">
+                  {name.slice(0, 2).toUpperCase()}
+                </span>
+              )}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-foreground">{name}</p>
+              <p className="truncate text-xs text-muted-foreground">{email}</p>
+            </div>
+          </div>
         )}
-      >
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-800">
-            {avatar ? (
-              <img src={avatar} alt={name} className="h-full w-full object-cover" />
-            ) : (
-              <span className="text-xs font-semibold text-slate-200">{name.slice(0, 2).toUpperCase()}</span>
-            )}
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-slate-900">{name}</p>
-            <p className="truncate text-xs text-slate-500">{email}</p>
-          </div>
-        </div>
-      </div>
 
       <nav
-        className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-2 pb-2"
+        className="min-h-0 flex-1 overflow-y-auto px-2 py-3"
         style={{
           scrollbarWidth: "thin",
           scrollbarColor: "rgba(148, 163, 184, 0.8) rgba(15, 23, 42, 0.04)",
@@ -191,8 +186,8 @@ export function AdminSidebar({
               <Icon className={cn("h-4 w-4 flex-shrink-0", !open && "mx-auto")} />
               <span
                 className={cn(
-                  "text-sm font-medium transition-all duration-300",
-                  open ? "opacity-100" : "opacity-0 lg:opacity-0",
+                  "text-sm font-medium",
+                  open ? "" : "hidden",
                 )}
               >
                 {item.label}
@@ -204,22 +199,14 @@ export function AdminSidebar({
 
       <div className="mt-auto border-t border-slate-200 bg-slate-50/70 p-2 pb-0">
         <div className="flex flex-col gap-2">
-          <div
-            className={cn(
-              "flex items-center px-2 py-1",
-              open ? "justify-between gap-3" : "justify-center",
-            )}
-          >
-            <div className={cn("flex min-w-0 items-center gap-3", open ? "" : "hidden")}>
-              <Sun className="h-4 w-4 text-amber-500" />
+          <div className={cn("flex items-center px-2 py-1", open ? "justify-between gap-3" : "justify-center")}>
+            {open && (
               <div className="min-w-0">
                 <p className="text-xs font-medium text-slate-800">Mode sombre</p>
                 <p className="truncate text-[10px] text-slate-500">Thème clair/sombre</p>
               </div>
-            </div>
-            <div className={cn(open ? "" : "mx-auto")}>
-              <Switch checked={darkMode} onCheckedChange={(value) => setDarkMode(Boolean(value))} />
-            </div>
+            )}
+            <ThemeSwitch checked={darkMode} onCheckedChange={setDarkMode} />
           </div>
 
           <button
@@ -232,7 +219,7 @@ export function AdminSidebar({
             )}
           >
             <LogOut className={cn("h-4 w-4 text-red-500", !open && "mx-auto")} />
-            <span className={cn("transition-all duration-300", open ? "opacity-100" : "opacity-0 lg:opacity-0")}>
+            <span className={cn(open ? "" : "hidden")}>
               {t("common.signOut")}
             </span>
           </button>

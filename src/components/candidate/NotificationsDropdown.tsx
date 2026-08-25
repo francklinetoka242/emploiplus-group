@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Bell, Trash2, Check } from "lucide-react";
+import { BellRing, Trash2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -60,9 +60,9 @@ export function NotificationsDropdown({
           variant="ghost"
           size="icon"
           aria-label={hasUnread ? `Notifications, ${unreadCount} non lue${unreadCount > 1 ? "s" : ""}` : "Notifications"}
-          className="relative text-muted-foreground hover:text-foreground"
+          className="relative size-10 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/50"
         >
-          <Bell className="w-5 h-5" />
+          <BellRing className={hasUnread ? "notification-bell-ring size-6" : "size-6"} />
           {hasUnread && (
             <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full">
               {unreadCount > 99 ? "99+" : unreadCount}
@@ -74,11 +74,11 @@ export function NotificationsDropdown({
       <DropdownMenuContent
         align="center"
         sideOffset={8}
-        className="w-[min(88vw,24rem)] max-w-[calc(100vw-1.25rem)] p-0"
+        className="w-[min(88vw,24rem)] max-w-[calc(100vw-1rem)] overflow-hidden p-0"
       >
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
-          <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
+          <h3 className="min-w-0 text-sm font-semibold text-foreground">Notifications</h3>
           {hasUnread && (
             <Button
               variant="ghost"
@@ -103,14 +103,14 @@ export function NotificationsDropdown({
               {recentNotifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`px-4 py-3 hover:bg-muted transition-colors ${
+                  className={`min-w-0 px-4 py-3 transition-colors hover:bg-muted ${
                     !notification.is_read ? "bg-primary/5" : ""
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex min-w-0 flex-wrap items-center gap-2 mb-1">
-                        <p className="min-w-0 flex-1 text-sm font-medium text-foreground truncate">
+                        <p className="min-w-0 flex-1 break-words text-sm font-medium text-foreground">
                           {notification.title}
                         </p>
                         <Badge
@@ -121,11 +121,11 @@ export function NotificationsDropdown({
                         </Badge>
                       </div>
                       {notification.content && (
-                        <p className="text-sm text-muted-foreground line-clamp-2">
+                        <p className="break-words text-sm text-muted-foreground line-clamp-2">
                           {notification.content}
                         </p>
                       )}
-                      <p className="text-xs text-muted-foreground/80 mt-1">
+                      <p className="mt-1 break-words text-xs text-muted-foreground/80">
                         {new Date(notification.created_at).toLocaleDateString("fr-FR", {
                           year: "numeric",
                           month: "short",
@@ -135,7 +135,7 @@ export function NotificationsDropdown({
                         })}
                       </p>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex shrink-0 items-center gap-1">
                       {!notification.is_read && (
                         <Button
                           variant="ghost"
@@ -169,7 +169,7 @@ export function NotificationsDropdown({
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link
                 to="/candidate/notifications"
-                className="flex items-center justify-center py-2 text-muted-foreground hover:text-foreground"
+                className="flex min-w-0 items-center justify-center whitespace-normal break-words px-3 py-2 text-center text-muted-foreground hover:text-foreground"
               >
                 Voir toutes les notifications
               </Link>

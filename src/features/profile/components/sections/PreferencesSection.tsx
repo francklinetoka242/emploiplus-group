@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import type { CandidatePreferences, CandidatePreferencesInsert } from "@/features/candidates/api/types";
 import { SlidersHorizontal } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { DateInput } from "@/components/ui/date-input";
 
 const CONTRACT_TYPE_OPTIONS = [
   { value: "cdi", label: "CDI" },
@@ -311,13 +312,12 @@ export function PreferencesSection({ preferences, loading, onSavePreferences }: 
 
             <div className="space-y-3">
               <Label className="text-sm font-medium text-slate-700">Date de disponibilité</Label>
-              <Input
-                type="date"
+              <DateInput
                 value={formData.availability_date ? formData.availability_date.slice(0, 10) : ""}
-                onChange={(e) =>
+                onChange={(value) =>
                   setFormData((prev) => ({
                     ...prev,
-                    availability_date: e.target.value ? new Date(`${e.target.value}T12:00:00`).toISOString() : null,
+                    availability_date: value ? new Date(`${value}T12:00:00`).toISOString() : null,
                   }))
                 }
               />

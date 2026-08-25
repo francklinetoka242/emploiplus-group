@@ -29,16 +29,13 @@ import {
   Search,
   ChevronDown,
   PlusCircle,
-  Moon,
-  Sun,
-  ToggleLeft,
-  ToggleRight,
   Bell,
   Heart,
   Send,
   Crown,
 } from "lucide-react";
 import EcoModeToggle from "@/components/sidebar/EcoModeToggle";
+import { ThemeSwitch } from "@/components/ui/theme-switch";
 import { useEcoMode } from "@/contexts/EcoModeContext";
 
 interface CandidateSidebarProps {
@@ -434,24 +431,12 @@ export function CandidateSidebar({
                     : "border border-slate-200 bg-slate-50",
                 )}
               >
-                <button
-                  type="button"
-                  onClick={() => setIsDarkMode((v) => !v)}
+                <div
                   className={cn(
                     "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left",
                     isDarkMode ? "hover:bg-white/10" : "hover:bg-slate-100",
                   )}
                 >
-                  <div
-                    className={cn(
-                      "flex h-9 w-9 items-center justify-center rounded-lg border",
-                      isDarkMode
-                        ? "border-white/10 bg-slate-950/90 text-slate-200"
-                        : "border-slate-200 bg-slate-100 text-slate-700",
-                    )}
-                  >
-                    {isDarkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                  </div>
                   <div className="min-w-0 flex-1">
                     <p
                       className={cn(
@@ -465,19 +450,8 @@ export function CandidateSidebar({
                       {isDarkMode ? "Activé" : "Désactivé"}
                     </p>
                   </div>
-                  <div
-                    className={cn(
-                      "flex h-6 w-11 items-center rounded-full p-1 transition-colors",
-                      isDarkMode ? "bg-secondary" : "bg-slate-300",
-                    )}
-                  >
-                    {isDarkMode ? (
-                      <ToggleRight className="h-4 w-4 text-white" />
-                    ) : (
-                      <ToggleLeft className="h-4 w-4 text-slate-700" />
-                    )}
-                  </div>
-                </button>
+                  <ThemeSwitch checked={isDarkMode} onCheckedChange={setIsDarkMode} />
+                </div>
               </div>
               <div
                 className={cn(
@@ -529,10 +503,9 @@ export function CandidateSidebar({
         )}
         style={{ minWidth: open ? 288 : 80 }}
       >
-      {/* Toggle Button */}
       <div
         className={cn(
-          "flex items-center justify-end px-4 py-5",
+          "flex h-12 shrink-0 items-start justify-end px-2 pt-1",
           isDarkMode ? "border-b border-white/5" : "border-b border-slate-200",
         )}
       >
@@ -541,17 +514,22 @@ export function CandidateSidebar({
           size="icon"
           onClick={() => onOpenChange?.(!open)}
           className={cn(
-            "rounded-lg p-2 hover:bg-white/10",
-            isDarkMode ? "text-slate-300 hover:text-white" : "text-slate-700 hover:text-slate-900",
+            "h-10 w-10 rounded-lg",
+            isDarkMode ? "text-slate-300 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
           )}
+          aria-label={open ? "Réduire le menu candidat" : "Agrandir le menu candidat"}
         >
           {open ? <ChevronLeft className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
       </div>
 
       <TooltipProvider delayDuration={200}>
-        <nav className="flex-1 overflow-y-auto px-2 py-4 scrollbar-hide">
-          <div className="space-y-4">
+        <nav
+          className={cn(
+            "min-h-0 flex-1 overflow-y-auto px-2 pb-2 pt-1 scrollbar-hide",
+          )}
+        >
+          <div className="space-y-2">
             <Link
               to="/jobs"
               onClick={handleMenuClick}

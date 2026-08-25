@@ -7,6 +7,7 @@ import { BASE_URL } from "@/features/seo";
 import { usePublishedBlogPosts } from "@/hooks/usePublishedOffers";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { SectionHeader } from "@/components/page/SectionHeader";
+import { PaginationNav } from "@/components/ui/pagination";
 import { staggerContainer, staggerItem } from "@/lib/animations/animations";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import blogImage1 from "@/assets/imgCarrousselBlog/1.jpg";
@@ -388,36 +389,19 @@ export function BlogPage() {
             </div>
 
             {regularPosts.length > pageSize ? (
-              <motion.div 
+              <motion.div
                 className="container-page mt-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card/60 px-6 py-4 backdrop-blur-sm"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.5 }}
                 transition={{ duration: 0.5 }}
               >
-                <p className="text-sm font-medium text-muted-foreground">
-                  Page <span className="font-semibold text-foreground">{safePage}</span> sur <span className="font-semibold text-foreground">{totalPages}</span>
-                </p>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setPage((value) => Math.max(1, value - 1))}
-                    disabled={safePage === 1}
-                    className="inline-flex items-center justify-center rounded-lg border border-border p-2 text-sm font-semibold text-foreground transition hover:bg-card disabled:cursor-not-allowed disabled:opacity-50 hover:border-secondary"
-                    aria-label="Page précédente"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
-                    disabled={safePage === totalPages}
-                    className="inline-flex items-center justify-center rounded-lg border border-border p-2 text-sm font-semibold text-foreground transition hover:bg-card disabled:cursor-not-allowed disabled:opacity-50 hover:border-secondary"
-                    aria-label="Page suivante"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </div>
+                <PaginationNav
+                  currentPage={safePage}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                  className="ml-auto"
+                />
               </motion.div>
             ) : null}
           </>

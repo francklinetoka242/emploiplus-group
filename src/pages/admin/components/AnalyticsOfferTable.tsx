@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { PaginationNav } from "@/components/ui/pagination";
 import type { OfferAnalytics } from "@/features/admin/types/analytics";
 
 interface AnalyticsOfferTableProps {
@@ -31,7 +31,7 @@ export function AnalyticsOfferTable({ offers, total, loading }: AnalyticsOfferTa
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="data-table-shell overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b">
@@ -74,28 +74,13 @@ export function AnalyticsOfferTable({ offers, total, loading }: AnalyticsOfferTa
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 pt-4 border-t">
-          <span className="text-sm text-muted-foreground">
-            Page {page + 1} de {totalPages}
-          </span>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page === 0}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= totalPages - 1}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+        <div className="mt-4 border-t pt-4">
+          <PaginationNav
+            currentPage={page + 1}
+            totalPages={totalPages}
+            onPageChange={(nextPage) => setPage(nextPage - 1)}
+            className="justify-center"
+          />
         </div>
       )}
     </Card>

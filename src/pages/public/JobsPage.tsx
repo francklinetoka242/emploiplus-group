@@ -27,6 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { PaginationNav } from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -960,34 +961,13 @@ export function JobsPage() {
                             />
                           );
                         })}
-                        <nav
-                          aria-label="Pagination des recommandations"
-                          className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-4"
-                        >
-                          <span className="text-sm text-muted-foreground">
-                            Page {recommendedPage}
-                          </span>
-                          <div className="flex gap-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              disabled={recommendedPage <= 1 || recommendedLoading}
-                              onClick={() => setRecommendedPage((value) => Math.max(1, value - 1))}
-                            >
-                              Précédent
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              disabled={!hasMoreRecommendedJobs || recommendedLoading}
-                              onClick={() => setRecommendedPage((value) => value + 1)}
-                            >
-                              Suivant <ArrowRight className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </nav>
+                        <PaginationNav
+                          currentPage={recommendedPage}
+                          totalPages={recommendedPage + (hasMoreRecommendedJobs ? 1 : 0)}
+                          onPageChange={setRecommendedPage}
+                          disabled={recommendedLoading}
+                          className="justify-center border-t border-border/70 pt-4"
+                        />
                       </div>
                     ) : (
                       <div className="rounded-xl border border-dashed border-border p-5 text-sm leading-6 text-muted-foreground">
@@ -1233,28 +1213,13 @@ export function JobsPage() {
                     );
                   })}
                   {totalPages > 1 ? (
-                    <div className="mt-0 mb-0 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card/80 px-4 py-2">
-                      <p className="text-sm text-muted-foreground">
-                        Page {safePage} sur {totalPages}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setPage((value) => Math.max(1, value - 1))}
-                          disabled={safePage === 1}
-                          className="rounded-full border border-border px-3 py-2 text-sm font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          Précédent
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
-                          disabled={safePage === totalPages}
-                          className="rounded-full border border-border px-3 py-2 text-sm font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          Suivant
-                        </button>
-                      </div>
+                    <div className="mt-0 mb-0 rounded-2xl border border-border bg-card/80 px-4 py-2">
+                      <PaginationNav
+                        currentPage={safePage}
+                        totalPages={totalPages}
+                        onPageChange={setPage}
+                        className="justify-center"
+                      />
                     </div>
                   ) : null}
                 </>
@@ -1277,7 +1242,7 @@ export function JobsPage() {
         </div>
       </section>
       <div className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-40 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
-        {whatsappOpen ? (
+        {!isCandidateShell && whatsappOpen ? (
           <div
             role="dialog"
             aria-label="Accès rapide WhatsApp"
@@ -1327,24 +1292,25 @@ export function JobsPage() {
               type="button"
               onClick={() => setRecommendationsOpen(true)}
               aria-label="Voir mes recommandations"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-primary/20 bg-card px-3.5 py-2 text-sm font-semibold text-foreground shadow-lg transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:min-h-12 sm:px-4"
+              className="mr-16 inline-flex size-11 items-center justify-center rounded-full border border-primary/20 bg-card p-0 text-sm font-semibold text-foreground shadow-lg transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:mr-16 sm:size-auto sm:min-h-12 sm:justify-start sm:gap-2 sm:px-4 sm:py-2"
             >
               <Sparkles className="h-4 w-4 text-primary" />
               <span className="hidden sm:inline">Recommandations</span>
-              <span className="sm:hidden">Recommandations</span>
-              <span className="text-primary">Voir</span>
+              <span className="hidden text-primary sm:inline">Voir</span>
             </button>
           ) : null}
 
-          <button
-            type="button"
-            onClick={() => setWhatsappOpen((open) => !open)}
-            aria-expanded={whatsappOpen}
-            aria-label={whatsappOpen ? "Fermer les chaînes WhatsApp" : "Ouvrir les chaînes WhatsApp"}
-            className="flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition hover:scale-105 hover:bg-[#1ea952] focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
-          >
-            <MessageCircle className="size-7" />
-          </button>
+          {!isCandidateShell && (
+            <button
+              type="button"
+              onClick={() => setWhatsappOpen((open) => !open)}
+              aria-expanded={whatsappOpen}
+              aria-label={whatsappOpen ? "Fermer les chaînes WhatsApp" : "Ouvrir les chaînes WhatsApp"}
+              className="flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition hover:scale-105 hover:bg-[#1ea952] focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
+            >
+              <MessageCircle className="size-7" />
+            </button>
+          )}
         </div>
       </div>
       <Dialog

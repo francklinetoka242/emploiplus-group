@@ -16,9 +16,11 @@ import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
+import { PaginationNav } from "@/components/ui/pagination";
 import { jobService } from "@/features/jobs/api";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { DateInput } from "@/components/ui/date-input";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -622,11 +624,10 @@ export function AdminJobsPage() {
                   <label className="mb-2 block text-sm font-semibold text-foreground">
                     {t("admin.jobs.field.deadline")}
                   </label>
-                  <Input
+                  <DateInput
                     name="deadline"
-                    type="date"
                     value={form.deadline}
-                    onChange={handleChange}
+                    onChange={(value) => setForm((prev) => ({ ...prev, deadline: value }))}
                   />
                 </div>
                 <div className="rounded-3xl border border-border bg-secondary/10 p-4">
@@ -823,37 +824,13 @@ export function AdminJobsPage() {
                 })}
               </div>
 
-              <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handlePageChange(page - 1)}
-                  disabled={page === 1 || loading}
-                  className="h-9 w-9 rounded-full"
-                  aria-label="Page précédente"
-                  title="Page précédente"
-                >
-                  <ChevronLeft className="size-4" />
-                </Button>
-
-                <div className="text-xs text-muted-foreground">
-                  Page {page}/{totalPages}
-                </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={page >= totalPages || loading}
-                  className="h-9 w-9 rounded-full"
-                  aria-label="Page suivante"
-                  title="Page suivante"
-                >
-                  <ChevronRight className="size-4" />
-                </Button>
-              </div>
+              <PaginationNav
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                disabled={loading}
+                className="mt-5 border-t border-border pt-4"
+              />
             </>
           )}
         </div>

@@ -4,6 +4,65 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ButtonProps, buttonVariants } from "@/components/ui/button";
 
+interface PaginationNavProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  disabled?: boolean;
+  className?: string;
+}
+
+export function PaginationNav({
+  currentPage,
+  totalPages,
+  onPageChange,
+  disabled = false,
+  className,
+}: PaginationNavProps) {
+  if (totalPages <= 1) return null;
+
+  return (
+    <nav
+      aria-label="Pagination"
+      className={cn("flex flex-wrap items-center gap-x-1 gap-y-2", className)}
+    >
+      <button
+        type="button"
+        className="rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+        disabled={disabled || currentPage <= 1}
+      >
+        Previous
+      </button>
+      <div className="flex items-center gap-x-1">
+        {Array.from({ length: totalPages }, (_, index) => {
+          const page = index + 1;
+          return (
+            <button
+              key={page}
+              type="button"
+              className="h-9 w-9 rounded-lg border border-border bg-muted/50 text-sm font-medium text-foreground transition hover:bg-muted aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground disabled:pointer-events-none disabled:opacity-50"
+              aria-current={page === currentPage ? "page" : undefined}
+              onClick={() => onPageChange(page)}
+              disabled={disabled || page === currentPage}
+            >
+              {page}
+            </button>
+          );
+        })}
+      </div>
+      <button
+        type="button"
+        className="rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+        onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+        disabled={disabled || currentPage >= totalPages}
+      >
+        Next
+      </button>
+    </nav>
+  );
+}
+
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav
     role="navigation"

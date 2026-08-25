@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { BASE_URL } from "@/features/seo";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
+import { PaginationNav } from "@/components/ui/pagination";
 import {
   Dialog,
   DialogContent,
@@ -346,37 +347,13 @@ export function AdminCandidatesPage() {
                 })}
               </div>
 
-              <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-200 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handlePageChange(page - 1)}
-                  disabled={page === 1 || loading}
-                  className="h-9 w-9 rounded-full"
-                  aria-label="Page précédente"
-                  title="Page précédente"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-
-                <div className="text-xs text-slate-500">
-                  Page {page}/{totalPages}
-                </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={page >= totalPages || loading}
-                  className="h-9 w-9 rounded-full"
-                  aria-label="Page suivante"
-                  title="Page suivante"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+              <PaginationNav
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                disabled={loading}
+                className="mt-5 border-t border-slate-200 pt-4"
+              />
             </>
           )}
         </div>
