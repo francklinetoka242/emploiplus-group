@@ -256,7 +256,7 @@ export function MaeliseWidget() {
   };
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-end sm:inset-x-auto sm:bottom-5 sm:right-5">
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-end pb-[env(safe-area-inset-bottom)] sm:inset-x-auto sm:bottom-5 sm:right-5 sm:pb-0">
       <AlertDialog open={showNewConversationDialog} onOpenChange={setShowNewConversationDialog}>
         <AlertDialogContent className="max-w-md rounded-xl border border-border bg-card p-0 shadow-xl">
           <AlertDialogHeader className="space-y-2 px-6 pt-6">
@@ -599,7 +599,7 @@ export function MaeliseWidget() {
           ref={triggerRef}
           type="button"
           size="icon"
-          className="pointer-events-auto mb-4 mr-4 h-14 w-14 rounded-full bg-brand shadow-brand hover:bg-brand-deep sm:mb-0 sm:mr-0"
+          className="pointer-events-auto mb-4 mr-4 h-14 w-14 shrink-0 rounded-full bg-brand shadow-brand hover:bg-brand-deep sm:mb-0 sm:mr-0"
           aria-label={t("maelise.open")}
           onClick={open}
         >
