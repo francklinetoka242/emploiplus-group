@@ -92,13 +92,44 @@ async function getPermissions(supabase: ReturnType<typeof getSupabaseServer>, ca
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "GET" && req.method !== "PATCH") {
+  const isConversationReset = req.query.action === "conversation";
+  if (isConversationReset && req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+  if (!isConversationReset && req.method !== "GET" && req.method !== "PATCH") {
     res.setHeader("Allow", "GET, PATCH");
     return res.status(405).json({ error: "Method not allowed" });
   }
   const supabase = getSupabaseServer();
   const user = await authenticate(supabase, req);
   if (!user) return res.status(401).json({ error: "Authentification requise." });
+  if (isConversationReset) {
+    const conversationId = bodyOf(req).conversation_id;
+    if (typeof conversationId !== "string" || !conversationId.trim())
+      return res.status(400).json({ error: "conversation_id est requis." });
+
+    const { data, error } = await supabase
+      .from("maelise_conversations")
+      .update({
+        status: "deleted",
+        summary: null,
+        active_intent: null,
+        active_domain: null,
+        active_filters: {},
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", conversationId)
+      .eq("user_id", user.id)
+      .select("id")
+      .maybeSingle();
+    if (error) {
+      console.error("[maelise-conversation] reset failed", { name: error.name });
+      return res.status(500).json({ error: "Impossible de réinitialiser la conversation." });
+    }
+    if (!data) return res.status(404).json({ error: "Conversation introuvable." });
+    return res.status(200).json({ ok: true });
+  }
   const candidateId = await getCandidateId(supabase, user.id);
   if (!candidateId) return res.status(404).json({ error: "Profil candidat introuvable." });
 
