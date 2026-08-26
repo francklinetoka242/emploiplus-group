@@ -32,6 +32,11 @@ jobs:
             exit 1
           fi
 
+          if [[ "$SUPABASE_DB_URL" != postgresql://*:*@*/* && "$SUPABASE_DB_URL" != postgres://*:*@*/* ]]; then
+            echo "SUPABASE_DB_URL est invalide. Format attendu : postgresql://UTILISATEUR:MOT_DE_PASSE@HOTE:5432/postgres"
+            exit 1
+          fi
+
           docker run --rm \
             --network host \
             -e SUPABASE_DB_URL="$SUPABASE_DB_URL" \
