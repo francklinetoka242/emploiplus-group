@@ -18,6 +18,7 @@ import {
   updateNotification,
 } from "@/integrations/supabase/notifications";
 import { supabase } from "@/integrations/supabase/client";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type NotificationForm = {
   title: string;
@@ -50,6 +51,7 @@ const notificationStatusLabels: Record<NotificationStatus, string> = {
 };
 
 export function AdminNotificationsPage() {
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const { t } = useI18n();
   const [allNotifications, setAllNotifications] = React.useState<NotificationRecord[]>([]);
   const [form, setForm] = React.useState<NotificationForm>(defaultForm);
@@ -199,7 +201,7 @@ export function AdminNotificationsPage() {
   };
 
   const handleDelete = async (notification: NotificationRecord) => {
-    if (!window.confirm(`Supprimer définitivement la notification « ${notification.title} » ?`)) {
+    if (!(await confirm(`Supprimer définitivement la notification « ${notification.title} » ?`))) {
       return;
     }
     const { error } = await deleteNotification(notification.id);
@@ -235,6 +237,7 @@ export function AdminNotificationsPage() {
 
   return (
     <>
+      {confirmationDialog}
       <SEO
         title="Administration - Gestion des notifications"
         description="Gérez les notifications candidate depuis l'espace administrateur EmploiPlus."

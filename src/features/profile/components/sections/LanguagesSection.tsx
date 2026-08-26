@@ -13,6 +13,7 @@ import {
 import type { CandidateLanguage, CandidateLanguageInsert } from "@/features/candidates/api/types";
 import { Languages, Trash2, Edit2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const PROFICIENCY_LEVELS = [
   { value: "elementary", label: "Élémentaire" },
@@ -39,6 +40,7 @@ export function LanguagesSection({
   onUpdateLanguage,
   onDeleteLanguage,
 }: LanguagesSectionProps) {
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -102,7 +104,7 @@ export function LanguagesSection({
   const handleDelete = useCallback(
     async (id: string) => {
       if (!onDeleteLanguage) return;
-      if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette langue ?")) return;
+      if (!(await confirm("Êtes-vous sûr de vouloir supprimer cette langue ?"))) return;
 
       try {
         setSaving(true);
@@ -114,7 +116,7 @@ export function LanguagesSection({
         setSaving(false);
       }
     },
-    [onDeleteLanguage],
+    [onDeleteLanguage, confirm],
   );
 
   const content = useMemo(() => {
@@ -222,6 +224,7 @@ export function LanguagesSection({
 
   return (
     <Card>
+      {confirmationDialog}
       <CardHeader>
         <div className="flex items-center justify-between gap-2">
           <div>

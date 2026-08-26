@@ -42,17 +42,17 @@ export function SiteFooter() {
           <div className="font-semibold mb-3 text-sm text-slate-100">{t("footer.links.services")}</div>
           <ul className="space-y-2 text-sm text-slate-300">
             <li>
-              <Link to="/services" className="transition-colors duration-200 hover:text-white">
+              <Link to="/services" className="link link-animated transition-colors duration-200 hover:text-white">
                 {t("nav.services")}
               </Link>
             </li>
             <li>
-              <Link to="/jobs" className="transition-colors duration-200 hover:text-white">
+              <Link to="/jobs" className="link link-animated transition-colors duration-200 hover:text-white">
                 {t("nav.jobs")}
               </Link>
             </li>
             <li>
-              <Link to="/blog" className="transition-colors duration-200 hover:text-white">
+              <Link to="/blog" className="link link-animated transition-colors duration-200 hover:text-white">
                 {t("nav.blog")}
               </Link>
             </li>
@@ -62,17 +62,17 @@ export function SiteFooter() {
           <div className="font-semibold mb-3 text-sm text-slate-100">{t("footer.links.company")}</div>
           <ul className="space-y-2 text-sm text-slate-300">
             <li>
-              <Link to="/politique-de-confidentialite" className="transition-colors duration-200 hover:text-white">
+              <Link to="/politique-de-confidentialite" className="link link-animated transition-colors duration-200 hover:text-white">
                 Politique de Confidentialité
               </Link>
             </li>
             <li>
-              <Link to="/mentions-legales" className="transition-colors duration-200 hover:text-white">
+              <Link to="/mentions-legales" className="link link-animated transition-colors duration-200 hover:text-white">
                 Mentions Légales
               </Link>
             </li>
             <li>
-              <Link to="/cgu" className="transition-colors duration-200 hover:text-white">
+              <Link to="/cgu" className="link link-animated transition-colors duration-200 hover:text-white">
                 Conditions Générales d'Utilisation
               </Link>
             </li>

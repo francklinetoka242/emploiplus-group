@@ -1,6 +1,5 @@
 import type { Session } from "@supabase/supabase-js";
 import React from "react";
-import favicon from "@/assets/favicon.ico";
 import { useI18n } from "@/i18n";
 import { cn } from "@/lib/utils";
 import {
@@ -11,7 +10,6 @@ import {
   FileText,
   LayoutDashboard,
   LogOut,
-  PanelLeftOpen,
   ScrollText,
   ShieldCheck,
   Sparkles,
@@ -21,7 +19,20 @@ import {
 } from "lucide-react";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 
-type AdminView = "dashboard" | "jobs" | "blog" | "notifications" | "team" | "seo" | "privacy" | "legal" | "cgu" | "candidates" | "guides" | "faq" | "analytics-offres";
+type AdminView =
+  | "dashboard"
+  | "jobs"
+  | "blog"
+  | "notifications"
+  | "team"
+  | "seo"
+  | "privacy"
+  | "legal"
+  | "cgu"
+  | "candidates"
+  | "guides"
+  | "faq"
+  | "analytics-offres";
 
 interface AdminSidebarProps {
   open: boolean;
@@ -38,7 +49,6 @@ export function AdminSidebar({
   onSelect,
   onToggle,
   onLogout,
-  session,
 }: AdminSidebarProps) {
   const { t } = useI18n();
   const [darkMode, setDarkMode] = React.useState<boolean>(() => {
@@ -65,14 +75,6 @@ export function AdminSidebar({
       // ignore
     }
   }, [darkMode]);
-  // eslint-disable-next-line no-console
-  console.info("[AdminSidebar] render", { open, activeView, hasSession: !!session });
-  const name =
-    session.user?.user_metadata?.full_name || session.user?.user_metadata?.name || "Administrateur";
-  const email = session.user?.email || "admin@emploiplus.group";
-  const avatar =
-    session.user?.user_metadata?.avatar_url || session.user?.user_metadata?.picture || "";
-
   const navItems: { id: AdminView; label: string; icon: LucideIcon }[] = [
     {
       id: "dashboard",
@@ -96,110 +98,64 @@ export function AdminSidebar({
   return (
     <aside
       className={cn(
-        "flex h-screen flex-col overflow-hidden bg-card text-foreground transition-all duration-300",
-        open ? "w-full lg:w-72" : "w-20",
+        "flex h-full min-h-0 flex-col overflow-hidden bg-card text-foreground transition-all duration-300",
+        open ? "w-full lg:w-60" : "w-12",
       )}
       style={{
         scrollbarColor: "rgba(148, 163, 184, 0.8) transparent",
       }}
     >
-      <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-2">
-<div className={cn("flex min-w-0 items-center gap-2 sm:gap-3", !open && "justify-center")}> 
-          {!open && (
-            <button
-              type="button"
-              onClick={onToggle}
-              className="hidden h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-200 lg:inline-flex"
-              aria-label={t("admin.sidebar.expand")}
-            >
-              <PanelLeftOpen className="h-4 w-4" />
-            </button>
-          )}
-          <div className={cn("flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 p-1 shadow-sm", !open && "mx-auto") }>
-            <img src={favicon} alt="Emploi+" className="h-full w-full object-contain" />
-          </div>
-          <div
-            className={cn(
-              "min-w-0 overflow-hidden transition-all duration-300",
-              open ? "max-w-full opacity-100" : "max-w-0 opacity-0 lg:max-w-0",
-            )}
-          >
-            <p className="truncate text-sm font-semibold">Emploi+</p>
-            <p className="truncate text-[11px] text-slate-500">Dashboard pro</p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={onToggle}
-          className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-200"
-          aria-label={open ? t("admin.sidebar.collapse") : t("admin.sidebar.expand")}
-          style={{
-            boxShadow: "inset 0 0 0 1px rgba(148, 163, 184, 0.18)",
-          }}
-        >
-          {open ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-        </button>
-      </div>
-
-        {open && (
-          <div className="flex shrink-0 items-center gap-3 border-b border-border bg-muted/40 p-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-800">
-              {avatar ? (
-                <img src={avatar} alt={name} className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-xs font-semibold text-slate-200">
-                  {name.slice(0, 2).toUpperCase()}
-                </span>
-              )}
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-foreground">{name}</p>
-              <p className="truncate text-xs text-muted-foreground">{email}</p>
-            </div>
-          </div>
-        )}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-muted hover:text-primary"
+        aria-label={open ? t("admin.sidebar.collapse") : t("admin.sidebar.expand")}
+      >
+        {open ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+      </button>
 
       <nav
-        className="min-h-0 flex-1 overflow-y-auto px-2 py-3"
+        className="min-h-0 flex-1 overflow-y-auto px-2 pb-2 pt-12"
         style={{
           scrollbarWidth: "thin",
           scrollbarColor: "rgba(148, 163, 184, 0.8) rgba(15, 23, 42, 0.04)",
         }}
       >
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const active = activeView === item.id;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => onSelect(item.id)}
-              className={cn(
-                "group flex items-center rounded-xl px-3 py-2.5 text-left text-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-slate-100 hover:text-slate-900 active:scale-[0.98]",
-                open ? "justify-start gap-3 whitespace-nowrap" : "justify-center gap-0",
-                active ? "bg-slate-900 text-white shadow-sm hover:bg-slate-800 hover:text-white" : "text-slate-700",
-                !open && "w-full px-0",
-              )}
-              title={item.label}
-            >
-              <Icon className={cn("h-4 w-4 flex-shrink-0", !open && "mx-auto")} />
-              <span
+        <div className="space-y-0.5">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = activeView === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onSelect(item.id)}
                 className={cn(
-                  "text-sm font-medium",
-                  open ? "" : "hidden",
+                  "group flex min-h-8 w-full items-center rounded-md px-2 py-1 text-left text-sm transition-all duration-200 ease-out hover:bg-muted hover:text-primary active:scale-[0.98]",
+                  open ? "justify-start gap-3 whitespace-nowrap" : "justify-center gap-0",
+                  active ? "bg-muted text-primary" : "text-slate-700",
+                  !open && "w-full px-0",
                 )}
+                title={item.label}
               >
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
+                <Icon className={cn("h-4 w-4 flex-shrink-0", !open && "mx-auto")} />
+                <span className={cn("text-sm font-medium", open ? "" : "hidden")}>
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </nav>
 
-      <div className="mt-auto border-t border-slate-200 bg-slate-50/70 p-2 pb-0">
-        <div className="flex flex-col gap-2">
-          <div className={cn("flex items-center px-2 py-1", open ? "justify-between gap-3" : "justify-center")}>
+      <div className="mt-auto border-t border-slate-200 bg-slate-50/70 px-2 py-1.5">
+        <div className="flex flex-col gap-1">
+          <div
+            className={cn(
+              "flex items-center px-2 py-1",
+              open ? "justify-between gap-3" : "justify-center",
+            )}
+          >
             {open && (
               <div className="min-w-0">
                 <p className="text-xs font-medium text-slate-800">Mode sombre</p>
@@ -213,15 +169,13 @@ export function AdminSidebar({
             type="button"
             onClick={onLogout}
             className={cn(
-              "group inline-flex w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-100 hover:text-slate-900 active:scale-[0.98]",
+              "group inline-flex min-h-9 w-full items-center rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-100 hover:text-slate-900 active:scale-[0.98]",
               open ? "justify-start gap-3" : "justify-center gap-0",
               !open && "px-0",
             )}
           >
             <LogOut className={cn("h-4 w-4 text-red-500", !open && "mx-auto")} />
-            <span className={cn(open ? "" : "hidden")}>
-              {t("common.signOut")}
-            </span>
+            <span className={cn(open ? "" : "hidden")}>{t("common.signOut")}</span>
           </button>
         </div>
       </div>

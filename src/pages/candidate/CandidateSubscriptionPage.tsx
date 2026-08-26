@@ -57,7 +57,7 @@ export function CandidateSubscriptionPage() {
   const [notice, setNotice] = useState<string | null>(null);
 
   return (
-    <div className="mx-auto w-full max-w-6xl pb-8">
+    <div className="mx-auto mt-6 w-full max-w-6xl pb-8">
       <div className="grid min-w-0 gap-5 lg:grid-cols-3">
         {plans.map((plan) => {
           const Icon = plan.icon;

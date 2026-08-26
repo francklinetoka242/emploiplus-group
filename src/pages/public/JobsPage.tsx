@@ -6,8 +6,10 @@ import {
   Building2,
   CalendarDays,
   CircleAlert,
+  Bot,
   MapPin,
   MessageCircle,
+  Plus,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -60,6 +62,7 @@ import { centralAfricaCityGroups } from "@/data/locations";
 import { useCandidate } from "@/hooks/useCandidate";
 import { useCandidatePreferences as useCandidateJobPreferences } from "@/features/candidates/hooks/useCandidatePreferences";
 import { getRecommendedJobs, type RecommendedJob } from "@/services/aiMatchingService";
+import { useMaelise } from "@/features/maelise";
 import { hasAnalyzableCandidateCv, hasCandidateCv } from "@/features/candidates/api/cvApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -77,6 +80,7 @@ export function JobsPage() {
   const location = useLocation();
   const { user, isLoading, roles } = useAuthContext();
   const { profile } = useCandidate();
+  const { open: openMaelise } = useMaelise();
   const isCandidateShell = Boolean(user && (roles.includes("candidate") || profile?.id));
   const canUseAdvancedFilters = Boolean(user);
   const { preferences } = useCandidateJobPreferences(profile?.id);
@@ -117,6 +121,7 @@ export function JobsPage() {
   const [searchesLoading, setSearchesLoading] = React.useState(false);
   const [nearbyOnly, setNearbyOnly] = React.useState(false);
   const [candidateToolsOpen, setCandidateToolsOpen] = React.useState(false);
+  const [floatingActionsOpen, setFloatingActionsOpen] = React.useState(false);
   const recommendationContextRef = React.useRef<string | null>(null);
   const pageSize = 8;
   const recommendedPageSize = 3;
@@ -546,7 +551,7 @@ export function JobsPage() {
         <div className="grid gap-8">
           <div className="flex flex-col gap-6 text-foreground/90 leading-relaxed">
             <div
-              className="order-1 sticky z-40 isolate mt-0 mb-0 w-full self-start rounded-[1.25rem] bg-card/95 backdrop-blur-sm"
+              className="order-1 sticky top-0 z-40 isolate mt-0 mb-0 w-full self-start rounded-[1.25rem] bg-card/95 backdrop-blur-sm"
               style={{
                 top: mobileApp || isCandidateShell ? 0 : 64,
               }}
@@ -773,7 +778,7 @@ export function JobsPage() {
                       <button
                         type="button"
                         onClick={() => setFiltersOpen(true)}
-                        className="text-left text-sm font-semibold text-primary hover:underline sm:text-right"
+                        className="link link-animated text-left text-sm font-semibold text-primary sm:text-right"
                       >
                         Modifier les critères
                       </button>
@@ -977,7 +982,7 @@ export function JobsPage() {
                         {profile?.id && !hasCandidateCv(profile) ? (
                           <Link
                             to="/candidate/profile"
-                            className="mt-3 inline-flex font-semibold text-primary hover:underline"
+                            className="link link-animated mt-3 inline-flex font-semibold text-primary"
                           >
                             Compléter mon profil
                           </Link>
@@ -1286,18 +1291,53 @@ export function JobsPage() {
           </div>
         ) : null}
 
-        <div className="flex items-center gap-3">
-          {isCandidateShell && !recommendationsOpen ? (
-            <button
-              type="button"
-              onClick={() => setRecommendationsOpen(true)}
-              aria-label="Voir mes recommandations"
-              className="mr-16 inline-flex size-11 items-center justify-center rounded-full border border-primary/20 bg-card p-0 text-sm font-semibold text-foreground shadow-lg transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:mr-16 sm:size-auto sm:min-h-12 sm:justify-start sm:gap-2 sm:px-4 sm:py-2"
-            >
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="hidden sm:inline">Recommandations</span>
-              <span className="hidden text-primary sm:inline">Voir</span>
-            </button>
+        <div className={isCandidateShell ? "fab fab-flower" : "flex items-center gap-3"}>
+          {isCandidateShell ? (
+            <>
+              <div
+                tabIndex={0}
+                role="button"
+                aria-expanded={floatingActionsOpen}
+                aria-label={floatingActionsOpen ? "Masquer les actions" : "Afficher les actions"}
+                className="btn btn-lg btn-circle btn-primary"
+                onClick={() => setFloatingActionsOpen((open) => !open)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setFloatingActionsOpen((open) => !open);
+                  }
+                }}
+              >
+                {floatingActionsOpen ? (
+                  <X className="size-5" aria-hidden="true" />
+                ) : (
+                  <Plus className="size-5" aria-hidden="true" />
+                )}
+              </div>
+              {floatingActionsOpen ? (
+                <>
+                  {!recommendationsOpen ? (
+                    <button
+                      type="button"
+                      onClick={() => setRecommendationsOpen(true)}
+                      aria-label="Voir mes recommandations"
+                      className="btn btn-lg btn-recommendation rounded-full border border-primary/20 bg-card px-4 text-primary shadow-lg transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+                    >
+                      <Sparkles className="size-5" aria-hidden="true" />
+                      <span>Recommandation</span>
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={openMaelise}
+                    aria-label="Ouvrir Maélise"
+                    className="btn btn-lg btn-circle border border-brand/20 bg-brand text-brand-foreground shadow-brand transition hover:bg-brand/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60"
+                  >
+                    <Bot className="size-5" aria-hidden="true" />
+                  </button>
+                </>
+              ) : null}
+            </>
           ) : null}
 
           {!isCandidateShell && (

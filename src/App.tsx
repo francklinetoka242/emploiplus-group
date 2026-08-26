@@ -23,6 +23,7 @@ import {
   JobsPageSkeleton,
   JobOfferDetailSkeleton,
   BlogPageSkeleton,
+  BlogPostDetailSkeleton,
 } from "@/components/ui/skeletons";
 
 // Immediately loaded pages (critical path)
@@ -353,7 +354,13 @@ function CandidateOnboardingGate() {
 function AppContent() {
   const location = useLocation();
   const mobileApp = isMobileApp();
-  const { session } = useAuthContext();
+  const { session, isAuthenticated, roles, rolesResolved } = useAuthContext();
+  const showMaelise =
+    isAuthenticated &&
+    rolesResolved &&
+    roles.includes("candidate") &&
+    !roles.includes("admin") &&
+    !roles.includes("super_admin");
 
   // Scroll to top when route changes
   useEffect(() => {
@@ -428,7 +435,7 @@ function AppContent() {
         <Route path="/blog" element={withSuspense(<BlogPage />, <BlogPageSkeleton />)} />
         <Route
           path="/blog/:slug"
-          element={withSuspense(<BlogPostDetailPage />, <BlogPageSkeleton />)}
+          element={withSuspense(<BlogPostDetailPage />, <BlogPostDetailSkeleton />)}
         />
         <Route path="/faq" element={withSuspense(<FAQPage />, <PublicPageSkeleton />)} />
         <Route path="/contact" element={withSuspense(<ContactPage />, <PublicPageSkeleton />)} />
@@ -789,7 +796,7 @@ function AppContent() {
       <CandidateSidebarProvider>
         <MaeliseProvider>
           <Suspense fallback={<PageLoadingFallback />}>{routes}</Suspense>
-          <MaeliseWidget />
+          {showMaelise ? <MaeliseWidget /> : null}
           <Toaster richColors position="top-right" />
         </MaeliseProvider>
       </CandidateSidebarProvider>

@@ -23,6 +23,10 @@ function AdminDashboardView() {
     publishedPosts: 0,
     featuredPosts: 0,
     receivedRequests: 0,
+    totalCandidates: 0,
+    activeCandidates: 0,
+    inactiveCandidates: 0,
+    archivedCandidates: 0,
   });
   const [adminStats, setAdminStats] = useState({
     total: 0,
@@ -46,7 +50,7 @@ function AdminDashboardView() {
           setRefreshing(true);
         }
 
-        const [jobsRes, postsRes, featuredRes, requestsRes, adminsRes] = await Promise.all([
+        const [jobsRes, postsRes, featuredRes, requestsRes, adminsRes, candidatesRes] = await Promise.all([
           supabase
             .from("job_offers")
             .select("id", { count: "exact", head: true })
@@ -62,6 +66,7 @@ function AdminDashboardView() {
             .eq("is_featured", true),
           supabase.from("contacts_messages").select("id", { count: "exact", head: true }),
           supabase.from("user_roles").select("id, role, is_active"),
+          supabase.from("candidates").select("status"),
         ]);
 
         if (!mounted) return;
@@ -84,6 +89,10 @@ function AdminDashboardView() {
           publishedPosts: postsRes.count ?? 0,
           featuredPosts: featuredRes.count ?? 0,
           receivedRequests: requestsRes.count ?? 0,
+          totalCandidates: candidatesRes.data?.length ?? 0,
+          activeCandidates: candidatesRes.data?.filter((candidate) => candidate.status === "active").length ?? 0,
+          inactiveCandidates: candidatesRes.data?.filter((candidate) => candidate.status === "inactive").length ?? 0,
+          archivedCandidates: candidatesRes.data?.filter((candidate) => candidate.status === "archived").length ?? 0,
         });
         setAdminStats({
           total: adminData.length,
@@ -134,8 +143,13 @@ function AdminDashboardView() {
     },
     {
       label: "Candidats",
-      value: "26",
-      details: ["26 Total", "10 Actifs", "0 Inactifs", "0 Archivé"],
+      value: counts.totalCandidates.toString(),
+      details: [
+        `${counts.totalCandidates} Total`,
+        `${counts.activeCandidates} Actifs`,
+        `${counts.inactiveCandidates} Inactifs`,
+        `${counts.archivedCandidates} Archivé`,
+      ],
       icon: Users2,
       tone: "from-violet-500/15 to-violet-500/5 text-violet-600",
     },

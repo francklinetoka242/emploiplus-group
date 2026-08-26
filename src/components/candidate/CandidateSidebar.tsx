@@ -211,21 +211,21 @@ export function CandidateSidebar({
 
           <nav
             className={cn(
-              "flex-1 overflow-y-auto px-2 py-4 scrollbar-hide",
+              "flex-1 overflow-y-auto px-2 py-2 scrollbar-hide",
               isDarkMode ? "" : "bg-white",
             )}
           >
-            <div className="space-y-4">
+            <div className="space-y-2">
               {!mobileApp && (
                 <div
                   className={cn(
-                    "rounded-2xl p-2",
+                    "rounded-xl p-1.5",
                     isDarkMode
                       ? "border border-white/10 bg-slate-950/60"
                       : "border border-slate-200 bg-slate-50",
                   )}
                 >
-                  <div className="flex items-center justify-between px-2 pb-2">
+                  <div className="flex items-center justify-between px-2 pb-1">
                     <p
                       className={cn(
                         "text-[10px] font-semibold uppercase tracking-[0.24em]",
@@ -264,7 +264,7 @@ export function CandidateSidebar({
                           to={item.href}
                           onClick={handleMenuClick}
                           className={cn(
-                            `relative flex items-center gap-3 rounded-lg px-4 py-3 ${sidebarHoverMotion}`,
+                            `relative flex items-center gap-2.5 rounded-lg px-3 py-1.5 ${sidebarHoverMotion}`,
                             active
                               ? "bg-secondary text-white"
                               : isDarkMode
@@ -272,9 +272,6 @@ export function CandidateSidebar({
                                 : "bg-white text-slate-700 hover:bg-slate-50",
                           )}
                         >
-                          {active && (
-                            <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
-                          )}
                           <div
                             className={cn(
                               "flex h-9 w-9 items-center justify-center rounded-lg",
@@ -310,7 +307,7 @@ export function CandidateSidebar({
                 to="/jobs"
                 onClick={handleMenuClick}
                 className={cn(
-                  `relative flex items-center gap-3 rounded-2xl px-4 py-3 ${sidebarHoverMotion}`,
+                  `relative flex items-center gap-2.5 rounded-xl px-3 py-1.5 ${sidebarHoverMotion}`,
                   isDarkMode
                     ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
                     : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
@@ -329,7 +326,7 @@ export function CandidateSidebar({
 
               <div
                 className={cn(
-                  "rounded-2xl p-2",
+                  "rounded-xl p-1.5",
                   isDarkMode
                     ? "border border-white/10 bg-slate-950/60"
                     : "border border-slate-200 bg-slate-50",
@@ -337,7 +334,7 @@ export function CandidateSidebar({
               >
                 <p
                   className={cn(
-                    "px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em]",
+                    "px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.2em]",
                     isDarkMode ? "text-slate-400" : "text-slate-500",
                   )}
                 >
@@ -349,9 +346,6 @@ export function CandidateSidebar({
                     const active = isActive(item.href);
                     const content = (
                       <>
-                        {active && (
-                          <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
-                        )}
                         <div
                           className={cn(
                             "flex h-9 w-9 items-center justify-center rounded-lg",
@@ -389,7 +383,7 @@ export function CandidateSidebar({
                             setSupportDialogOpen(true);
                           }}
                           className={cn(
-                            `relative flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left ${sidebarHoverMotion}`,
+                            `relative flex w-full items-center gap-2.5 rounded-lg px-3 py-1.5 text-left ${sidebarHoverMotion}`,
                             active
                               ? "bg-secondary text-white"
                               : isDarkMode
@@ -408,7 +402,7 @@ export function CandidateSidebar({
                         to={item.href}
                         onClick={handleMenuClick}
                         className={cn(
-                          `relative flex items-center gap-3 rounded-lg px-4 py-3 ${sidebarHoverMotion}`,
+                          `relative flex items-center gap-2.5 rounded-lg px-3 py-1.5 ${sidebarHoverMotion}`,
                           active
                             ? "bg-secondary text-white"
                             : isDarkMode
@@ -425,7 +419,7 @@ export function CandidateSidebar({
 
               <div
                 className={cn(
-                  "mt-3 rounded-2xl p-2",
+                  "mt-2 rounded-xl p-1.5",
                   isDarkMode
                     ? "border border-white/10 bg-slate-950/60"
                     : "border border-slate-200 bg-slate-50",
@@ -433,7 +427,7 @@ export function CandidateSidebar({
               >
                 <div
                   className={cn(
-                    "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left",
+                    "flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left",
                     isDarkMode ? "hover:bg-white/10" : "hover:bg-slate-100",
                   )}
                 >
@@ -455,7 +449,7 @@ export function CandidateSidebar({
               </div>
               <div
                 className={cn(
-                  "rounded-2xl p-2",
+                  "rounded-xl p-1.5",
                   isDarkMode
                     ? "border border-white/10 bg-slate-950/60"
                     : "border border-slate-200 bg-slate-50",
@@ -469,7 +463,7 @@ export function CandidateSidebar({
           {/* Footer - Logout (mobile) */}
           <div
             className={cn(
-              "px-4 py-4",
+              "px-3 py-2",
               isDarkMode ? "border-t border-white/5" : "border-t border-slate-200",
             )}
           >
@@ -478,7 +472,7 @@ export function CandidateSidebar({
                 onOpenChange?.(false);
                 onLogout?.();
               }}
-              className="w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium text-white"
+              className="w-full gap-2 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2 text-sm font-medium text-white"
               variant="ghost"
             >
               <LogOut className="h-4 w-4 text-white" /> Déconnexion
@@ -499,236 +493,239 @@ export function CandidateSidebar({
           isDarkMode
             ? "bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100"
             : "bg-white text-slate-900",
-          open ? "w-72" : "w-20",
+          open ? "w-60" : "w-12",
         )}
-        style={{ minWidth: open ? 288 : 80 }}
-      >
-      <div
-        className={cn(
-          "flex h-12 shrink-0 items-start justify-end px-2 pt-1",
-          isDarkMode ? "border-b border-white/5" : "border-b border-slate-200",
-        )}
+        style={{ minWidth: open ? 240 : 48 }}
       >
         <Button
           variant="ghost"
           size="icon"
           onClick={() => onOpenChange?.(!open)}
           className={cn(
-            "h-10 w-10 rounded-lg",
-            isDarkMode ? "text-slate-300 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
+            "absolute right-2 top-1 z-10 h-10 w-10 rounded-lg",
+            isDarkMode
+              ? "text-slate-300 hover:bg-white/10 hover:text-white"
+              : "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
           )}
           aria-label={open ? "Réduire le menu candidat" : "Agrandir le menu candidat"}
         >
           {open ? <ChevronLeft className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
-      </div>
 
-      <TooltipProvider delayDuration={200}>
-        <nav
-          className={cn(
-            "min-h-0 flex-1 overflow-y-auto px-2 pb-2 pt-1 scrollbar-hide",
-          )}
-        >
-          <div className="space-y-2">
-            <Link
-              to="/jobs"
-              onClick={handleMenuClick}
-              className={cn(
-                `relative flex items-center gap-3 rounded-lg px-3 py-2.5 ${sidebarHoverMotion} md:px-3 md:py-2`,
-                isDarkMode
-                  ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
-                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-              )}
-            >
-              <div
+        <TooltipProvider delayDuration={200}>
+          <nav
+            className={cn(
+              "min-h-0 flex-1 overflow-y-auto px-2 pb-1 scrollbar-hide",
+              open ? "pt-1" : "pt-12",
+            )}
+          >
+            <div className={cn(open ? "space-y-1.5" : "space-y-1")}>
+              <Link
+                to="/jobs"
+                onClick={handleMenuClick}
                 className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-lg",
-                  isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
+                  cn(
+                    `relative flex items-center rounded-lg ${sidebarHoverMotion}`,
+                    open ? "gap-2 px-3 py-1" : "justify-center gap-1 px-1 py-1",
+                  ),
+                  isDarkMode
+                    ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
+                    : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
                 )}
               >
-                <Search className="h-5 w-5" />
-              </div>
-              {open && <span className="truncate text-sm font-medium">Emplois</span>}
-            </Link>
-
-            <div
-              className={cn(
-                "rounded-2xl p-2",
-                isDarkMode
-                  ? "border border-white/10 bg-slate-950/60"
-                  : "border border-slate-200 bg-slate-50",
-              )}
-            >
-              {open && (
-                <p
+                <div
                   className={cn(
-                    "px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em]",
-                    isDarkMode ? "text-slate-400" : "text-slate-500",
+                    open
+                      ? "flex h-8 w-8 items-center justify-center rounded-lg"
+                      : "flex h-8 w-8 items-center justify-center rounded-lg",
+                    isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
                   )}
                 >
-                  Mon espace
-                </p>
-              )}
-              <div className="space-y-1">
-                {candidateMenuItems.map((item) => {
-                  const Icon = item.icon;
-                  const active = isActive(item.href);
-                  const content = (
-                    <>
-                      {active && (
-                        <div className="absolute left-0 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary to-secondary" />
-                      )}
-                      <div
-                        className={cn(
-                          "flex h-9 w-9 items-center justify-center rounded-lg",
-                          active
-                            ? "bg-secondary text-white"
-                            : isDarkMode
-                              ? "bg-slate-950/90 text-white"
-                              : "bg-slate-100 text-slate-700",
-                        )}
-                      >
-                        <Icon
+                  <Search className="h-5 w-5" />
+                </div>
+                {open && <span className="truncate text-sm font-medium">Emplois</span>}
+              </Link>
+
+              <div className={cn("rounded-lg", open ? "border-t border-slate-200/80 pt-2" : "p-1")}>
+                {open && (
+                  <p
+                    className={cn(
+                      "px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.2em]",
+                      isDarkMode ? "text-slate-400" : "text-slate-500",
+                    )}
+                  >
+                    Mon espace
+                  </p>
+                )}
+                <div className={cn(open ? "space-y-0.5" : "space-y-0.5")}>
+                  {candidateMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    const active = isActive(item.href);
+                    const content = (
+                      <>
+                        <div
                           className={cn(
-                            "h-5 w-5",
+                            open
+                              ? "flex h-8 w-8 items-center justify-center rounded-lg"
+                              : "flex h-8 w-8 items-center justify-center rounded-lg",
                             active
-                              ? "text-white"
+                              ? "bg-primary/10 text-primary"
                               : isDarkMode
                                 ? "text-slate-200"
-                                : "text-slate-700",
-                          )}
-                        />
-                      </div>
-                      {open && (
-                        <span
-                          className={cn(
-                            "truncate text-sm font-medium",
-                            active
-                              ? "text-white"
-                              : isDarkMode
-                                ? "text-slate-300 group-hover:text-slate-100"
-                                : "text-slate-700 group-hover:text-slate-900",
+                                : "bg-slate-100 text-slate-700",
                           )}
                         >
-                          {item.label}
-                        </span>
-                      )}
-                    </>
-                  );
+                          <Icon
+                            className={cn(
+                              "h-5 w-5",
+                              active
+                                ? "text-primary"
+                                : isDarkMode
+                                  ? "text-slate-200"
+                                  : "text-slate-700",
+                            )}
+                          />
+                        </div>
+                        {open && (
+                          <span
+                            className={cn(
+                              "truncate text-sm font-medium",
+                              active
+                                ? "text-primary"
+                                : isDarkMode
+                                  ? "text-slate-300 group-hover:text-slate-100"
+                                  : "text-slate-700 group-hover:text-slate-900",
+                            )}
+                          >
+                            {item.label}
+                          </span>
+                        )}
+                      </>
+                    );
 
-                  const itemElement = item.external ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleMenuClick();
-                        setSupportDialogOpen(true);
-                      }}
-                      className={cn(
-                        `group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left ${sidebarHoverMotion} md:px-3 md:py-2`,
-                        active
-                          ? "bg-secondary text-white"
-                          : isDarkMode
-                            ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
-                            : "bg-white text-slate-700 hover:bg-slate-50",
-                      )}
-                    >
-                      {content}
-                    </button>
-                  ) : (
-                    <Link
-                      to={item.href}
-                      onClick={handleMenuClick}
-                      className={cn(
-                        `group relative flex items-center gap-3 rounded-lg px-3 py-2.5 ${sidebarHoverMotion} md:px-3 md:py-2`,
-                        active
-                          ? "bg-secondary text-white"
-                          : isDarkMode
-                            ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
-                            : "bg-white text-slate-700 hover:bg-slate-50",
-                      )}
-                    >
-                      {content}
-                    </Link>
-                  );
+                    const itemElement = item.external ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleMenuClick();
+                          setSupportDialogOpen(true);
+                        }}
+                        className={cn(
+                          cn(
+                            "group relative flex w-full items-center rounded-lg text-left",
+                            open
+                              ? `gap-2 px-3 py-1 ${sidebarHoverMotion}`
+                              : `justify-center gap-1 px-1 py-1 ${sidebarHoverMotion}`,
+                          ),
+                          active
+                            ? "bg-muted text-primary"
+                            : isDarkMode
+                              ? "text-slate-200 hover:bg-white/5"
+                              : "text-slate-700 hover:bg-slate-50",
+                        )}
+                      >
+                        {content}
+                      </button>
+                    ) : (
+                      <Link
+                        to={item.href}
+                        onClick={handleMenuClick}
+                        className={cn(
+                          cn(
+                            "group relative flex items-center rounded-lg",
+                            open
+                              ? `gap-2 px-3 py-1 ${sidebarHoverMotion}`
+                              : `justify-center gap-1 px-1 py-1 ${sidebarHoverMotion}`,
+                          ),
+                          active
+                            ? "bg-muted text-primary"
+                            : isDarkMode
+                              ? "text-slate-200 hover:bg-white/5"
+                              : "text-slate-700 hover:bg-slate-50",
+                        )}
+                      >
+                        {content}
+                      </Link>
+                    );
 
-                  return (
-                    <Tooltip key={item.id}>
-                      <TooltipTrigger asChild>{itemElement}</TooltipTrigger>
-                      {!open && (
-                        <TooltipContent
-                          side="right"
-                          align="center"
-                          className={cn(
-                            "rounded-lg px-3 py-2 text-xs font-medium",
-                            isDarkMode
-                              ? "border border-white/10 bg-slate-900 text-slate-100"
-                              : "border border-slate-200 bg-white text-slate-900",
-                          )}
-                        >
-                          {item.label}
-                        </TooltipContent>
-                      )}
-                    </Tooltip>
-                  );
-                })}
+                    return (
+                      <Tooltip key={item.id}>
+                        <TooltipTrigger asChild>{itemElement}</TooltipTrigger>
+                        {!open && (
+                          <TooltipContent
+                            side="right"
+                            align="center"
+                            className={cn(
+                              "rounded-lg px-3 py-2 text-xs font-medium",
+                              isDarkMode
+                                ? "border border-white/10 bg-slate-900 text-slate-100"
+                                : "border border-slate-200 bg-white text-slate-900",
+                            )}
+                          >
+                            {item.label}
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-        </nav>
+          </nav>
 
-        {/* Footer - desktop */}
-        <div
-          className={cn(
-            "px-2 py-4",
-            isDarkMode ? "border-t border-white/5" : "border-t border-slate-200",
-          )}
-        >
-          {open ? (
-            <>
-              <div className="mb-3">
-                <EcoModeToggle />
-              </div>
-              <Button
-                onClick={onLogout}
-                className="w-full gap-3 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2.5 text-sm font-medium text-white"
-                variant="ghost"
-              >
-                <LogOut className="h-4 w-4 text-white" /> Déconnexion
-              </Button>
-            </>
-          ) : (
-            <div className="flex items-center justify-end">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    onClick={onLogout}
-                    size="icon"
-                    className={cn(
-                      "h-10 w-10 rounded-lg",
-                      isDarkMode ? "bg-slate-800/50" : "bg-slate-100 text-slate-900",
-                    )}
-                    variant="ghost"
-                  >
-                    <LogOut className="h-5 w-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="right"
-                  className={cn(
-                    "rounded-lg text-xs font-medium",
-                    isDarkMode
-                      ? "border border-white/10 bg-slate-900 text-slate-100"
-                      : "border border-slate-200 bg-white text-slate-900",
-                  )}
+          {/* Footer - desktop */}
+          <div
+            className={cn(
+              "px-2 py-2",
+              isDarkMode ? "border-t border-white/5" : "border-t border-slate-200",
+            )}
+          >
+            {open ? (
+              <>
+                <div className="mb-1.5">
+                  <EcoModeToggle />
+                </div>
+                <Button
+                  onClick={onLogout}
+                  className="w-full gap-2 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2 text-sm font-medium text-white"
+                  variant="ghost"
                 >
-                  Déconnexion
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          )}
-        </div>
-      </TooltipProvider>
-    </aside>
+                  <LogOut className="h-4 w-4 text-white" /> Déconnexion
+                </Button>
+              </>
+            ) : (
+              <div className="flex items-center justify-end">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={onLogout}
+                      size="icon"
+                      className={cn(
+                        "h-10 w-10 rounded-lg",
+                        isDarkMode ? "bg-slate-800/50" : "bg-slate-100 text-slate-900",
+                      )}
+                      variant="ghost"
+                    >
+                      <LogOut className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="right"
+                    className={cn(
+                      "rounded-lg text-xs font-medium",
+                      isDarkMode
+                        ? "border border-white/10 bg-slate-900 text-slate-100"
+                        : "border border-slate-200 bg-white text-slate-900",
+                    )}
+                  >
+                    Déconnexion
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            )}
+          </div>
+        </TooltipProvider>
+      </aside>
     </>
   );
 }

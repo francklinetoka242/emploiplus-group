@@ -21,10 +21,14 @@ import {
   Bot,
   Check,
   ExternalLink,
+  LockKeyhole,
   Loader2,
   MessageCircle,
+  MessageSquareText,
+  Power,
   RefreshCcw,
   Send,
+  ShieldCheck,
   Settings2,
   X,
 } from "lucide-react";
@@ -253,6 +257,8 @@ export function MaeliseWidget() {
     }, 0);
   };
 
+  const isCandidateJobsPage = location.pathname === "/jobs" && Boolean(session);
+
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-end pb-[env(safe-area-inset-bottom)] sm:inset-x-auto sm:bottom-5 sm:right-5 sm:pb-0">
       <AlertDialog open={showNewConversationDialog} onOpenChange={setShowNewConversationDialog}>
@@ -279,56 +285,83 @@ export function MaeliseWidget() {
           side="right"
           className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-md"
         >
-          <SheetHeader className="border-b border-border px-5 py-5 pr-14 text-left sm:px-7">
-            <SheetTitle className="flex items-center gap-2 text-xl">
-              <Settings2 className="h-5 w-5 text-primary" />
-              Paramètres Maélise
+          <SheetHeader className="border-b border-border bg-muted/20 px-5 py-5 pr-14 text-left sm:px-7">
+            <SheetTitle className="flex items-center gap-3 text-xl tracking-tight">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Settings2 className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span>Paramètres Maélise</span>
             </SheetTitle>
-            <SheetDescription className="leading-6">
+            <SheetDescription className="max-w-sm leading-6">
               Cette conversation est indépendante et ne conserve pas l’historique des échanges
               précédents.
             </SheetDescription>
           </SheetHeader>
 
-          <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5 sm:px-7">
-            <div className="rounded-xl border border-border bg-muted/30 p-4">
-              <p className="text-sm font-medium text-foreground">Conversation active</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Une nouvelle conversation réinitialise le contexte courant et recommence avec le
-                message d’accueil par défaut.
-              </p>
-            </div>
+          <div className="flex-1 space-y-3 overflow-y-auto bg-muted/10 px-5 py-4 sm:px-7">
+            <section className="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <div className="flex items-start gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600">
+                  <MessageSquareText className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Conversation active</h3>
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                    Une nouvelle conversation réinitialise le contexte courant et recommence avec le
+                    message d’accueil par défaut.
+                  </p>
+                </div>
+              </div>
+            </section>
 
-            <div className="rounded-xl border border-border bg-card p-4">
-              <p className="text-sm font-medium text-foreground">Confidentialité</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                Autorisez séparément chaque catégorie de données. Les nouvelles permissions sont
-                désactivées par défaut.
-              </p>
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-4 w-full"
-                disabled={!permissions || permissionsLoading}
-                onClick={() => void toggleAllPermissions()}
-              >
-                {permissions && maelisePermissionColumns.every((column) => permissions[column])
-                  ? "Tout désactiver"
-                  : "Tout activer"}
-              </Button>
-              <div className="mt-4 space-y-2" aria-busy={permissionsLoading}>
+            <section className="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600">
+                    <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">Confidentialité</h3>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                      Autorisez séparément chaque catégorie de données. Les nouvelles permissions
+                      sont désactivées par défaut.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+                  disabled={!permissions || permissionsLoading}
+                  onClick={() => void toggleAllPermissions()}
+                  aria-label={
+                    permissions && maelisePermissionColumns.every((column) => permissions[column])
+                      ? "Tout désactiver"
+                      : "Tout activer"
+                  }
+                  title={
+                    permissions && maelisePermissionColumns.every((column) => permissions[column])
+                      ? "Tout désactiver"
+                      : "Tout activer"
+                  }
+                >
+                  <Power className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+              <div className="mt-4 space-y-1.5" aria-busy={permissionsLoading}>
                 {maelisePermissionColumns.map((column) => (
                   <div
                     key={column}
                     id={`privacy-${column}`}
                     className={[
-                      "flex items-center justify-between gap-3 rounded-md border border-border/70 bg-background/40 px-3 py-2 transition-colors",
+                      "flex items-center justify-between gap-3 rounded-lg border border-border/70 bg-background/60 px-3 py-2.5 transition-colors",
                       highlightedPermission === column
                         ? "border-brand bg-brand/10 ring-2 ring-brand/30"
                         : "",
                     ].join(" ")}
                   >
-                    <span className="text-sm text-foreground">{permissionLabels[column]}</span>
+                    <span className="text-sm leading-5 text-foreground">
+                      {permissionLabels[column]}
+                    </span>
                     <button
                       type="button"
                       aria-label={`${permissions?.[column] ? "Désactiver" : "Activer"} ${permissionLabels[column]}`}
@@ -361,15 +394,22 @@ export function MaeliseWidget() {
                   {permissionsError}
                 </p>
               )}
-            </div>
+            </section>
 
-            <div className="rounded-xl border border-border bg-card p-4">
-              <p className="text-sm font-medium text-foreground">Sécurité</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Les données du candidat restent gérées côté serveur selon le profil connecté, sans
-                mémoire historique persistante.
-              </p>
-            </div>
+            <section className="rounded-xl border border-border bg-card p-4 shadow-sm">
+              <div className="flex items-start gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600">
+                  <LockKeyhole className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Sécurité</h3>
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                    Les données du candidat restent gérées côté serveur selon le profil connecté,
+                    sans mémoire historique persistante.
+                  </p>
+                </div>
+              </div>
+            </section>
           </div>
         </SheetContent>
       </Sheet>
@@ -592,7 +632,7 @@ export function MaeliseWidget() {
         </section>
       )}
 
-      {!isOpen && (
+      {!isOpen && !isCandidateJobsPage && (
         <Button
           ref={triggerRef}
           type="button"

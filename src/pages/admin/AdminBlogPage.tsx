@@ -1,9 +1,15 @@
 import React from "react";
 import {
+  Bold,
   Eye,
   EyeOff,
   ExternalLink,
   FileText,
+  Heading2,
+  Italic,
+  Link as LinkIcon,
+  List,
+  ListOrdered,
   PencilLine,
   Plus,
   RefreshCw,
@@ -28,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Database } from "@/integrations/supabase/types";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 
@@ -51,6 +58,7 @@ function createEmptyForm() {
 }
 
 export function AdminBlogPage() {
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const { t } = useI18n();
   const [form, setForm] = React.useState(createEmptyForm());
   const [posts, setPosts] = React.useState<BlogPost[]>([]);
@@ -65,6 +73,7 @@ export function AdminBlogPage() {
   const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(
     null,
   );
+  const contentRef = React.useRef<HTMLTextAreaElement>(null);
 
   const totalPages = Math.max(1, Math.ceil(totalPosts / PAGE_SIZE));
 
@@ -75,6 +84,50 @@ export function AdminBlogPage() {
       ...prev,
       [name]: name === "sort_order" ? Number(value) : value,
     }));
+  };
+
+  const insertMarkdown = (prefix: string, suffix = "", defaultText = "texte") => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = form.content.slice(start, end) || defaultText;
+    const replacement = `${prefix}${selectedText}${suffix}`;
+    const nextContent = `${form.content.slice(0, start)}${replacement}${form.content.slice(end)}`;
+
+    setForm((prev) => ({ ...prev, content: nextContent }));
+    window.requestAnimationFrame(() => {
+      textarea.focus();
+      const selectionStart = start + prefix.length;
+      textarea.setSelectionRange(selectionStart, selectionStart + selectedText.length);
+    });
+  };
+
+  const insertList = (ordered: boolean) => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = form.content.slice(start, end) || "Élément de liste";
+    const lines = selectedText.split("\n");
+    const replacement = lines
+      .map((line, index) => `${ordered ? `${index + 1}.` : "-"} ${line || "Élément de liste"}`)
+      .join("\n");
+    const nextContent = `${form.content.slice(0, start)}${replacement}${form.content.slice(end)}`;
+
+    setForm((prev) => ({ ...prev, content: nextContent }));
+    window.requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start, start + replacement.length);
+    });
+  };
+
+  const insertLink = () => {
+    const url = window.prompt("URL du lien", "https://");
+    if (!url) return;
+    insertMarkdown("[", `](${url})`, "Texte du lien");
   };
 
   const loadPosts = React.useCallback(
@@ -278,7 +331,7 @@ export function AdminBlogPage() {
   };
 
   const deletePost = async (post: BlogPost) => {
-    if (!window.confirm(`Supprimer définitivement l'article « ${post.title} » ?`)) return;
+    if (!(await confirm(`Supprimer définitivement l'article « ${post.title} » ?`))) return;
     setActionLoadingId(post.id);
     const { error } = await supabase.from("blog_posts").delete().eq("id", post.id);
     setActionLoadingId(null);
@@ -298,6 +351,7 @@ export function AdminBlogPage() {
 
   return (
     <>
+      {confirmationDialog}
       <SEO
         title="Administration - Blog"
         description="Gérez les articles de blog depuis l'administration EmploiPlus Group."
@@ -422,7 +476,76 @@ export function AdminBlogPage() {
                 <label className="mb-2 block text-sm font-semibold text-foreground">
                   {t("admin.blog.field.content")}
                 </label>
+                <div className="mb-2 flex flex-wrap items-center gap-1 rounded-lg border border-border bg-muted/40 p-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => insertMarkdown("**", "**")}
+                    title="Gras"
+                    aria-label="Mettre en gras"
+                    className="h-8 w-8"
+                  >
+                    <Bold className="size-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => insertMarkdown("*", "*")}
+                    title="Italique"
+                    aria-label="Mettre en italique"
+                    className="h-8 w-8"
+                  >
+                    <Italic className="size-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => insertMarkdown("## ", "", "Titre")}
+                    title="Titre de section"
+                    aria-label="Insérer un titre de section"
+                    className="h-8 w-8"
+                  >
+                    <Heading2 className="size-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => insertList(false)}
+                    title="Liste à puces"
+                    aria-label="Insérer une liste à puces"
+                    className="h-8 w-8"
+                  >
+                    <List className="size-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => insertList(true)}
+                    title="Liste numérotée"
+                    aria-label="Insérer une liste numérotée"
+                    className="h-8 w-8"
+                  >
+                    <ListOrdered className="size-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={insertLink}
+                    title="Ajouter un lien"
+                    aria-label="Ajouter un lien"
+                    className="h-8 w-8"
+                  >
+                    <LinkIcon className="size-4" />
+                  </Button>
+                </div>
                 <Textarea
+                  ref={contentRef}
                   name="content"
                   value={form.content}
                   onChange={handleChange}

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useI18n } from "@/i18n";
 import { usePageSEO } from "@/features/seo";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +45,7 @@ export function CandidateLanguagesPage() {
   const { languages, loading, error: hookError, createLanguage, updateLanguage, deleteLanguage } =
     useCandidateLanguages(profile?.id);
   const [showForm, setShowForm] = useState(false);
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const displayError = error ?? hookError;
@@ -102,7 +104,7 @@ export function CandidateLanguagesPage() {
   };
 
   const handleDeleteLanguage = async (id: string) => {
-    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette langue ?")) return;
+    if (!(await confirm("Êtes-vous sûr de vouloir supprimer cette langue ?"))) return;
 
     try {
       await deleteLanguage(id);
@@ -141,8 +143,10 @@ export function CandidateLanguagesPage() {
     );
   }
 
-  return (
-    <div className="space-y-6">
+    return (
+      <>
+        {confirmationDialog}
+        <div className="space-y-6">
       <div className="flex items-center justify-end">
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
@@ -310,6 +314,7 @@ export function CandidateLanguagesPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+        </div>
+      </>
   );
 }

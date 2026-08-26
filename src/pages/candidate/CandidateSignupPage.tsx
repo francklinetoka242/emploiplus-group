@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { parseAuthErrorMessage } from "@/features/authentication/api/authApi";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { signupSchema, type SignupFormValues } from "@/features/forms/schemas/auth.schemas";
@@ -22,6 +22,8 @@ export function CandidateSignupPage() {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -192,7 +194,24 @@ export function CandidateSignupPage() {
                       <FormItem>
                         <FormLabel className="text-slate-700">Mot de passe</FormLabel>
                         <FormControl>
-                          <Input {...field} id="password" type="password" placeholder="••••••••" disabled={loading} />
+                          <div className="relative">
+                            <Input
+                              {...field}
+                              id="password"
+                              type={showPassword ? "text" : "password"}
+                              placeholder="••••••••"
+                              className="pr-11"
+                              disabled={loading}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword((visible) => !visible)}
+                              className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground transition hover:text-foreground"
+                              aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                            >
+                              {showPassword ? <Eye className="size-5" /> : <EyeOff className="size-5" />}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -206,7 +225,24 @@ export function CandidateSignupPage() {
                       <FormItem>
                         <FormLabel className="text-slate-700">Confirmer le mot de passe</FormLabel>
                         <FormControl>
-                          <Input {...field} id="confirmPassword" type="password" placeholder="••••••••" disabled={loading} />
+                          <div className="relative">
+                            <Input
+                              {...field}
+                              id="confirmPassword"
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="••••••••"
+                              className="pr-11"
+                              disabled={loading}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowConfirmPassword((visible) => !visible)}
+                              className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground transition hover:text-foreground"
+                              aria-label={showConfirmPassword ? "Masquer la confirmation du mot de passe" : "Afficher la confirmation du mot de passe"}
+                            >
+                              {showConfirmPassword ? <Eye className="size-5" /> : <EyeOff className="size-5" />}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -233,11 +269,11 @@ export function CandidateSignupPage() {
                         </FormControl>
                         <FormLabel htmlFor="agreeTerms" className="cursor-pointer text-xs font-normal leading-5">
                           En cliquant sur Accepter et s’inscrire ou sur Continuer, vous acceptez les{" "}
-                          <Link to="/cgu" className="font-normal text-brand hover:underline">
+                          <Link to="/cgu" className="link link-animated font-normal text-brand">
                             Conditions Générales d'Utilisation
                           </Link>{" "}
                           et la{" "}
-                          <Link to="/politique-de-confidentialite" className="font-normal text-brand hover:underline">
+                          <Link to="/politique-de-confidentialite" className="link link-animated font-normal text-brand">
                             politique de confidentialité
                           </Link>{" "}
                           et la{" "}

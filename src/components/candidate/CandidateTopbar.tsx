@@ -78,7 +78,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
                   cn(
                     "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
                     isActive
-                      ? "bg-accent text-foreground"
+                      ? "bg-accent text-white"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   )
                 }

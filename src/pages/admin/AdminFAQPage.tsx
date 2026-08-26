@@ -2,10 +2,12 @@ import React from "react";
 import { faqService, type FAQ, type FAQCategory } from "@/features/faq/api/faqService";
 import { Button } from "@/components/ui/button";
 import { Plus, Pencil, Trash2, X, FolderOpen } from "lucide-react";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const DEFAULT_FAQ_CATEGORIES = ["Compte", "Services", "Autres"];
 
 export default function AdminFAQPage() {
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const [faqs, setFaqs] = React.useState<FAQ[]>([]);
   const [categories, setCategories] = React.useState<FAQCategory[]>([]);
   const [loading, setLoading] = React.useState(false);
@@ -118,7 +120,7 @@ export default function AdminFAQPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Supprimer cette FAQ ?")) return;
+    if (!(await confirm("Supprimer cette FAQ ?"))) return;
     setError(null);
     try {
       await faqService.remove(id);
@@ -149,7 +151,7 @@ export default function AdminFAQPage() {
   };
 
   const handleRemoveCategory = async (categoryId: string, categoryName: string) => {
-    if (!confirm(`Supprimer la catégorie « ${categoryName} » ?`)) return;
+    if (!(await confirm(`Supprimer la catégorie « ${categoryName} » ?`))) return;
 
     if (categoryId.startsWith("default-")) {
       setCategories((current) => current.filter((categoryEntry) => categoryEntry.id !== categoryId));
@@ -167,6 +169,7 @@ export default function AdminFAQPage() {
 
   return (
     <div className="space-y-4">
+      {confirmationDialog}
       <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
         <div className="flex items-center justify-between gap-3">
           <div>

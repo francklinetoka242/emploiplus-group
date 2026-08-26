@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import type { CandidateExperience, CandidateExperienceInsert } from "@/features/candidates/api/types";
 import { Briefcase, Trash2, Edit2, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 import { DateInput } from "@/components/ui/date-input";
 
 interface ExperienceSectionProps {
@@ -27,6 +28,7 @@ export function ExperienceSection({
   onUpdateExperience,
   onDeleteExperience,
 }: ExperienceSectionProps) {
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -106,7 +108,7 @@ export function ExperienceSection({
   const handleDelete = useCallback(
     async (id: string) => {
       if (!onDeleteExperience) return;
-      if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette expérience ?")) return;
+      if (!(await confirm("Êtes-vous sûr de vouloir supprimer cette expérience ?"))) return;
 
       try {
         setSaving(true);
@@ -118,7 +120,7 @@ export function ExperienceSection({
         setSaving(false);
       }
     },
-    [onDeleteExperience],
+    [onDeleteExperience, confirm],
   );
 
   const content = useMemo(() => {
@@ -273,6 +275,7 @@ export function ExperienceSection({
 
   return (
     <Card>
+      {confirmationDialog}
       <CardHeader>
         <div className="flex items-center justify-between gap-2">
           <div>

@@ -7,6 +7,86 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.link.link-animated {
+  position: relative;
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+}
+
+.link.link-animated::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background-color: currentColor;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 180ms ease-out;
+}
+
+.link.link-animated:hover::after,
+.link.link-animated:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.fab {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.fab-flower {
+  flex-direction: row-reverse;
+}
+
+.fab .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.fab .btn-lg {
+  height: 3.5rem;
+  width: 3.5rem;
+}
+
+.fab .btn-recommendation {
+  width: auto;
+  min-width: max-content;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.fab .btn-circle {
+  border-radius: 9999px;
+}
+
+.fab .btn-primary {
+  background-color: var(--brand);
+  color: var(--brand-foreground);
+  box-shadow: var(--shadow-brand);
+}
+
+.fab [role="button"] {
+  outline: none;
+}
+
+.fab [role="button"]:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 30%, transparent), var(--shadow-brand);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link.link-animated::after {
+    transition: none;
+  }
+}
+
 /*
  * EmploiPlus Group — Tech Corporate Design System
  * Bleu profond / cyan accent. Tous les tokens en oklch.

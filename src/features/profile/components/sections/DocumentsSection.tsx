@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Trash2, Eye, CheckCircle2, Circle, Upload } from "lucide-react";
 import type { CandidateDocument, CandidateCVState } from "@/lib/candidate-documents";
@@ -9,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CANDIDATE_DOCUMENTS_BUCKET } from "@/services/storageService";
 import { toast } from "sonner";
 import { FilePreviewDialog } from "@/components/site/FilePreviewDialog";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type DocumentTypeOption = CandidateDocument["type"] | "cv";
 
@@ -44,6 +44,7 @@ export function DocumentsSection({
   onDeleteCv,
   onAddDocument,
 }: DocumentsSectionProps) {
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const [selectedType, setSelectedType] = useState<DocumentTypeOption>("motivation");
   const [otherLabel, setOtherLabel] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -119,7 +120,7 @@ export function DocumentsSection({
     async (document: CandidateDocument) => {
       const isCv = document.type === "cv";
       if ((isCv && !onDeleteCv) || (!isCv && !onDeleteDocument)) return;
-      if (window.confirm("Êtes-vous sûr de vouloir supprimer ce document ?")) {
+      if (await confirm("Êtes-vous sûr de vouloir supprimer ce document ?")) {
         if (isCv) {
           await onDeleteCv?.();
           setIsCvDeleted(true);
@@ -128,7 +129,7 @@ export function DocumentsSection({
         }
       }
     },
-    [onDeleteCv, onDeleteDocument],
+    [onDeleteCv, onDeleteDocument, confirm],
   );
 
   const resolveDocumentUrl = useCallback(async (documentUrl: string) => {
@@ -330,38 +331,38 @@ export function DocumentsSection({
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="space-y-3">
+          <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
             <FileText className="h-4 w-4 text-primary" />
             Documents
-          </CardTitle>
-          <CardDescription>Gérez vos documents importants pour votre candidature.</CardDescription>
-        </CardHeader>
-        <CardContent>
+          </h2>
+          <p className="text-sm text-muted-foreground">Gérez vos documents importants pour votre candidature.</p>
           <p className="text-sm text-slate-500">Chargement…</p>
-        </CardContent>
-      </Card>
+      </div>
     );
   }
 
   return (
     <>
-      <Card>
-        <CardHeader>
+      {confirmationDialog}
+      <div className="space-y-6">
+        <div>
           <div className="flex items-center justify-between gap-2">
             <div>
-              <CardTitle className="flex items-center gap-2">
+              <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
                 <FileText className="h-4 w-4 text-primary" />
                 Documents
-              </CardTitle>
-              <CardDescription>Gérez vos documents importants pour votre candidature.</CardDescription>
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">Gérez vos documents importants pour votre candidature.</p>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+        </div>
+
+        <section aria-labelledby="document-upload-title">
+          <h3 id="document-upload-title" className="mb-3 text-base font-semibold text-foreground">
+            Ajouter un document
+          </h3>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
               <div className="flex flex-col gap-3 md:flex-row md:items-end">
                 <div className="flex-1">
                   <label className="mb-1 block text-sm font-medium text-slate-700">Type de document</label>
@@ -415,11 +416,13 @@ export function DocumentsSection({
                 </p>
               )}
               {feedbackError && <p className="mt-2 text-sm text-rose-600">{feedbackError}</p>}
-            </div>
+          </div>
 
-            <div>
-              <p className="mb-3 text-sm font-medium text-slate-700">État des documents</p>
-              <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+        </section>
+
+        <section aria-labelledby="document-status-title">
+          <h3 id="document-status-title" className="mb-3 text-base font-semibold text-foreground">État des documents</h3>
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {DOCUMENT_TYPES.map((type) => {
                   const isCompleted = completedTypes.has(type.value);
                   return (
@@ -440,13 +443,13 @@ export function DocumentsSection({
                     </div>
                   );
                 })}
-              </div>
             </div>
+        </section>
 
-            {allDocuments.length > 0 ? (
-              <div>
-                <p className="mb-3 text-sm font-medium text-slate-700">Documents ajoutés</p>
-                <div className="space-y-2">
+        <section aria-labelledby="added-documents-title">
+          <h3 id="added-documents-title" className="mb-3 text-base font-semibold text-foreground">Documents ajoutés</h3>
+          {allDocuments.length > 0 ? (
+            <div className="space-y-2">
                   {allDocuments.map((doc) => (
                     <div
                       key={doc.id}
@@ -500,17 +503,15 @@ export function DocumentsSection({
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <FileText className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-                <p className="text-sm text-slate-500">Aucun document ajouté.</p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          ) : (
+            <div className="py-8 text-center">
+              <FileText className="mx-auto mb-3 h-12 w-12 text-slate-300" />
+              <p className="text-sm text-slate-500">Aucun document ajouté.</p>
+            </div>
+          )}
+        </section>
+      </div>
 
       {selectedPreviewDocument && (
         <FilePreviewDialog

@@ -9,6 +9,7 @@ import type { CandidateEducation, CandidateEducationInsert } from "@/features/ca
 import { GraduationCap, Trash2, Edit2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DateInput } from "@/components/ui/date-input";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface EducationSectionProps {
   educations: CandidateEducation[];
@@ -27,6 +28,7 @@ export function EducationSection({
   onUpdateEducation,
   onDeleteEducation,
 }: EducationSectionProps) {
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -110,7 +112,7 @@ export function EducationSection({
   const handleDelete = useCallback(
     async (id: string) => {
       if (!onDeleteEducation) return;
-      if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette formation ?")) return;
+      if (!(await confirm("Êtes-vous sûr de vouloir supprimer cette formation ?"))) return;
 
       try {
         setSaving(true);
@@ -122,7 +124,7 @@ export function EducationSection({
         setSaving(false);
       }
     },
-    [onDeleteEducation],
+    [onDeleteEducation, confirm],
   );
 
   const content = useMemo(() => {
@@ -291,6 +293,7 @@ export function EducationSection({
 
   return (
     <Card>
+      {confirmationDialog}
       <CardHeader>
         <div className="flex items-center justify-between gap-2">
           <div>

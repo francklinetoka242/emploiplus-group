@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { usePageSEO } from "@/features/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Building2, CalendarDays, ClipboardList, Eye, MapPin, Trash2 } from "lucide-react";
+import { AlertCircle, Building2, CalendarDays, ClipboardList, Eye, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Table,
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { useCandidate } from "@/hooks/useCandidate";
 import { useCandidateApplications } from "@/features/candidates/hooks/useCandidateApplications";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface Application {
   id: string;
@@ -27,7 +28,6 @@ interface Application {
     id: string;
     title: string;
     company: string;
-    location_city: string;
     contract_type: string;
   };
   status: string;
@@ -74,6 +74,7 @@ export function CandidateApplicationsPage() {
   const { applications, loading, withdrawApplication } = useCandidateApplications();
 
   const [selectedApplication, setSelectedApplication] = useState<any | null>(null);
+  const { confirm, confirmationDialog } = useConfirmDialog();
 
   const openDetails = (application: any) => {
     setSelectedApplication(application);
@@ -84,16 +85,14 @@ export function CandidateApplicationsPage() {
   };
 
   const handleDelete = async (applicationId: string) => {
-    // confirmation
-    // eslint-disable-next-line no-restricted-globals
-    if (!confirm("Confirmez-vous la suppression de cette candidature ?")) return;
+    if (!(await confirm("Confirmez-vous la suppression de cette candidature ?"))) return;
     try {
       await withdrawApplication(applicationId);
       // simple refresh to reload applications
       window.location.reload();
     } catch (err) {
       console.error("Failed to delete application", err);
-      alert("Impossible de supprimer la candidature.");
+      console.error("Impossible de supprimer la candidature.");
     }
   };
 
@@ -106,8 +105,10 @@ export function CandidateApplicationsPage() {
   }
 
   return (
-    <div className="mx-auto min-w-0 w-full max-w-5xl space-y-4 overflow-x-hidden pb-8 md:pb-12">
-      <div className="overflow-hidden rounded-3xl border border-primary/15 bg-card shadow-sm">
+    <>
+      {confirmationDialog}
+      <div className="min-w-0 w-full space-y-4 overflow-x-hidden pb-8 md:pb-12">
+      <div className="overflow-hidden rounded-3xl bg-transparent shadow-none">
         <div className="flex flex-col gap-2 bg-primary/[0.03] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <div className="flex min-w-0 items-start gap-2.5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -129,7 +130,7 @@ export function CandidateApplicationsPage() {
         </div>
       </div>
 
-      <Card className="min-w-0 w-full overflow-hidden border-primary/15 bg-card shadow-sm">
+      <Card className="min-w-0 w-full overflow-hidden border-0 bg-transparent shadow-none">
         <CardHeader className="bg-primary/[0.03] p-5 sm:p-6">
           <CardTitle className="text-lg sm:text-xl">{applications.length} candidature(s)</CardTitle>
           <CardDescription className="mt-1">Vos candidatures les plus récentes en premier</CardDescription>
@@ -154,7 +155,6 @@ export function CandidateApplicationsPage() {
                     <TableRow className="bg-muted/40 hover:bg-muted/40">
                       <TableHead>Offre</TableHead>
                       <TableHead>Entreprise</TableHead>
-                      <TableHead>Localisation</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Date</TableHead>
@@ -168,7 +168,6 @@ export function CandidateApplicationsPage() {
                           <span className="line-clamp-2">{app.job_offers?.title || "-"}</span>
                         </TableCell>
                         <TableCell className="text-muted-foreground">{app.job_offers?.company || "-"}</TableCell>
-                        <TableCell className="text-muted-foreground">{app.job_offers?.location_city || "-"}</TableCell>
                         <TableCell className="text-muted-foreground">{app.job_offers?.contract_type || "-"}</TableCell>
                         <TableCell>
                           <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusBadgeColor(app.status)}`}>
@@ -218,7 +217,6 @@ export function CandidateApplicationsPage() {
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-primary" />{app.job_offers?.location_city || "-"}</span>
                         <span className="flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5 text-primary" />{new Date(app.applied_at).toLocaleDateString("fr-FR")}</span>
                       </div>
                     </CardHeader>
@@ -256,10 +254,6 @@ export function CandidateApplicationsPage() {
                   <p className="text-sm">{selectedApplication.job_offers?.company || "-"}</p>
                 </div>
                 <div className="rounded-2xl border border-border bg-background p-4">
-                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground mb-2">Localisation</p>
-                  <p className="text-sm">{selectedApplication.job_offers?.location_city || "-"}</p>
-                </div>
-                <div className="rounded-2xl border border-border bg-background p-4">
                   <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground mb-2">Type</p>
                   <p className="text-sm">{selectedApplication.job_offers?.contract_type || "-"}</p>
                 </div>
@@ -290,6 +284,7 @@ export function CandidateApplicationsPage() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </>
   );
 }

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import type { CandidateSkill, CandidateSkillInsert } from "@/features/candidates/api/types";
 import { Sparkles, Trash2, Edit2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface SkillsSectionProps {
   skills: CandidateSkill[];
@@ -22,6 +23,7 @@ export function SkillsSection({
   onCreateSkill,
   onDeleteSkill,
 }: SkillsSectionProps) {
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     skill_name: "",
@@ -64,7 +66,7 @@ export function SkillsSection({
   const handleDelete = useCallback(
     async (id: string) => {
       if (!onDeleteSkill) return;
-      if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette compétence ?")) return;
+      if (!(await confirm("Êtes-vous sûr de vouloir supprimer cette compétence ?"))) return;
 
       try {
         setSaving(true);
@@ -76,7 +78,7 @@ export function SkillsSection({
         setSaving(false);
       }
     },
-    [onDeleteSkill],
+    [onDeleteSkill, confirm],
   );
 
   const content = useMemo(() => {
@@ -148,6 +150,7 @@ export function SkillsSection({
 
   return (
     <Card>
+      {confirmationDialog}
       <CardHeader>
         <div className="flex items-center justify-between gap-2">
           <div>

@@ -112,7 +112,7 @@ export function SiteHeader() {
                 key={l.to}
                 to={l.to}
                 onClick={() => setOpen(false)}
-                className="px-3 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
+                className="link link-animated px-3 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
               >
                 {l.label}
               </Link>

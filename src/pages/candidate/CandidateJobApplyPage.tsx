@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
 import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES } from "@/services/storageService";
 import { getCandidateDocuments, getCandidateDocumentsList, type CandidateDocument } from "@/features/candidates/api/documentsApi";
 
@@ -73,7 +74,7 @@ function Breadcrumb({ jobTitle }: { jobTitle: string }) {
   const navigate = useNavigate();
 
   return (
-    <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6 flex-wrap">
+    <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
       <span className="flex items-center gap-1 text-foreground/80">
         <Home className="h-4 w-4" />
         <span>Accueil</span>
@@ -83,9 +84,9 @@ function Breadcrumb({ jobTitle }: { jobTitle: string }) {
       <span className="text-border/60">/</span>
       <span className="text-foreground/80">Offres</span>
       <span className="text-border/60">/</span>
-      <span className="text-foreground font-medium">{jobTitle}</span>
+      <span className="font-medium text-foreground">{jobTitle}</span>
       <span className="text-border/60">/</span>
-      <span className="text-foreground font-semibold">Postuler</span>
+      <span className="font-semibold text-foreground">Postuler</span>
     </nav>
   );
 }
@@ -444,11 +445,11 @@ export function CandidateJobApplyPage() {
     if (!files) return;
     Array.from(files).forEach((file) => {
       if (!ALLOWED_DOCUMENT_MIME_TYPES.includes(file.type)) {
-        alert("Seuls les fichiers PDF sont acceptés.");
+        toast.error("Seuls les fichiers PDF sont acceptés.");
         return;
       }
       if (file.size > MAX_DOCUMENT_SIZE_BYTES) {
-        alert("Le fichier dépasse la limite de 2 Mo.");
+        toast.error("Le fichier dépasse la limite de 2 Mo.");
         return;
       }
       const tempDoc: TemporaryDocument = {

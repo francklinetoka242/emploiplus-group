@@ -179,7 +179,7 @@ export default function HubCandidatPage() {
                   href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631"
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-5 inline-flex items-center text-sm font-semibold text-emerald-700 underline decoration-emerald-300 underline-offset-4 transition-colors hover:text-emerald-900"
+                  className="link link-animated mt-5 inline-flex items-center text-sm font-semibold text-emerald-700 transition-colors hover:text-emerald-900"
                 >
                   S'abonner à la chaîne
                 </a>

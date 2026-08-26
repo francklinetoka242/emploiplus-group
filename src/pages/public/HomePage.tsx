@@ -308,7 +308,7 @@ export function HomePage() {
               <p className="mt-2 text-muted-foreground">{t("home.blog.subtitle")}</p>
             </div>
             <Button asChild variant="ghost">
-              <Link to="/blog">{t("home.blog.viewAll")}</Link>
+              <Link to="/blog" className="link link-animated">{t("home.blog.viewAll")}</Link>
             </Button>
           </motion.div>
           <motion.div className="grid gap-6 md:grid-cols-3" variants={staggerContainer}>
@@ -369,7 +369,7 @@ export function HomePage() {
                     <div className="flex items-center justify-between gap-3 border-t border-border/70 px-6 py-4">
                       <Link
                         to={`/blog/${post.slug}`}
-                        className="inline-flex items-center gap-2 text-sm font-semibold text-brand transition hover:underline"
+                        className="link link-animated inline-flex items-center gap-2 text-sm font-semibold text-brand transition"
                       >
                         {t("blog.readMore") || "Voir plus"}
                         <ExternalLink className="size-4" />

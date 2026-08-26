@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 import { parseAuthErrorMessage, resendConfirmationEmail } from "@/features/authentication/api/authApi";
@@ -35,6 +35,7 @@ export function CandidateLoginPage() {
   const [pendingEmail, setPendingEmail] = useState(state?.pendingEmail || "");
   const [showPendingResend, setShowPendingResend] = useState(Boolean(state?.pendingEmail));
   const [emailConfirmed, setEmailConfirmed] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -319,13 +320,24 @@ export function CandidateLoginPage() {
 
                 <div>
                   <Label htmlFor="password" className="text-slate-700">Mot de passe</Label>
-                  <Input
-                    {...register("password")}
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    disabled={isLoading}
-                  />
+                  <div className="relative">
+                    <Input
+                      {...register("password")}
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      className="pr-11"
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((visible) => !visible)}
+                      className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground transition hover:text-foreground"
+                      aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    >
+                      {showPassword ? <Eye className="size-5" /> : <EyeOff className="size-5" />}
+                    </button>
+                  </div>
                   {errors.password && (
                     <p className="text-sm text-destructive mt-1">{errors.password.message}</p>
                   )}
@@ -355,11 +367,11 @@ export function CandidateLoginPage() {
 
               <p className="mt-4 text-center text-xs font-normal leading-5 text-muted-foreground">
                 En continuant, vous acceptez les{" "}
-                <Link to="/cgu" className="font-normal text-brand hover:underline">
+                <Link to="/cgu" className="link link-animated font-normal text-brand">
                   Conditions Générales d'Utilisation
                 </Link>{" "}
                 et la{" "}
-                <Link to="/politique-de-confidentialite" className="font-normal text-brand hover:underline">
+                <Link to="/politique-de-confidentialite" className="link link-animated font-normal text-brand">
                   politique de confidentialité
                 </Link>{" "}
                 et la{" "}

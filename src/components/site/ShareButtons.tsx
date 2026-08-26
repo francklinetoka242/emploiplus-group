@@ -23,6 +23,7 @@ export function ShareButtons({
   variant = "full",
   className = "",
   showCopyLink = true,
+  showQuickActions = false,
   shareData,
 }: {
   url: string;
@@ -30,6 +31,7 @@ export function ShareButtons({
   variant?: "full" | "compact";
   className?: string;
   showCopyLink?: boolean;
+  showQuickActions?: boolean;
   shareData?: ShareJobData;
 }) {
   const { t } = useI18n();
@@ -80,17 +82,66 @@ export function ShareButtons({
 
   if (variant === "compact") {
     return (
-      <div className={`relative ${className}`}>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          onClick={() => setOpen((value) => !value)}
-          aria-label="Partager l'offre"
-          className="h-9 w-9 rounded-full border-border bg-background/90 shadow-sm"
-        >
-          <Share2 className="size-4" />
-        </Button>
+      <div className={`relative flex items-center gap-2 ${className}`}>
+        {!showQuickActions ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => setOpen((value) => !value)}
+            aria-label="Partager l'offre"
+            className="h-9 w-9 rounded-full border-border bg-background/90 shadow-sm"
+          >
+            <Share2 className="size-4" />
+          </Button>
+        ) : null}
+        {showQuickActions ? (
+          <>
+            <a
+              href={links.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Partager sur WhatsApp"
+              aria-label="Partager sur WhatsApp"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white hover:opacity-90"
+            >
+              <MessageSquare className="size-4" />
+            </a>
+            <a
+              href={links.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Partager sur Facebook"
+              aria-label="Partager sur Facebook"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#1877F2] text-white hover:opacity-90"
+            >
+              <Facebook className="size-4" />
+            </a>
+            <a
+              href={links.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Partager sur LinkedIn"
+              aria-label="Partager sur LinkedIn"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#0A66C2] text-white hover:opacity-90"
+            >
+              <Linkedin className="size-4" />
+            </a>
+            {showCopyLink ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={copy}
+                title={copied ? t("common.copied") : t("cta.copyLink")}
+                aria-label={copied ? t("common.copied") : t("cta.copyLink")}
+                className="h-9 w-9 rounded-full border-border bg-background/90 shadow-sm"
+              >
+                {copied ? <Check className="size-4" /> : <Link2 className="size-4" />}
+              </Button>
+            ) : null}
+          </>
+        ) : null}
         {open ? (
           <div className="absolute bottom-full right-0 z-50 mb-2 flex min-w-[180px] flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-elev">
             <a

@@ -19,8 +19,8 @@ import {
   Building2,
   CalendarDays,
   Clock3,
+  Eye,
   Loader2,
-  MapPin,
   Trash2,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -32,6 +32,7 @@ import {
 } from "@/features/candidates/api/savedOffersApi";
 import { getCandidateApplications } from "@/features/candidates/api/applicationsApi";
 import { notifySavedOfferExpirations } from "@/integrations/supabase/notifications";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface SavedOffer {
   id: string;
@@ -42,8 +43,6 @@ interface SavedOffer {
     slug: string;
     title: string;
     company: string;
-    location_city: string | null;
-    location_country: string | null;
     salary: string | null;
     contract_type: string | null;
     status: string | null;
@@ -60,7 +59,7 @@ function formatStaticStatus(job: SavedOffer["job_offers"]): { label: string; ton
   const now = Date.now();
 
   if (job.status === "expired" || (deadlineValue && new Date(deadlineValue).getTime() < now)) {
-    return { label: "Expirée", tone: "bg-red-50 text-red-700 border-red-200" };
+    return { label: "Expirée", tone: "bg-secondary/15 text-secondary border-secondary/40" };
   }
 
   if (job.status === "archived") {
@@ -77,6 +76,7 @@ export function CandidateSavedOffersPage() {
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [showLimitNotice, setShowLimitNotice] = useState(false);
+  const { confirm, confirmationDialog } = useConfirmDialog();
 
   const isFull = savedOffers.length >= MAX_SAVED_OFFERS;
 
@@ -124,7 +124,7 @@ export function CandidateSavedOffersPage() {
   }, [profile?.id, profile?.user_id, profileLoading]);
 
   const handleDelete = async (savedOfferId: string) => {
-    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette offre enregistrée ?")) {
+    if (!(await confirm("Êtes-vous sûr de vouloir supprimer cette offre enregistrée ?"))) {
       return;
     }
 
@@ -156,7 +156,6 @@ export function CandidateSavedOffersPage() {
           canApply,
           statusLabel: status.label,
           statusTone: status.tone,
-          location: [job?.location_city, job?.location_country].filter(Boolean).join(", ") || "À préciser",
           savedDate: new Date(offer.saved_at).toLocaleDateString("fr-FR", {
             day: "2-digit",
             month: "short",
@@ -176,8 +175,10 @@ export function CandidateSavedOffersPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="overflow-hidden rounded-3xl border border-primary/15 bg-card shadow-sm">
+    <>
+      {confirmationDialog}
+      <div className="space-y-4">
+      <div className="overflow-hidden rounded-3xl bg-transparent shadow-none">
         <div className="flex flex-col gap-3 bg-primary/[0.03] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
           <div className="flex min-w-0 items-start gap-2.5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -243,7 +244,7 @@ export function CandidateSavedOffersPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card className="overflow-hidden border-primary/15 shadow-sm">
+        <Card className="overflow-hidden border-0 bg-transparent shadow-none">
           <CardHeader className="bg-primary/[0.03] p-5 sm:p-6">
             <CardTitle className="text-lg sm:text-xl">{savedOffersWithMeta.length} offre(s) enregistrée(s)</CardTitle>
             <CardDescription className="mt-1">Vos offres les plus récentes en premier</CardDescription>
@@ -255,7 +256,6 @@ export function CandidateSavedOffersPage() {
                   <TableRow className="bg-muted/40 hover:bg-muted/40">
                     <TableHead>Titre</TableHead>
                     <TableHead>Entreprise</TableHead>
-                    <TableHead>Localisation</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Statut</TableHead>
                     <TableHead>Enregistrée le</TableHead>
@@ -267,9 +267,9 @@ export function CandidateSavedOffersPage() {
                     <TableRow key={offer.id} className="transition-colors hover:bg-primary/[0.03]">
                       <TableCell className="max-w-[260px] font-semibold text-foreground">
                         <div className="space-y-1">
-                          <Link to={`/jobs/${offer.job_offers.slug}`} className="line-clamp-2 text-primary hover:underline">
+                          <span className="line-clamp-2 text-foreground">
                             {offer.job_offers.title}
-                          </Link>
+                          </span>
                           {offer.job_offers.salary ? (
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
                               <BadgeDollarSign className="h-3.5 w-3.5 text-primary" />
@@ -279,7 +279,6 @@ export function CandidateSavedOffersPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-muted-foreground">{offer.job_offers.company}</TableCell>
-                      <TableCell className="text-muted-foreground">{offer.location}</TableCell>
                       <TableCell className="capitalize text-muted-foreground">
                         {offer.job_offers.contract_type ? offer.job_offers.contract_type.replace(/_/g, " ") : "-"}
                       </TableCell>
@@ -290,16 +289,18 @@ export function CandidateSavedOffersPage() {
                       </TableCell>
                       <TableCell className="text-muted-foreground">{offer.savedDate}</TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button asChild size="sm" variant="outline" className="h-9 border-primary/20 text-primary hover:bg-primary/5">
-                            <Link to={`/jobs/${offer.job_offers.slug}`}>Voir</Link>
+                        <div className="grid grid-cols-[2.25rem_7rem_2.25rem] items-center justify-end gap-2">
+                          <Button asChild size="icon" variant="outline" className="h-9 w-9 border-primary/20 text-primary hover:bg-primary/5" title="Voir l'offre">
+                            <Link to={`/jobs/${offer.job_offers.slug}`} aria-label="Voir l'offre">
+                              <Eye className="h-4 w-4" />
+                            </Link>
                           </Button>
                           {offer.canApply ? (
-                            <Button asChild size="sm" className="h-9 bg-brand text-brand-foreground hover:bg-brand/90">
+                            <Button asChild size="sm" className="h-9 w-full bg-brand text-brand-foreground hover:bg-brand/90">
                               <Link to={`/candidate/jobs/${offer.job_offers.slug}/apply`}>Postuler</Link>
                             </Button>
                           ) : (
-                            <span className="inline-flex h-9 items-center rounded-lg border border-border bg-muted px-3 text-xs text-muted-foreground">
+                            <span className="inline-flex h-9 w-full items-center justify-center rounded-lg border border-border bg-muted px-3 text-xs text-muted-foreground">
                               {offer.job_offers.status === "archived" ? "Offre fermée" : offer.job_offers.status === "expired" ? "Offre expirée" : "Déjà postulé"}
                             </span>
                           )}
@@ -308,7 +309,7 @@ export function CandidateSavedOffersPage() {
                             variant="ghost"
                             onClick={() => handleDelete(offer.id)}
                             disabled={deleting === offer.id}
-                            className="h-9 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                            className="h-9 w-9 p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                           >
                             {deleting === offer.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                           </Button>
@@ -325,9 +326,9 @@ export function CandidateSavedOffersPage() {
                 <div key={offer.id} className="rounded-2xl border border-border/80 bg-background p-4 shadow-sm">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <Link to={`/jobs/${offer.job_offers.slug}`} className="line-clamp-2 text-base font-semibold leading-tight text-foreground hover:text-primary">
-                        {offer.job_offers.title}
-                      </Link>
+                        <span className="line-clamp-2 text-base font-semibold leading-tight text-foreground">
+                          {offer.job_offers.title}
+                        </span>
                       <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                         <Building2 className="h-3.5 w-3.5 shrink-0 text-primary" />
                         <span className="truncate">{offer.job_offers.company}</span>
@@ -345,7 +346,6 @@ export function CandidateSavedOffersPage() {
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2.5 py-1.5"><MapPin className="h-3.5 w-3.5 text-primary" />{offer.location}</span>
                     <span className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2.5 py-1.5"><BriefcaseBusiness className="h-3.5 w-3.5 text-primary" />{offer.job_offers.contract_type?.replace(/_/g, " ") || "-"}</span>
                     <span className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 ${offer.statusTone}`}><Clock3 className="h-3.5 w-3.5" />{offer.statusLabel}</span>
                   </div>
@@ -368,6 +368,7 @@ export function CandidateSavedOffersPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+      </div>
+    </>
   );
 }

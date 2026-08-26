@@ -138,13 +138,10 @@ export function AdminPage() {
                 "transition-all duration-300",
                 isMobile
                   ? cn(
-                      "fixed inset-y-[57px] left-0 z-40 w-72 overflow-y-auto transform transition-transform duration-300",
+                      "fixed inset-y-[57px] left-0 z-40 w-60 overflow-y-auto transform transition-transform duration-300",
                       mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
                     )
-                  : cn(
-                      "fixed inset-y-0 left-0 z-30 h-screen",
-                      sidebarOpen ? "w-72" : "w-20",
-                    ),
+                  : cn("fixed inset-y-0 left-0 z-30 h-screen", sidebarOpen ? "w-60" : "w-12"),
               )}
             >
               <AdminSidebar
@@ -167,7 +164,7 @@ export function AdminPage() {
             <div
               className={cn(
                 "w-full flex-1 transition-all duration-300",
-                isMobile ? "px-4 pb-6 pt-0" : cn("min-w-0", sidebarOpen ? "lg:pl-72" : "lg:pl-20"),
+                isMobile ? "px-4 pb-6 pt-0" : cn("min-w-0", sidebarOpen ? "lg:pl-60" : "lg:pl-12"),
               )}
             >
               <main className="w-full min-h-[calc(100vh-2rem)] overflow-y-auto rounded-none border-0 bg-background p-4 sm:p-6 transition-all duration-300 lg:mt-4">

@@ -43,6 +43,8 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   const location = useLocation();
   const { open, setOpen } = useCandidateSidebar();
   const { logout } = useCandidate();
+  const keepHeaderVisible =
+    location.pathname === "/candidate/public/jobs" || location.pathname === "/candidate/profile";
   const mainRef = useRef<HTMLElement | null>(null);
   const lastMainScrollTopRef = useRef(0);
   const lastWindowScrollTopRef = useRef(0);
@@ -55,6 +57,11 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   }, [location.pathname]);
 
   useEffect(() => {
+    if (keepHeaderVisible) {
+      setHeaderVisible(true);
+      return;
+    }
+
     const scrollContainer = mainRef.current;
     const canScrollContainer = () =>
       Boolean(scrollContainer && scrollContainer.scrollHeight > scrollContainer.clientHeight + 1);
@@ -89,18 +96,18 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
       scrollContainer?.removeEventListener("scroll", handleContainerScroll);
       window.removeEventListener("scroll", handleWindowScroll);
     };
-  }, []);
+  }, [keepHeaderVisible]);
 
   return (
-    <div className="h-screen min-h-screen flex flex-col bg-background text-foreground">
+    <div className="flex h-screen min-h-screen flex-col overflow-hidden bg-background text-foreground">
       {/* Mobile Header (visible uniquement sur mobile) */}
       <div
         className={cn(
-          "transition-transform duration-300 md:hidden",
-          headerVisible ? "translate-y-0" : "-translate-y-full",
+          "grid overflow-hidden transition-[grid-template-rows,transform] duration-600 md:hidden",
+          headerVisible ? "grid-rows-[1fr] translate-y-0" : "grid-rows-[0fr] -translate-y-full",
         )}
       >
-        <div>
+        <div className="min-h-0">
           <CandidateMobileHeader
             title={pageTitle}
             onMenuOpen={() => setOpen(true)}
@@ -121,17 +128,17 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
         <div
           className={cn(
             "flex min-h-0 min-w-0 flex-1 flex-col transition-all duration-300 ease-in-out",
-            open ? "md:ml-72" : "md:ml-20",
+            open ? "md:ml-60" : "md:ml-12",
           )}
         >
           {/* Topbar Desktop */}
           <div
             className={cn(
-              "transition-transform duration-300",
-              headerVisible ? "translate-y-0" : "-translate-y-full",
+              "grid overflow-hidden transition-[grid-template-rows,transform] duration-600",
+              headerVisible ? "grid-rows-[1fr] translate-y-0" : "grid-rows-[0fr] -translate-y-full",
             )}
           >
-            <div>
+            <div className="min-h-0">
               <CandidateTopbar onMenuToggle={() => setOpen(!open)} onLogout={logout} />
             </div>
           </div>
@@ -142,7 +149,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
             className="min-w-0 flex-1 min-h-0 touch-pan-y overflow-y-auto overflow-x-clip overscroll-y-contain"
           >
             <div className="min-w-0 w-full">
-              <div className="mx-auto w-full px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10 max-w-7xl">
+              <div className="w-full max-w-none px-4 pt-6 sm:px-6 lg:px-8">
                 {children}
               </div>
             </div>

@@ -625,7 +625,7 @@ export function JobOfferDetailPage() {
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <Link
                     to="/jobs"
-                    className="inline-flex items-center gap-2 text-sm font-medium text-brand transition hover:underline"
+                    className="link link-animated inline-flex items-center gap-2 text-sm font-medium text-brand transition"
                   >
                     <ArrowLeft className="size-4" />
                     {getLabel("jobs.backToList", "Retour à la liste")}

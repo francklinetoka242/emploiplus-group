@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Database } from "@/integrations/supabase/types";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type CandidateRow = Database["public"]["Tables"]["candidates"]["Row"];
 type CandidateStatus = CandidateRow["status"];
@@ -42,6 +43,7 @@ function formatDate(value?: string | null) {
 }
 
 export function AdminCandidatesPage() {
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const { t } = useI18n();
   const [candidates, setCandidates] = React.useState<CandidateRow[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -135,7 +137,7 @@ export function AdminCandidatesPage() {
   };
 
   const handleDeleteCandidate = async (candidate: CandidateRow) => {
-    const confirmed = window.confirm(
+    const confirmed = await confirm(
       t("admin.candidates.confirmDelete") || "Supprimer définitivement ce candidat ?",
     );
     if (!confirmed) {
@@ -167,6 +169,7 @@ export function AdminCandidatesPage() {
 
   return (
     <>
+      {confirmationDialog}
       <SEO
         title={pageTitle}
         description={pageDescription}

@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DateInput } from "@/components/ui/date-input";
 import { Badge } from "@/components/ui/badge";
+import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Select,
   SelectContent,
@@ -85,6 +86,7 @@ function formatDateInput(value?: string | null) {
 const PAGE_SIZE = 10;
 
 export function AdminJobsPage() {
+  const { confirm, confirmationDialog } = useConfirmDialog();
   const { t } = useI18n();
   const [form, setForm] = React.useState<JobFormState>(createEmptyForm());
   const [jobs, setJobs] = React.useState<JobOffer[]>([]);
@@ -333,7 +335,7 @@ export function AdminJobsPage() {
   };
 
   const deleteJob = async (job: JobOffer) => {
-    if (!window.confirm(`Supprimer définitivement l'offre « ${job.title} » ?`)) return;
+    if (!(await confirm(`Supprimer définitivement l'offre « ${job.title} » ?`))) return;
     setActionLoadingId(job.id);
     try {
       await jobService.deleteOffer(job.id);
@@ -358,6 +360,7 @@ export function AdminJobsPage() {
 
   return (
     <>
+      {confirmationDialog}
       <SEO
         title="Administration - Offres d'emploi"
         description="Créez et gérez les offres d'emploi depuis l'administration EmploiPlus Group."
