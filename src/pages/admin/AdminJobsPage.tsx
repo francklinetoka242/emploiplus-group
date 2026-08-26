@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { centralAfricaCityGroups } from "@/data/locations";
 import type { JobOffer, JobOfferUpdate, JobOfferInsert } from "@/features/jobs/types";
+import { AdminSearchToolbar } from "./components/AdminSearchToolbar";
 
 type JobFormState = {
   title: string;
@@ -98,6 +99,9 @@ export function AdminJobsPage() {
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [totalJobs, setTotalJobs] = React.useState(0);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [contractFilter, setContractFilter] = React.useState("all");
   const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(
     null,
   );
@@ -137,6 +141,19 @@ export function AdminJobsPage() {
   }, [loadJobs, page]);
 
   const totalPages = Math.max(1, Math.ceil(totalJobs / PAGE_SIZE));
+  const filteredJobs = React.useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return jobs.filter((job) => {
+      const matchesQuery = !query || [job.title, job.company, job.location_city, job.description, ...(job.tags ?? [])]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(query);
+      const matchesStatus = statusFilter === "all" || job.status === statusFilter;
+      const matchesContract = contractFilter === "all" || job.contract_type === contractFilter;
+      return matchesQuery && matchesStatus && matchesContract;
+    });
+  }, [jobs, searchQuery, statusFilter, contractFilter]);
 
   function createSlug(value: string) {
     return (
@@ -726,19 +743,43 @@ export function AdminJobsPage() {
               {totalJobs} élément(s)
             </div>
           </div>
+          <AdminSearchToolbar
+            value={searchQuery}
+            onChange={(value) => { setSearchQuery(value); setPage(1); }}
+            placeholder="Rechercher une offre, une entreprise ou une ville"
+            filters={
+              <>
+                <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="h-9 rounded-lg border border-border bg-background px-3 text-sm">
+                  <option value="all">Tous les statuts</option>
+                  <option value="published">Publié</option>
+                  <option value="draft">Brouillon</option>
+                  <option value="archived">Archivé</option>
+                </select>
+                <select value={contractFilter} onChange={(event) => setContractFilter(event.target.value)} className="h-9 rounded-lg border border-border bg-background px-3 text-sm">
+                  <option value="all">Tous les contrats</option>
+                  <option value="cdi">CDI</option>
+                  <option value="cdd">CDD</option>
+                  <option value="stage">Stage</option>
+                  <option value="freelance">Freelance</option>
+                  <option value="interim">Intérim</option>
+                </select>
+              </>
+            }
+            filtersActive={statusFilter !== "all" || contractFilter !== "all"}
+          />
 
           {loading ? (
             <div className="mt-4 rounded-2xl border border-border bg-background/70 p-5 text-sm text-muted-foreground">
               Chargement...
             </div>
-          ) : jobs.length === 0 ? (
+          ) : filteredJobs.length === 0 ? (
             <div className="mt-4 rounded-2xl border border-border bg-background/70 p-5 text-sm text-muted-foreground">
               Aucune offre pour le moment.
             </div>
           ) : (
             <>
               <div className="mt-4 space-y-3">
-                {jobs.map((job) => {
+                {filteredJobs.map((job) => {
                   const meta =
                     statusMeta[job.status as keyof typeof statusMeta] ?? statusMeta.draft;
 

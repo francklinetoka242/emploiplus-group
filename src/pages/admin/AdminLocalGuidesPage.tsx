@@ -18,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { createLocalGuide, deleteLocalGuide, fetchLocalGuides, toggleLocalGuideVisibility, updateLocalGuide } from "@/features/local-guides/localGuideService";
 import type { LocalGuideRecord } from "@/features/local-guides/types";
 import { toast } from "sonner";
+import { AdminSearchToolbar } from "./components/AdminSearchToolbar";
 
 const categories = ["Salaires", "Droit du travail", "Entretien", "Formation", "Autre"];
 
@@ -34,6 +35,9 @@ export function AdminLocalGuidesPage() {
   const [visible, setVisible] = useState(true);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [documentFile, setDocumentFile] = useState<File | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [visibilityFilter, setVisibilityFilter] = useState("all");
 
   const loadGuides = async () => {
     try {
@@ -154,7 +158,15 @@ export function AdminLocalGuidesPage() {
     }
   };
 
-  const guideRows = useMemo(() => guides, [guides]);
+  const guideRows = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return guides.filter((guide) => {
+      const matchesQuery = !query || [guide.title, guide.slug, guide.category, guide.description].join(" ").toLowerCase().includes(query);
+      const matchesCategory = categoryFilter === "all" || guide.category === categoryFilter;
+      const matchesVisibility = visibilityFilter === "all" || (visibilityFilter === "visible" ? guide.visible : !guide.visible);
+      return matchesQuery && matchesCategory && matchesVisibility;
+    });
+  }, [guides, searchQuery, categoryFilter, visibilityFilter]);
   const visibleCount = guides.filter((guide) => guide.visible).length;
 
   return (
@@ -208,6 +220,26 @@ export function AdminLocalGuidesPage() {
           </div>
         </div>
       </div>
+
+      <AdminSearchToolbar
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Rechercher une fiche, un slug ou une catégorie"
+        filters={
+          <>
+            <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm">
+              <option value="all">Toutes les catégories</option>
+              {categories.map((value) => <option key={value} value={value}>{value}</option>)}
+            </select>
+            <select value={visibilityFilter} onChange={(event) => setVisibilityFilter(event.target.value)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm">
+              <option value="all">Toutes les visibilités</option>
+              <option value="visible">Visibles</option>
+              <option value="hidden">Masquées</option>
+            </select>
+          </>
+        }
+        filtersActive={categoryFilter !== "all" || visibilityFilter !== "all"}
+      />
 
       {showForm ? (
         <div className="grid w-full min-w-0 gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">

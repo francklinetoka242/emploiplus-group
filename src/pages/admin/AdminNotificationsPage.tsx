@@ -19,6 +19,7 @@ import {
 } from "@/integrations/supabase/notifications";
 import { supabase } from "@/integrations/supabase/client";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
+import { AdminSearchToolbar } from "./components/AdminSearchToolbar";
 
 type NotificationForm = {
   title: string;
@@ -68,6 +69,7 @@ export function AdminNotificationsPage() {
   const [typeFilter, setTypeFilter] = React.useState<"all" | NotificationType>("all");
   const [statusFilter, setStatusFilter] = React.useState<"all" | NotificationStatus>("all");
   const [showForm, setShowForm] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState("");
 
   const loadNotifications = React.useCallback(async () => {
     setLoading(true);
@@ -231,9 +233,10 @@ export function AdminNotificationsPage() {
     return notifications.filter((notification) => {
       const matchesType = typeFilter === "all" || notification.type === typeFilter;
       const matchesStatus = statusFilter === "all" || notification.status === statusFilter;
-      return matchesType && matchesStatus;
+      const matchesQuery = !searchQuery.trim() || [notification.title, notification.content, notification.type].join(" ").toLowerCase().includes(searchQuery.trim().toLowerCase());
+      return matchesType && matchesStatus && matchesQuery;
     });
-  }, [notifications, typeFilter, statusFilter]);
+  }, [notifications, typeFilter, statusFilter, searchQuery]);
 
   return (
     <>
@@ -440,31 +443,25 @@ export function AdminNotificationsPage() {
         <div className="data-table-shell overflow-x-auto p-4 sm:p-6">
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <h2 className="text-lg font-semibold text-slate-900">Notifications enregistrées</h2>
-            <div className="flex flex-wrap gap-3">
-              <select
-                value={typeFilter}
-                onChange={(event) => setTypeFilter(event.target.value as "all" | NotificationType)}
-                className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm"
-              >
-                <option value="all">Toutes les catégories</option>
-                {notificationTypes.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={statusFilter}
-                onChange={(event) =>
-                  setStatusFilter(event.target.value as "all" | NotificationStatus)
-                }
-                className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm"
-              >
-                <option value="all">Tous les statuts</option>
-                <option value="active">Actif</option>
-                <option value="masked">Masqué</option>
-              </select>
-            </div>
+            <AdminSearchToolbar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Rechercher une notification"
+              filters={
+                <>
+                  <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value as "all" | NotificationType)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm">
+                    <option value="all">Toutes les catégories</option>
+                    {notificationTypes.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                  </select>
+                  <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as "all" | NotificationStatus)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm">
+                    <option value="all">Tous les statuts</option>
+                    <option value="active">Actif</option>
+                    <option value="masked">Masqué</option>
+                  </select>
+                </>
+              }
+              filtersActive={typeFilter !== "all" || statusFilter !== "all"}
+            />
           </div>
           <table className="min-w-full divide-y divide-border text-sm">
             <thead className="bg-muted/40">

@@ -4,9 +4,9 @@ import { BarChart3, BookOpen, Handshake, Settings2, TrendingUp } from "lucide-re
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
-import francklinImage from "@/assets/Equipe_Experte/Ing_Francklin_ETOKA.jpeg";
-import destineeImage from "@/assets/Equipe_Experte/Ing_Destinée_MOUISSOU.jpeg";
-import claudeImage from "@/assets/Equipe_Experte/Claude_OMVOULET.jpeg";
+import francklinImage from "@/assets/about/team/francklin-etoka.webp";
+import destineeImage from "@/assets/about/team/destinee-mouissou.webp";
+import claudeImage from "@/assets/about/team/claude-omvoulet.webp";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 import { staggerContainer, staggerItem, fadeUp } from "@/lib/animations/animations";
 

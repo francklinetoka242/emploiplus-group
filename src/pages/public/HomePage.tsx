@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import heroBg from "@/assets/hero-bg.jpg";
+import heroBg from "@/assets/home/home-hero-background.webp";
+import heroMain from "@/assets/home/home-recruitment-image.webp";
 import { useEcoMode } from '@/contexts/EcoModeContext';
-import logoMonago from "@/assets/logo-monago.jpg";
-import presentationPhoto from "@/assets/services/entraineur-affaires-noir-donnant-presentation-.jpg";
+import logoMonago from "@/assets/partners/logo-monago.webp";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
@@ -26,7 +26,6 @@ import {
   Handshake,
   BookOpen,
   ArrowUp,
-  Play,
 } from "lucide-react";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { JobCard } from "@/features/jobs/components";
@@ -234,7 +233,7 @@ export function HomePage() {
       )}
 
       <motion.section 
-        className="container-page py-16 md:py-16"
+        className="container-page max-w-5xl py-[1.125rem] md:py-[1.625rem]"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
@@ -301,7 +300,7 @@ export function HomePage() {
         viewport={{ once: true, amount: 0.2 }}
         variants={staggerContainer}
       >
-        <div className="container-page pt-0 pb-20 md:pb-24">
+        <div className="container-page max-w-5xl pt-[1.125rem] pb-[1.625rem] md:pt-[1.625rem] md:pb-[1.625rem]">
           <motion.div className="flex flex-wrap items-end justify-between gap-4 mb-10" variants={fadeUp}>
             <div>
               <h2 className="font-display text-3xl md:text-4xl font-extrabold">
@@ -496,14 +495,14 @@ export function HomePage() {
       </motion.section>
 
       <motion.section
-        className="overflow-hidden bg-card py-12 md:py-16"
+        className="overflow-hidden bg-card py-[1.125rem] md:py-[1.625rem]"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.7 }}
       >
-        <div className="container-page max-w-xl">
-          <div className="grid items-center gap-6 sm:grid-cols-12 sm:gap-8">
+        <div className="container-page max-w-5xl">
+          <div className="grid items-center gap-9 sm:grid-cols-12 sm:gap-12">
             <motion.div
               className="overflow-hidden rounded-xl bg-muted shadow-soft sm:col-span-4"
               initial={{ opacity: 0, x: -32 }}
@@ -511,7 +510,7 @@ export function HomePage() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <img src="/ent-img.webp" alt="Équipe professionnelle en collaboration" className="h-44 w-full object-cover sm:h-20" loading="lazy" />
+              <img src="/home-team-collaboration.webp" alt="Équipe professionnelle en collaboration" className="h-[15.5rem] w-full object-cover sm:h-[10.5rem]" loading="lazy" />
             </motion.div>
 
             <motion.div
@@ -522,23 +521,23 @@ export function HomePage() {
               transition={{ duration: 0.6 }}
             >
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-brand">Excellence du recrutement</p>
-              <h2 className="mt-3 max-w-2xl font-display text-2xl font-extrabold leading-tight text-foreground sm:text-xl">Développez vos talents pour faire grandir votre organisation</h2>
+              <h2 className="mt-3 max-w-2xl font-display text-3xl font-extrabold leading-tight text-foreground sm:text-[1.75rem]">Développez vos talents pour faire grandir votre organisation</h2>
             </motion.div>
 
             <motion.div className="sm:col-span-4" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}>
-              <h3 className="font-display text-lg font-bold text-foreground">Les bons talents pour votre équipe</h3>
-              <p className="mt-3 text-xs leading-5 text-muted-foreground sm:text-[9px] sm:leading-4">Nous vous aidons à identifier les profils qui correspondent à vos besoins et à construire des équipes engagées, compétentes et prêtes à contribuer durablement à vos projets.</p>
+              <h3 className="font-display text-xl font-bold text-foreground">Les bons talents pour votre équipe</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-[0.85rem] sm:leading-5">Nous vous aidons à identifier les profils qui correspondent à vos besoins et à construire des équipes engagées, compétentes et prêtes à contribuer durablement à vos projets.</p>
             </motion.div>
 
             <motion.div
-              className="rounded-2xl bg-[#2f7650] p-4 text-white shadow-soft sm:col-span-4"
+              className="rounded-2xl bg-brand p-6 text-white shadow-soft sm:col-span-4"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <p className="text-[9px] leading-3">Une approche structurée pour attirer, évaluer et accompagner les talents dont votre organisation a besoin.</p>
-              <ul className="mt-3 space-y-1 text-[9px] leading-3"><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> 15 ans d’expérience</li><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> Gestion des talents</li><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> Recherche de profils dirigeants</li></ul>
+              <p className="text-sm leading-5">Une approche structurée pour attirer, évaluer et accompagner les talents dont votre organisation a besoin.</p>
+              <ul className="mt-4 space-y-2 text-sm leading-5"><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> 1 ans d’expérience</li><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> Gestion des talents</li><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> Recherche de profils dirigeants</li></ul>
             </motion.div>
 
             <motion.div
@@ -549,21 +548,11 @@ export function HomePage() {
               transition={{ duration: 0.6, delay: 0.1 }}
             >
               <img
-                src={presentationPhoto}
-                alt="Présentation vidéo EmploiPlus Group"
-                className="h-52 w-full object-cover sm:h-28"
+                src={heroMain}
+                alt="Présentation EmploiPlus Group"
+                className="h-56 w-full object-cover sm:h-48"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-brand-deep/20" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div
-                  className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-secondary-foreground shadow-lg"
-                  aria-label="Vidéo bientôt disponible"
-                  title="Vidéo bientôt disponible"
-                >
-                  <Play className="ml-1 h-6 w-6 fill-current" />
-                </div>
-              </div>
             </motion.div>
           </div>
         </div>
@@ -577,7 +566,7 @@ export function HomePage() {
         transition={{ duration: 0.7 }}
       >
         <img
-          src="/img-carriere.svg"
+          src="/home-career-consultation.svg"
           alt="Environnement professionnel EmploiPlus Group"
           className="absolute inset-0 h-full w-full object-cover"
           loading="lazy"
@@ -585,7 +574,7 @@ export function HomePage() {
         <div className="absolute inset-0 bg-brand-deep/35" />
         <div className="container-page relative flex min-h-[300px] max-w-lg items-center md:min-h-[365px]">
           <motion.div
-            className="max-w-lg rounded-2xl bg-card p-6 shadow-elev sm:w-64 sm:p-5"
+            className="max-w-lg rounded-2xl bg-card/85 p-6 shadow-elev sm:w-64 sm:p-5"
             initial={{ opacity: 0, x: -32 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.3 }}

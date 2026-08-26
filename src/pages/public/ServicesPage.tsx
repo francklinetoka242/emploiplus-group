@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 import { Briefcase, Check, User, Sparkles, Bell, Zap, Eye, MapPin, Users, Layers, TrendingUp } from "lucide-react";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
-import candidateIllustration1 from "@/assets/IMG_Page-Services/img_section_candidat/1.webp";
-import candidateIllustration2 from "@/assets/IMG_Page-Services/img_section_candidat/2.webp";
-import candidateIllustration3 from "@/assets/IMG_Page-Services/img_section_candidat/3.webp";
-import candidateIllustration4 from "@/assets/IMG_Page-Services/img_section_candidat/4.webp";
-import candidateIllustration5 from "@/assets/IMG_Page-Services/img_section_candidat/5.webp";
-import candidateIllustration6 from "@/assets/IMG_Page-Services/img_section_candidat/6.webp";
-import candidateIllustration7 from "@/assets/IMG_Page-Services/img_section_candidat/7.webp";
-import enterpriseIllustration from "@/assets/services/directeur-souriant-tenant-document-important-colleg.jpg";
+import candidateIllustration1 from "@/assets/services/candidate-section/candidate-step-01.webp";
+import candidateIllustration2 from "@/assets/services/candidate-section/candidate-step-02.webp";
+import candidateIllustration3 from "@/assets/services/candidate-section/candidate-step-03.webp";
+import candidateIllustration4 from "@/assets/services/candidate-section/candidate-step-04.webp";
+import candidateIllustration5 from "@/assets/services/candidate-section/candidate-step-05.webp";
+import candidateIllustration6 from "@/assets/services/candidate-section/candidate-step-06.webp";
+import candidateIllustration7 from "@/assets/services/candidate-section/candidate-step-07.webp";
+import enterpriseIllustration from "@/assets/services/candidate-journey/success-management.webp";
 
 const candidateSlides = [
   { src: candidateIllustration1, alt: "Parcours candidat - vue 1" },

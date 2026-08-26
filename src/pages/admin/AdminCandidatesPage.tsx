@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import type { Database } from "@/integrations/supabase/types";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
+import { AdminSearchToolbar } from "./components/AdminSearchToolbar";
 
 type CandidateRow = Database["public"]["Tables"]["candidates"]["Row"];
 type CandidateStatus = CandidateRow["status"];
@@ -52,6 +53,9 @@ export function AdminCandidatesPage() {
   const [expandedCandidateId, setExpandedCandidateId] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [totalCandidates, setTotalCandidates] = React.useState(0);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [registrationSort, setRegistrationSort] = React.useState<"desc" | "asc">("desc");
   const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(
     null,
   );
@@ -72,7 +76,7 @@ export function AdminCandidatesPage() {
             "id, user_id, first_name, last_name, email, phone, avatar_url, headline, location_city, location_country, date_of_birth, status, created_at, updated_at",
             { count: "exact" },
           )
-          .order("created_at", { ascending: false })
+          .order("created_at", { ascending: registrationSort === "asc" })
           .range(offset, offset + PAGE_SIZE - 1),
         supabase.from("candidates").select("id", { count: "exact", head: true }),
       ]);
@@ -92,7 +96,7 @@ export function AdminCandidatesPage() {
       setCandidates((data ?? []) as CandidateRow[]);
       setTotalCandidates(count ?? 0);
     },
-    [page],
+    [page, registrationSort],
   );
 
   const handlePageChange = (nextPage: number) => {
@@ -112,6 +116,14 @@ export function AdminCandidatesPage() {
     }),
     [candidates],
   );
+  const filteredCandidates = React.useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return candidates.filter((candidate) => {
+      const matchesQuery = !query || [candidate.first_name, candidate.last_name, candidate.email, candidate.phone, candidate.headline, candidate.location_city, candidate.location_country]
+        .filter(Boolean).join(" ").toLowerCase().includes(query);
+      return matchesQuery && (statusFilter === "all" || candidate.status === statusFilter);
+    });
+  }, [candidates, searchQuery, statusFilter]);
 
   const handleToggleStatus = async (candidate: CandidateRow) => {
     const nextStatus: CandidateStatus = candidate.status === "active" ? "inactive" : "active";
@@ -214,19 +226,39 @@ export function AdminCandidatesPage() {
               </span>
             </div>
           </div>
+          <AdminSearchToolbar
+            value={searchQuery}
+            onChange={(value) => { setSearchQuery(value); setPage(1); }}
+            placeholder="Rechercher un candidat, un email ou une ville"
+            filters={
+              <>
+                <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="h-9 rounded-lg border border-border bg-background px-3 text-sm">
+                  <option value="all">Tous les statuts</option>
+                  <option value="active">Actifs</option>
+                  <option value="inactive">Inactifs</option>
+                  <option value="archived">Archivés</option>
+                </select>
+                <select value={registrationSort} onChange={(event) => setRegistrationSort(event.target.value as "desc" | "asc")} className="h-9 rounded-lg border border-border bg-background px-3 text-sm">
+                  <option value="desc">Date : ordre décroissant</option>
+                  <option value="asc">Date : ordre croissant</option>
+                </select>
+              </>
+            }
+            filtersActive={statusFilter !== "all" || registrationSort !== "desc"}
+          />
 
           {loading ? (
             <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-500">
               Chargement des candidats...
             </div>
-          ) : candidates.length === 0 ? (
+          ) : filteredCandidates.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-500">
               {t("admin.candidates.noCandidates") || "Aucun candidat n'a été trouvé."}
             </div>
           ) : (
             <>
               <div className="space-y-3">
-                {candidates.map((candidate) => {
+                {filteredCandidates.map((candidate) => {
                   const initials = `${candidate.first_name?.charAt(0) ?? "C"}${candidate.last_name?.charAt(0) ?? "A"}`.toUpperCase();
                   const fullName = `${candidate.first_name ?? ""} ${candidate.last_name ?? ""}`.trim() || "Candidat";
                   const isExpanded = expandedCandidateId === candidate.id;

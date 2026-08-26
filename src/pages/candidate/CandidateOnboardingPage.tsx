@@ -8,11 +8,11 @@ import {
   getOrInitializeCandidateOnboarding,
   updateCandidateOnboarding,
 } from "@/features/candidates/api/candidateOnboardingApi";
-import image1 from "@/assets/ImgOnboarding/1.svg";
-import image2 from "@/assets/ImgOnboarding/2.svg";
-import image3 from "@/assets/ImgOnboarding/3.svg";
-import image4 from "@/assets/ImgOnboarding/4.svg";
-import image5 from "@/assets/ImgOnboarding/5.svg";
+import image1 from "@/assets/onboarding/onboarding-step-01.svg";
+import image2 from "@/assets/onboarding/onboarding-step-02.svg";
+import image3 from "@/assets/onboarding/onboarding-step-03.svg";
+import image4 from "@/assets/onboarding/onboarding-step-04.svg";
+import image5 from "@/assets/onboarding/onboarding-step-05.svg";
 
 const onboardingImages = [image1, image2, image3, image4, image5];
 

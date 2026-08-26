@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import type { Database } from "@/integrations/supabase/types";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
+import { AdminSearchToolbar } from "./components/AdminSearchToolbar";
 
 type BlogPost = Database["public"]["Tables"]["blog_posts"]["Row"];
 
@@ -70,12 +71,24 @@ export function AdminBlogPage() {
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [totalPosts, setTotalPosts] = React.useState(0);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [featuredFilter, setFeaturedFilter] = React.useState("all");
   const [message, setMessage] = React.useState<{ type: "success" | "error"; text: string } | null>(
     null,
   );
   const contentRef = React.useRef<HTMLTextAreaElement>(null);
 
   const totalPages = Math.max(1, Math.ceil(totalPosts / PAGE_SIZE));
+  const filteredPosts = React.useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return posts.filter((post) => {
+      const matchesQuery = !query || [post.title, post.category, post.author, post.excerpt, post.slug].filter(Boolean).join(" ").toLowerCase().includes(query);
+      const matchesStatus = statusFilter === "all" || post.status === statusFilter;
+      const matchesFeatured = featuredFilter === "all" || (featuredFilter === "featured" ? post.is_featured : !post.is_featured);
+      return matchesQuery && matchesStatus && matchesFeatured;
+    });
+  }, [posts, searchQuery, statusFilter, featuredFilter]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -399,6 +412,27 @@ export function AdminBlogPage() {
             </div>
           </div>
         </div>
+          <AdminSearchToolbar
+            value={searchQuery}
+            onChange={(value) => { setSearchQuery(value); setPage(1); }}
+            placeholder="Rechercher un article, une catégorie ou un auteur"
+            filters={
+              <>
+                <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm">
+                  <option value="all">Tous les statuts</option>
+                  <option value="published">Publié</option>
+                  <option value="draft">Brouillon</option>
+                  <option value="archived">Archivé</option>
+                </select>
+                <select value={featuredFilter} onChange={(event) => setFeaturedFilter(event.target.value)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm">
+                  <option value="all">Tous les articles</option>
+                  <option value="featured">À la une</option>
+                  <option value="regular">Standard</option>
+                </select>
+              </>
+            }
+            filtersActive={statusFilter !== "all" || featuredFilter !== "all"}
+          />
 
         {message ? (
           <div
@@ -709,14 +743,14 @@ export function AdminBlogPage() {
             <div className="mt-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-500">
               Chargement...
             </div>
-          ) : posts.length === 0 ? (
+          ) : filteredPosts.length === 0 ? (
             <div className="mt-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-500">
               Aucun article pour le moment.
             </div>
           ) : (
             <>
               <div className="space-y-3">
-                {posts.map((post) => {
+                {filteredPosts.map((post) => {
                   const meta =
                     statusMeta[post.status as keyof typeof statusMeta] ?? statusMeta.draft;
 

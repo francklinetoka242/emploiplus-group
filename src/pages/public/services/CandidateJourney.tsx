@@ -2,10 +2,10 @@ import React from "react";
 import { motion } from "framer-motion";
 import AnimatedHeading from "@/components/AnimatedHeading";
 import { fadeUp, staggerContainer, staggerItem, zoomIn } from "@/lib/animations/animations";
-import cvImage from "@/assets/services/conception-cv-professionnel-axee-concept-recrutement-developpement-carriere_981640-71397.jpg";
-import coachingImage from "@/assets/services/entraineur-affaires-noir-donnant-presentation-.jpg";
-import successImage from "@/assets/services/directeur-souriant-tenant-document-important-colleg.jpg";
-import trainingImage from "@/assets/services/reconnaitre-contributions-impactantes-individus-noi.jpg";
+import cvImage from "@/assets/services/candidate-journey/cv-design.jpg";
+import coachingImage from "@/assets/services/candidate-journey/coaching-presentation.jpg";
+import successImage from "@/assets/services/candidate-journey/success-management.webp";
+import trainingImage from "@/assets/services/candidate-journey/talent-training.jpg";
 
 const steps = [
   { title: "Préparer", desc: "Conception & Refonte CV / Lettre de Motivation" },

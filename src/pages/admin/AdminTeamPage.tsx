@@ -24,6 +24,7 @@ import {
 import { toast } from "sonner";
 import { AlertCircle, Ban, CheckCircle2, Pencil, Plus, Trash2, Users } from "lucide-react";
 import { buildAdminCreateUserPayload } from "@/features/authentication/utils/adminCreateUserPayload";
+import { AdminSearchToolbar } from "./components/AdminSearchToolbar";
 
 type AdminRole = "super_admin" | "admin" | "editor";
 
@@ -65,6 +66,9 @@ export function AdminTeamPage() {
   const [submitting, setSubmitting] = React.useState(false);
   const [currentMemberId, setCurrentMemberId] = React.useState<string | null>(null);
   const [formState, setFormState] = React.useState<AdminFormState>(emptyForm());
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [roleFilter, setRoleFilter] = React.useState("all");
+  const [statusFilter, setStatusFilter] = React.useState("all");
 
   const loadTeam = React.useCallback(async () => {
     setError(null);
@@ -349,6 +353,16 @@ export function AdminTeamPage() {
     }
   };
 
+  const filteredTeamMembers = React.useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return teamMembers.filter((member) => {
+      const matchesQuery = !query || [member.name, member.email, member.specialty, member.role].join(" ").toLowerCase().includes(query);
+      const matchesRole = roleFilter === "all" || member.role === roleFilter;
+      const matchesStatus = statusFilter === "all" || (statusFilter === "active" ? member.isActive : !member.isActive);
+      return matchesQuery && matchesRole && matchesStatus;
+    });
+  }, [teamMembers, searchQuery, roleFilter, statusFilter]);
+
   return (
     <>
       <SEO
@@ -383,6 +397,28 @@ export function AdminTeamPage() {
           </div>
         </div>
 
+        <AdminSearchToolbar
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder="Rechercher un membre, un email ou une spécialité"
+          filters={
+            <>
+              <select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm">
+                <option value="all">Tous les rôles</option>
+                <option value="super_admin">Super admin</option>
+                <option value="admin">Admin</option>
+                <option value="editor">Éditeur</option>
+              </select>
+              <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm">
+                <option value="all">Tous les statuts</option>
+                <option value="active">Actifs</option>
+                <option value="inactive">Inactifs</option>
+              </select>
+            </>
+          }
+          filtersActive={roleFilter !== "all" || statusFilter !== "all"}
+        />
+
         {loading ? (
           <div className="rounded-[2rem] border border-border bg-background p-6 text-center text-sm text-muted-foreground">
             {t("admin.team.loading")}
@@ -394,13 +430,13 @@ export function AdminTeamPage() {
               <span>{error}</span>
             </div>
           </div>
-        ) : teamMembers.length === 0 ? (
+        ) : filteredTeamMembers.length === 0 ? (
           <div className="rounded-[2rem] border border-border bg-background p-6 text-sm text-muted-foreground">
             {t("admin.team.empty")}
           </div>
         ) : (
           <div className="space-y-3">
-            {teamMembers.map((member) => (
+            {filteredTeamMembers.map((member) => (
               <div
                 key={member.id}
                 className="flex flex-col gap-3 rounded-[1.25rem] border border-slate-200 bg-white/90 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md md:flex-row md:items-center"
