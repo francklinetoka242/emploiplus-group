@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 import { useEcoMode } from '@/contexts/EcoModeContext';
 import logoMonago from "@/assets/logo-monago.jpg";
+import presentationPhoto from "@/assets/services/entraineur-affaires-noir-donnant-presentation-.jpg";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
@@ -495,78 +496,62 @@ export function HomePage() {
       </motion.section>
 
       <motion.section
-        className="overflow-hidden bg-card py-20 md:py-24"
+        className="overflow-hidden bg-card py-12 md:py-16"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.7 }}
       >
-        <div className="container-page">
-          <div className="grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+        <div className="container-page max-w-xl">
+          <div className="grid items-center gap-6 sm:grid-cols-12 sm:gap-8">
             <motion.div
-              className="order-2 max-w-xl lg:order-2"
+              className="overflow-hidden rounded-xl bg-muted shadow-soft sm:col-span-4"
               initial={{ opacity: 0, x: -32 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand">
-                Recrutement excellence
-              </p>
-              <h2 className="mt-4 font-display text-3xl font-extrabold leading-tight text-foreground md:text-5xl">
-                Cultivez vos talents pour faire grandir votre organisation
-              </h2>
-              <p className="mt-5 max-w-lg text-base leading-7 text-muted-foreground">
-                Des équipes engagées et des parcours professionnels solides créent une performance durable. EmploiPlus Group vous accompagne à chaque étape.
-              </p>
+              <img src="/ent-img.webp" alt="Équipe professionnelle en collaboration" className="h-44 w-full object-cover sm:h-20" loading="lazy" />
             </motion.div>
 
             <motion.div
-              className="order-1 overflow-hidden rounded-[1.75rem] bg-muted shadow-elev lg:order-1"
+              className="sm:col-span-8"
               initial={{ opacity: 0, x: 32 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <img
-                src="/img-carriere.svg"
-                alt="Équipe professionnelle en collaboration"
-                className="h-64 w-full object-cover sm:h-80"
-                loading="lazy"
-              />
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-brand">Excellence du recrutement</p>
+              <h2 className="mt-3 max-w-2xl font-display text-2xl font-extrabold leading-tight text-foreground sm:text-xl">Développez vos talents pour faire grandir votre organisation</h2>
             </motion.div>
-          </div>
 
-          <div className="mt-14 grid items-center gap-10 lg:grid-cols-[1fr_0.85fr] lg:gap-16">
+            <motion.div className="sm:col-span-4" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}>
+              <h3 className="font-display text-lg font-bold text-foreground">Les bons talents pour votre équipe</h3>
+              <p className="mt-3 text-xs leading-5 text-muted-foreground sm:text-[9px] sm:leading-4">Nous vous aidons à identifier les profils qui correspondent à vos besoins et à construire des équipes engagées, compétentes et prêtes à contribuer durablement à vos projets.</p>
+            </motion.div>
+
             <motion.div
-              className="max-w-xl"
+              className="rounded-2xl bg-[#2f7650] p-4 text-white shadow-soft sm:col-span-4"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <h3 className="font-display text-2xl font-bold text-foreground md:text-3xl">
-                Une recherche de talents plus claire et plus humaine
-              </h3>
-              <p className="mt-4 text-base leading-7 text-muted-foreground">
-                Identifiez les bons profils, valorisez les compétences et construisez les équipes qui feront avancer vos projets.
-              </p>
-              <Button asChild className="mt-7 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/90">
-                <Link to="/contact">Parler à un expert</Link>
-              </Button>
+              <p className="text-[9px] leading-3">Une approche structurée pour attirer, évaluer et accompagner les talents dont votre organisation a besoin.</p>
+              <ul className="mt-3 space-y-1 text-[9px] leading-3"><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> 15 ans d’expérience</li><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> Gestion des talents</li><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> Recherche de profils dirigeants</li></ul>
             </motion.div>
 
             <motion.div
-              className="relative overflow-hidden rounded-[1.75rem] bg-brand-deep shadow-brand"
+              className="relative overflow-hidden rounded-xl bg-brand-deep shadow-brand sm:col-span-4"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
               <img
-                src="/ent-img.svg"
+                src={presentationPhoto}
                 alt="Présentation vidéo EmploiPlus Group"
-                className="h-64 w-full object-cover sm:h-72"
+                className="h-52 w-full object-cover sm:h-28"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-brand-deep/20" />
@@ -585,7 +570,7 @@ export function HomePage() {
       </motion.section>
 
       <motion.section
-        className="relative overflow-hidden py-24 md:py-32"
+        className="relative min-h-[360px] overflow-hidden py-12 md:min-h-[430px] md:py-16"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
@@ -597,26 +582,26 @@ export function HomePage() {
           className="absolute inset-0 h-full w-full object-cover"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-brand-deep/65" />
-        <div className="container-page relative">
+        <div className="absolute inset-0 bg-brand-deep/35" />
+        <div className="container-page relative flex min-h-[300px] max-w-lg items-center md:min-h-[365px]">
           <motion.div
-            className="max-w-xl rounded-[1.75rem] bg-card p-7 shadow-elev sm:p-10 md:p-12"
+            className="max-w-lg rounded-2xl bg-card p-6 shadow-elev sm:w-64 sm:p-5"
             initial={{ opacity: 0, x: -32 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6 }}
           >
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand">
-              Construisons la suite
+              Planifiez une consultation aujourd’hui
             </p>
-            <h2 className="mt-4 font-display text-3xl font-extrabold leading-tight text-foreground md:text-5xl">
-              Donnez de l’élan à votre prochain projet
+            <h2 className="mt-3 font-display text-2xl font-extrabold leading-tight text-foreground sm:text-xl">
+              Commencez votre parcours vers l’excellence des talents
             </h2>
-            <p className="mt-5 text-base leading-7 text-muted-foreground">
-              Une expertise concrète, des profils qualifiés et un accompagnement pensé pour vos priorités.
+            <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-[9px] sm:leading-4">
+              Échangeons sur vos enjeux et bénéficiez d’un accompagnement adapté pour trouver les compétences qui feront avancer votre activité.
             </p>
-            <Button asChild className="mt-7 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/90">
-              <Link to="/contact">Démarrer une conversation</Link>
+            <Button asChild className="mt-6 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/90">
+              <Link to="/contact">Demander un devis <ArrowUp className="ml-1 h-4 w-4 rotate-45" /></Link>
             </Button>
           </motion.div>
         </div>
