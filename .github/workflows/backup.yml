@@ -3,7 +3,7 @@ name: Daily Supabase & Storage Backup to Google Drive
 on:
   schedule:
     - cron: '0 3 * * *' # Tous les jours à 3h00 du matin
-  workflow_dispatch: # Permet de lancer le backup manuellement
+  workflow_dispatch: # Permet de lancer le backup manuellement depuis GitHub
 
 jobs:
   backup:
@@ -30,8 +30,8 @@ jobs:
         run: |
           PROJECT_REF=$(echo "$SUPABASE_URL" | awk -F'//' '{print $2}' | awk -F'.' '{print $1}')
           
-          # Utilisation de la connexion directe via le pooler ou l'hôte de base de données standard
-          supabase db dump --db-url "postgresql://postgres.${PROJECT_REF}:${SUPABASE_SERVICE_ROLE_KEY}@aws-0-eu-central-1.pooler.supabase.com:6543/postgres" -f backup_temp/database.sql
+          # Connexion directe sur le port 5432 avec la clé service_role
+          supabase db dump --db-url "postgresql://postgres:${SUPABASE_SERVICE_ROLE_KEY}@db.${PROJECT_REF}.supabase.co:5432/postgres" -f backup_temp/database.sql
 
       - name: 2. Download Supabase Storage Media
         env:
