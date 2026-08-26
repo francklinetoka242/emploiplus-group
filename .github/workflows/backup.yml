@@ -2,7 +2,7 @@ name: Daily Supabase & Storage Backup to Google Drive
 
 on:
   schedule:
-    - cron: '0 3 * * *' # Tous les jours à 3h00 du matin
+    - cron: "0 3 * * *" # Tous les jours à 3h00 du matin
   workflow_dispatch: # Permet de lancer le backup manuellement depuis GitHub
 
 jobs:
@@ -15,7 +15,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "24"
+
+      - name: Install Node.js dependencies
+        run: npm ci
 
       - name: Install Supabase CLI
         uses: supabase/setup-cli@v1
@@ -25,13 +28,14 @@ jobs:
 
       - name: 1. Dump Supabase Database
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
-          PROJECT_REF=$(echo "$SUPABASE_URL" | awk -F'//' '{print $2}' | awk -F'.' '{print $1}')
-          
-          # Connexion directe sur le port 5432 avec la clé service_role
-          supabase db dump --db-url "postgresql://postgres:${SUPABASE_SERVICE_ROLE_KEY}@db.${PROJECT_REF}.supabase.co:5432/postgres" -f backup_temp/database.sql
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "Le secret SUPABASE_DB_URL est manquant. Ajoutez l URL PostgreSQL du pooler Supabase dans GitHub Actions."
+            exit 1
+          fi
+
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f backup_temp/database.sql
 
       - name: 2. Download Supabase Storage Media
         env:
