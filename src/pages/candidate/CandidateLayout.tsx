@@ -43,6 +43,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   const location = useLocation();
   const { open, setOpen } = useCandidateSidebar();
   const { logout } = useCandidate();
+  const isPublicCandidatePage = location.pathname.startsWith("/candidate/public");
   const keepHeaderVisible =
     location.pathname === "/candidate/public/jobs" || location.pathname === "/candidate/profile";
   const mainRef = useRef<HTMLElement | null>(null);
@@ -149,7 +150,13 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
             className="min-w-0 flex-1 min-h-0 touch-pan-y overflow-y-auto overflow-x-clip overscroll-y-contain"
           >
             <div className="min-w-0 w-full">
-              <div className="w-full max-w-none px-4 pt-6 sm:px-6 lg:px-8">
+              <div
+                className={cn(
+                  "w-full max-w-none",
+                  isPublicCandidatePage && "px-0 pt-0",
+                  !isPublicCandidatePage && "px-0 pt-0",
+                )}
+              >
                 {children}
               </div>
             </div>

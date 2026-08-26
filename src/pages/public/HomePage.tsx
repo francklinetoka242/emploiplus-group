@@ -25,6 +25,7 @@ import {
   Handshake,
   BookOpen,
   ArrowUp,
+  Play,
 } from "lucide-react";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { JobCard } from "@/features/jobs/components";
@@ -494,43 +495,133 @@ export function HomePage() {
       </motion.section>
 
       <motion.section
-        className="container-page pb-24"
-        initial={{ opacity: 0, x: -80 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="overflow-hidden bg-card py-20 md:py-24"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.7 }}
       >
-        <motion.div className="relative overflow-hidden border-y border-white/20 bg-[var(--brand)] px-6 py-10 shadow-brand sm:px-10 md:px-16 md:py-14" initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }}>
-          <div
-            className="absolute inset-0 opacity-25"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.35), transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.2), transparent 40%)",
-            }}
-          />
-          <div className="relative grid gap-8 md:grid-cols-[minmax(0,1fr)_220px] md:items-center md:gap-12">
-            <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/70">Échangeons sur votre projet</p>
-              <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white md:text-4xl">
-                {t("home.cta.title")}
-              </h2>
-              <p className="mt-4 max-w-xl text-base leading-7 text-white/85">
-                {t("home.cta.subtitle")}
+        <div className="container-page">
+          <div className="grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+            <motion.div
+              className="order-2 max-w-xl lg:order-2"
+              initial={{ opacity: 0, x: -32 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6 }}
+            >
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand">
+                Recrutement excellence
               </p>
-            </div>
-            <div className="md:border-l md:border-white/25 md:pl-8">
-              <Button
-                asChild
-                size="lg"
-                className="w-full bg-white font-semibold text-[--brand-deep] hover:bg-white/90 sm:w-auto"
-              >
-                <Link to="/contact">{t("home.cta.button")}</Link>
-              </Button>
-              <p className="mt-3 text-sm leading-6 text-white/65">Parlons de vos priorités et de la prochaine étape.</p>
-            </div>
+              <h2 className="mt-4 font-display text-3xl font-extrabold leading-tight text-foreground md:text-5xl">
+                Cultivez vos talents pour faire grandir votre organisation
+              </h2>
+              <p className="mt-5 max-w-lg text-base leading-7 text-muted-foreground">
+                Des équipes engagées et des parcours professionnels solides créent une performance durable. EmploiPlus Group vous accompagne à chaque étape.
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="order-1 overflow-hidden rounded-[1.75rem] bg-muted shadow-elev lg:order-1"
+              initial={{ opacity: 0, x: 32 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6 }}
+            >
+              <img
+                src="/img-carriere.svg"
+                alt="Équipe professionnelle en collaboration"
+                className="h-64 w-full object-cover sm:h-80"
+                loading="lazy"
+              />
+            </motion.div>
           </div>
-        </motion.div>
+
+          <div className="mt-14 grid items-center gap-10 lg:grid-cols-[1fr_0.85fr] lg:gap-16">
+            <motion.div
+              className="max-w-xl"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h3 className="font-display text-2xl font-bold text-foreground md:text-3xl">
+                Une recherche de talents plus claire et plus humaine
+              </h3>
+              <p className="mt-4 text-base leading-7 text-muted-foreground">
+                Identifiez les bons profils, valorisez les compétences et construisez les équipes qui feront avancer vos projets.
+              </p>
+              <Button asChild className="mt-7 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/90">
+                <Link to="/contact">Parler à un expert</Link>
+              </Button>
+            </motion.div>
+
+            <motion.div
+              className="relative overflow-hidden rounded-[1.75rem] bg-brand-deep shadow-brand"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <img
+                src="/ent-img.svg"
+                alt="Présentation vidéo EmploiPlus Group"
+                className="h-64 w-full object-cover sm:h-72"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-brand-deep/20" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div
+                  className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-secondary-foreground shadow-lg"
+                  aria-label="Vidéo bientôt disponible"
+                  title="Vidéo bientôt disponible"
+                >
+                  <Play className="ml-1 h-6 w-6 fill-current" />
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </motion.section>
+
+      <motion.section
+        className="relative overflow-hidden py-24 md:py-32"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.7 }}
+      >
+        <img
+          src="/img-carriere.svg"
+          alt="Environnement professionnel EmploiPlus Group"
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-brand-deep/65" />
+        <div className="container-page relative">
+          <motion.div
+            className="max-w-xl rounded-[1.75rem] bg-card p-7 shadow-elev sm:p-10 md:p-12"
+            initial={{ opacity: 0, x: -32 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6 }}
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand">
+              Construisons la suite
+            </p>
+            <h2 className="mt-4 font-display text-3xl font-extrabold leading-tight text-foreground md:text-5xl">
+              Donnez de l’élan à votre prochain projet
+            </h2>
+            <p className="mt-5 text-base leading-7 text-muted-foreground">
+              Une expertise concrète, des profils qualifiés et un accompagnement pensé pour vos priorités.
+            </p>
+            <Button asChild className="mt-7 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/90">
+              <Link to="/contact">Démarrer une conversation</Link>
+            </Button>
+          </motion.div>
+        </div>
+      </motion.section>
+
     </div>
   );
 }
