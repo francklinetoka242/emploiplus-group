@@ -21,6 +21,7 @@ interface CandidateLayoutProps {
 const pageToTitle: Record<string, string> = {
   "/candidate/dashboard": "Tableau de bord",
   "/candidate/profile": "Mon profil",
+  "/candidate/create-cv": "Création-CV",
   "/candidate/documents": "Mes Documents",
   "/candidate/experience": "Profil",
   "/candidate/education": "Profil",

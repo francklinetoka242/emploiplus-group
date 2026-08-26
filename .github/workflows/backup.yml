@@ -20,9 +20,6 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci
 
-      - name: Install Supabase CLI
-        uses: supabase/setup-cli@v1
-
       - name: Create backup directory
         run: mkdir -p backup_temp
 
@@ -35,7 +32,17 @@ jobs:
             exit 1
           fi
 
-          supabase db dump --db-url "$SUPABASE_DB_URL" -f backup_temp/database.sql
+          docker run --rm \
+            --network host \
+            -e SUPABASE_DB_URL="$SUPABASE_DB_URL" \
+            -v "$PWD/backup_temp:/backup" \
+            postgres:17 \
+            pg_dump \
+            --dbname="$SUPABASE_DB_URL" \
+            --format=plain \
+            --no-owner \
+            --no-privileges \
+            --file=/backup/database.sql
 
       - name: 2. Download Supabase Storage Media
         env:
