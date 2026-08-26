@@ -25,11 +25,18 @@ jobs:
 
       - name: 1. Dump Supabase Database
         env:
-          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          PROJECT_ID=$(echo "${{ secrets.SUPABASE_URL }}" | awk -F'//' '{print $2}' | awk -F'.' '{print $1}')
-          export SUPABASE_ACCESS_TOKEN="${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
-          supabase db dump --project-ref $PROJECT_ID -f backup_temp/database.sql
+          # Construction de l'URL de connexion PostgreSQL avec la clé service_role
+          # Format standard : postgresql://postgres.PROJECT_REF:PASSWORD@aws-0-REGION.pooler.supabase.com:6543/postgres
+          # Mais le plus simple et robuste avec la CLI est d'utiliser --db-url en extrayant le domaine
+          
+          PROJECT_REF=$(echo "$SUPABASE_URL" | awk -F'//' '{print $2}' | awk -F'.' '{print $1}')
+          DB_URL="postgresql://postgres.${PROJECT_REF}:${SUPABASE_SERVICE_ROLE_KEY}@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"
+          
+          # Tentative de dump avec --db-url
+          supabase db dump --db-url "postgresql://postgres:${SUPABASE_SERVICE_ROLE_KEY}@db.${PROJECT_REF}.supabase.co:5432/postgres" -f backup_temp/database.sql
 
       - name: 2. Download Supabase Storage Media
         env:
