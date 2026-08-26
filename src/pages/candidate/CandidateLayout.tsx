@@ -45,6 +45,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   const { open, setOpen } = useCandidateSidebar();
   const { logout } = useCandidate();
   const isPublicCandidatePage = location.pathname.startsWith("/candidate/public");
+  const isCvPage = location.pathname.startsWith("/candidate/create-cv");
   const keepHeaderVisible =
     location.pathname === "/candidate/public/jobs" || location.pathname === "/candidate/profile";
   const mainRef = useRef<HTMLElement | null>(null);
@@ -101,7 +102,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   }, [keepHeaderVisible]);
 
   return (
-    <div className="flex h-screen min-h-screen flex-col overflow-hidden bg-background text-foreground">
+    <div className={cn("flex min-h-screen flex-col bg-background text-foreground", !isCvPage && "h-screen overflow-hidden")}>
       {/* Mobile Header (visible uniquement sur mobile) */}
       <div
         className={cn(
@@ -122,7 +123,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
       <CandidateSidebar open={open} onOpenChange={setOpen} onLogout={logout} isDrawer={true} />
 
       {/* Layout Desktop */}
-      <div className="flex min-h-0 flex-1 md:flex-row flex-col">
+      <div className={cn("flex min-h-0 flex-1 flex-col md:flex-row", isCvPage && "min-h-screen")}>
         {/* Sidebar Desktop (visible uniquement sur desktop) */}
         <CandidateSidebar open={open} onOpenChange={setOpen} onLogout={logout} isDrawer={false} />
 
@@ -148,7 +149,12 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
           {/* Contenu avec scroll */}
           <main
             ref={mainRef}
-            className="min-w-0 flex-1 min-h-0 touch-pan-y overflow-y-auto overflow-x-clip overscroll-y-contain"
+            className={cn(
+              "min-w-0 touch-pan-y",
+              isCvPage
+                ? "w-full flex-none overflow-visible"
+                : "min-h-0 flex-1 overflow-y-auto overflow-x-clip overscroll-y-contain",
+            )}
           >
             <div className="min-w-0 w-full">
               <div

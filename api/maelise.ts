@@ -492,7 +492,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  const apiKey = process.env.MAELISE_GROQ_API_KEY;
+  const apiKey = process.env.MAELISE_GROQ_API_KEY || process.env.GROQ_API_KEY;
   if (!apiKey) return res.status(500).json({ error: "Maélise is not configured" });
 
   const supabase = getSupabaseServer();
@@ -638,7 +638,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       signal: controller.signal,
       body: JSON.stringify({
-        model: process.env.MAELISE_GROQ_MODEL || "openai/gpt-oss-20b",
+        model: process.env.MAELISE_GROQ_MODEL || process.env.GROQ_MODEL || "openai/gpt-oss-20b",
         temperature: 0.2,
         response_format: { type: "json_object" },
         messages: [
@@ -662,10 +662,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
     if (groqResponse.status === 429 || groqResponse.status === 402)
       throw new Error("GROQ_QUOTA_EXCEEDED");
-    if (!groqResponse.ok)
+    if (!groqResponse.ok) {
+      const providerError = await groqResponse.text().catch(() => "");
+      console.error("[maelise] Groq request rejected", {
+        status: groqResponse.status,
+        model: process.env.MAELISE_GROQ_MODEL || process.env.GROQ_MODEL || "openai/gpt-oss-20b",
+        providerError: providerError.slice(0, 500),
+      });
       return res
         .status(groqResponse.status >= 500 ? 503 : 502)
         .json({ error: "Le service Maélise est momentanément indisponible." });
+    }
     const result = (await groqResponse.json()) as {
       choices?: Array<{ message?: { content?: string } }>;
     };

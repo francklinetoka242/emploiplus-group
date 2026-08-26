@@ -33,6 +33,7 @@ import {
   Heart,
   Send,
   Crown,
+  FilePlus,
 } from "lucide-react";
 import EcoModeToggle from "@/components/sidebar/EcoModeToggle";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
@@ -58,6 +59,7 @@ const menuItems = [
   { id: "dashboard", label: "Tableau de bord", icon: Home, href: "/candidate/dashboard" },
   { id: "profile", label: "Mon profil", icon: User, href: "/candidate/profile" },
   { id: "documents", label: "Documents", icon: PlusCircle, href: "/candidate/documents" },
+  { id: "create-cv", label: "Création-CV", icon: FilePlus, href: "/candidate/create-cv" },
   { id: "guides", label: "Fiches", icon: BookOpen, href: "/candidate/guides" },
   { id: "applications", label: "Mes candidatures", icon: Send, href: "/candidate/applications" },
   { id: "saved", label: "Offres enregistrées", icon: Heart, href: "/candidate/saved-jobs" },
