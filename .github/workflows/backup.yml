@@ -26,20 +26,26 @@ jobs:
       - name: 1. Dump Supabase Database
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           if [ -z "$SUPABASE_DB_URL" ]; then
-            echo "Le secret SUPABASE_DB_URL est manquant. Ajoutez l URL PostgreSQL du pooler Supabase dans GitHub Actions."
+            echo "Le secret SUPABASE_DB_URL est manquant. Ajoutez l URL PostgreSQL du pooler sans mot de passe."
             exit 1
           fi
 
-          if [[ "$SUPABASE_DB_URL" != postgresql://*:*@*/* && "$SUPABASE_DB_URL" != postgres://*:*@*/* ]]; then
-            echo "SUPABASE_DB_URL est invalide. Format attendu : postgresql://UTILISATEUR:MOT_DE_PASSE@HOTE:5432/postgres"
+          if [ -z "$SUPABASE_DB_PASSWORD" ]; then
+            echo "Le secret SUPABASE_DB_PASSWORD est manquant. Ajoutez le mot de passe de la base Supabase dans GitHub Actions."
+            exit 1
+          fi
+
+          if [[ "$SUPABASE_DB_URL" != postgresql://*@*/* && "$SUPABASE_DB_URL" != postgres://*@*/* ]]; then
+            echo "SUPABASE_DB_URL est invalide. Format attendu : postgresql://UTILISATEUR@HOTE:5432/postgres"
             exit 1
           fi
 
           docker run --rm \
             --network host \
-            -e SUPABASE_DB_URL="$SUPABASE_DB_URL" \
+            -e PGPASSWORD="$SUPABASE_DB_PASSWORD" \
             -v "$PWD/backup_temp:/backup" \
             postgres:17 \
             pg_dump \
