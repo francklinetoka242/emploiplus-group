@@ -519,6 +519,10 @@ function AppContent() {
           element={withSuspense(<CandidateCreateCVPage />, <CandidateDashboardSkeleton />)}
         />
         <Route
+          path="create-cv/:templateId"
+          element={withSuspense(<CandidateCreateCVPage />, <CandidateDashboardSkeleton />)}
+        />
+        <Route
           path="documents"
           element={withSuspense(<CandidateDocumentsPage />, <CandidateDashboardSkeleton />)}
         />

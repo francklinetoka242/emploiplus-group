@@ -155,7 +155,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
                 className={cn(
                   "w-full max-w-none",
                   isPublicCandidatePage && "px-0 pt-0",
-                  !isPublicCandidatePage && "px-0 pt-0",
+                  !isPublicCandidatePage && "px-4 py-6 sm:px-6 lg:px-8",
                 )}
               >
                 {children}
