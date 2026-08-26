@@ -19,7 +19,7 @@
       }
 
       .cls-3, .cls-5 {
-        font-family: Montserrat-Regular, Montserrat;
+        font-family: Inter, sans-serif;
       }
 
       .cls-6, .cls-7 {

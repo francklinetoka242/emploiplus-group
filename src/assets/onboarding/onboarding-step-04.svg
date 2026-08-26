@@ -13,7 +13,7 @@
       }
 
       .cls-1, .cls-4 {
-        font-family: Montserrat-Regular, Montserrat;
+        font-family: Inter, sans-serif;
       }
 
       .cls-6 {
@@ -86,7 +86,7 @@
       }
 
       .cls-20, .cls-22 {
-        font-family: Montserrat-Medium, Montserrat;
+        font-family: Inter, sans-serif;
         font-weight: 500;
       }
 
@@ -170,7 +170,7 @@
       }
 
       .cls-5 {
-        font-family: MontserratAlternates-ExtraBold, 'Montserrat Alternates';
+        font-family: Inter, sans-serif;
         font-size: 79.7px;
         font-weight: 700;
         stroke: #00009e;

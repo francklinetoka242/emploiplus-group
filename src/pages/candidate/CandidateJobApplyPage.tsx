@@ -620,7 +620,7 @@ export function CandidateJobApplyPage() {
       ];
 
       const applicationHtml = `
-        <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
+        <div style="font-family: Inter, Arial, sans-serif; color: #111827; line-height: 1.6;">
           <p style="margin: 0 0 12px;"><strong>Objet :</strong> ${escapeHtml(outgoingSubject)}</p>
           <div style="white-space: pre-wrap; margin: 0 0 16px;">${escapeHtml(candidateMessage || "Aucun message fourni.").replace(/\n/g, "<br />")}</div>
           <p style="margin: 0 0 12px;"><strong>Ci-joints</strong></p>

@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import heroBg from "@/assets/home/home-hero-background.webp";
 import heroMain from "@/assets/home/home-recruitment-image.webp";
+import enterpriseTeamImage from "@/assets/home/enterprise-team-03.webp";
+import mainJcImage from "@/assets/home/main-j-c.webp";
 import { useEcoMode } from '@/contexts/EcoModeContext';
 import logoMonago from "@/assets/partners/logo-monago.webp";
 import { Button } from "@/components/ui/button";
@@ -17,6 +19,8 @@ import {
   BadgeDollarSign,
   BriefcaseBusiness,
   Building2,
+  ClipboardCheck,
+  Users,
   CalendarDays,
   ExternalLink,
   Mail,
@@ -398,78 +402,156 @@ export function HomePage() {
         </div>
       </motion.section>
 
-      <motion.section
-        className="relative z-10 overflow-hidden bg-slate-950"
-        initial={{ opacity: 0, y: 80 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.15 }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <div className="container-page py-20 md:py-24">
-          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.55, delay: 0.05 }}>
-            <SectionHeader
-              title={<span className="text-white">Nos services</span>}
-              subtitle={<span className="text-slate-300">Une plateforme pensée pour les entreprises et les talents.</span>}
-            />
-          </motion.div>
-          <motion.div className="mt-12 grid gap-6 md:grid-cols-2" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
-            {services.map((item, i) => (
-              <motion.article
-                key={item.title}
-                className={`group relative overflow-hidden ${
-                  i === 0
-                    ? "border-l-2 border-secondary/70 pl-6 md:pl-8"
-                    : "rounded-[28px] border border-white/10 bg-slate-900/70 shadow-[0_18px_50px_-20px_rgba(15,23,42,0.9)] backdrop-blur-sm"
-                }`}
-                initial={{ opacity: 0, x: -80 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                variants={staggerItem}
-                whileHover={i === 0 ? undefined : { y: -8, transition: { duration: 0.2 } }}
-                transition={{ delay: i * 0.08, duration: 0.55 }}
-              >
-                {i === 1 ? <div className="absolute inset-x-0 top-0 h-1 bg-secondary" /> : null}
-                <div className={`flex h-full flex-col justify-between gap-6 ${i === 0 ? "py-2 pr-2 md:py-4 md:pr-6" : "p-6 md:p-7"}`}>
-                  <div>
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="inline-flex items-center rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-brand-foreground/90">
+      <>
+        {services.map((item, i) => (
+          <motion.section
+            key={item.title}
+            className={`relative z-10 overflow-hidden bg-white ${i === 1 ? "py-[1.125rem] md:py-[1.625rem]" : ""}`}
+            initial={i === 0 || i === 1 ? false : { opacity: 0, y: 40 }}
+            whileInView={i === 0 || i === 1 ? undefined : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7 }}
+          >
+            <div className={`container-page ${i === 1 ? "max-w-5xl" : "max-w-6xl py-16 md:py-20"}`}>
+              <div className="grid gap-8">
+              <div className="group relative">
+                {i === 0 ? (
+                  <motion.div
+                    className="grid min-h-[28rem] items-start gap-8 p-6 md:grid-cols-[0.9fr_1.1fr] md:gap-12 md:p-10"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.25 }}
+                    variants={staggerContainer}
+                  >
+                    <motion.div className="max-w-md pt-2 md:pt-1" variants={staggerItem} whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
+                      <span className="inline-block font-display text-3xl font-extrabold leading-none text-brand md:text-4xl">
                         {item.heading}
                       </span>
-                      {i === 1 ? (
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-brand-foreground ring-1 ring-white/10">
-                          <Building2 className="h-4 w-4" />
-                        </div>
-                      ) : <Sparkles className="h-5 w-5 text-brand-foreground" />}
-                    </div>
+                      <h2 className="mt-5 font-display text-3xl font-extrabold leading-tight text-slate-950 md:text-4xl">
+                        {item.title}
+                      </h2>
+                      <p className="mt-5 text-base leading-relaxed text-slate-600">
+                        {item.description}
+                      </p>
+                      <Button asChild className="mt-7 rounded-xl bg-[linear-gradient(120deg,#7DB7E3_0%,#7DB7E3_1%,#3B8DCE_6%,#000079_100%)] px-6 text-white shadow-sm hover:brightness-110 transition-transform hover:scale-105">
+                        <Link to={item.link.href}>{item.link.label}</Link>
+                      </Button>
+                    </motion.div>
 
-                    <h2 className="mt-5 font-display text-2xl font-bold text-white">
-                      {item.title}
-                    </h2>
-                    <p className="mt-4 text-base leading-relaxed text-slate-300">
-                      {item.description}
-                    </p>
-
-                    <ul className="mt-6 space-y-3 text-sm text-slate-200">
-                      {item.bullets.map((bullet) => (
-                        <li key={bullet} className="flex items-start gap-3">
-                          <span className="mt-2 h-px w-4 shrink-0 bg-brand/70" />
-                          <span>{bullet}</span>
-                        </li>
+                    <motion.div className="relative mx-auto flex min-h-[20rem] w-full max-w-[30rem] items-center justify-center" variants={staggerItem}>
+                      <div className="relative size-72 overflow-visible rounded-full md:size-[21rem]">
+                        <motion.div
+                          className="h-full w-full overflow-hidden rounded-full bg-slate-200 shadow-xl"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          whileHover={{ scale: 1.04 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.7, ease: "easeOut" }}
+                        >
+                          <img src={heroMain} alt="Parcours candidat EmploiPlus Group" className="h-full w-full object-cover" loading="lazy" />
+                        </motion.div>
+                        <motion.div
+                          className="absolute left-1/2 top-1/2 flex size-28 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-brand text-white shadow-xl shadow-brand/30 md:size-32"
+                          initial={{ scale: 0, rotate: -180 }}
+                          whileInView={{ scale: 1, rotate: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.2 }}
+                          whileHover={{ scale: 1.1, rotate: 8 }}
+                        >
+                          <Sparkles className="h-9 w-9" />
+                        </motion.div>
+                      </div>
+                      {item.bullets.map((bullet, bulletIndex) => (
+                        <motion.div
+                          key={bullet}
+                          className="pointer-events-none absolute inset-0"
+                          initial={{ rotate: 0 }}
+                          whileInView={{ rotate: [0, 360] }}
+                          viewport={{ once: true, amount: 0.4 }}
+                          transition={{ duration: 3, delay: 0.35 + bulletIndex * 0.12, ease: "easeInOut" }}
+                        >
+                          <motion.div
+                            className={`pointer-events-auto absolute flex size-28 items-center justify-center rounded-full border border-white bg-white/95 p-4 text-center text-[0.68rem] font-semibold leading-4 text-slate-800 shadow-lg md:size-32 md:text-xs ${
+                              bulletIndex === 0 ? "right-0 top-0" : bulletIndex === 1 ? "right-0 bottom-0" : bulletIndex === 2 ? "left-0 bottom-0" : "left-0 top-0"
+                            }`}
+                            whileHover={{ scale: 1.1, backgroundColor: "#ffffff", boxShadow: "0 12px 28px rgba(0, 0, 158, 0.2)" }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <span>{bullet}</span>
+                          </motion.div>
+                        </motion.div>
                       ))}
-                    </ul>
-                  </div>
+                    </motion.div>
+                  </motion.div>
+                ) : (
+                  <div className="space-y-10 md:space-y-14">
+                    <motion.div
+                      className="grid gap-6 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-center md:gap-8"
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, amount: 0.25 }}
+                      variants={staggerContainer}
+                    >
+                      <div className="grid min-h-80 grid-cols-[9rem_minmax(0,1fr)] grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-3 md:h-[360px]">
+                        <motion.div className="flex items-end rounded-xl bg-[linear-gradient(120deg,#7DB7E3_0%,#7DB7E3_1%,#3B8DCE_6%,#000079_100%)] p-5" whileHover={{ y: -5, scale: 1.02 }} transition={{ duration: 0.2 }}>
+                          <span className="break-words font-display text-xl font-extrabold uppercase leading-tight text-white md:text-2xl">
+                            À propos<br />de nous
+                          </span>
+                        </motion.div>
+                        <motion.img src={enterpriseTeamImage} alt="Équipe Entreprise EmploiPlus Group" className="h-full min-h-0 w-full rounded-xl object-cover" loading="lazy" variants={staggerItem} whileHover={{ scale: 1.04 }} transition={{ duration: 0.25 }} />
+                        <motion.img src={mainJcImage} alt="Environnement professionnel Entreprise" className="col-span-2 h-full min-h-0 w-full rounded-xl object-cover" loading="lazy" variants={staggerItem} whileHover={{ scale: 1.04 }} transition={{ duration: 0.25 }} />
+                      </div>
+                      <motion.div className="pt-1" variants={staggerItem} whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
+                        <h2 className="font-display text-2xl font-extrabold leading-tight text-slate-950 md:text-3xl">{item.title}</h2>
+                        <p className="mt-4 text-sm leading-relaxed text-slate-600">{item.description}</p>
+                        <Button asChild size="sm" className="mt-5 rounded-full bg-[linear-gradient(120deg,#7DB7E3_0%,#7DB7E3_1%,#3B8DCE_6%,#000079_100%)] px-5 text-white shadow-sm hover:brightness-110 transition-transform hover:scale-105">
+                          <Link to={item.link.href}>{item.link.label}<ArrowUp className="ml-2 h-4 w-4 rotate-45" /></Link>
+                        </Button>
+                      </motion.div>
+                    </motion.div>
 
-                  <div className="mt-6">
-                    <Button asChild className="w-full justify-center rounded-xl bg-white text-slate-900 hover:bg-slate-200 shadow-sm">
-                      <Link to={item.link.href}>{item.link.label}</Link>
-                    </Button>
+                    <motion.div
+                      className="grid gap-4 md:grid-cols-[9rem_repeat(3,minmax(0,1fr))] md:gap-5"
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, amount: 0.2 }}
+                      variants={staggerContainer}
+                    >
+                      <motion.div className="flex min-h-[154px] w-[9rem] self-start items-end rounded-xl bg-[linear-gradient(120deg,#7DB7E3_0%,#7DB7E3_1%,#3B8DCE_6%,#000079_100%)] p-5 md:min-h-[174px]" whileHover={{ y: -5, scale: 1.02 }} transition={{ duration: 0.2 }}>
+                        <span className="font-display text-2xl font-extrabold uppercase leading-tight text-white md:text-3xl">Pro<br />duits</span>
+                      </motion.div>
+                      {item.bullets.slice(0, 3).map((bullet, bulletIndex) => (
+                        <motion.div
+                          key={bullet}
+                          className="flex min-h-84 flex-col justify-between rounded-xl border border-slate-100 bg-white p-5 shadow-[0_8px_24px_-18px_rgba(15,23,42,0.45)] md:min-h-[384px]"
+                          variants={staggerItem}
+                          whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                        >
+                          <div>
+                            {bulletIndex === 0 ? (
+                              <ClipboardCheck className="h-5 w-5 text-brand" />
+                            ) : bulletIndex === 1 ? (
+                              <Users className="h-5 w-5 text-brand" />
+                            ) : (
+                              <BarChart3 className="h-5 w-5 text-brand" />
+                            )}
+                            <p className="mt-5 font-display text-base font-bold leading-5 text-slate-800">{bullet}</p>
+                            <p className="mt-3 text-xs leading-5 text-slate-500">Une solution professionnelle adaptée à vos objectifs et à votre organisation.</p>
+                          </div>
+                          <Link to={item.link.href} aria-label={`Découvrir ${bullet}`} className="flex size-7 items-center justify-center self-end rounded-full bg-brand text-white transition hover:bg-brand/90">
+                            <ArrowUp className="h-3.5 w-3.5 rotate-45" />
+                          </Link>
+                        </motion.div>
+                      ))}
+                    </motion.div>
                   </div>
-                </div>
-              </motion.article>
-            ))}
-          </motion.div>
-        </div>
-      </motion.section>
+                )}
+              </div>
+              </div>
+            </div>
+          </motion.section>
+        ))}
+      </>
 
       <motion.section
         className="container-page py-20 md:py-24"
@@ -530,7 +612,7 @@ export function HomePage() {
             </motion.div>
 
             <motion.div
-              className="rounded-2xl bg-brand p-6 text-white shadow-soft sm:col-span-4"
+              className="rounded-2xl bg-[linear-gradient(120deg,#7DB7E3_0%,#7DB7E3_1%,#3B8DCE_6%,#000079_100%)] p-6 text-white shadow-soft sm:col-span-4"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}

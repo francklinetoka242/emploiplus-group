@@ -239,7 +239,7 @@
       }
 
       .cls-33 {
-        font-family: Montserrat-Regular, Montserrat;
+        font-family: Inter, sans-serif;
         font-size: 32.82px;
       }
     </style>

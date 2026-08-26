@@ -4,7 +4,7 @@ import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { Megaphone, Users, Database, Search } from "lucide-react";
-import hubImage from "@/assets/services/hub-emploi-main.webp";
+import hubImage from "@/assets/home/hub-emploi-main.webp";
 
 const canonical = `${BASE_URL}/services/hub-emploi-recrutement`;
 

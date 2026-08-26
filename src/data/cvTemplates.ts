@@ -39,7 +39,7 @@ const buildPreviewSvg = (name: string, accent: string, secondary: string) => {
       <rect x="478" y="598" width="430" height="12" rx="6" fill="#cbd5e1" />
       <rect x="478" y="626" width="390" height="12" rx="6" fill="#cbd5e1" />
       <rect x="478" y="660" width="180" height="34" rx="17" fill="${accent}" />
-      <text x="70" y="790" fill="#f8fafc" font-family="Segoe UI, Arial" font-size="22">${name}</text>
+      <text x="70" y="790" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="22">${name}</text>
     </svg>`;
 
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
@@ -81,7 +81,7 @@ const buildCorporatePreviewSvg = (name: string) => {
       <rect x="520" y="756" width="260" height="18" rx="9" fill="#0f172a" />
       <rect x="520" y="786" width="300" height="12" rx="6" fill="#64748b" />
       <rect x="520" y="812" width="190" height="12" rx="6" fill="#cbd5e1" />
-      <text x="70" y="790" fill="#f8fafc" font-family="Segoe UI, Arial" font-size="22">${name}</text>
+      <text x="70" y="790" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="22">${name}</text>
     </svg>`;
 
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;

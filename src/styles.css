@@ -350,10 +350,6 @@
     text-rendering: optimizeLegibility;
   }
 
-  body.is-mobile-app {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  }
-
   body.is-mobile-app img,
   body.is-mobile-app picture,
   body.is-mobile-app video {

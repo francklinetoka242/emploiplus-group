@@ -814,14 +814,6 @@ export default function App() {
     if (isMobileAppUserAgent) {
       document.documentElement.classList.add("is-mobile-app");
       document.body.classList.add("is-mobile-app");
-      document.documentElement.style.setProperty(
-        "--font-sans",
-        "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-      );
-      document.documentElement.style.setProperty(
-        "--font-display",
-        "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-      );
 
       document.querySelectorAll("img:not([loading])").forEach((img) => {
         img.setAttribute("loading", "lazy");

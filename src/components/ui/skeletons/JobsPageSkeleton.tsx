@@ -3,42 +3,42 @@ import { Skeleton } from "./Skeleton";
 
 export function JobsPageSkeleton() {
   return (
-    <div className="container-page pb-20 md:pb-28">
-      <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-border bg-card/80 p-6 shadow-soft">
-            <Skeleton variant="line" height={28} className="w-48" />
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {Array.from({ length: 4 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="rounded-3xl border border-border/60 bg-background/70 p-4"
-                >
-                  <Skeleton variant="line" height={16} className="w-1/2" />
-                  <Skeleton variant="line" height={16} className="w-3/4 mt-3" />
-                  <Skeleton variant="rectangle" height={96} className="w-full mt-4" />
-                </div>
-              ))}
-            </div>
+    <div className="container-page pb-32 md:pb-28">
+      <div className="grid gap-6">
+        <div className="rounded-[1.25rem] border border-border bg-card/95 p-3 shadow-soft sm:p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <Skeleton variant="line" height={20} className="w-40" />
           </div>
 
-          <div className="grid gap-4">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <JobCardSkeleton key={index} />
+          <div className="flex items-center gap-3">
+            <Skeleton variant="line" height={44} className="flex-1 rounded-xl" />
+            <Skeleton variant="line" height={44} width={44} className="rounded-xl" />
+            <Skeleton variant="line" height={44} width={44} className="rounded-xl" />
+            <Skeleton variant="line" height={44} width={44} className="rounded-xl" />
+          </div>
+
+          <div className="mt-3 flex gap-2 overflow-hidden">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                variant="line"
+                height={32}
+                className="w-24 rounded-full"
+              />
             ))}
           </div>
         </div>
 
-        <aside className="space-y-4">
-          <div className="rounded-3xl border border-border bg-card/80 p-6 shadow-soft">
-            <Skeleton variant="line" height={24} className="w-40" />
-            <div className="mt-4 space-y-3">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Skeleton key={index} variant="line" height={16} className="w-full" />
-              ))}
-            </div>
-          </div>
-        </aside>
+        <div className="flex items-end justify-between gap-3 pt-2">
+          <Skeleton variant="line" height={28} className="w-44" />
+          <Skeleton variant="line" height={16} className="w-24" />
+        </div>
+
+        <div className="space-y-3">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <JobCardSkeleton key={index} />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
   <defs>
     <style>
       .cls-1 {
-        font-family: Montserrat-Black, Montserrat;
+        font-family: Inter, sans-serif;
         font-size: 58.66px;
         font-weight: 800;
       }
