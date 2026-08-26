@@ -3,7 +3,7 @@ name: Daily Supabase & Storage Backup to Google Drive
 on:
   schedule:
     - cron: '0 3 * * *' # Tous les jours à 3h00 du matin
-  workflow_dispatch: # Permet de lancer le backup manuellement depuis GitHub
+  workflow_dispatch: # Permet de lancer le backup manuellement
 
 jobs:
   backup:
@@ -27,12 +27,8 @@ jobs:
         env:
           SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_URL }}
         run: |
-          # Extraction de l'ID du projet depuis l'URL Supabase
           PROJECT_ID=$(echo "${{ secrets.SUPABASE_URL }}" | awk -F'//' '{print $2}' | awk -F'.' '{print $1}')
-          
-          # Utilisation de la clé service_role pour s'authentifier
           export SUPABASE_ACCESS_TOKEN="${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
-          
           supabase db dump --project-ref $PROJECT_ID -f backup_temp/database.sql
 
       - name: 2. Download Supabase Storage Media
@@ -94,9 +90,45 @@ jobs:
           zip -r ../supabase-full-backup-$TIMESTAMP.zip .
           echo "BACKUP_NAME=supabase-full-backup-$TIMESTAMP.zip" >> $GITHUB_ENV
 
-      - name: 4. Upload to Google Drive
-        uses: 3cr/gdrive-action@v1.2.0
-        with:
-          unstored-file-path: ${{ env.BACKUP_NAME }}
-          google-drive-folder-id: ${{ secrets.GDRIVE_FOLDER_ID }}
-          credentials-json: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+      - name: 4. Upload to Google Drive via Node.js
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          BACKUP_FILE: ${{ env.BACKUP_NAME }}
+        run: |
+          node -e '
+            const { google } = require("googleapis");
+            const fs = require("fs");
+
+            async function uploadFile() {
+              const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+              const auth = new google.auth.GoogleAuth({
+                credentials,
+                scopes: ["https://www.googleapis.com/auth/drive.file"],
+              });
+
+              const drive = google.drive({ version: "v3", auth });
+              const filePath = process.env.BACKUP_FILE;
+
+              const fileMetadata = {
+                name: filePath,
+                parents: [process.env.GDRIVE_FOLDER_ID],
+              };
+              const media = {
+                mimeType: "application/zip",
+                body: fs.createReadStream(filePath),
+              };
+
+              const response = await drive.files.create({
+                resource: fileMetadata,
+                media: media,
+                fields: "id",
+              });
+              console.log("Fichier uploadé sur Google Drive avec succès, ID:", response.data.id);
+            }
+
+            uploadFile().catch(err => {
+              console.error("Erreur lors de l upload Google Drive:", err);
+              process.exit(1);
+            });
+          '
