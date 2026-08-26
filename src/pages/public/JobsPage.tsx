@@ -548,24 +548,24 @@ export function JobsPage() {
         ]}
       />
       <section className="container-page pb-32 md:pb-28">
-        <div className="grid gap-8">
-          <div className="flex flex-col gap-6 text-foreground/90 leading-relaxed">
+        <div className="grid min-w-0 gap-8">
+          <div className="flex min-w-0 flex-col gap-6 text-foreground/90 leading-relaxed">
             <div
-              className="order-1 sticky top-0 z-40 isolate mt-0 mb-0 w-full self-start rounded-[1.25rem] bg-card/95 backdrop-blur-sm"
+              className="order-1 sticky top-0 z-40 isolate mt-0 mb-0 w-full min-w-0 self-start rounded-[1.25rem] bg-card/95 backdrop-blur-sm"
               style={{
                 top: mobileApp || isCandidateShell ? 0 : 64,
               }}
             >
-              <div className="flex flex-col overflow-hidden rounded-[1.25rem] border-0 bg-card shadow-none ring-0">
+              <div className="flex min-w-0 flex-col overflow-hidden rounded-[1.25rem] border-0 bg-card shadow-none ring-0">
                 <form
                   onSubmit={handleSearchSubmit}
-                  className="order-1 flex flex-col gap-3 bg-card/95 p-3 sm:p-4"
+                  className="order-1 flex min-w-0 flex-col gap-3 bg-card/95 p-3 sm:p-4"
                 >
                   <label className="text-sm font-semibold text-foreground" htmlFor="job-search-input">
                     Rechercher un emploi
                   </label>
-                  <div className="flex items-center gap-3">
-                  <div className="relative flex-1">
+                  <div className="flex min-w-0 flex-wrap items-center gap-3">
+                  <div className="relative min-w-0 basis-full sm:flex-1 sm:basis-auto">
                     <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                       id="job-search-input"
