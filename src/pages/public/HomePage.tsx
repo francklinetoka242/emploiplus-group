@@ -300,7 +300,7 @@ export function HomePage() {
         viewport={{ once: true, amount: 0.2 }}
         variants={staggerContainer}
       >
-        <div className="container-page max-w-5xl pt-[1.125rem] pb-[1.625rem] md:pt-[1.625rem] md:pb-[1.625rem]">
+        <div className="container-page max-w-5xl pt-[1.125rem] pb-20 md:pt-[1.625rem] md:pb-24">
           <motion.div className="flex flex-wrap items-end justify-between gap-4 mb-10" variants={fadeUp}>
             <div>
               <h2 className="font-display text-3xl md:text-4xl font-extrabold">
@@ -574,7 +574,7 @@ export function HomePage() {
         <div className="absolute inset-0 bg-brand-deep/35" />
         <div className="container-page relative flex min-h-[300px] max-w-lg items-center md:min-h-[365px]">
           <motion.div
-            className="max-w-lg rounded-2xl bg-card/85 p-6 shadow-elev sm:w-64 sm:p-5"
+            className="relative -translate-x-3 max-w-lg rounded-2xl bg-card/85 p-6 shadow-elev sm:-translate-x-6 sm:w-72 sm:p-5"
             initial={{ opacity: 0, x: -32 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.3 }}
