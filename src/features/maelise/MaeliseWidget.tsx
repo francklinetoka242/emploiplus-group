@@ -125,6 +125,7 @@ export function MaeliseWidget() {
   const [speechError, setSpeechError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const conversationRef = useRef<HTMLElement>(null);
   const speechRecognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const speechBaseDraftRef = useRef("");
   const previousPathRef = useRef(location.pathname);
@@ -205,6 +206,26 @@ export function MaeliseWidget() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [close, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleOutsidePointer = (event: PointerEvent) => {
+      if (settingsOpen || showNewConversationDialog) return;
+      const target = event.target;
+      if (target instanceof Node && !conversationRef.current?.contains(target)) close();
+    };
+    document.addEventListener("pointerdown", handleOutsidePointer);
+    return () => document.removeEventListener("pointerdown", handleOutsidePointer);
+  }, [close, isOpen, settingsOpen, showNewConversationDialog]);
 
   useEffect(() => {
     if (previousPathRef.current !== location.pathname && isOpen) {
@@ -522,6 +543,7 @@ export function MaeliseWidget() {
 
       {isOpen && (
         <section
+          ref={conversationRef}
           aria-label={t("maelise.conversationLabel")}
           className="pointer-events-auto mx-3 mb-3 flex h-[min(620px,calc(100dvh-1rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl sm:mx-0 sm:mb-3 sm:h-[min(620px,calc(100dvh-6rem))] sm:w-[390px]"
         >
@@ -578,7 +600,7 @@ export function MaeliseWidget() {
           </header>
 
           <div
-            className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-background px-3 py-4 sm:px-4"
+            className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain bg-background px-3 py-4 [touch-action:pan-y] sm:px-4"
             aria-live="polite"
           >
             {messages.map((message) => (
