@@ -23,6 +23,7 @@ import {
   ExternalLink,
   LockKeyhole,
   Loader2,
+  Mic,
   MessageCircle,
   MessageSquareText,
   Power,
@@ -44,6 +45,40 @@ import {
   type MaelisePermissions,
 } from "./api";
 import { useMaelise } from "./useMaelise";
+
+interface SpeechRecognitionResultLike {
+  isFinal: boolean;
+  0: { transcript: string };
+}
+
+interface SpeechRecognitionEventLike extends Event {
+  resultIndex: number;
+  results: {
+    length: number;
+    [index: number]: SpeechRecognitionResultLike;
+  };
+}
+
+interface SpeechRecognitionErrorEventLike extends Event {
+  error: string;
+}
+
+interface SpeechRecognitionLike {
+  lang: string;
+  interimResults: boolean;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+type SpeechRecognitionWindow = Window & {
+  SpeechRecognition?: SpeechRecognitionConstructor;
+  webkitSpeechRecognition?: SpeechRecognitionConstructor;
+};
 
 function isInternalPath(path: string) {
   return path.startsWith("/") && !path.startsWith("//") && !path.startsWith("/admin");
@@ -85,8 +120,13 @@ export function MaeliseWidget() {
   const [permissionsError, setPermissionsError] = useState<string | null>(null);
   const [highlightedPermission, setHighlightedPermission] = useState<string | null>(null);
   const [quotaAvailableAt, setQuotaAvailableAt] = useState<string | null>(null);
+  const [speechRecognitionSupported, setSpeechRecognitionSupported] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [speechError, setSpeechError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const speechRecognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const speechBaseDraftRef = useRef("");
   const previousPathRef = useRef(location.pathname);
   const excluded =
     location.pathname === "/auth" ||
@@ -106,6 +146,53 @@ export function MaeliseWidget() {
   useEffect(() => {
     if (isOpen) inputRef.current?.focus();
   }, [isOpen]);
+
+  useEffect(() => {
+    const speechWindow = window as SpeechRecognitionWindow;
+    const Recognition = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
+    if (!Recognition) return;
+
+    const recognition = new Recognition();
+    recognition.lang = "fr-FR";
+    recognition.interimResults = true;
+    recognition.onresult = (event) => {
+      let finalTranscript = "";
+      let interimTranscript = "";
+      for (let index = 0; index < event.results.length; index += 1) {
+        const transcript = event.results[index]?.[0]?.transcript ?? "";
+        if (event.results[index]?.isFinal) finalTranscript += transcript;
+        else interimTranscript += transcript;
+      }
+      const spokenText = `${finalTranscript}${interimTranscript}`.trim();
+      const separator = speechBaseDraftRef.current && spokenText ? " " : "";
+      setDraft(`${speechBaseDraftRef.current}${separator}${spokenText}`.slice(0, 550));
+    };
+    recognition.onerror = (event) => {
+      const messages: Record<string, string> = {
+        "audio-capture": "Microphone introuvable. Vérifiez qu’il est disponible.",
+        "not-allowed": "Micro non autorisé. Vérifiez les permissions de votre navigateur.",
+        "service-not-allowed": "La saisie vocale n’est pas autorisée par ce navigateur.",
+        "no-speech": "Aucune parole détectée. Réessayez.",
+      };
+      setSpeechError(messages[event.error] ?? "La saisie vocale a rencontré un problème.");
+      setIsListening(false);
+    };
+    recognition.onend = () => setIsListening(false);
+    speechRecognitionRef.current = recognition;
+    setSpeechRecognitionSupported(true);
+
+    return () => {
+      recognition.onresult = null;
+      recognition.onerror = null;
+      recognition.onend = null;
+      recognition.stop();
+      speechRecognitionRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isLoading && isListening) speechRecognitionRef.current?.stop();
+  }, [isLoading, isListening]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -207,8 +294,27 @@ export function MaeliseWidget() {
 
   if (excluded || authLoading || !rolesResolved || !session) return null;
 
+  const toggleSpeechRecognition = () => {
+    const recognition = speechRecognitionRef.current;
+    if (!recognition || isLoading || quotaBlocked) return;
+    setSpeechError(null);
+    if (isListening) {
+      recognition.stop();
+      return;
+    }
+    speechBaseDraftRef.current = draft.trim();
+    try {
+      recognition.start();
+      setIsListening(true);
+    } catch {
+      setIsListening(false);
+      setSpeechError("La saisie vocale n’a pas pu démarrer. Réessayez.");
+    }
+  };
+
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (isListening) speechRecognitionRef.current?.stop();
     const value = draft.trim();
     if (
       !value ||
@@ -602,9 +708,10 @@ export function MaeliseWidget() {
               <Input
                 ref={inputRef}
                 value={draft}
-                onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                  setDraft(event.target.value.slice(0, 550))
-                }
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  setSpeechError(null);
+                  setDraft(event.target.value.slice(0, 550));
+                }}
                 placeholder={t("maelise.placeholder")}
                 maxLength={550}
                 disabled={isLoading || quotaBlocked}
@@ -616,6 +723,24 @@ export function MaeliseWidget() {
               />
             </div>
             <Button
+              type="button"
+              size="icon"
+              variant="outline"
+              disabled={!speechRecognitionSupported || isLoading || (!isListening && quotaBlocked)}
+              aria-label={isListening ? "Arrêter la saisie vocale" : "Démarrer la saisie vocale"}
+              title={
+                speechRecognitionSupported
+                  ? isListening
+                    ? "Arrêter la saisie vocale"
+                    : "Saisie vocale"
+                  : "La saisie vocale n’est pas prise en charge par ce navigateur"
+              }
+              className={isListening ? "maelise-microphone--listening text-primary" : ""}
+              onClick={toggleSpeechRecognition}
+            >
+              <Mic aria-hidden="true" />
+            </Button>
+            <Button
               type="submit"
               size="icon"
               disabled={!draft.trim() || isLoading || quotaBlocked}
@@ -624,6 +749,14 @@ export function MaeliseWidget() {
               <Send aria-hidden="true" />
             </Button>
           </form>
+          {speechError && (
+            <p
+              className="border-t border-border bg-card px-3 pt-2 text-xs text-muted-foreground"
+              role="status"
+            >
+              {speechError}
+            </p>
+          )}
           <p className="border-t border-border bg-card px-3 pb-2 text-right text-xs text-muted-foreground">
             {remainingCharacters === 550
               ? "550 caractères"

@@ -219,6 +219,20 @@
   animation: maelise-neon-pulse 1.35s ease-in-out infinite;
 }
 
+.maelise-microphone--listening {
+  animation: maelise-microphone-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes maelise-microphone-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 35%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 20%, transparent);
+  }
+}
+
 @keyframes maelise-loading-dot {
   0%,
   80%,
@@ -257,6 +271,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .maelise-input-shell--loading,
+  .maelise-microphone--listening,
   .maelise-loading-dots > span {
     animation: none;
   }
