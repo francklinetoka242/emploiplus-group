@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { useCandidate } from "@/hooks/useCandidate";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ export function SiteHeader() {
   const { t } = useI18n();
   const { profile, loading } = useCandidate();
   const [open, setOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -25,8 +26,13 @@ export function SiteHeader() {
     { to: "/jobs", label: t("nav.jobs") },
     { to: "/blog", label: t("nav.blog") },
     { to: "/about", label: t("nav.about") },
-    { to: "/contact", label: t("nav.contact") },
     { to: "/faq", label: t("nav.faq") },
+  ];
+  const serviceLinks = [
+    { to: "/services/mise-disposition-rh", label: "Mise à disposition" },
+    { to: "/services/recrutement", label: "Recrutement" },
+    { to: "/services/externalisation", label: "Externalisation" },
+    { to: "/services/conseil-formation", label: "Formation & Conseil" },
   ];
 
   return (
@@ -54,23 +60,69 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1">
-          {links.map((l) => (
-            <NavLink
-              key={l.to}
-              to={l.to}
-              end={l.to === "/"}
-              className={({ isActive }) =>
-                cn(
-                  "px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                  isActive
-                    ? "text-foreground bg-muted"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/70",
-                )
-              }
-            >
-              {l.label}
-            </NavLink>
-          ))}
+          {links.map((l) =>
+            l.to === "/services" ? (
+              <div
+                key={l.to}
+                className="relative"
+                onMouseEnter={() => setServicesOpen(true)}
+                onMouseLeave={() => setServicesOpen(false)}
+              >
+                <button
+                  type="button"
+                  aria-expanded={servicesOpen}
+                  aria-haspopup="menu"
+                  onClick={() => setServicesOpen(true)}
+                  className={cn(
+                    "inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    servicesOpen
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",
+                  )}
+                >
+                  {l.label}
+                  <ChevronDown
+                    className={cn("size-4 transition-transform", servicesOpen && "rotate-180")}
+                    aria-hidden="true"
+                  />
+                </button>
+                {servicesOpen ? (
+                  <div
+                    role="menu"
+                    className="absolute left-0 top-full z-50 mt-1 w-64 rounded-xl border border-border bg-background p-2 shadow-lg"
+                  >
+                    {serviceLinks.map((service) => (
+                      <NavLink
+                        key={service.to}
+                        to={service.to}
+                        role="menuitem"
+                        onClick={() => setServicesOpen(false)}
+                        className="block rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      >
+                        {service.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <NavLink
+                key={l.to}
+                to={l.to}
+                end={l.to === "/"}
+                className={({ isActive }) =>
+                  cn(
+                    "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",
+                  )
+                }
+              >
+                {l.label}
+              </NavLink>
+            ),
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -82,14 +134,14 @@ export function SiteHeader() {
                 size="sm"
                 className="hidden md:inline-flex border-border/70 bg-background/80 px-3 text-sm font-medium hover:bg-accent"
               >
-                <Link to="/candidate/login">Se connecter</Link>
+                <Link to="/candidate/login">connexion</Link>
               </Button>
               <Button
                 asChild
                 size="sm"
                 className="hidden md:inline-flex bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand"
               >
-                <Link to="/candidate/signup">Créer un compte</Link>
+                <Link to="/candidate/signup">S'inscrire</Link>
               </Button>
             </>
           )}
@@ -107,16 +159,52 @@ export function SiteHeader() {
       {open && (
         <div className="lg:hidden border-t border-border bg-background">
           <nav className="container-page py-4 flex flex-col gap-1">
-            {links.map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                onClick={() => setOpen(false)}
-                className="link link-animated px-3 py-2.5 rounded-md text-sm font-medium hover:bg-accent"
-              >
-                {l.label}
-              </Link>
-            ))}
+            {links.map((l) =>
+              l.to === "/services" ? (
+                <div key={l.to} className="rounded-md">
+                  <button
+                    type="button"
+                    aria-expanded={servicesOpen}
+                    aria-haspopup="menu"
+                    onClick={() => setServicesOpen((isOpen) => !isOpen)}
+                    className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left text-sm font-medium hover:bg-accent"
+                  >
+                    {l.label}
+                    <ChevronDown
+                      className={cn("size-4 transition-transform", servicesOpen && "rotate-180")}
+                      aria-hidden="true"
+                    />
+                  </button>
+                  {servicesOpen ? (
+                    <div role="menu" className="mt-1 space-y-1 border-l border-border pl-3">
+                      {serviceLinks.map((service) => (
+                        <Link
+                          key={service.to}
+                          to={service.to}
+                          role="menuitem"
+                          onClick={() => {
+                            setServicesOpen(false);
+                            setOpen(false);
+                          }}
+                          className="link link-animated block rounded-md px-3 py-2 text-sm hover:bg-accent"
+                        >
+                          {service.label}
+                        </Link>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  onClick={() => setOpen(false)}
+                  className="link link-animated rounded-md px-3 py-2.5 text-sm font-medium hover:bg-accent"
+                >
+                  {l.label}
+                </Link>
+              ),
+            )}
             {!loading && !profile && (
               <div className="mt-2 flex flex-col gap-2">
                 <Button
@@ -125,14 +213,14 @@ export function SiteHeader() {
                   className="justify-center"
                   onClick={() => setOpen(false)}
                 >
-                  <Link to="/candidate/login">Se connecter</Link>
+                  <Link to="/candidate/login">connexion</Link>
                 </Button>
                 <Button
                   asChild
                   className="justify-center bg-brand hover:bg-brand/90 text-brand-foreground"
                   onClick={() => setOpen(false)}
                 >
-                  <Link to="/candidate/signup">Créer un compte</Link>
+                  <Link to="/candidate/signup">S'inscrire</Link>
                 </Button>
               </div>
             )}

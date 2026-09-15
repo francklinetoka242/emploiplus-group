@@ -17,8 +17,8 @@ function NotFoundPage() {
         canonical={`${BASE_URL}/404`}
         robots="noindex,nofollow"
       />
-      <div className="bg-[#f4e9dc] px-4 py-16 sm:px-6 md:py-24">
-        <div className="container-page rounded-xl border border-[#eaded3] bg-white p-10 text-center shadow-sm">
+      <div className="bg-background px-4 py-16 sm:px-6 md:py-24">
+        <div className="container-page rounded-xl border border-border bg-white p-10 text-center shadow-sm">
           <h1 className="font-display text-4xl font-bold text-foreground">404</h1>
           <p className="mt-4 text-muted-foreground">Page introuvable.</p>
           <Link
@@ -78,8 +78,8 @@ export function BlogPostDetailPage() {
           ogType="article"
           structuredData={blogPostingStructuredData}
         />
-        <div className="bg-[#f4e9dc] px-4 py-16 sm:px-6 md:py-24">
-          <div className="container-page rounded-xl border border-[#eaded3] bg-white p-10 text-center shadow-sm">
+        <div className="bg-background px-4 py-16 sm:px-6 md:py-24">
+          <div className="container-page rounded-xl border border-border bg-white p-10 text-center shadow-sm">
             <p className="text-muted-foreground">{t("blog.loading")}</p>
           </div>
         </div>
@@ -130,7 +130,7 @@ export function BlogPostDetailPage() {
         ]}
         structuredData={blogPostingStructuredDataPost}
       />
-      <section className="bg-[#f4e9dc] px-4 pb-16 pt-6 sm:px-6 md:pb-24 md:pt-10">
+      <section className="bg-background px-4 pb-16 pt-6 sm:px-6 md:pb-24 md:pt-10">
         <div className="container-page grid min-h-0 min-w-0 gap-6 lg:h-[calc(100vh-9rem)] lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-8">
           <aside className="order-2 min-h-0 min-w-0 space-y-4 overflow-y-auto lg:order-2 lg:pr-1">
             <section className="rounded-xl bg-white/80 p-4 shadow-sm ring-1 ring-[#d8c7b7]">
@@ -143,9 +143,9 @@ export function BlogPostDetailPage() {
                     <Link
                       key={latestPost.id}
                       to={`/blog/${latestPost.slug}`}
-                      className="flex gap-3 border-b border-[#eaded3] pb-3 last:border-0 last:pb-0"
+                      className="flex gap-3 border-b border-border pb-3 last:border-0 last:pb-0"
                     >
-                      <div className="h-12 w-14 shrink-0 overflow-hidden rounded-md bg-[#e5d8cb]">
+                      <div className="h-12 w-14 shrink-0 overflow-hidden rounded-md bg-background">
                         {latestPost.image ? (
                           <img
                             src={latestPost.image}
@@ -169,8 +169,8 @@ export function BlogPostDetailPage() {
               </div>
             </section>
 
-            <section className="rounded-xl border border-[#eaded3] bg-white p-5 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#00009e]">
+            <section className="rounded-xl border border-border bg-white p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1B2CE3]">
                 {t("blog.article.information")}
               </p>
               <div className="mt-4 space-y-4 text-sm leading-6 text-[#3f342e]">
@@ -198,7 +198,7 @@ export function BlogPostDetailPage() {
                       {(post.tags as string[]).map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-full border border-[#eaded3] bg-[#fffaf6] px-3 py-1 text-xs text-[#765f50]"
+                          className="rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground"
                         >
                           {tag}
                         </span>
@@ -238,7 +238,7 @@ export function BlogPostDetailPage() {
             <div className="flex items-center justify-between gap-4">
               <Link
                 to="/blog"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#00009e] transition hover:text-[#000079]"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#1B2CE3] transition hover:text-[#000079]"
               >
                 <ArrowLeft className="size-4" /> {t("blog.backToList")}
               </Link>
@@ -250,11 +250,11 @@ export function BlogPostDetailPage() {
               />
             </div>
             {post.excerpt ? (
-              <p className="rounded-xl border border-[#eaded3] bg-white p-5 text-base leading-7 text-[#765f50] shadow-sm sm:p-7">
+              <p className="rounded-xl border border-border bg-white p-5 text-base leading-7 text-muted-foreground shadow-sm sm:p-7">
                 {post.excerpt}
               </p>
             ) : null}
-            <article className="min-w-0 rounded-xl border border-[#eaded3] bg-white p-5 shadow-sm sm:p-8">
+            <article className="min-w-0 rounded-xl border border-border bg-white p-5 shadow-sm sm:p-8">
               <h2 className="font-display text-xl font-semibold tracking-tight text-[#171717] sm:text-2xl">
                 {t("blog.article.content")}
               </h2>
@@ -263,8 +263,8 @@ export function BlogPostDetailPage() {
               </div>
             </article>
             {post.external_link || post.video_url ? (
-              <section className="rounded-xl border border-[#eaded3] bg-white p-5 shadow-sm">
-                <p className="text-sm uppercase tracking-[0.2em] text-[#00009e]">
+              <section className="rounded-xl border border-border bg-white p-5 shadow-sm">
+                <p className="text-sm uppercase tracking-[0.2em] text-[#1B2CE3]">
                   {t("blog.article.resources")}
                 </p>
                 <div className="mt-4 space-y-2">
@@ -273,7 +273,7 @@ export function BlogPostDetailPage() {
                       href={post.external_link}
                       target="_blank"
                       rel="noreferrer"
-                      className="block rounded-lg border border-[#eaded3] bg-[#fffaf6] px-4 py-3 text-[#00009e] hover:bg-[#f4e9dc]"
+                      className="block rounded-lg border border-border bg-background px-4 py-3 text-[#1B2CE3] hover:bg-white"
                     >
                       {t("blog.article.externalLink")}
                     </a>
@@ -283,7 +283,7 @@ export function BlogPostDetailPage() {
                       href={post.video_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="block rounded-lg border border-[#eaded3] bg-[#fffaf6] px-4 py-3 text-[#00009e] hover:bg-[#f4e9dc]"
+                      className="block rounded-lg border border-border bg-background px-4 py-3 text-[#1B2CE3] hover:bg-white"
                     >
                       {t("blog.article.watchVideo")}
                     </a>

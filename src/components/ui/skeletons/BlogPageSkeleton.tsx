@@ -2,7 +2,7 @@ import { Skeleton } from "./Skeleton";
 
 export function BlogPageSkeleton() {
   return (
-    <div className="bg-[#eef4ff] py-5 sm:py-8">
+    <div className="bg-background py-5 sm:py-8">
       <div className="container-page max-w-6xl">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div className="space-y-2">

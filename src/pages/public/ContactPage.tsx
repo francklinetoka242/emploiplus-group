@@ -77,48 +77,10 @@ export function ContactPage() {
         ]}
       />
       
-      {/* Hero Section */}
-      <motion.section 
-        className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 py-16 md:py-28"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(232,169,0,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(59,130,246,0.1),transparent_50%)]" />
-        </div>
-        <motion.div 
-          className="container-page relative z-10 text-center"
-          variants={staggerContainer}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.p 
-            className="inline-flex rounded-full bg-secondary/10 px-4 py-2 text-sm font-semibold text-secondary ring-1 ring-secondary/20 mb-6"
-            variants={fadeUp}
-          >
-            {t("contact.subtitle")}
-          </motion.p>
-          <motion.h1 
-            className="font-display text-4xl md:text-5xl font-extrabold text-white mb-6"
-            variants={fadeUp}
-          >
-            {t("contact.title")}
-          </motion.h1>
-          <motion.p 
-            className="text-lg text-slate-300 max-w-2xl mx-auto"
-            variants={fadeUp}
-          >
-            {t("contact.subtitle")} - Nous répondons sous 24h
-          </motion.p>
-        </motion.div>
-      </motion.section>
-
       {/* Contact Content */}
-      <section className="container-page py-20 md:py-28">
+      <section className="container-page py-12 md:py-16">
         <motion.div 
-          className="grid gap-12 md:grid-cols-3 lg:grid-cols-5"
+          className="grid gap-8 md:grid-cols-1 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.2fr)]"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
@@ -126,29 +88,29 @@ export function ContactPage() {
         >
           {/* Quick Contact Cards */}
           <motion.div 
-            className="md:col-span-3 lg:col-span-2"
+            className="w-full lg:pr-2"
             variants={staggerItem}
           >
-            <div className="grid gap-6 mb-12">
+            <div className="grid gap-4 mb-0 rounded-2xl border border-border bg-card p-4 shadow-sm md:p-5">
               {/* Phone Card */}
               <motion.div 
-                className="border-b border-secondary/25 py-6 first:pt-0 last:border-b-0"
+                className="border-b border-primary/25 py-4 first:pt-0 last:border-b-0"
               >
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 pt-1 text-secondary">
-                    <Phone className="h-6 w-6" />
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 pt-1 text-primary">
+                    <Phone className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                       {t("contact.info.phoneLabel")}
                     </p>
                     <a
                       href="tel:+242067311033"
-                      className="text-xl font-bold text-secondary hover:text-secondary/80 transition-colors"
+                      className="text-lg font-bold text-primary hover:text-primary/80 transition-colors"
                     >
                       {t("contact.info.phoneValue")}
                     </a>
-                    <p className="text-sm text-muted-foreground mt-2">
+                    <p className="text-sm text-muted-foreground mt-1">
                       {t("contact.info.phoneHelp")}
                     </p>
                   </div>
@@ -157,23 +119,23 @@ export function ContactPage() {
 
               {/* Email Card */}
               <motion.div 
-                className="border-b border-secondary/25 py-6 first:pt-0 last:border-b-0"
+                className="border-b border-primary/25 py-4 first:pt-0 last:border-b-0"
               >
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 pt-1 text-secondary">
-                    <Mail className="h-6 w-6" />
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 pt-1 text-primary">
+                    <Mail className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                       {t("contact.info.emailLabel")}
                     </p>
                     <a
                       href="mailto:contact@emploiplus.group"
-                      className="text-xl font-bold text-secondary hover:text-secondary/80 transition-colors"
+                      className="text-lg font-bold text-primary hover:text-primary/80 transition-colors"
                     >
                       {t("contact.info.emailValue")}
                     </a>
-                    <p className="text-sm text-muted-foreground mt-2">
+                    <p className="text-sm text-muted-foreground mt-1">
                       contact@emploiplus.group
                     </p>
                   </div>
@@ -182,20 +144,20 @@ export function ContactPage() {
 
               {/* Location Card */}
               <motion.div 
-                className="border-b border-secondary/25 py-6 first:pt-0 last:border-b-0"
+                className="border-b border-primary/25 py-4 first:pt-0 last:border-b-0"
               >
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 pt-1 text-secondary">
-                    <MapPin className="h-6 w-6" />
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 pt-1 text-primary">
+                    <MapPin className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                       {t("contact.location.headquarter")}
                     </p>
-                    <p className="text-xl font-bold text-secondary">
+                    <p className="text-lg font-bold text-primary">
                       {t("contact.location.city")}
                     </p>
-                    <p className="text-sm text-muted-foreground mt-2">
+                    <p className="text-sm text-muted-foreground mt-1">
                       {t("contact.location.country")}
                     </p>
                   </div>
@@ -206,28 +168,28 @@ export function ContactPage() {
 
           {/* Contact Form */}
           <motion.div 
-            className="md:col-span-3 lg:col-span-3"
+            className="w-full lg:justify-self-end"
             variants={staggerItem}
           >
-            <div className="rounded-3xl border border-secondary/20 bg-gradient-to-br from-secondary/8 via-card to-card p-8 md:p-10 shadow-sm">
-              <div className="mb-8">
-                <h2 className="font-display text-3xl font-bold text-foreground">
+            <div className="w-full max-w-[560px] rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/8 via-card to-card p-6 md:p-7 shadow-sm">
+              <div className="mb-6">
+                <h2 className="font-display text-2xl font-bold text-foreground">
                   {t("contact.form.title")}
                 </h2>
-                <p className="mt-3 text-muted-foreground">
+                <p className="mt-2 text-sm text-muted-foreground">
                   {t("contact.form.subtitle")}
                 </p>
               </div>
 
               {submitted && (
                 <motion.div 
-                  className="mb-6 flex items-center gap-3 rounded-xl border border-secondary/40 bg-secondary/10 p-4"
+                  className="mb-6 flex items-center gap-3 rounded-xl border border-primary/40 bg-primary/10 p-4"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                 >
-                  <CheckCircle className="h-5 w-5 flex-shrink-0 text-secondary-foreground" />
-                  <p className="text-sm font-semibold text-secondary-foreground">
+                  <CheckCircle className="h-5 w-5 flex-shrink-0 text-primary" />
+                  <p className="text-sm font-semibold text-primary">
                     Merci ! Votre message a été envoyé avec succès.
                   </p>
                 </motion.div>
@@ -252,7 +214,7 @@ export function ContactPage() {
                       onChange={handleChange}
                       required
                       placeholder={t("contact.form.placeholder.name")}
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200"
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                     />
                   </motion.div>
                   <motion.div variants={staggerItem}>
@@ -266,7 +228,7 @@ export function ContactPage() {
                       onChange={handleChange}
                       required
                       placeholder={t("contact.form.placeholder.email")}
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200"
+                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                     />
                   </motion.div>
                 </div>
@@ -282,7 +244,7 @@ export function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder={t("contact.form.placeholder.subject")}
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                   />
                 </motion.div>
 
@@ -297,7 +259,7 @@ export function ContactPage() {
                     required
                     rows={5}
                     placeholder={t("contact.form.placeholder.message")}
-                    className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 resize-none"
+                    className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 resize-none"
                   />
                 </motion.div>
 
@@ -308,7 +270,7 @@ export function ContactPage() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
                     disabled={isSubmitting}
                   >
                     <Send className="h-4 w-4" />

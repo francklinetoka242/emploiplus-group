@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Briefcase, Check, User, Sparkles, Bell, Zap, Eye, MapPin, Users, Layers, TrendingUp } from "lucide-react";
+import {
+  Briefcase,
+  Check,
+  User,
+  Sparkles,
+  Bell,
+  Zap,
+  Eye,
+  MapPin,
+  Users,
+  Layers,
+  TrendingUp,
+} from "lucide-react";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import candidateIllustration1 from "@/assets/services/candidate-section/candidate-step-01.webp";
@@ -53,32 +65,32 @@ function CandidateCarousel() {
       <div className="relative rounded-[1.8rem] bg-transparent p-0 shadow-none">
         <div className="relative mx-auto aspect-[9/20.5] w-[220px] sm:w-[250px]">
           {positionedSlides.map(({ image, offset }) => (
-              <div
-                key={image.src}
-                className="absolute inset-0 overflow-hidden rounded-[1.3rem] bg-white transition-[transform,opacity] duration-700 ease-out will-change-transform"
-                style={{
-                  opacity: offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.5 : 0,
-                  transform:
-                    offset === 0
-                      ? "translate3d(0, 0, 0) scale(1)"
-                      : offset === -1
-                        ? "translate3d(clamp(-175px, -30vw, -80px), 0, 0) scale(0.7)"
-                        : offset === 1
-                          ? "translate3d(clamp(80px, 30vw, 175px), 0, 0) scale(0.7)"
-                          : offset < 0
-                            ? "translate3d(clamp(-250px, -42vw, -130px), 0, 0) scale(0.5)"
-                            : "translate3d(clamp(130px, 42vw, 250px), 0, 0) scale(0.5)",
-                  zIndex: offset === 0 ? 5 : Math.abs(offset) === 1 ? 2 : 1,
-                }}
-              >
-                <img
-                  src={image.src}
-                  alt={offset === 0 ? image.alt : ""}
-                  aria-hidden={offset !== 0}
-                  className="h-full w-full object-contain bg-white"
-                />
-              </div>
-            ))}
+            <div
+              key={image.src}
+              className="absolute inset-0 overflow-hidden rounded-[1.3rem] bg-white transition-[transform,opacity] duration-700 ease-out will-change-transform"
+              style={{
+                opacity: offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.5 : 0,
+                transform:
+                  offset === 0
+                    ? "translate3d(0, 0, 0) scale(1)"
+                    : offset === -1
+                      ? "translate3d(clamp(-175px, -30vw, -80px), 0, 0) scale(0.7)"
+                      : offset === 1
+                        ? "translate3d(clamp(80px, 30vw, 175px), 0, 0) scale(0.7)"
+                        : offset < 0
+                          ? "translate3d(clamp(-250px, -42vw, -130px), 0, 0) scale(0.5)"
+                          : "translate3d(clamp(130px, 42vw, 250px), 0, 0) scale(0.5)",
+                zIndex: offset === 0 ? 5 : Math.abs(offset) === 1 ? 2 : 1,
+              }}
+            >
+              <img
+                src={image.src}
+                alt={offset === 0 ? image.alt : ""}
+                aria-hidden={offset !== 0}
+                className="h-full w-full object-contain bg-white"
+              />
+            </div>
+          ))}
         </div>
         <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
           {candidateSlides.map((image, index) => (
@@ -118,7 +130,8 @@ export function ServicesPage() {
                     Un parcours candidat fluide et efficace
                   </h2>
                   <p className="max-w-2xl text-base leading-8 text-muted-foreground">
-                    Explorez les offres, préparez votre profil et postulez en quelques étapes. Tout est pensé pour gagner du temps et vous mettre en valeur.
+                    Explorez les offres, préparez votre profil et postulez en quelques étapes. Tout
+                    est pensé pour gagner du temps et vous mettre en valeur.
                   </p>
                 </div>
 
@@ -186,7 +199,8 @@ export function ServicesPage() {
                     Une solution d'externalisation globale et sur mesure
                   </h2>
                   <p className="max-w-2xl text-base leading-8 text-muted-foreground">
-                    BPO, gestion déléguée et pilotage opérationnel pour faire évoluer votre organisation avec sérénité.
+                    BPO, gestion déléguée et pilotage opérationnel pour faire évoluer votre
+                    organisation avec sérénité.
                   </p>
                 </div>
 
@@ -225,7 +239,7 @@ export function ServicesPage() {
                 </div>
 
                 <Link
-                  to="/services/solutions-entreprises-bpo"
+                  to="/services/externalisation"
                   className="inline-flex items-center justify-center rounded-full bg-secondary px-7 py-3 text-sm font-semibold text-secondary-foreground transition duration-300 hover:bg-secondary/90 slide-in-up slide-delay-4"
                 >
                   Découvrir nos solutions

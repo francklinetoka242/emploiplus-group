@@ -225,7 +225,7 @@ export function DocumentsSection({
             if ((result as any).extraction) {
               setFeedbackMessage("Le CV a été ajouté et son contenu a été extrait pour l’IA.");
               toast.success("Votre CV a été mis à jour avec succès. Vos scores de compatibilité avec les offres sont en cours de recalcul.", {
-                className: "!bg-secondary !text-secondary-foreground !border-secondary",
+                className: "!bg-primary !text-primary-foreground !border-primary",
               });
             } else if ((result as any).error) {
               setFeedbackMessage("Votre CV a été ajouté, mais l’extraction du contenu a échoué.");
@@ -234,7 +234,7 @@ export function DocumentsSection({
             } else {
               setFeedbackMessage("Votre CV a été ajouté.");
               toast.success("Votre CV a été mis à jour avec succès. Vos scores de compatibilité avec les offres sont en cours de recalcul.", {
-                className: "!bg-secondary !text-secondary-foreground !border-secondary",
+                className: "!bg-primary !text-primary-foreground !border-primary",
               });
             }
       } else {
@@ -411,7 +411,7 @@ export function DocumentsSection({
                 onChange={handleFileSelection}
               />
               {feedbackMessage && (
-                <p className="mt-2 rounded-md border border-secondary/40 bg-secondary/10 px-3 py-2 text-sm font-medium text-secondary-foreground">
+                <p className="mt-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm font-medium text-primary">
                   {feedbackMessage}
                 </p>
               )}

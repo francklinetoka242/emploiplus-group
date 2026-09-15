@@ -5,7 +5,7 @@ import heroBg from "@/assets/home/home-hero-background.webp";
 import heroMain from "@/assets/home/home-recruitment-image.webp";
 import enterpriseTeamImage from "@/assets/home/enterprise-team-03.webp";
 import mainJcImage from "@/assets/home/main-j-c.webp";
-import { useEcoMode } from '@/contexts/EcoModeContext';
+import { useEcoMode } from "@/contexts/EcoModeContext";
 import logoMonago from "@/assets/partners/logo-monago.webp";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
@@ -44,10 +44,7 @@ function HeroSection() {
         <div className="relative z-10 container-page py-20 md:py-28">
           <div className="grid items-center gap-12">
             <div>
-              <p className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-primary/10">
-                {t("home.hero.eyebrow")}
-              </p>
-              <h1 className="mt-8 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
+              <h1 className="mt-20 md:mt-24 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
                 {t("home.hero.title")}
               </h1>
               <p className="mt-6 max-w-2xl text-base text-slate-700 leading-relaxed">
@@ -81,20 +78,9 @@ function HeroSection() {
       <div className="absolute inset-0 bg-black/40" />
       <div className="relative z-10 container-page py-20 md:py-28">
         <div className="grid items-center gap-12">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-          >
-            <motion.p
-              className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-primary/10"
-              variants={fadeUp}
-              transition={{ duration: 0.45 }}
-            >
-              {t("home.hero.eyebrow")}
-            </motion.p>
+          <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
             <motion.h1
-              className="mt-8 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white"
+              className="mt-20 md:mt-24 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white"
               variants={fadeUp}
               transition={{ duration: 0.5, delay: 0.08 }}
             >
@@ -112,10 +98,18 @@ function HeroSection() {
               variants={fadeUp}
               transition={{ duration: 0.5, delay: 0.24 }}
             >
-              <Button asChild size="lg" className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand">
+              <Button
+                asChild
+                size="lg"
+                className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand"
+              >
                 <Link to="/jobs">{t("home.hero.cta.jobs")}</Link>
               </Button>
-              <Button asChild size="lg" className="bg-accent text-secondary-foreground hover:bg-accent/90 shadow-lg">
+              <Button
+                asChild
+                size="lg"
+                className="bg-accent text-secondary-foreground hover:bg-accent/90 shadow-lg"
+              >
                 <Link to="/services">{t("home.hero.cta.services")}</Link>
               </Button>
             </motion.div>
@@ -161,8 +155,7 @@ export function HomePage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const nearBottom =
-        window.innerHeight + window.scrollY >= document.body.scrollHeight - 200;
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 200;
       setShowScrollTop(nearBottom);
     };
 
@@ -189,9 +182,21 @@ export function HomePage() {
   };
 
   const stats = [
-    { value: "1200+", label: "home.stats.jobs", icon: <BarChart3 className="h-8 w-8 md:h-10 md:w-10 text-secondary" /> },
-    { value: "1", label: "home.stats.companies", icon: <Handshake className="h-8 w-8 md:h-10 md:w-10 text-secondary" /> },
-    { value: "455+", label: "home.stats.readers", icon: <BookOpen className="h-8 w-8 md:h-10 md:w-10 text-secondary" /> },
+    {
+      value: "1200+",
+      label: "home.stats.jobs",
+      icon: <BarChart3 className="h-8 w-8 md:h-10 md:w-10 text-primary" />,
+    },
+    {
+      value: "1",
+      label: "home.stats.companies",
+      icon: <Handshake className="h-8 w-8 md:h-10 md:w-10 text-primary" />,
+    },
+    {
+      value: "500+",
+      label: "home.stats.readers",
+      icon: <BookOpen className="h-8 w-8 md:h-10 md:w-10 text-primary" />,
+    },
   ];
 
   const services = [
@@ -223,7 +228,7 @@ export function HomePage() {
         "Valorisation de la performance RH",
       ],
       link: {
-        href: "/services/solutions-entreprises-bpo",
+        href: "/services/externalisation",
         label: "Découvrir nos solutions",
       },
     },
@@ -245,20 +250,20 @@ export function HomePage() {
         </button>
       )}
 
-      <motion.section 
+      <motion.section
         className="container-page max-w-5xl py-[1.125rem] md:py-[1.625rem]"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.6 }}
       >
-        <motion.div 
-          className="rounded-[28px] border border-secondary/15 bg-gradient-to-br from-secondary/8 via-card to-card p-6 md:p-10 shadow-sm"
-          whileInView={{ boxShadow: "0 18px 40px rgba(232,169,0,0.06)" }}
+        <motion.div
+          className="rounded-[28px] border border-primary/15 bg-gradient-to-br from-primary/8 via-card to-card p-6 md:p-10 shadow-sm"
+          whileInView={{ boxShadow: "0 18px 40px rgba(27,44,227,0.06)" }}
           transition={{ duration: 0.6 }}
         >
           <div className="grid gap-6 lg:items-center">
-            <motion.div 
+            <motion.div
               className="grid gap-4 sm:grid-cols-3"
               variants={staggerContainer}
               initial="hidden"
@@ -266,8 +271,8 @@ export function HomePage() {
               viewport={{ once: true, amount: 0.3 }}
             >
               {stats.map((item, i) => (
-                <motion.div 
-                  key={item.label} 
+                <motion.div
+                  key={item.label}
                   variants={staggerItem}
                   className="flex min-h-[170px] flex-col justify-between rounded-2xl border border-border bg-card/80 p-5"
                 >
@@ -279,18 +284,21 @@ export function HomePage() {
                     transition={{ type: "spring", stiffness: 100, damping: 15, delay: i * 0.1 }}
                   >
                     <div className="flex items-center justify-center">{item.icon}</div>
-                    <span className="h-2.5 w-2.5 rounded-full bg-secondary/40" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-primary/40" />
                   </motion.div>
-                  <motion.p 
-                    className="font-display text-2xl md:text-3xl font-extrabold text-secondary"
+                  <motion.p
+                    className="font-display text-2xl md:text-3xl font-extrabold text-primary"
                     initial={{ scale: 0.5, opacity: 0 }}
                     whileInView={{ scale: 1, opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: i * 0.1 }}
                   >
-                    {item.value}
+                    <AnimatedCounter
+                      value={item.value}
+                      className="font-display text-2xl md:text-3xl font-extrabold text-primary"
+                    />
                   </motion.p>
-                  <motion.p 
+                  <motion.p
                     className="text-sm md:text-base font-semibold text-foreground"
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -314,7 +322,10 @@ export function HomePage() {
         variants={staggerContainer}
       >
         <div className="container-page max-w-5xl pt-[1.125rem] pb-20 md:pt-[1.625rem] md:pb-24">
-          <motion.div className="flex flex-wrap items-end justify-between gap-4 mb-10" variants={fadeUp}>
+          <motion.div
+            className="flex flex-wrap items-end justify-between gap-4 mb-10"
+            variants={fadeUp}
+          >
             <div>
               <h2 className="font-display text-3xl md:text-4xl font-extrabold">
                 {t("home.blog.title")}
@@ -322,7 +333,9 @@ export function HomePage() {
               <p className="mt-2 text-muted-foreground">{t("home.blog.subtitle")}</p>
             </div>
             <Button asChild variant="ghost">
-              <Link to="/blog" className="link link-animated">{t("home.blog.viewAll")}</Link>
+              <Link to="/blog" className="link link-animated">
+                {t("home.blog.viewAll")}
+              </Link>
             </Button>
           </motion.div>
           <motion.div className="grid gap-6 md:grid-cols-3" variants={staggerContainer}>
@@ -345,7 +358,7 @@ export function HomePage() {
                 return (
                   <motion.article
                     key={post.id}
-                    className="relative z-30 flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition-all duration-300 hover:shadow-elev group-hover:border-brand"
+                    className="relative z-30 flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm ring-1 ring-slate-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group-hover:border-brand"
                     variants={staggerItem}
                     whileHover={{ y: -8, transition: { duration: 0.2 } }}
                     transition={{ delay: i * 0.08 }}
@@ -423,139 +436,224 @@ export function HomePage() {
           >
             <div className={`container-page ${i === 1 ? "max-w-5xl" : "max-w-6xl py-16 md:py-20"}`}>
               <div className="grid gap-8">
-              <div className="group relative">
-                {i === 0 ? (
-                  <motion.div
-                    className="grid min-h-[28rem] items-start gap-8 p-6 md:grid-cols-[0.9fr_1.1fr] md:gap-12 md:p-10"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.25 }}
-                    variants={staggerContainer}
-                  >
-                    <motion.div className="max-w-md pt-2 md:pt-1" variants={staggerItem} whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
-                      <span className="inline-block font-display text-3xl font-extrabold leading-none text-brand md:text-4xl">
-                        {item.heading}
-                      </span>
-                      <h2 className="mt-5 font-display text-3xl font-extrabold leading-tight text-slate-950 md:text-4xl">
-                        {item.title}
-                      </h2>
-                      <p className="mt-5 text-base leading-relaxed text-slate-600">
-                        {item.description}
-                      </p>
-                      <Button asChild className="mt-7 rounded-xl bg-[linear-gradient(120deg,#7DB7E3_0%,#7DB7E3_1%,#3B8DCE_6%,#000079_100%)] px-6 text-white shadow-sm hover:brightness-110 transition-transform hover:scale-105">
-                        <Link to={item.link.href}>{item.link.label}</Link>
-                      </Button>
-                    </motion.div>
-
-                    <motion.div className="relative mx-auto flex min-h-[20rem] w-full max-w-[30rem] items-center justify-center" variants={staggerItem}>
-                      <div className="relative size-72 overflow-visible rounded-full md:size-[21rem]">
-                        <motion.div
-                          className="h-full w-full overflow-hidden rounded-full bg-slate-200 shadow-xl"
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          whileHover={{ scale: 1.04 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.7, ease: "easeOut" }}
-                        >
-                          <img src={heroMain} alt="Parcours candidat EmploiPlus Group" className="h-full w-full object-cover" loading="lazy" />
-                        </motion.div>
-                        <motion.div
-                          className="absolute left-1/2 top-1/2 flex size-28 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-brand text-white shadow-xl shadow-brand/30 md:size-32"
-                          initial={{ scale: 0, rotate: -180 }}
-                          whileInView={{ scale: 1, rotate: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.2 }}
-                          whileHover={{ scale: 1.1, rotate: 8 }}
-                        >
-                          <Sparkles className="h-9 w-9" />
-                        </motion.div>
-                      </div>
-                      {item.bullets.map((bullet, bulletIndex) => (
-                        <motion.div
-                          key={bullet}
-                          className="pointer-events-none absolute inset-0"
-                          initial={{ rotate: 0 }}
-                          whileInView={{ rotate: [0, 360] }}
-                          viewport={{ once: true, amount: 0.4 }}
-                          transition={{ duration: 3, delay: 0.35 + bulletIndex * 0.12, ease: "easeInOut" }}
-                        >
-                          <motion.div
-                            className={`pointer-events-auto absolute flex size-28 items-center justify-center rounded-full border border-white bg-white/95 p-4 text-center text-[0.68rem] font-semibold leading-4 text-slate-800 shadow-lg md:size-32 md:text-xs ${
-                              bulletIndex === 0 ? "right-0 top-0" : bulletIndex === 1 ? "right-0 bottom-0" : bulletIndex === 2 ? "left-0 bottom-0" : "left-0 top-0"
-                            }`}
-                            whileHover={{ scale: 1.1, backgroundColor: "#ffffff", boxShadow: "0 12px 28px rgba(0, 0, 158, 0.2)" }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <span>{bullet}</span>
-                          </motion.div>
-                        </motion.div>
-                      ))}
-                    </motion.div>
-                  </motion.div>
-                ) : (
-                  <div className="space-y-10 md:space-y-14">
+                <div className="group relative">
+                  {i === 0 ? (
                     <motion.div
-                      className="grid gap-6 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-center md:gap-8"
+                      className="grid min-h-[28rem] items-start gap-8 p-6 md:grid-cols-[0.9fr_1.1fr] md:gap-12 md:p-10"
                       initial="hidden"
                       whileInView="visible"
                       viewport={{ once: true, amount: 0.25 }}
                       variants={staggerContainer}
                     >
-                      <div className="grid min-h-80 grid-cols-[9rem_minmax(0,1fr)] grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-3 md:h-[360px]">
-                        <motion.div className="flex items-end rounded-xl bg-[linear-gradient(120deg,#7DB7E3_0%,#7DB7E3_1%,#3B8DCE_6%,#000079_100%)] p-5" whileHover={{ y: -5, scale: 1.02 }} transition={{ duration: 0.2 }}>
-                          <span className="break-words font-display text-xl font-extrabold uppercase leading-tight text-white md:text-2xl">
-                            À propos<br />de nous
-                          </span>
-                        </motion.div>
-                        <motion.img src={enterpriseTeamImage} alt="Équipe Entreprise EmploiPlus Group" className="h-full min-h-0 w-full rounded-xl object-cover" loading="lazy" variants={staggerItem} whileHover={{ scale: 1.04 }} transition={{ duration: 0.25 }} />
-                        <motion.img src={mainJcImage} alt="Environnement professionnel Entreprise" className="col-span-2 h-full min-h-0 w-full rounded-xl object-cover" loading="lazy" variants={staggerItem} whileHover={{ scale: 1.04 }} transition={{ duration: 0.25 }} />
-                      </div>
-                      <motion.div className="pt-1" variants={staggerItem} whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
-                        <h2 className="font-display text-2xl font-extrabold leading-tight text-slate-950 md:text-3xl">{item.title}</h2>
-                        <p className="mt-4 text-sm leading-relaxed text-slate-600">{item.description}</p>
-                        <Button asChild size="sm" className="mt-5 rounded-full bg-[linear-gradient(120deg,#7DB7E3_0%,#7DB7E3_1%,#3B8DCE_6%,#000079_100%)] px-5 text-white shadow-sm hover:brightness-110 transition-transform hover:scale-105">
-                          <Link to={item.link.href}>{item.link.label}<ArrowUp className="ml-2 h-4 w-4 rotate-45" /></Link>
+                      <motion.div
+                        className="max-w-md pt-2 md:pt-1"
+                        variants={staggerItem}
+                        whileHover={{ y: -4 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <span className="inline-block font-display text-3xl font-extrabold leading-none text-brand md:text-4xl">
+                          {item.heading}
+                        </span>
+                        <h2 className="mt-5 font-display text-3xl font-extrabold leading-tight text-slate-950 md:text-4xl">
+                          {item.title}
+                        </h2>
+                        <p className="mt-5 text-base leading-relaxed text-slate-600">
+                          {item.description}
+                        </p>
+                        <Button
+                          asChild
+                          className="mt-7 rounded-xl bg-[linear-gradient(135deg,#1B2CE3_0%,#000079_100%)] px-6 text-white shadow-sm hover:brightness-110 transition-transform hover:scale-105"
+                        >
+                          <Link to={item.link.href}>{item.link.label}</Link>
                         </Button>
                       </motion.div>
-                    </motion.div>
 
-                    <motion.div
-                      className="grid gap-4 md:grid-cols-[9rem_repeat(3,minmax(0,1fr))] md:gap-5"
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true, amount: 0.2 }}
-                      variants={staggerContainer}
-                    >
-                      <motion.div className="flex min-h-[154px] w-[9rem] self-start items-end rounded-xl bg-[linear-gradient(120deg,#7DB7E3_0%,#7DB7E3_1%,#3B8DCE_6%,#000079_100%)] p-5 md:min-h-[174px]" whileHover={{ y: -5, scale: 1.02 }} transition={{ duration: 0.2 }}>
-                        <span className="font-display text-2xl font-extrabold uppercase leading-tight text-white md:text-3xl">Pro<br />duits</span>
+                      <motion.div
+                        className="relative mx-auto flex min-h-[20rem] w-full max-w-[30rem] items-center justify-center"
+                        variants={staggerItem}
+                      >
+                        <div className="relative size-72 overflow-visible rounded-full md:size-[21rem]">
+                          <motion.div
+                            className="h-full w-full overflow-hidden rounded-full bg-slate-200 shadow-xl"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            whileHover={{ scale: 1.04 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.7, ease: "easeOut" }}
+                          >
+                            <img
+                              src={heroMain}
+                              alt="Parcours candidat EmploiPlus Group"
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                            />
+                          </motion.div>
+                          <motion.div
+                            className="absolute left-1/2 top-1/2 flex size-28 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-brand text-white shadow-xl shadow-brand/30 md:size-32"
+                            initial={{ scale: 0, rotate: -180 }}
+                            whileInView={{ scale: 1, rotate: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.2 }}
+                            whileHover={{ scale: 1.1, rotate: 8 }}
+                          >
+                            <Sparkles className="h-9 w-9" />
+                          </motion.div>
+                        </div>
+                        {item.bullets.map((bullet, bulletIndex) => (
+                          <motion.div
+                            key={bullet}
+                            className="pointer-events-none absolute inset-0"
+                            initial={{ rotate: 0 }}
+                            whileInView={{ rotate: [0, 360] }}
+                            viewport={{ once: true, amount: 0.4 }}
+                            transition={{
+                              duration: 3,
+                              delay: 0.35 + bulletIndex * 0.12,
+                              ease: "easeInOut",
+                            }}
+                          >
+                            <motion.div
+                              className={`pointer-events-auto absolute flex size-28 items-center justify-center rounded-full border border-white bg-white/95 p-4 text-center text-[0.68rem] font-semibold leading-4 text-slate-800 shadow-lg md:size-32 md:text-xs ${
+                                bulletIndex === 0
+                                  ? "right-0 top-0"
+                                  : bulletIndex === 1
+                                    ? "right-0 bottom-0"
+                                    : bulletIndex === 2
+                                      ? "left-0 bottom-0"
+                                      : "left-0 top-0"
+                              }`}
+                              whileHover={{
+                                scale: 1.1,
+                                backgroundColor: "#ffffff",
+                                boxShadow: "0 12px 28px rgba(0, 0, 158, 0.2)",
+                              }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <span>{bullet}</span>
+                            </motion.div>
+                          </motion.div>
+                        ))}
                       </motion.div>
-                      {item.bullets.slice(0, 3).map((bullet, bulletIndex) => (
-                        <motion.div
-                          key={bullet}
-                          className="flex min-h-84 flex-col justify-between rounded-xl border border-slate-100 bg-white p-5 shadow-[0_8px_24px_-18px_rgba(15,23,42,0.45)] md:min-h-[384px]"
-                          variants={staggerItem}
-                          whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                        >
-                          <div>
-                            {bulletIndex === 0 ? (
-                              <ClipboardCheck className="h-5 w-5 text-brand" />
-                            ) : bulletIndex === 1 ? (
-                              <Users className="h-5 w-5 text-brand" />
-                            ) : (
-                              <BarChart3 className="h-5 w-5 text-brand" />
-                            )}
-                            <p className="mt-5 font-display text-base font-bold leading-5 text-slate-800">{bullet}</p>
-                            <p className="mt-3 text-xs leading-5 text-slate-500">Une solution professionnelle adaptée à vos objectifs et à votre organisation.</p>
-                          </div>
-                          <Link to={item.link.href} aria-label={`Découvrir ${bullet}`} className="flex size-7 items-center justify-center self-end rounded-full bg-brand text-white transition hover:bg-brand/90">
-                            <ArrowUp className="h-3.5 w-3.5 rotate-45" />
-                          </Link>
-                        </motion.div>
-                      ))}
                     </motion.div>
-                  </div>
-                )}
-              </div>
+                  ) : (
+                    <div className="space-y-10 md:space-y-14">
+                      <motion.div
+                        className="grid gap-6 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:items-center md:gap-8"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.25 }}
+                        variants={staggerContainer}
+                      >
+                        <div className="grid min-h-80 grid-cols-[9rem_minmax(0,1fr)] grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-3 md:h-[360px]">
+                          <motion.div
+                            className="flex items-end rounded-xl bg-[linear-gradient(135deg,#1B2CE3_0%,#000079_100%)] p-5"
+                            whileHover={{ y: -5, scale: 1.02 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <span className="break-words font-display text-xl font-extrabold uppercase leading-tight text-white md:text-2xl">
+                              À propos
+                              <br />
+                              de nous
+                            </span>
+                          </motion.div>
+                          <motion.img
+                            src={enterpriseTeamImage}
+                            alt="Équipe Entreprise EmploiPlus Group"
+                            className="h-full min-h-0 w-full rounded-xl object-cover"
+                            loading="lazy"
+                            variants={staggerItem}
+                            whileHover={{ scale: 1.04 }}
+                            transition={{ duration: 0.25 }}
+                          />
+                          <motion.img
+                            src={mainJcImage}
+                            alt="Environnement professionnel Entreprise"
+                            className="col-span-2 h-full min-h-0 w-full rounded-xl object-cover"
+                            loading="lazy"
+                            variants={staggerItem}
+                            whileHover={{ scale: 1.04 }}
+                            transition={{ duration: 0.25 }}
+                          />
+                        </div>
+                        <motion.div
+                          className="pt-1"
+                          variants={staggerItem}
+                          whileHover={{ y: -4 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <h2 className="font-display text-2xl font-extrabold leading-tight text-slate-950 md:text-3xl">
+                            {item.title}
+                          </h2>
+                          <p className="mt-4 text-sm leading-relaxed text-slate-600">
+                            {item.description}
+                          </p>
+                          <Button
+                            asChild
+                            size="sm"
+                            className="mt-5 rounded-full bg-[linear-gradient(135deg,#1B2CE3_0%,#000079_100%)] px-5 text-white shadow-sm hover:brightness-110 transition-transform hover:scale-105"
+                          >
+                            <Link to={item.link.href}>
+                              {item.link.label}
+                              <ArrowUp className="ml-2 h-4 w-4 rotate-45" />
+                            </Link>
+                          </Button>
+                        </motion.div>
+                      </motion.div>
+
+                      <motion.div
+                        className="grid gap-4 md:grid-cols-[9rem_repeat(3,minmax(0,1fr))] md:gap-5"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                        variants={staggerContainer}
+                      >
+                        <motion.div
+                          className="flex min-h-[154px] w-[9rem] self-start items-end rounded-xl bg-[linear-gradient(135deg,#1B2CE3_0%,#000079_100%)] p-5 md:min-h-[174px]"
+                          whileHover={{ y: -5, scale: 1.02 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <span className="font-display text-2xl font-extrabold uppercase leading-tight text-white md:text-3xl">
+                            Pro
+                            <br />
+                            duits
+                          </span>
+                        </motion.div>
+                        {item.bullets.slice(0, 3).map((bullet, bulletIndex) => (
+                          <motion.div
+                            key={bullet}
+                            className="flex min-h-84 flex-col justify-between rounded-xl border border-slate-100 bg-white p-5 shadow-[0_8px_24px_-18px_rgba(15,23,42,0.45)] md:min-h-[384px]"
+                            variants={staggerItem}
+                            whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                          >
+                            <div>
+                              {bulletIndex === 0 ? (
+                                <ClipboardCheck className="h-5 w-5 text-brand" />
+                              ) : bulletIndex === 1 ? (
+                                <Users className="h-5 w-5 text-brand" />
+                              ) : (
+                                <BarChart3 className="h-5 w-5 text-brand" />
+                              )}
+                              <p className="mt-5 font-display text-base font-bold leading-5 text-slate-800">
+                                {bullet}
+                              </p>
+                              <p className="mt-3 text-xs leading-5 text-slate-500">
+                                Une solution professionnelle adaptée à vos objectifs et à votre
+                                organisation.
+                              </p>
+                            </div>
+                            <Link
+                              to={item.link.href}
+                              aria-label={`Découvrir ${bullet}`}
+                              className="flex size-7 items-center justify-center self-end rounded-full bg-brand text-white transition hover:bg-brand/90"
+                            >
+                              <ArrowUp className="h-3.5 w-3.5 rotate-45" />
+                            </Link>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </motion.section>
@@ -569,10 +667,21 @@ export function HomePage() {
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       >
-        <motion.div initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.55, delay: 0.05 }}>
+        <motion.div
+          initial={{ opacity: 0, x: -24 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.55, delay: 0.05 }}
+        >
           <SectionHeader title={t("home.partners.title")} subtitle={t("home.partners.subtitle")} />
         </motion.div>
-        <motion.div className="mt-12 flex items-center justify-center gap-8" initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6, delay: 0.15 }}>
+        <motion.div
+          className="mt-12 flex items-center justify-center gap-8"
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+        >
           <img
             src={logoMonago}
             alt={t("home.partners.title")}
@@ -601,7 +710,12 @@ export function HomePage() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <img src="/home-team-collaboration.webp" alt="Équipe professionnelle en collaboration" className="h-[15.5rem] w-full object-cover sm:h-[10.5rem]" loading="lazy" />
+              <img
+                src="/home-team-collaboration.webp"
+                alt="Équipe professionnelle en collaboration"
+                className="h-[15.5rem] w-full object-cover sm:h-[10.5rem]"
+                loading="lazy"
+              />
             </motion.div>
 
             <motion.div
@@ -611,24 +725,53 @@ export function HomePage() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-brand">Excellence du recrutement</p>
-              <h2 className="mt-3 max-w-2xl font-display text-3xl font-extrabold leading-tight text-foreground sm:text-[1.75rem]">Développez vos talents pour faire grandir votre organisation</h2>
-            </motion.div>
-
-            <motion.div className="sm:col-span-4" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}>
-              <h3 className="font-display text-xl font-bold text-foreground">Les bons talents pour votre équipe</h3>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-[0.85rem] sm:leading-5">Nous vous aidons à identifier les profils qui correspondent à vos besoins et à construire des équipes engagées, compétentes et prêtes à contribuer durablement à vos projets.</p>
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-brand">
+                Excellence du recrutement
+              </p>
+              <h2 className="mt-3 max-w-2xl font-display text-3xl font-extrabold leading-tight text-foreground sm:text-[1.75rem]">
+                Développez vos talents pour faire grandir votre organisation
+              </h2>
             </motion.div>
 
             <motion.div
-              className="rounded-2xl bg-[linear-gradient(120deg,#7DB7E3_0%,#7DB7E3_1%,#3B8DCE_6%,#000079_100%)] p-6 text-white shadow-soft sm:col-span-4"
+              className="sm:col-span-4"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <p className="text-sm leading-5">Une approche structurée pour attirer, évaluer et accompagner les talents dont votre organisation a besoin.</p>
-              <ul className="mt-4 space-y-2 text-sm leading-5"><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> 1 ans d’expérience</li><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> Gestion des talents</li><li className="flex items-center gap-2"><span aria-hidden="true">✓</span> Recherche de profils dirigeants</li></ul>
+              <h3 className="font-display text-xl font-bold text-foreground">
+                Les bons talents pour votre équipe
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-[0.85rem] sm:leading-5">
+                Nous vous aidons à identifier les profils qui correspondent à vos besoins et à
+                construire des équipes engagées, compétentes et prêtes à contribuer durablement à
+                vos projets.
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="rounded-2xl bg-[linear-gradient(135deg,#1B2CE3_0%,#000079_100%)] p-6 text-white shadow-soft sm:col-span-4"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6 }}
+            >
+              <p className="text-sm leading-5">
+                Une approche structurée pour attirer, évaluer et accompagner les talents dont votre
+                organisation a besoin.
+              </p>
+              <ul className="mt-4 space-y-2 text-sm leading-5">
+                <li className="flex items-center gap-2">
+                  <span aria-hidden="true">✓</span> 1 ans d’expérience
+                </li>
+                <li className="flex items-center gap-2">
+                  <span aria-hidden="true">✓</span> Gestion des talents
+                </li>
+                <li className="flex items-center gap-2">
+                  <span aria-hidden="true">✓</span> Recherche de profils dirigeants
+                </li>
+              </ul>
             </motion.div>
 
             <motion.div
@@ -678,15 +821,20 @@ export function HomePage() {
               Commencez votre parcours vers l’excellence des talents
             </h2>
             <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-[9px] sm:leading-4">
-              Échangeons sur vos enjeux et bénéficiez d’un accompagnement adapté pour trouver les compétences qui feront avancer votre activité.
+              Échangeons sur vos enjeux et bénéficiez d’un accompagnement adapté pour trouver les
+              compétences qui feront avancer votre activité.
             </p>
-            <Button asChild className="mt-6 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/90">
-              <Link to="/contact">Demander un devis <ArrowUp className="ml-1 h-4 w-4 rotate-45" /></Link>
+            <Button
+              asChild
+              className="mt-6 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/90"
+            >
+              <Link to="/contact">
+                Demander un devis <ArrowUp className="ml-1 h-4 w-4 rotate-45" />
+              </Link>
             </Button>
           </motion.div>
         </div>
       </motion.section>
-
     </div>
   );
 }

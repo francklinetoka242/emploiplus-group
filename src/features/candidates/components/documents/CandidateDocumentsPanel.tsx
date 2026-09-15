@@ -75,9 +75,9 @@ export function CandidateDocumentsPanel(props: CandidateDocumentsPanelProps) {
   return (
     <div className="space-y-6">
       {feedbackMessage && (
-        <Alert className="border-secondary/40 bg-secondary/10">
-          <AlertCircle className="h-4 w-4 text-secondary-foreground" />
-          <AlertDescription className="text-secondary-foreground">{feedbackMessage}</AlertDescription>
+        <Alert className="border-primary/40 bg-primary/10">
+          <AlertCircle className="h-4 w-4 text-primary" />
+          <AlertDescription className="text-primary">{feedbackMessage}</AlertDescription>
         </Alert>
       )}
       {feedbackError && (

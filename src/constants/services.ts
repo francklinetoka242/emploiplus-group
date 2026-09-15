@@ -1,6 +1,6 @@
 export const SERVICES = [
   {
-    slug: "hub-emploi-recrutement",
+    slug: "recrutement",
     titleKey: "services.card1.title",
     descriptionKey: "services.card1.description",
     detailKey: "services.card1.detail",
@@ -12,7 +12,7 @@ export const SERVICES = [
     detailKey: "services.card2.detail",
   },
   {
-    slug: "conseil-formation-transformation",
+    slug: "conseil-formation",
     titleKey: "services.card3.title",
     descriptionKey: "services.card3.description",
     detailKey: "services.card3.detail",

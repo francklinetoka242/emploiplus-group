@@ -63,7 +63,7 @@ const SERVICE_DETAILS = {
       },
     ],
   },
-  "conseil-formation-transformation": {
+  "conseil-formation": {
     icon: GraduationCap,
     sections: [
       {
@@ -228,9 +228,11 @@ export function ServiceDetailPage() {
         <div className="grid gap-12 lg:grid-cols-[1.5fr_0.85fr]">
           <div className="space-y-8">
             <div className="space-y-4">
-              <p className="text-sm uppercase tracking-[0.3em] text-brand font-semibold">
-                {t("services.title")}
-              </p>
+              {service.slug === "conseil-formation" ? null : (
+                <p className="text-sm uppercase tracking-[0.3em] text-brand font-semibold">
+                  {t("services.title")}
+                </p>
+              )}
               <h1 className="font-display text-4xl font-bold text-foreground">
                 {t(service.titleKey)}
               </h1>

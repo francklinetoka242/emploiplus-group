@@ -74,7 +74,7 @@ export default function HubCandidatPage() {
       <main className="container-page overflow-x-hidden pb-16 md:pb-20">
         <div className="w-full space-y-10 overflow-x-hidden">
           <section className="ambient-glow relative w-full overflow-hidden bg-background px-4 py-8 sm:px-6 lg:px-8 lg:py-12" style={{ borderRadius: 0, marginLeft: 0, marginRight: 0 }}>
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,0,158,0.08),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(232,169,0,0.08),transparent_28%)] float-soft" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(27,44,227,0.08),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(232,169,0,0.08),transparent_28%)] float-soft" />
             <div className="relative mx-auto max-w-6xl">
               <div className="max-w-3xl space-y-6">
                 <span className="inline-flex items-center rounded-full border border-brand/15 bg-brand/5 px-4 py-2 text-sm font-semibold text-brand slide-in-left slide-delay-1 soft-pulse">

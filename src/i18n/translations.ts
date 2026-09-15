@@ -68,10 +68,9 @@ export const FR: Dict = {
   "maelise.suggestion.cv": "Comment améliorer mon CV ?",
   "maelise.suggestion.application": "Comment fonctionne une candidature ?",
   "maelise.suggestion.services": "Que propose EmploiPlus ?",
-  "home.hero.eyebrow": "Emplois, Business Process Outsourcing",
   "home.hero.title": "Construisons votre avenir professionnel.",
   "home.hero.subtitle":
-    "Emploiplus Group est une entreprise spécialisée dans les services d'employabilité, le Business Process Outsourcing (BPO) et la gestion déléguée des ressources humaines basée en Afrique centrale.",
+    "Emploiplus Group est une entreprise spécialisée dans les services d'employabilité, Externalisation, et la gestion déléguée des ressources humaines basée en Afrique centrale.",
   "home.hero.cta.jobs": "Voir les offres",
   "home.hero.cta.services": "Nos services",
   "home.stats.jobs": "Offres diffusées",
@@ -251,7 +250,7 @@ export const FR: Dict = {
     "Réponses rapides aux questions les plus fréquentes des candidats et des entreprises.",
   "faq.services.title": "Quels services propose EmploiPlus Group ?",
   "faq.services.answer":
-    "Emploiplus Group est une entreprise spécialisée dans les services d'employabilité, le Business Process Outsourcing (BPO) et la gestion déléguée des ressources humaines basée en Afrique centrale.",
+    "Emploiplus Group est une entreprise spécialisée dans les services d'employabilité, Externalisation, et la gestion déléguée des ressources humaines basée en Afrique centrale.",
   "faq.apply.title": "Comment postuler à un emploi sur le site ?",
   "faq.apply.answer":
     "Pour postuler à une offre, rendez-vous sur la page Offre d'emploi, cliquez sur le bouton de candidature et utilisez les options proposées : email, WhatsApp ou lien externe selon l'annonce. Vous pouvez aussi créer un compte candidat pour suivre plus facilement vos candidatures.",
@@ -275,7 +274,7 @@ export const FR: Dict = {
   "footer.links.services": "Services",
   "footer.links.company": "Company",
   "footer.links.contact": "Contact",
-  "footer.tagline": "Emplois, Business Process Outsourcing",
+  "footer.tagline": "Emplois, Externalisation",
   "footer.rights": "Tous droits réservés.",
   "admin.dashboard.overview": "Vue d'ensemble",
   "admin.dashboard.title": "Tableau de bord",

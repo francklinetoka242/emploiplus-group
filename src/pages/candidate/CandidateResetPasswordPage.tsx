@@ -230,7 +230,7 @@ export function CandidateResetPasswordPage() {
             <CardContent className="pt-6">
               <div className="text-center space-y-4">
                 <div className="flex justify-center">
-                  <CheckCircle2 className="w-12 h-12 text-secondary" />
+                  <CheckCircle2 className="w-12 h-12 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg text-foreground mb-2">
@@ -248,7 +248,7 @@ export function CandidateResetPasswordPage() {
 
         {/* Footer */}
         <p className="text-center text-sm text-muted-foreground mt-6">
-          © 2024 EmploiPlus Group. Tous droits réservés.
+          © 2025 EmploiPlus Group. Tous droits réservés.
         </p>
       </div>
     </div>

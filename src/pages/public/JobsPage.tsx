@@ -122,6 +122,7 @@ export function JobsPage() {
   const [nearbyOnly, setNearbyOnly] = React.useState(false);
   const [candidateToolsOpen, setCandidateToolsOpen] = React.useState(false);
   const [floatingActionsOpen, setFloatingActionsOpen] = React.useState(false);
+  const [candidatePromoOpen, setCandidatePromoOpen] = React.useState(true);
   const recommendationContextRef = React.useRef<string | null>(null);
   const pageSize = 8;
   const recommendedPageSize = 3;
@@ -297,7 +298,8 @@ export function JobsPage() {
       const isRemoteFriendly =
         Array.isArray(preferences?.mobility_modes) &&
         preferences.mobility_modes.includes("remote") &&
-        (!job.location_city && !job.location_country);
+        !job.location_city &&
+        !job.location_country;
 
       const withinRadius =
         (preferences?.mobility_radius_km ?? 50) > 0 &&
@@ -484,25 +486,18 @@ export function JobsPage() {
 
   const hasActiveSearchCriteria = Boolean(
     appliedFilters.query ||
-      appliedFilters.company ||
-      appliedFilters.location ||
-      appliedFilters.contractType ||
-      appliedFilters.domain ||
-      appliedFilters.salaryMin ||
-      nearbyOnly ||
-      sortBy !== "date",
+    appliedFilters.company ||
+    appliedFilters.location ||
+    appliedFilters.contractType ||
+    appliedFilters.domain ||
+    appliedFilters.salaryMin ||
+    nearbyOnly ||
+    sortBy !== "date",
   );
 
   React.useEffect(() => {
     setPage(1);
-  }, [
-    q,
-    companyFilter,
-    locationFilter,
-    appliedFilters.contractType,
-    domainInput,
-    sortBy,
-  ]);
+  }, [q, companyFilter, locationFilter, appliedFilters.contractType, domainInput, sortBy]);
 
   React.useEffect(() => {
     if (!isCandidateShell || location.hash !== "#recommended-for-you" || recommendationsOpen) {
@@ -561,144 +556,147 @@ export function JobsPage() {
                   onSubmit={handleSearchSubmit}
                   className="order-1 flex min-w-0 flex-col gap-3 bg-card/95 p-3 sm:p-4"
                 >
-                  <label className="text-sm font-semibold text-foreground" htmlFor="job-search-input">
+                  <label
+                    className="text-sm font-semibold text-foreground"
+                    htmlFor="job-search-input"
+                  >
                     Rechercher un emploi
                   </label>
                   <div className="flex min-w-0 flex-wrap items-center gap-3">
-                  <div className="relative min-w-0 basis-full sm:flex-1 sm:basis-auto">
-                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      id="job-search-input"
-                      value={searchInput}
-                      onChange={(e) => setSearchInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          handleSearchSubmit();
-                        }
-                      }}
-                      placeholder="Rechercher un emploi..."
-                      className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                    />
-                    {searchInput ? (
-                      <button
-                        type="button"
-                        aria-label="Réinitialiser la recherche"
-                        onClick={clearSearchInput}
-                        className="absolute right-3 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    ) : null}
-                    {searchSuggestions.length > 0 ? (
-                      <div className="absolute left-0 right-0 top-full z-10 mt-1 rounded-xl border border-border bg-card p-2 shadow-sm">
-                        <p className="px-2 py-1 text-xs text-muted-foreground">
-                          Suggestions métier
-                        </p>
-                        <div className="flex flex-wrap gap-1">
-                          {searchSuggestions.map((suggestion) => (
-                            <button
-                              key={suggestion}
-                              type="button"
-                              onClick={() => setSearchInput(suggestion)}
-                              className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground hover:border-primary hover:text-primary"
-                            >
-                              {suggestion}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-
-                  <button
-                    type="submit"
-                    aria-label="Rechercher"
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-foreground transition hover:bg-primary/5"
-                  >
-                    <Search className="h-4 w-4" />
-                  </button>
-
-                  {!canUseAdvancedFilters ? (
-                    <Select
-                      value={locationInput}
-                      onValueChange={setLocationInput}
-                      open={locationOpen}
-                      onOpenChange={setLocationOpen}
-                    >
-                      <SelectTrigger
-                        aria-label="Rechercher par pays ou ville"
-                        title="Rechercher par pays ou ville"
-                        className="h-11 w-11 justify-center rounded-xl border-border bg-background p-0 text-foreground [&>span]:sr-only"
-                      >
-                        <MapPin className="h-4 w-4" aria-hidden="true" />
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {centralAfricaCityGroups.map((group) => (
-                          <SelectGroup key={group.country}>
-                            <SelectLabel>{group.country}</SelectLabel>
-                            <SelectItem value={group.country}>{group.country}</SelectItem>
-                            {group.cities.map((city) => (
-                              <SelectItem key={city} value={city}>
-                                {city}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  ) : null}
-
-                  {canUseAdvancedFilters ? (
-                    <button
-                      type="button"
-                      aria-label="Afficher ou masquer les filtres"
-                      title="Afficher ou masquer les filtres"
-                      aria-expanded={filtersOpen}
-                      onClick={() => setFiltersOpen((prev) => !prev)}
-                      className={`inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-3 text-sm font-semibold transition hover:bg-primary/5 ${
-                        filtersOpen
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-background text-foreground"
-                      }`}
-                    >
-                      <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
-                      <span>Filtres</span>
-                    </button>
-                  ) : (
-                    <Popover
-                      open={advancedFiltersPromptOpen}
-                      onOpenChange={setAdvancedFiltersPromptOpen}
-                    >
-                      <PopoverTrigger asChild>
+                    <div className="relative min-w-0 basis-full sm:flex-1 sm:basis-auto">
+                      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input
+                        id="job-search-input"
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleSearchSubmit();
+                          }
+                        }}
+                        placeholder="Rechercher un emploi..."
+                        className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                      />
+                      {searchInput ? (
                         <button
                           type="button"
-                          title="Connectez-vous pour avoir plus de filtres"
-                          aria-label="Connectez-vous pour avoir plus de filtres"
-                          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted/50 text-muted-foreground transition hover:bg-primary/5 hover:text-primary"
+                          aria-label="Réinitialiser la recherche"
+                          onClick={clearSearchInput}
+                          className="absolute right-3 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
                         >
-                          <CircleAlert className="h-5 w-5" aria-hidden="true" />
+                          <X className="h-4 w-4" />
                         </button>
-                      </PopoverTrigger>
-                      <PopoverContent side="bottom" align="end" className="w-64 p-4">
-                        <p className="text-sm font-semibold text-foreground">
-                          Connectez-vous pour avoir plus de filtres.
-                        </p>
-                        <Button
-                          asChild
-                          size="sm"
-                          className="mt-3 w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90"
+                      ) : null}
+                      {searchSuggestions.length > 0 ? (
+                        <div className="absolute left-0 right-0 top-full z-10 mt-1 rounded-xl border border-border bg-card p-2 shadow-sm">
+                          <p className="px-2 py-1 text-xs text-muted-foreground">
+                            Suggestions métier
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {searchSuggestions.map((suggestion) => (
+                              <button
+                                key={suggestion}
+                                type="button"
+                                onClick={() => setSearchInput(suggestion)}
+                                className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground hover:border-primary hover:text-primary"
+                              >
+                                {suggestion}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <button
+                      type="submit"
+                      aria-label="Rechercher"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-background text-foreground transition hover:bg-primary/5"
+                    >
+                      <Search className="h-4 w-4" />
+                    </button>
+
+                    {!canUseAdvancedFilters ? (
+                      <Select
+                        value={locationInput}
+                        onValueChange={setLocationInput}
+                        open={locationOpen}
+                        onOpenChange={setLocationOpen}
+                      >
+                        <SelectTrigger
+                          aria-label="Rechercher par pays ou ville"
+                          title="Rechercher par pays ou ville"
+                          className="h-11 w-11 justify-center rounded-xl border-border bg-background p-0 text-foreground [&>span]:sr-only"
                         >
-                          <Link
-                            to="/candidate/login"
-                            onClick={() => setAdvancedFiltersPromptOpen(false)}
+                          <MapPin className="h-4 w-4" aria-hidden="true" />
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {centralAfricaCityGroups.map((group) => (
+                            <SelectGroup key={group.country}>
+                              <SelectLabel>{group.country}</SelectLabel>
+                              <SelectItem value={group.country}>{group.country}</SelectItem>
+                              {group.cities.map((city) => (
+                                <SelectItem key={city} value={city}>
+                                  {city}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : null}
+
+                    {canUseAdvancedFilters ? (
+                      <button
+                        type="button"
+                        aria-label="Afficher ou masquer les filtres"
+                        title="Afficher ou masquer les filtres"
+                        aria-expanded={filtersOpen}
+                        onClick={() => setFiltersOpen((prev) => !prev)}
+                        className={`inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border px-3 text-sm font-semibold transition hover:bg-primary/5 ${
+                          filtersOpen
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-background text-foreground"
+                        }`}
+                      >
+                        <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+                        <span>Filtres</span>
+                      </button>
+                    ) : (
+                      <Popover
+                        open={advancedFiltersPromptOpen}
+                        onOpenChange={setAdvancedFiltersPromptOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            title="Connectez-vous pour avoir plus de filtres"
+                            aria-label="Connectez-vous pour avoir plus de filtres"
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted/50 text-muted-foreground transition hover:bg-primary/5 hover:text-primary"
                           >
-                            Se connecter
-                          </Link>
-                        </Button>
-                      </PopoverContent>
-                    </Popover>
-                  )}
+                            <CircleAlert className="h-5 w-5" aria-hidden="true" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent side="bottom" align="end" className="w-64 p-4">
+                          <p className="text-sm font-semibold text-foreground">
+                            Connectez-vous pour avoir plus de filtres.
+                          </p>
+                          <Button
+                            asChild
+                            size="sm"
+                            className="mt-3 w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90"
+                          >
+                            <Link
+                              to="/candidate/login"
+                              onClick={() => setAdvancedFiltersPromptOpen(false)}
+                            >
+                              Se connecter
+                            </Link>
+                          </Button>
+                        </PopoverContent>
+                      </Popover>
+                    )}
                   </div>
                 </form>
 
@@ -709,8 +707,14 @@ export function JobsPage() {
                     onClick={() => setCandidateToolsOpen((open) => !open)}
                     className="order-3 flex w-full items-center justify-between border-t border-border px-3 py-2.5 text-left text-sm font-semibold text-primary transition hover:bg-primary/5 sm:px-4"
                   >
-                    <span>{candidateToolsOpen ? "Masquer les options candidat" : "Afficher les options candidat"}</span>
-                    <span aria-hidden="true" className="text-lg leading-none">{candidateToolsOpen ? "−" : "+"}</span>
+                    <span>
+                      {candidateToolsOpen
+                        ? "Masquer les options candidat"
+                        : "Afficher les options candidat"}
+                    </span>
+                    <span aria-hidden="true" className="text-lg leading-none">
+                      {candidateToolsOpen ? "−" : "+"}
+                    </span>
                   </button>
                 ) : null}
 
@@ -740,7 +744,10 @@ export function JobsPage() {
                       }}
                       className="rounded-xl border border-border bg-background px-3 py-2 text-left text-sm font-semibold text-foreground transition hover:border-primary/40 hover:text-primary"
                     >
-                      <span className="block">Offres proches de moi{profile?.location_city ? ` (${profile.location_city})` : ""}</span>
+                      <span className="block">
+                        Offres proches de moi
+                        {profile?.location_city ? ` (${profile.location_city})` : ""}
+                      </span>
                       <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
                         {profile?.location_city
                           ? "Basées sur votre ville et vos préférences de mobilité."
@@ -792,458 +799,482 @@ export function JobsPage() {
                       filtersOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
                     }`}
                   >
-                  <div className="flex items-end gap-2 overflow-x-auto bg-card px-3 py-2.5 sm:px-4">
-                    <div className="shrink-0">
-                      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                        Type de contrat
-                      </label>
-                      <select
-                        value={contractTypeInput}
-                        onChange={(e) => setContractTypeInput(e.target.value)}
-                        className="h-9 w-[9.5rem] rounded-lg border border-border bg-background px-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                      >
-                        <option value="">Tous</option>
-                        <option value="cdi">CDI</option>
-                        <option value="cdd">CDD</option>
-                        <option value="stage">Stage</option>
-                        <option value="freelance">Freelance</option>
-                        <option value="prestation_de_services">Prestation de services</option>
-                        <option value="temps_partiel">Temps partiel</option>
-                        <option value="interim">Intérim</option>
-                      </select>
-                    </div>
-
-                    <div className="shrink-0">
-                      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                        Localisation
-                      </label>
-                      <Select value={locationInput} onValueChange={setLocationInput}>
-                        <SelectTrigger className="h-9 w-[9.5rem] rounded-lg border-border bg-background px-2.5 text-sm">
-                          <SelectValue placeholder="Sélectionner une ville ou un pays" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {centralAfricaCityGroups.map((group) => (
-                            <SelectGroup key={group.country}>
-                              <SelectLabel>{group.country}</SelectLabel>
-                              <SelectItem value={group.country}>{group.country}</SelectItem>
-                              {group.cities.map((city) => (
-                                <SelectItem key={city} value={city}>
-                                  {city}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {availableDomains.length > 0 ? (
+                    <div className="flex items-end gap-2 overflow-x-auto bg-card px-3 py-2.5 sm:px-4">
                       <div className="shrink-0">
                         <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                          Domaine
+                          Type de contrat
                         </label>
                         <select
-                          value={domainInput}
-                          onChange={(e) => setDomainInput(e.target.value)}
-                          className="h-9 w-[5.5rem] rounded-lg border border-border bg-background px-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                          value={contractTypeInput}
+                          onChange={(e) => setContractTypeInput(e.target.value)}
+                          className="h-9 w-[9.5rem] rounded-lg border border-border bg-background px-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
                         >
                           <option value="">Tous</option>
-                          {availableDomains.map((domain) => (
-                            <option key={domain} value={domain}>
-                              {domain}
-                            </option>
-                          ))}
+                          <option value="cdi">CDI</option>
+                          <option value="cdd">CDD</option>
+                          <option value="stage">Stage</option>
+                          <option value="freelance">Freelance</option>
+                          <option value="prestation_de_services">Prestation de services</option>
+                          <option value="temps_partiel">Temps partiel</option>
+                          <option value="interim">Intérim</option>
                         </select>
                       </div>
-                    ) : null}
 
-                    <div className="shrink-0">
-                      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                        Trier par
-                      </label>
-                      <select
-                        value={sortBy}
-                        onChange={(e) =>
-                          setSortBy(
-                            e.target.value as "date" | "relevance" | "salary-high" | "salary-low",
-                          )
-                        }
-                        className="h-9 w-[9rem] rounded-lg border border-border bg-background px-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
-                      >
-                        <option value="date">Date de publication</option>
-                        <option value="relevance">Pertinence</option>
-                        <option value="salary-high">Salaire décroissant</option>
-                        <option value="salary-low">Salaire croissant</option>
-                      </select>
-                    </div>
+                      <div className="shrink-0">
+                        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                          Localisation
+                        </label>
+                        <Select value={locationInput} onValueChange={setLocationInput}>
+                          <SelectTrigger className="h-9 w-[9.5rem] rounded-lg border-border bg-background px-2.5 text-sm">
+                            <SelectValue placeholder="Sélectionner une ville ou un pays" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {centralAfricaCityGroups.map((group) => (
+                              <SelectGroup key={group.country}>
+                                <SelectLabel>{group.country}</SelectLabel>
+                                <SelectItem value={group.country}>{group.country}</SelectItem>
+                                {group.cities.map((city) => (
+                                  <SelectItem key={city} value={city}>
+                                    {city}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    <div className="flex shrink-0 items-end justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={handleSearchSubmit}
-                        aria-label="Rechercher avec ces critères"
-                        title="Rechercher avec ces critères"
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand text-brand-foreground transition hover:bg-brand/90"
-                      >
-                        <Search className="h-4 w-4" aria-hidden="true" />
-                      </button>
+                      {availableDomains.length > 0 ? (
+                        <div className="shrink-0">
+                          <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                            Domaine
+                          </label>
+                          <select
+                            value={domainInput}
+                            onChange={(e) => setDomainInput(e.target.value)}
+                            className="h-9 w-[5.5rem] rounded-lg border border-border bg-background px-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                          >
+                            <option value="">Tous</option>
+                            {availableDomains.map((domain) => (
+                              <option key={domain} value={domain}>
+                                {domain}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      ) : null}
+
+                      <div className="shrink-0">
+                        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                          Trier par
+                        </label>
+                        <select
+                          value={sortBy}
+                          onChange={(e) =>
+                            setSortBy(
+                              e.target.value as "date" | "relevance" | "salary-high" | "salary-low",
+                            )
+                          }
+                          className="h-9 w-[9rem] rounded-lg border border-border bg-background px-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand"
+                        >
+                          <option value="date">Date de publication</option>
+                          <option value="relevance">Pertinence</option>
+                          <option value="salary-high">Salaire décroissant</option>
+                          <option value="salary-low">Salaire croissant</option>
+                        </select>
+                      </div>
+
+                      <div className="flex shrink-0 items-end justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={handleSearchSubmit}
+                          aria-label="Rechercher avec ces critères"
+                          title="Rechercher avec ces critères"
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand text-brand-foreground transition hover:bg-brand/90"
+                        >
+                          <Search className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
                   </div>
                 ) : null}
-            </div>
-                {isCandidateShell ? (
-              <Sheet
-                open={recommendationsOpen}
-                onOpenChange={(open) => {
-                  if (!open && location.hash === "#recommended-for-you") {
-                    navigate(`${location.pathname}${location.search}`, { replace: true });
-                  }
-                  setRecommendationsOpen(open);
-                }}
-              >
-                <SheetContent
-                  side="right"
-                  className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl"
+              </div>
+              {isCandidateShell ? (
+                <Sheet
+                  open={recommendationsOpen}
+                  onOpenChange={(open) => {
+                    if (!open && location.hash === "#recommended-for-you") {
+                      navigate(`${location.pathname}${location.search}`, { replace: true });
+                    }
+                    setRecommendationsOpen(open);
+                  }}
                 >
-                  <SheetHeader className="border-b border-border px-5 py-5 pr-14 text-left sm:px-7">
-                    <SheetTitle
-                      id="recommended-for-you"
-                      className="flex items-center gap-2 text-xl"
-                    >
-                      <Sparkles className="h-5 w-5 text-primary" />
-                      Recommandé pour vous
-                    </SheetTitle>
-                    <SheetDescription className="leading-6">
-                      Ces offres correspondent le mieux à votre profil selon notre système de
-                      compatibilité.
-                    </SheetDescription>
-                  </SheetHeader>
+                  <SheetContent
+                    side="right"
+                    className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl"
+                  >
+                    <SheetHeader className="border-b border-border px-5 py-5 pr-14 text-left sm:px-7">
+                      <SheetTitle
+                        id="recommended-for-you"
+                        className="flex items-center gap-2 text-xl"
+                      >
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        Recommandé pour vous
+                      </SheetTitle>
+                      <SheetDescription className="leading-6">
+                        Ces offres correspondent le mieux à votre profil selon notre système de
+                        compatibilité.
+                      </SheetDescription>
+                    </SheetHeader>
 
-                  <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-7">
-                    {recommendedLoading ? (
-                      <div className="space-y-4" aria-label="Chargement des recommandations">
-                        {[1, 2, 3].map((index) => (
-                          <Skeleton key={index} className="h-36 w-full rounded-xl" />
-                        ))}
-                      </div>
-                    ) : recommendedError ? (
-                      <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm leading-6 text-destructive">
-                        <p>Impossible de charger vos recommandations pour le moment.</p>
-                        <p className="mt-1">{recommendedError}</p>
-                        <p className="mt-1">Vous pouvez continuer à consulter toutes les offres ci-dessous.</p>
-                      </div>
-                    ) : recommendedJobs.length > 0 ? (
-                      <div className="space-y-4">
-                        {recommendedJobs.map((job, index) => {
-                          const location =
-                            [job.location_city, job.location_country].filter(Boolean).join(", ") ||
-                            t("jobs.location.remote");
-                          const previewText = (job.description || job.requirements || "")
-                            .replace(/\s+/g, " ")
-                            .trim();
-                          const deadlineValue = job.deadline || job.expires_at || null;
-                          const isExpired = Boolean(
-                            deadlineValue && new Date(deadlineValue).getTime() < Date.now(),
-                          );
+                    <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-7">
+                      {recommendedLoading ? (
+                        <div className="space-y-4" aria-label="Chargement des recommandations">
+                          {[1, 2, 3].map((index) => (
+                            <Skeleton key={index} className="h-36 w-full rounded-xl" />
+                          ))}
+                        </div>
+                      ) : recommendedError ? (
+                        <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm leading-6 text-destructive">
+                          <p>Impossible de charger vos recommandations pour le moment.</p>
+                          <p className="mt-1">{recommendedError}</p>
+                          <p className="mt-1">
+                            Vous pouvez continuer à consulter toutes les offres ci-dessous.
+                          </p>
+                        </div>
+                      ) : recommendedJobs.length > 0 ? (
+                        <div className="space-y-4">
+                          {recommendedJobs.map((job, index) => {
+                            const location =
+                              [job.location_city, job.location_country]
+                                .filter(Boolean)
+                                .join(", ") || t("jobs.location.remote");
+                            const previewText = (job.description || job.requirements || "")
+                              .replace(/\s+/g, " ")
+                              .trim();
+                            const deadlineValue = job.deadline || job.expires_at || null;
+                            const isExpired = Boolean(
+                              deadlineValue && new Date(deadlineValue).getTime() < Date.now(),
+                            );
 
-                          return (
-                            <JobCard
-                              key={job.id}
-                              job={job}
-                              location={location}
-                              previewText={previewText}
-                              contractLabel={getContractLabel(job.contract_type)}
-                              tags={(job.tags || []).filter(Boolean).slice(0, 3)}
-                              deadlineValue={deadlineValue}
-                              isExpired={isExpired}
-                              t={t}
-                              index={index}
-                              hideRequirementsSection
-                              variant="list"
-                              matchScore={typeof job.score === "number" ? job.score : undefined}
-                              onApplyClick={() => handleApplyClick(job.slug)}
-                            />
-                          );
-                        })}
-                        <PaginationNav
-                          currentPage={recommendedPage}
-                          totalPages={recommendedPage + (hasMoreRecommendedJobs ? 1 : 0)}
-                          onPageChange={setRecommendedPage}
-                          disabled={recommendedLoading}
-                          className="justify-center border-t border-border/70 pt-4"
-                        />
-                      </div>
-                    ) : (
-                      <div className="rounded-xl border border-dashed border-border p-5 text-sm leading-6 text-muted-foreground">
-                        {profile?.id && !hasCandidateCv(profile)
-                          ? "Ajoutez votre CV pour recevoir des recommandations adaptées à votre parcours."
-                          : "Aucune recommandation pour le moment. Consultez les offres disponibles ou complétez votre profil."}
-                        {profile?.id && !hasCandidateCv(profile) ? (
-                          <Link
-                            to="/candidate/profile"
-                            className="link link-animated mt-3 inline-flex font-semibold text-primary"
-                          >
-                            Compléter mon profil
-                          </Link>
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
-                </SheetContent>
-              </Sheet>
-            ) : null}
+                            return (
+                              <JobCard
+                                key={job.id}
+                                job={job}
+                                location={location}
+                                previewText={previewText}
+                                contractLabel={getContractLabel(job.contract_type)}
+                                tags={(job.tags || []).filter(Boolean).slice(0, 3)}
+                                deadlineValue={deadlineValue}
+                                isExpired={isExpired}
+                                t={t}
+                                index={index}
+                                hideRequirementsSection
+                                variant="list"
+                                matchScore={typeof job.score === "number" ? job.score : undefined}
+                                onApplyClick={() => handleApplyClick(job.slug)}
+                              />
+                            );
+                          })}
+                          <PaginationNav
+                            currentPage={recommendedPage}
+                            totalPages={recommendedPage + (hasMoreRecommendedJobs ? 1 : 0)}
+                            onPageChange={setRecommendedPage}
+                            disabled={recommendedLoading}
+                            className="justify-center border-t border-border/70 pt-4"
+                          />
+                        </div>
+                      ) : (
+                        <div className="rounded-xl border border-dashed border-border p-5 text-sm leading-6 text-muted-foreground">
+                          {profile?.id && !hasCandidateCv(profile)
+                            ? "Ajoutez votre CV pour recevoir des recommandations adaptées à votre parcours."
+                            : "Aucune recommandation pour le moment. Consultez les offres disponibles ou complétez votre profil."}
+                          {profile?.id && !hasCandidateCv(profile) ? (
+                            <Link
+                              to="/candidate/profile"
+                              className="link link-animated mt-3 inline-flex font-semibold text-primary"
+                            >
+                              Compléter mon profil
+                            </Link>
+                          ) : null}
+                        </div>
+                      )}
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              ) : null}
 
-            {isCandidateShell && candidateToolsOpen ? (
-              <section className="order-4 pt-6" aria-label="Mes recherches">
-                <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                  <div>
-                    <h2 className="text-lg font-semibold text-foreground">Mes recherches</h2>
-                    <p className="text-sm text-muted-foreground">Retrouvez vos critères sauvegardés et vos dernières recherches.</p>
-                  </div>
-                </div>
-                {!searchesLoading && savedSearches.length === 0 && searchHistory.length === 0 ? (
-                  <div className="flex flex-col gap-3 rounded-xl border border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-sm text-muted-foreground">Aucune recherche sauvegardée ou récente.</p>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => void saveCurrentSearch()}
-                      disabled={!appliedFilters.query && !appliedFilters.location}
-                    >
-                      Sauvegarder la recherche
-                    </Button>
-                  </div>
-                ) : (
-                <div className="grid gap-4 lg:grid-cols-2">
-                <div className="rounded-2xl border border-border bg-card p-4">
-                  <div className="flex items-center justify-between gap-3">
+              {isCandidateShell && candidateToolsOpen ? (
+                <section className="order-4 pt-6" aria-label="Mes recherches">
+                  <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                      <h2 className="text-base font-semibold text-foreground">
-                        Recherches sauvegardées
-                      </h2>
+                      <h2 className="text-lg font-semibold text-foreground">Mes recherches</h2>
                       <p className="text-sm text-muted-foreground">
-                        Relancez vos critères favoris.
+                        Retrouvez vos critères sauvegardés et vos dernières recherches.
                       </p>
                     </div>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => void saveCurrentSearch()}
-                      disabled={!appliedFilters.query && !appliedFilters.location}
-                    >
-                      Sauvegarder
-                    </Button>
                   </div>
-                  <div className="mt-4 space-y-3">
-                    {searchesLoading ? (
-                      <p className="text-sm text-muted-foreground">Chargement...</p>
-                    ) : savedSearches.length === 0 ? (
-                      <p className="text-sm text-muted-foreground">Aucune recherche sauvegardée.</p>
-                    ) : (
-                      savedSearches.map((saved) => (
-                        <div
-                          key={saved.id}
-                          className="flex items-start justify-between gap-3 border-t border-border pt-3"
-                        >
-                          <button
+                  {!searchesLoading && savedSearches.length === 0 && searchHistory.length === 0 ? (
+                    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-sm text-muted-foreground">
+                        Aucune recherche sauvegardée ou récente.
+                      </p>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => void saveCurrentSearch()}
+                        disabled={!appliedFilters.query && !appliedFilters.location}
+                      >
+                        Sauvegarder la recherche
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 lg:grid-cols-2">
+                      <div className="rounded-2xl border border-border bg-card p-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <h2 className="text-base font-semibold text-foreground">
+                              Recherches sauvegardées
+                            </h2>
+                            <p className="text-sm text-muted-foreground">
+                              Relancez vos critères favoris.
+                            </p>
+                          </div>
+                          <Button
                             type="button"
-                            className="min-w-0 text-left"
-                            onClick={() => applyCriteria(saved.criteria)}
+                            size="sm"
+                            variant="outline"
+                            onClick={() => void saveCurrentSearch()}
+                            disabled={!appliedFilters.query && !appliedFilters.location}
                           >
-                            <p className="truncate text-sm font-semibold text-foreground">
-                              {saved.name}
+                            Sauvegarder
+                          </Button>
+                        </div>
+                        <div className="mt-4 space-y-3">
+                          {searchesLoading ? (
+                            <p className="text-sm text-muted-foreground">Chargement...</p>
+                          ) : savedSearches.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                              Aucune recherche sauvegardée.
                             </p>
-                            <p className="text-xs text-muted-foreground">
-                              {saved.criteria.query || "Tous les métiers"}
-                              {saved.criteria.location ? ` · ${saved.criteria.location}` : ""}
+                          ) : (
+                            savedSearches.map((saved) => (
+                              <div
+                                key={saved.id}
+                                className="flex items-start justify-between gap-3 border-t border-border pt-3"
+                              >
+                                <button
+                                  type="button"
+                                  className="min-w-0 text-left"
+                                  onClick={() => applyCriteria(saved.criteria)}
+                                >
+                                  <p className="truncate text-sm font-semibold text-foreground">
+                                    {saved.name}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {saved.criteria.query || "Tous les métiers"}
+                                    {saved.criteria.location ? ` · ${saved.criteria.location}` : ""}
+                                  </p>
+                                </button>
+                                <div className="flex shrink-0 gap-2 text-xs">
+                                  <button
+                                    type="button"
+                                    className="text-foreground hover:text-primary"
+                                    onClick={() => void editSavedSearch(saved)}
+                                  >
+                                    Modifier
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="text-primary hover:underline"
+                                    onClick={() => void toggleSavedSearch(saved)}
+                                  >
+                                    {saved.is_active ? "Désactiver" : "Activer"}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="text-destructive hover:underline"
+                                    onClick={() =>
+                                      void deleteSavedJobSearch(saved.id).then(() =>
+                                        setSavedSearches((current) =>
+                                          current.filter((item) => item.id !== saved.id),
+                                        ),
+                                      )
+                                    }
+                                  >
+                                    Supprimer
+                                  </button>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-border bg-card p-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <h2 className="text-base font-semibold text-foreground">
+                              Recherches récentes
+                            </h2>
+                            <p className="text-sm text-muted-foreground">
+                              Les 10 dernières recherches appliquées.
                             </p>
-                          </button>
-                          <div className="flex shrink-0 gap-2 text-xs">
+                          </div>
+                          {searchHistory.length > 0 ? (
                             <button
                               type="button"
-                              className="text-foreground hover:text-primary"
-                              onClick={() => void editSavedSearch(saved)}
-                            >
-                              Modifier
-                            </button>
-                            <button
-                              type="button"
-                              className="text-primary hover:underline"
-                              onClick={() => void toggleSavedSearch(saved)}
-                            >
-                              {saved.is_active ? "Désactiver" : "Activer"}
-                            </button>
-                            <button
-                              type="button"
-                              className="text-destructive hover:underline"
+                              className="text-xs font-semibold text-primary hover:underline"
                               onClick={() =>
-                                void deleteSavedJobSearch(saved.id).then(() =>
-                                  setSavedSearches((current) =>
-                                    current.filter((item) => item.id !== saved.id),
-                                  ),
+                                void clearSearchHistory(profile!.id).then(() =>
+                                  setSearchHistory([]),
                                 )
                               }
                             >
-                              Supprimer
+                              Effacer
                             </button>
-                          </div>
+                          ) : null}
                         </div>
-                      ))
-                    )}
-                  </div>
-                </div>
+                        <div className="mt-4 space-y-2">
+                          {searchHistory.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">Aucun historique.</p>
+                          ) : (
+                            searchHistory.map((item) => (
+                              <div
+                                key={item.id}
+                                className="flex items-center justify-between gap-3 border-t border-border pt-2"
+                              >
+                                <button
+                                  type="button"
+                                  className="truncate text-left text-sm text-foreground hover:text-primary"
+                                  onClick={() => applyCriteria(item.criteria)}
+                                >
+                                  {item.criteria.query || "Recherche filtrée"}
+                                  {item.criteria.location ? ` · ${item.criteria.location}` : ""}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="shrink-0 text-xs text-muted-foreground hover:text-destructive"
+                                  onClick={() =>
+                                    void deleteSearchHistoryItem(item.id).then(() =>
+                                      setSearchHistory((current) =>
+                                        current.filter((entry) => entry.id !== item.id),
+                                      ),
+                                    )
+                                  }
+                                >
+                                  Supprimer
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </section>
+              ) : null}
 
-                <div className="rounded-2xl border border-border bg-card p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <h2 className="text-base font-semibold text-foreground">
-                        Recherches récentes
-                      </h2>
-                      <p className="text-sm text-muted-foreground">
-                        Les 10 dernières recherches appliquées.
+              <div className="order-3 flex flex-col gap-3 pt-6 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-foreground sm:text-2xl">
+                    Offres disponibles
+                  </h2>
+                  {hasActiveSearchCriteria ? (
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {sortedOffers.length} offre{sortedOffers.length > 1 ? "s" : ""} trouvée
+                      {sortedOffers.length > 1 ? "s" : ""}
+                    </p>
+                  ) : null}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Tri :{" "}
+                  {sortBy === "date"
+                    ? "plus récentes"
+                    : sortBy === "relevance"
+                      ? "pertinence"
+                      : sortBy === "salary-high"
+                        ? "salaire décroissant"
+                        : "salaire croissant"}
+                </p>
+              </div>
+
+              <div
+                className={`order-3 ${mobileApp ? "mt-0 grid gap-3 pt-0" : "mt-0 grid gap-3 pt-0"}`}
+              >
+                {loading ? (
+                  [1, 2, 3].map((index) => (
+                    <article
+                      key={index}
+                      className="rounded-3xl border border-border bg-card p-6 shadow-soft animate-pulse"
+                    />
+                  ))
+                ) : sortedOffers.length > 0 ? (
+                  <>
+                    {paginatedOffers.map((job, i) => {
+                      const location =
+                        [job.location_city, job.location_country].filter(Boolean).join(", ") ||
+                        t("jobs.location.remote");
+                      const previewText = (job.description || job.requirements || "")
+                        .replace(/\s+/g, " ")
+                        .trim();
+                      const contractLabel = getContractLabel(job.contract_type);
+                      const tags = (job.tags || []).filter(Boolean).slice(0, 3);
+                      const deadlineValue = job.deadline || null;
+                      const isExpired = Boolean(
+                        deadlineValue && new Date(deadlineValue).getTime() < Date.now(),
+                      );
+                      const shareUrl =
+                        typeof window !== "undefined"
+                          ? `${window.location.origin}/jobs/${job.slug}`
+                          : `${BASE_URL}/jobs/${job.slug}`;
+                      const shareText = `Offre d'emploi : ${job.title} chez ${job.company}\n\n${previewText.slice(0, 220)}\n\nOffre partagée depuis https://emploiplus-group.com`;
+                      return (
+                        <JobCard
+                          key={job.id}
+                          job={job}
+                          location={location}
+                          previewText={previewText}
+                          contractLabel={contractLabel}
+                          tags={tags}
+                          deadlineValue={deadlineValue}
+                          isExpired={isExpired}
+                          t={t}
+                          index={i}
+                          hideRequirementsSection
+                          variant="list"
+                          onApplyClick={() => handleApplyClick(job.slug)}
+                        />
+                      );
+                    })}
+                    {totalPages > 1 ? (
+                      <div className="mt-0 mb-0 rounded-2xl border border-border bg-card/80 px-4 py-2">
+                        <PaginationNav
+                          currentPage={safePage}
+                          totalPages={totalPages}
+                          onPageChange={setPage}
+                          className="justify-center"
+                        />
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">
+                    <div className="max-w-md space-y-3">
+                      <p className="text-base font-semibold text-foreground">
+                        Aucune offre ne correspond à ces critères.
+                      </p>
+                      <p className="text-sm leading-6">
+                        Modifiez les filtres ou réinitialisez la recherche pour afficher de
+                        nouvelles opportunités.
                       </p>
                     </div>
-                    {searchHistory.length > 0 ? (
-                      <button
-                        type="button"
-                        className="text-xs font-semibold text-primary hover:underline"
-                        onClick={() =>
-                          void clearSearchHistory(profile!.id).then(() => setSearchHistory([]))
-                        }
-                      >
-                        Effacer
-                      </button>
-                    ) : null}
                   </div>
-                  <div className="mt-4 space-y-2">
-                    {searchHistory.length === 0 ? (
-                      <p className="text-sm text-muted-foreground">Aucun historique.</p>
-                    ) : (
-                      searchHistory.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center justify-between gap-3 border-t border-border pt-2"
-                        >
-                          <button
-                            type="button"
-                            className="truncate text-left text-sm text-foreground hover:text-primary"
-                            onClick={() => applyCriteria(item.criteria)}
-                          >
-                            {item.criteria.query || "Recherche filtrée"}
-                            {item.criteria.location ? ` · ${item.criteria.location}` : ""}
-                          </button>
-                          <button
-                            type="button"
-                            className="shrink-0 text-xs text-muted-foreground hover:text-destructive"
-                            onClick={() =>
-                              void deleteSearchHistoryItem(item.id).then(() =>
-                                setSearchHistory((current) =>
-                                  current.filter((entry) => entry.id !== item.id),
-                                ),
-                              )
-                            }
-                          >
-                            Supprimer
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-                </div>
                 )}
-              </section>
-            ) : null}
-
-            <div className="order-3 flex flex-col gap-3 pt-6 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-foreground sm:text-2xl">Offres disponibles</h2>
-                {hasActiveSearchCriteria ? (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {sortedOffers.length} offre{sortedOffers.length > 1 ? "s" : ""} trouvée
-                    {sortedOffers.length > 1 ? "s" : ""}
-                  </p>
-                ) : null}
               </div>
-              <p className="text-sm text-muted-foreground">Tri : {sortBy === "date" ? "plus récentes" : sortBy === "relevance" ? "pertinence" : sortBy === "salary-high" ? "salaire décroissant" : "salaire croissant"}</p>
-            </div>
-
-            <div className={`order-3 ${mobileApp ? "mt-0 grid gap-3 pt-0" : "mt-0 grid gap-3 pt-0"}`}>
-              {loading ? (
-                [1, 2, 3].map((index) => (
-                  <article
-                    key={index}
-                    className="rounded-3xl border border-border bg-card p-6 shadow-soft animate-pulse"
-                  />
-                ))
-              ) : sortedOffers.length > 0 ? (
-                <>
-                  {paginatedOffers.map((job, i) => {
-                    const location =
-                      [job.location_city, job.location_country].filter(Boolean).join(", ") ||
-                      t("jobs.location.remote");
-                    const previewText = (job.description || job.requirements || "")
-                      .replace(/\s+/g, " ")
-                      .trim();
-                    const contractLabel = getContractLabel(job.contract_type);
-                    const tags = (job.tags || []).filter(Boolean).slice(0, 3);
-                    const deadlineValue = job.deadline || null;
-                    const isExpired = Boolean(
-                      deadlineValue && new Date(deadlineValue).getTime() < Date.now(),
-                    );
-                    const shareUrl =
-                      typeof window !== "undefined"
-                        ? `${window.location.origin}/jobs/${job.slug}`
-                        : `${BASE_URL}/jobs/${job.slug}`;
-                    const shareText = `Offre d'emploi : ${job.title} chez ${job.company}\n\n${previewText.slice(0, 220)}\n\nOffre partagée depuis https://emploiplus-group.com`;
-                    return (
-                      <JobCard
-                        key={job.id}
-                        job={job}
-                        location={location}
-                        previewText={previewText}
-                        contractLabel={contractLabel}
-                        tags={tags}
-                        deadlineValue={deadlineValue}
-                        isExpired={isExpired}
-                        t={t}
-                        index={i}
-                        hideRequirementsSection
-                        variant="list"
-                        onApplyClick={() => handleApplyClick(job.slug)}
-                      />
-                    );
-                  })}
-                  {totalPages > 1 ? (
-                    <div className="mt-0 mb-0 rounded-2xl border border-border bg-card/80 px-4 py-2">
-                      <PaginationNav
-                        currentPage={safePage}
-                        totalPages={totalPages}
-                        onPageChange={setPage}
-                        className="justify-center"
-                      />
-                    </div>
-                  ) : null}
-                </>
-              ) : (
-                <div className="rounded-3xl border border-border bg-card p-6 text-muted-foreground">
-                  <div className="max-w-md space-y-3">
-                    <p className="text-base font-semibold text-foreground">
-                      Aucune offre ne correspond à ces critères.
-                    </p>
-                    <p className="text-sm leading-6">
-                      Modifiez les filtres ou réinitialisez la recherche pour afficher de nouvelles
-                      opportunités.
-                    </p>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
-        </div>
         </div>
       </section>
       <div className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-40 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
@@ -1291,7 +1322,44 @@ export function JobsPage() {
           </div>
         ) : null}
 
-        <div className={isCandidateShell ? "fab fab-flower" : "flex items-center gap-3"}>
+        <div className={isCandidateShell ? "fab fab-flower" : "flex items-end gap-3"}>
+          {candidatePromoOpen ? (
+            <aside className="hidden w-[min(calc(100vw-6rem),22rem)] overflow-hidden rounded-2xl border border-brand/20 bg-card text-left shadow-2xl md:block">
+              <div className="flex items-start justify-between gap-4 border-b border-border/70 px-5 pb-3 pt-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand">Espace candidat</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Des outils pour avancer plus vite</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCandidatePromoOpen(false)}
+                  className="-mr-1 -mt-1 rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                  aria-label="Replier l'espace candidat"
+                  title="Replier"
+                >
+                  <X className="size-4" aria-hidden="true" />
+                </button>
+              </div>
+              <div className="px-5 pb-5 pt-4">
+                <h2 className="max-w-[17rem] text-lg font-semibold leading-6 text-foreground">Donnez un nouvel élan à votre recherche</h2>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">Retrouvez des outils intelligents pour préparer votre profil et accéder aux opportunités qui vous correspondent.</p>
+                <Button asChild className="mt-4 h-10 w-full rounded-xl bg-brand text-sm font-semibold text-brand-foreground shadow-sm hover:bg-brand/90">
+                  <Link to="/services/hub-candidat-intelligent">Découvrir l'espace candidat<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Link>
+                </Button>
+              </div>
+            </aside>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setCandidatePromoOpen(true)}
+              className="hidden items-center gap-2 rounded-full border border-brand/20 bg-card px-4 py-2.5 text-sm font-semibold text-brand shadow-lg transition hover:-translate-y-0.5 hover:border-brand/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 md:inline-flex"
+              aria-label="Afficher l'espace candidat"
+            >
+              <Sparkles className="size-4" aria-hidden="true" />
+              Espace candidat
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </button>
+          )}
           {isCandidateShell ? (
             <>
               <div
@@ -1345,7 +1413,9 @@ export function JobsPage() {
               type="button"
               onClick={() => setWhatsappOpen((open) => !open)}
               aria-expanded={whatsappOpen}
-              aria-label={whatsappOpen ? "Fermer les chaînes WhatsApp" : "Ouvrir les chaînes WhatsApp"}
+              aria-label={
+                whatsappOpen ? "Fermer les chaînes WhatsApp" : "Ouvrir les chaînes WhatsApp"
+              }
               className="flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition hover:scale-105 hover:bg-[#1ea952] focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
             >
               <MessageCircle className="size-7" />

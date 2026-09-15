@@ -63,6 +63,11 @@ const HubCandidatPage = lazy(() => import("@/pages/public/services/HubCandidatPa
 const SolutionsEntreprisePage = lazy(
   () => import("@/pages/public/services/SolutionsEntreprisePage"),
 );
+const MiseADispositionPage = lazy(() => import("@/pages/public/services/MiseADispositionPage"));
+const RecrutementChasseurDeTetePage = lazy(
+  () => import("@/pages/public/services/RecrutementChasseurDeTetePage"),
+);
+const ConseilFormationPage = lazy(() => import("@/pages/public/services/ConseilFormationPage"));
 const PrivacyPolicyPage = lazy(() =>
   import("@/pages/public/PrivacyPolicyPage").then((m) => ({ default: m.PrivacyPolicyPage })),
 );
@@ -416,8 +421,32 @@ function AppContent() {
           element={withSuspense(<HubCandidatPage />, <PublicPageSkeleton />)}
         />
         <Route
-          path="/services/solutions-entreprises-bpo"
+          path="/services/externalisation"
           element={withSuspense(<SolutionsEntreprisePage />, <PublicPageSkeleton />)}
+        />
+        <Route
+          path="/services/solutions-entreprises-bpo"
+          element={<Navigate to="/services/externalisation" replace />}
+        />
+        <Route
+          path="/services/mise-disposition-rh"
+          element={withSuspense(<MiseADispositionPage />, <PublicPageSkeleton />)}
+        />
+        <Route
+          path="/services/recrutement"
+          element={withSuspense(<RecrutementChasseurDeTetePage />, <PublicPageSkeleton />)}
+        />
+        <Route
+          path="/services/conseil-formation"
+          element={withSuspense(<ConseilFormationPage />, <PublicPageSkeleton />)}
+        />
+        <Route
+          path="/services/conseil-formation-transformation"
+          element={<Navigate to="/services/conseil-formation" replace />}
+        />
+        <Route
+          path="/services/hub-emploi-recrutement"
+          element={<Navigate to="/services/recrutement" replace />}
         />
         <Route
           path="/services/:slug"

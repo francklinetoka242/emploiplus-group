@@ -144,7 +144,7 @@ export function CandidateOnboardingPage() {
         <div className="overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.10)] ring-1 ring-slate-100">
           <div className="grid min-h-[520px] lg:grid-cols-[1.12fr_0.88fr]">
             <div className="relative min-h-[280px] overflow-hidden border-b border-slate-200 bg-gradient-to-br from-slate-50 via-white to-blue-50 lg:min-h-full lg:border-b-0 lg:border-r">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(0,0,158,0.08),_transparent_35%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(27,44,227,0.08),_transparent_35%)]" />
               <div className="relative h-full w-full p-4 sm:p-5 lg:p-6">
                 <div className="relative h-full min-h-[250px] overflow-hidden rounded-[24px] bg-white shadow-inner ring-1 ring-slate-200">
                   {onboardingImages.map((image, index) => (
@@ -165,7 +165,7 @@ export function CandidateOnboardingPage() {
 
             <div className="flex items-center justify-center p-5 sm:p-7 lg:p-9">
               <div className="w-full max-w-[440px]">
-                <div className="mb-4 inline-flex items-center rounded-full border border-[#00009e]/15 bg-[#00009e]/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#00009e]">
+                <div className="mb-4 inline-flex items-center rounded-full border border-[#1B2CE3]/15 bg-[#1B2CE3]/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#1B2CE3]">
                   {currentStep.eyebrow}
                 </div>
 
@@ -181,7 +181,7 @@ export function CandidateOnboardingPage() {
                 <ul className="mt-6 space-y-3 text-left">
                   {currentStep.items.map((item) => (
                     <li key={item} className="flex items-start gap-3 text-sm leading-6 text-slate-700 sm:text-[0.98rem]">
-                      <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#00009e]/10 text-[#00009e]">
+                      <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#1B2CE3]/10 text-[#1B2CE3]">
                         <Check className="h-3.5 w-3.5" />
                       </span>
                       <span>{item}</span>
@@ -194,7 +194,7 @@ export function CandidateOnboardingPage() {
                     <span
                       key={`indicator-${index}`}
                       className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-                        index === activeIndex ? "w-8 bg-[#00009e]" : "bg-slate-300"
+                        index === activeIndex ? "w-8 bg-[#1B2CE3]" : "bg-slate-300"
                       }`}
                     />
                   ))}
@@ -203,7 +203,7 @@ export function CandidateOnboardingPage() {
                 <div className="mt-8 flex justify-center lg:justify-start">
                   <Button
                     size="lg"
-                    className="w-full max-w-[220px] rounded-full bg-[#00009e] px-6 py-6 text-base font-semibold text-white shadow-[0_18px_35px_rgba(0,0,158,0.25)] transition hover:bg-[#0000b8]"
+                    className="w-full max-w-[220px] rounded-full bg-[#1B2CE3] px-6 py-6 text-base font-semibold text-white shadow-[0_18px_35px_rgba(27,44,227,0.25)] transition hover:bg-[#3040F0]"
                     onClick={handleStart}
                   >
                     Commencer

@@ -2,7 +2,7 @@ import { Skeleton } from "./Skeleton";
 
 export function BlogPostDetailSkeleton() {
   return (
-    <div className="bg-[#eef4ff] px-4 pb-16 pt-2 sm:px-6 md:pb-24">
+    <div className="bg-background px-4 pb-16 pt-2 sm:px-6 md:pb-24">
       <div className="container-page grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-8">
         <main className="order-1 min-w-0 space-y-6 lg:order-1">
           <div className="relative min-h-[300px] overflow-hidden rounded-xl bg-brand-deep shadow-sm sm:min-h-[380px]">

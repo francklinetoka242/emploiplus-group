@@ -42,8 +42,9 @@ export function BlogPage() {
           { name: t("blog.title"), url: `${BASE_URL}/blog` },
         ]}
       />
-      <motion.section
-        className="relative z-10 overflow-hidden bg-[#eef4ff] py-5 sm:py-8"
+      <div className="bg-background">
+        <motion.section
+        className="relative z-10 overflow-hidden bg-background py-5 sm:py-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
@@ -208,7 +209,7 @@ export function BlogPage() {
               </motion.div>
             ) : null}
 
-            <div className="bg-gradient-to-b from-white via-slate-50 to-white py-4">
+            <div className="bg-background py-4">
               <motion.div 
                 className="container-page"
                 initial={{ opacity: 0, y: 20 }}
@@ -250,7 +251,7 @@ export function BlogPage() {
                                   />
                                 </div>
                               ) : (
-                                <div className="h-48 w-full bg-gradient-to-br from-slate-100 to-slate-50" />
+                                <div className="h-48 w-full bg-background" />
                               )}
                               <div className="flex flex-1 flex-col p-6">
                                 <div className="flex flex-wrap items-center gap-2">
@@ -311,7 +312,7 @@ export function BlogPage() {
                                   />
                                 </div>
                               ) : (
-                                <div className="h-48 w-full bg-gradient-to-br from-slate-100 to-slate-50" />
+                                <div className="h-48 w-full bg-background" />
                               )}
                               <div className="flex flex-1 flex-col p-6">
                                 <div className="flex flex-wrap items-center gap-2">
@@ -385,7 +386,8 @@ export function BlogPage() {
             <p className="text-muted-foreground">{t("blog.empty")}</p>
           </motion.div>
         )}
-      </section>
+        </section>
+      </div>
     </>
   );
 }

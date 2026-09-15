@@ -110,14 +110,13 @@ export function AboutPage() {
 
           <motion.div className="w-full" variants={staggerItem}>
             <div className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-brand">Nos engagements</p>
-              <motion.h3 className="mt-3 font-display text-2xl font-extrabold text-foreground md:text-3xl" variants={fadeUp}>
+              <motion.h3 className="font-display text-2xl font-extrabold text-foreground md:text-3xl" variants={fadeUp}>
                 Une expertise pensée pour faire avancer vos projets
               </motion.h3>
             </div>
             <motion.div className="mt-8 grid gap-5 md:grid-cols-4" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
               {values.map((item, index) => (
-                <motion.div key={item.title} className={`min-h-52 rounded-2xl p-6 text-left shadow-sm transition-transform duration-300 hover:-translate-y-1 ${index === 0 ? "bg-gradient-to-br from-[#3B8DCE] via-brand to-brand-deep text-white" : "border border-border bg-card"}`} variants={staggerItem}>
+                <motion.div key={item.title} className={`min-h-52 rounded-2xl p-6 text-left shadow-sm transition-transform duration-300 hover:-translate-y-1 ${index === 0 ? "bg-[linear-gradient(135deg,#1B2CE3_0%,#000079_100%)] text-white" : "border border-border bg-card"}`} variants={staggerItem}>
                   <div className={`flex size-11 items-center justify-center rounded-xl ${index === 0 ? "bg-white/15 [&_svg]:text-white" : "bg-brand/10"}`}>{item.icon}</div>
                   <h4 className={`mt-6 font-display text-lg font-bold ${index === 0 ? "text-white" : "text-foreground"}`}>{item.title}</h4>
                   <p className={`mt-2 text-sm leading-relaxed ${index === 0 ? "text-white/80" : "text-muted-foreground"}`}>{item.description}</p>

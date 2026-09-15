@@ -238,9 +238,9 @@ export function CandidateLoginPage() {
 
           <CardContent>
             {emailConfirmed && (
-              <Alert className="mb-4 border-secondary/40 bg-secondary/10">
-                <CheckCircle2 className="h-4 w-4 text-secondary-foreground" />
-                <AlertDescription className="text-secondary-foreground">
+              <Alert className="mb-4 border-primary/40 bg-primary/10">
+                <CheckCircle2 className="h-4 w-4 text-primary" />
+                <AlertDescription className="text-primary">
                   <div className="flex flex-col gap-2">
                     <span className="font-semibold">Votre adresse e-mail a été confirmée avec succès.</span>
                     <span>Vous pouvez maintenant vous connecter.</span>
@@ -273,18 +273,18 @@ export function CandidateLoginPage() {
             )}
 
             {successMessage && (
-              <Alert className="mb-4 border-secondary/40 bg-secondary/10">
-                <CheckCircle2 className="h-4 w-4 text-secondary-foreground" />
-                <AlertDescription className="text-secondary-foreground">
+              <Alert className="mb-4 border-primary/40 bg-primary/10">
+                <CheckCircle2 className="h-4 w-4 text-primary" />
+                <AlertDescription className="text-primary">
                   {successMessage}
                 </AlertDescription>
               </Alert>
             )}
 
             {showPendingResend && pendingEmail && !emailNotConfirmed && (
-              <Alert className="mb-4 border-secondary/40 bg-secondary/10">
-                <AlertCircle className="h-4 w-4 text-secondary-foreground" />
-                <AlertDescription className="text-secondary-foreground">
+              <Alert className="mb-4 border-primary/40 bg-primary/10">
+                <AlertCircle className="h-4 w-4 text-primary" />
+                <AlertDescription className="text-primary">
                   Vous n'avez pas encore confirmé votre email. Si vous n'avez pas reçu le message,
                   renvoyez-le ci-dessous.
                   <div className="mt-3">
@@ -294,7 +294,7 @@ export function CandidateLoginPage() {
                       size="sm"
                       disabled={resending}
                       onClick={handleResendEmail}
-                      className="border-secondary/40 text-secondary-foreground hover:bg-secondary/10"
+                      className="border-primary/40 text-primary hover:bg-primary/10"
                     >
                       {resending ? "Envoi en cours..." : "Renvoyer l'email de confirmation"}
                     </Button>
