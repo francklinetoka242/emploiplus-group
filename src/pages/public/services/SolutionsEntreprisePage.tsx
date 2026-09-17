@@ -21,8 +21,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { BASE_URL } from "@/features/seo";
 import backgroundPage from "@/assets/backgroun-page-services/208is.jpg";
+import pricingImage from "@/assets/backgroun-page-services/img-ext-p.webp";
 import teamImage from "@/assets/services/enterprise-team-02.webp";
-import engagementImage from "@/assets/services/enterprise-team-01.webp";
 
 const heroVisual = {
   src: teamImage,
@@ -186,7 +186,7 @@ export default function SolutionsEntreprisePage() {
             <div className="mx-auto max-w-6xl grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.8fr)] lg:items-center lg:gap-16">
               <div className="max-w-3xl">
                 <h1 className="mt-5 font-display text-4xl font-extrabold leading-tight tracking-tight text-white md:text-6xl">
-                  Externalisez vos processus administratifs
+                  Externalisez vos processus
                 </h1>
                 <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
                   Nous vous proposons une solution complète et personnalisée vous garantissant un gain
@@ -327,9 +327,9 @@ export default function SolutionsEntreprisePage() {
               </div>
               <div className="overflow-hidden border-l-4 border-brand bg-slate-100">
                 <img
-                  src={engagementImage}
-                  alt="Équipe professionnelle au travail"
-                  className="h-64 w-full object-cover md:h-80"
+                  src={pricingImage}
+                  alt="Illustration de tarification et externalisation"
+                  className="h-auto w-full object-contain"
                 />
               </div>
             </div>

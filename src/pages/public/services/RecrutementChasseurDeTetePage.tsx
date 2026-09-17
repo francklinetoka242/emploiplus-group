@@ -19,7 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { BASE_URL } from "@/features/seo";
 import backgroundPage from "@/assets/backgroun-page-services/208is.jpg";
-import recruitmentImage from "@/assets/home/home-recruitment-image.webp";
+import businessImage from "@/assets/backgroun-page-services/Business-img.webp";
+import recruitmentImage from "@/assets/backgroun-page-services/img-ressource-p.webp";
 
 const heroVisual = {
   src: recruitmentImage,
@@ -223,9 +224,9 @@ export default function RecrutementChasseurDeTetePage() {
                 </div>
                 <div className="overflow-hidden rounded-[24px] bg-white shadow-sm ring-1 ring-primary/10">
                   <img
-                    src={recruitmentImage}
+                    src={businessImage}
                     alt="Équipe EmploiPlus accompagnant une entreprise"
-                    className="h-64 w-full object-cover md:h-80"
+                    className="h-auto w-full object-contain"
                     loading="lazy"
                   />
                 </div>

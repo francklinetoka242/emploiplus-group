@@ -14,7 +14,7 @@ import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { BASE_URL } from "@/features/seo";
 import backgroundPage from "@/assets/backgroun-page-services/208is.jpg";
-import teamImage from "@/assets/services/enterprise-team-01.webp";
+import teamImage from "@/assets/home/home-recruitment-image.webp";
 
 const heroVisual = {
   src: teamImage,
