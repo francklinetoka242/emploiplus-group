@@ -47,10 +47,16 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
   const publicLinks = [
     { to: "/", label: "Accueil" },
     { to: "/services", label: "Services" },
+    { to: "/jobs", label: "Offres d'emploi" },
     { to: "/blog", label: "Blog" },
     { to: "/about", label: "À propos" },
-    { to: "/contact", label: "Contact" },
     { to: "/faq", label: "FAQ" },
+  ];
+  const serviceLinks = [
+    { to: "/services/mise-disposition-rh", label: "Mise à disposition" },
+    { to: "/services/recrutement", label: "Recrutement" },
+    { to: "/services/externalisation", label: "Externalisation" },
+    { to: "/services/conseil-formation", label: "Formation & Conseil" },
   ];
 
   const handleLogout = async () => {
@@ -69,23 +75,46 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
           )}
 
           <nav className="flex items-center gap-1.5">
-            {publicLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end={link.to === "/"}
-                className={({ isActive }) =>
-                  cn(
-                    "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-accent text-white"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
+            {publicLinks.map((link) =>
+              link.to === "/services" ? (
+                <DropdownMenu key={link.to}>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="h-auto rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                    >
+                      {link.label}
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-64 rounded-xl p-2">
+                    {serviceLinks.map((service) => (
+                      <DropdownMenuItem key={service.to} asChild>
+                        <Link to={service.to} className="cursor-pointer rounded-lg py-2.5">
+                          {service.label}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  end={link.to === "/"}
+                  className={({ isActive }) =>
+                    cn(
+                      "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
+                      isActive
+                        ? "bg-accent text-white"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    )
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              ),
+            )}
           </nav>
         </div>
 

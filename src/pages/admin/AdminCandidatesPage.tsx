@@ -23,18 +23,6 @@ type CandidateStatus = CandidateRow["status"];
 
 const PAGE_SIZE = 10;
 
-const statusStyles: Record<CandidateStatus, string> = {
-  active: "bg-emerald-100 text-emerald-700",
-  inactive: "bg-amber-100 text-amber-700",
-  archived: "bg-slate-100 text-slate-700",
-};
-
-const statusLabels: Record<CandidateStatus, string> = {
-  active: "admin.candidates.status.active",
-  inactive: "admin.candidates.status.inactive",
-  archived: "admin.candidates.status.archived",
-};
-
 function formatDate(value?: string | null) {
   if (!value) return "-";
   const date = new Date(value);
@@ -53,6 +41,7 @@ export function AdminCandidatesPage() {
   const [expandedCandidateId, setExpandedCandidateId] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [totalCandidates, setTotalCandidates] = React.useState(0);
+  const [emailConfirmedByUserId, setEmailConfirmedByUserId] = React.useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [registrationSort, setRegistrationSort] = React.useState<"desc" | "asc">("desc");
@@ -95,6 +84,31 @@ export function AdminCandidatesPage() {
 
       setCandidates((data ?? []) as CandidateRow[]);
       setTotalCandidates(count ?? 0);
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) {
+        setEmailConfirmedByUserId({});
+        return;
+      }
+
+      const emailStatusResponse = await fetch("/api/admin-candidate-email-status", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userIds: (data ?? []).map((candidate) => candidate.user_id) }),
+      });
+      if (!emailStatusResponse.ok) {
+        setEmailConfirmedByUserId({});
+        return;
+      }
+
+      const emailStatus = (await emailStatusResponse.json()) as {
+        emailConfirmedByUserId?: Record<string, boolean>;
+      };
+      setEmailConfirmedByUserId(emailStatus.emailConfirmedByUserId ?? {});
     },
     [page, registrationSort],
   );
@@ -278,9 +292,9 @@ export function AdminCandidatesPage() {
                             <div className="flex min-w-0 flex-wrap items-center gap-2">
                               <p className="truncate text-base font-semibold text-slate-900">{fullName}</p>
                               <span
-                                className={`inline-flex shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${statusStyles[candidate.status]}`}
+                                className={`inline-flex shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${emailConfirmedByUserId[candidate.user_id] ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}
                               >
-                                {t(statusLabels[candidate.status]) || candidate.status}
+                                {emailConfirmedByUserId[candidate.user_id] ? "Email validé" : "Email à valider"}
                               </span>
                             </div>
 

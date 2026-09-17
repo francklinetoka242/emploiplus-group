@@ -54,6 +54,14 @@ export function CandidateLoginPage() {
 
   const { login, user, isAuthenticated, rolesResolved } = useAuth();
 
+  const isEmailNotConfirmedError = (error: unknown) => {
+    if (!error || typeof error !== "object") return false;
+    const errorRecord = error as { code?: unknown; message?: unknown };
+    const code = typeof errorRecord.code === "string" ? errorRecord.code.toLowerCase() : "";
+    const message = typeof errorRecord.message === "string" ? errorRecord.message.toLowerCase() : "";
+    return code === "email_not_confirmed" || message.includes("email not confirmed");
+  };
+
   const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -97,15 +105,10 @@ export function CandidateLoginPage() {
       setSuccessMessage("Connexion réussie! Redirection en cours...");
       // Redirection will be handled by orchestration below (rolesResolved watch)
     } catch (error: unknown) {
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        "code" in error &&
-        (error as { code?: string }).code === "EMAIL_NOT_CONFIRMED"
-      ) {
+      if (isEmailNotConfirmedError(error)) {
         setEmailNotConfirmed(true);
         setPendingEmail((error as { userEmail?: string }).userEmail || values.email);
-        setErrorMessage("Veuillez confirmer votre email avant de vous connecter");
+        setErrorMessage("Votre email n'est pas encore confirmé.");
       } else {
         const errorMsg = parseAuthErrorMessage(error);
         setErrorMessage(errorMsg);

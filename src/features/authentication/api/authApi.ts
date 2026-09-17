@@ -3,7 +3,7 @@ import type { User } from "@supabase/supabase-js";
 import { clearAuthStorage } from "@/features/authentication/utils/authStorage";
 
 function assertEmailConfirmed(user: User | null | undefined) {
-  if (user?.email_confirmed_at !== null) {
+  if (user?.email_confirmed_at) {
     return;
   }
 
@@ -11,6 +11,14 @@ function assertEmailConfirmed(user: User | null | undefined) {
     code: "EMAIL_NOT_CONFIRMED",
     userEmail: user?.email ?? null,
   });
+}
+
+function isEmailNotConfirmedError(error: unknown) {
+  if (!error || typeof error !== "object") return false;
+  const errorRecord = error as { code?: unknown; message?: unknown };
+  const code = typeof errorRecord.code === "string" ? errorRecord.code.toLowerCase() : "";
+  const message = typeof errorRecord.message === "string" ? errorRecord.message.toLowerCase() : "";
+  return code === "email_not_confirmed" || message.includes("email not confirmed");
 }
 
 const getStringValue = (value: unknown) => {
@@ -153,7 +161,15 @@ export function parseAuthErrorMessage(error: unknown): string {
 
 export async function loginCandidate(email: string, password: string) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
+  if (error) {
+    if (isEmailNotConfirmedError(error)) {
+      throw Object.assign(new Error("EMAIL_NOT_CONFIRMED"), {
+        code: "EMAIL_NOT_CONFIRMED",
+        userEmail: email,
+      });
+    }
+    throw error;
+  }
 
   const user = data.user || data.session?.user;
   try {

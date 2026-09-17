@@ -48,11 +48,17 @@ interface CandidateSidebarProps {
 
 const publicMenuItems = [
   { id: "public-home", label: "Accueil", icon: Home, href: "/" },
-  { id: "public-services", label: "Services", icon: BriefcaseBusiness, href: "/services" },
   { id: "public-blog", label: "Blog", icon: BookOpen, href: "/blog" },
   { id: "public-faq", label: "FAQ", icon: Info, href: "/faq" },
   { id: "public-about", label: "À propos", icon: Info, href: "/about" },
   { id: "public-contact", label: "Contact", icon: Mail, href: "/contact" },
+];
+
+const publicServiceItems = [
+  { id: "service-hr", label: "Mise à disposition", href: "/services/mise-disposition-rh" },
+  { id: "service-recruitment", label: "Recrutement", href: "/services/recrutement" },
+  { id: "service-outsourcing", label: "Externalisation", href: "/services/externalisation" },
+  { id: "service-training", label: "Formation & Conseil", href: "/services/conseil-formation" },
 ];
 
 const menuItems = [
@@ -301,6 +307,45 @@ export function CandidateSidebar({
                         </Link>
                       );
                     })}
+                    <div className="space-y-1">
+                      <div
+                        className={cn(
+                          "relative flex items-center gap-2.5 rounded-lg px-3 py-1.5",
+                          isDarkMode ? "bg-slate-950/90 text-slate-200" : "bg-white text-slate-700",
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "flex h-9 w-9 items-center justify-center rounded-lg",
+                            isDarkMode
+                              ? "bg-slate-950/90 text-white"
+                              : "bg-slate-100 text-slate-700",
+                          )}
+                        >
+                          <BriefcaseBusiness className="h-5 w-5" />
+                        </div>
+                        <span className="truncate text-sm font-medium">Services</span>
+                      </div>
+                      <div className="ml-12 space-y-1 border-l border-slate-200 pl-2 dark:border-slate-700">
+                        {publicServiceItems.map((service) => (
+                          <Link
+                            key={service.id}
+                            to={service.href}
+                            onClick={handleMenuClick}
+                            className={cn(
+                              "block rounded-md px-2 py-1.5 text-xs transition-colors",
+                              isActive(service.href)
+                                ? "bg-secondary text-white"
+                                : isDarkMode
+                                  ? "text-slate-300 hover:bg-slate-900/90"
+                                  : "text-slate-600 hover:bg-slate-50",
+                            )}
+                          >
+                            {service.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
