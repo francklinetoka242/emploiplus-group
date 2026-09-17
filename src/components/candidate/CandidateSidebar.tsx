@@ -81,10 +81,12 @@ const menuItems = [
   },
 ];
 
+const CANDIDATE_THEME_STORAGE_KEY = "candidate-theme";
+
 const getInitialDarkMode = () => {
   if (typeof window === "undefined") return false;
   try {
-    const stored = window.localStorage.getItem("theme");
+    const stored = window.localStorage.getItem(CANDIDATE_THEME_STORAGE_KEY);
     if (stored === "dark") return true;
     if (stored === "light") return false;
     return false;
@@ -97,7 +99,7 @@ const applyTheme = (darkMode: boolean) => {
   if (typeof document === "undefined") return;
   document.documentElement.classList.toggle("dark", darkMode);
   try {
-    window.localStorage.setItem("theme", darkMode ? "dark" : "light");
+    window.localStorage.setItem(CANDIDATE_THEME_STORAGE_KEY, darkMode ? "dark" : "light");
   } catch {
     // ignore
   }

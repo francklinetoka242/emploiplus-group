@@ -4,10 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Settings } from "lucide-react";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 
+const CANDIDATE_THEME_STORAGE_KEY = "candidate-theme";
+
 export function CandidatePreferencesPage() {
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     try {
-      const stored = localStorage.getItem("theme");
+      const stored = localStorage.getItem(CANDIDATE_THEME_STORAGE_KEY);
       if (stored === "dark") return true;
       if (stored === "light") return false;
       return false;
@@ -20,10 +22,10 @@ export function CandidatePreferencesPage() {
     try {
       if (darkMode) {
         document.documentElement.classList.add("dark");
-        localStorage.setItem("theme", "dark");
+        localStorage.setItem(CANDIDATE_THEME_STORAGE_KEY, "dark");
       } else {
         document.documentElement.classList.remove("dark");
-        localStorage.setItem("theme", "light");
+        localStorage.setItem(CANDIDATE_THEME_STORAGE_KEY, "light");
       }
     } catch (e) {
       // ignore
