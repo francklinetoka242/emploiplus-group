@@ -58,7 +58,7 @@ export function CandidateResetPasswordPage() {
 
     try {
       const response = await fetch(
-        `/api/password-reset-validate?token=${encodeURIComponent(token)}`,
+        `/api/password-reset?action=validate&token=${encodeURIComponent(token)}`,
       );
       const body = await parseResponseBody(response);
       if (!response.ok) {
@@ -92,7 +92,7 @@ export function CandidateResetPasswordPage() {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/password-reset-confirm", {
+      const response = await fetch("/api/password-reset?action=confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password: values.password }),

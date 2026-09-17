@@ -13,6 +13,18 @@
       "destination": "/api/maelise-permissions?action=conversation"
     },
     {
+      "source": "/api/password-reset-request",
+      "destination": "/api/password-reset?action=request"
+    },
+    {
+      "source": "/api/password-reset-validate",
+      "destination": "/api/password-reset?action=validate"
+    },
+    {
+      "source": "/api/password-reset-confirm",
+      "destination": "/api/password-reset?action=confirm"
+    },
+    {
       "source": "/send-email",
       "destination": "/api/send-email"
     },
