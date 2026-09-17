@@ -6,6 +6,7 @@ import {
   Building2,
   CalendarDays,
   CircleAlert,
+  CircleUserRound,
   Bot,
   MapPin,
   MessageCircle,
@@ -122,7 +123,7 @@ export function JobsPage() {
   const [nearbyOnly, setNearbyOnly] = React.useState(false);
   const [candidateToolsOpen, setCandidateToolsOpen] = React.useState(false);
   const [floatingActionsOpen, setFloatingActionsOpen] = React.useState(false);
-  const [candidatePromoOpen, setCandidatePromoOpen] = React.useState(true);
+  const [candidatePromoOpen, setCandidatePromoOpen] = React.useState(false);
   const recommendationContextRef = React.useRef<string | null>(null);
   const pageSize = 8;
   const recommendedPageSize = 3;
@@ -1323,43 +1324,6 @@ export function JobsPage() {
         ) : null}
 
         <div className={isCandidateShell ? "fab fab-flower" : "flex items-end gap-3"}>
-          {candidatePromoOpen ? (
-            <aside className="hidden w-[min(calc(100vw-6rem),22rem)] overflow-hidden rounded-2xl border border-brand/20 bg-card text-left shadow-2xl md:block">
-              <div className="flex items-start justify-between gap-4 border-b border-border/70 px-5 pb-3 pt-4">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand">Espace candidat</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Des outils pour avancer plus vite</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setCandidatePromoOpen(false)}
-                  className="-mr-1 -mt-1 rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-                  aria-label="Replier l'espace candidat"
-                  title="Replier"
-                >
-                  <X className="size-4" aria-hidden="true" />
-                </button>
-              </div>
-              <div className="px-5 pb-5 pt-4">
-                <h2 className="max-w-[17rem] text-lg font-semibold leading-6 text-foreground">Donnez un nouvel élan à votre recherche</h2>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">Retrouvez des outils intelligents pour préparer votre profil et accéder aux opportunités qui vous correspondent.</p>
-                <Button asChild className="mt-4 h-10 w-full rounded-xl bg-brand text-sm font-semibold text-brand-foreground shadow-sm hover:bg-brand/90">
-                  <Link to="/services/hub-candidat-intelligent">Découvrir l'espace candidat<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Link>
-                </Button>
-              </div>
-            </aside>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setCandidatePromoOpen(true)}
-              className="hidden items-center gap-2 rounded-full border border-brand/20 bg-card px-4 py-2.5 text-sm font-semibold text-brand shadow-lg transition hover:-translate-y-0.5 hover:border-brand/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 md:inline-flex"
-              aria-label="Afficher l'espace candidat"
-            >
-              <Sparkles className="size-4" aria-hidden="true" />
-              Espace candidat
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </button>
-          )}
           {isCandidateShell ? (
             <>
               <div
@@ -1395,6 +1359,42 @@ export function JobsPage() {
                       <span>Recommandation</span>
                     </button>
                   ) : null}
+                  {candidatePromoOpen ? (
+                    <aside className="hidden w-[min(calc(100vw-6rem),22rem)] overflow-hidden rounded-2xl border border-brand/20 bg-card text-left shadow-2xl md:block">
+                      <div className="flex items-start justify-between gap-4 border-b border-border/70 px-5 pb-3 pt-4">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand">Espace candidat</p>
+                          <p className="mt-1 text-xs text-muted-foreground">Des outils pour avancer plus vite</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setCandidatePromoOpen(false)}
+                          className="-mr-1 -mt-1 rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                          aria-label="Replier l'espace candidat"
+                          title="Replier"
+                        >
+                          <X className="size-4" aria-hidden="true" />
+                        </button>
+                      </div>
+                      <div className="px-5 pb-5 pt-4">
+                        <h2 className="max-w-[17rem] text-lg font-semibold leading-6 text-foreground">Donnez un nouvel élan à votre recherche</h2>
+                        <p className="mt-3 text-sm leading-6 text-muted-foreground">Retrouvez des outils intelligents pour préparer votre profil et accéder aux opportunités qui vous correspondent.</p>
+                        <Button asChild className="mt-4 h-10 w-full rounded-xl bg-brand text-sm font-semibold text-brand-foreground shadow-sm hover:bg-brand/90">
+                          <Link to="/services/hub-candidat-intelligent">Découvrir l'espace candidat<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Link>
+                        </Button>
+                      </div>
+                    </aside>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setCandidatePromoOpen(true)}
+                      aria-label="Afficher l'espace candidat"
+                      className="btn btn-lg btn-recommendation rounded-full border border-primary/20 bg-card px-4 text-primary shadow-lg transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+                    >
+                      <CircleUserRound className="size-5" aria-hidden="true" />
+                      <span>Espace candidat</span>
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={openMaelise}
