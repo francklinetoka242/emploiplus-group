@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import backgroundPage from "@/assets/backgroun-page-services/208is.jpg";
-import heroImage from "@/assets/services/enterprise-team-02.webp";
-import modalityImage from "@/assets/services/enterprise-team-01.webp";
+import heroImage from "@/assets/backgroun-page-services/4ade292be.jpg";
+import modalityImage from "@/assets/backgroun-page-services/office-girl-f-c.webp";
 import {
   Check,
   ChevronLeft,
