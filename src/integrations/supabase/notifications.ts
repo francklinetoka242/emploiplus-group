@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
-import type { PostgrestError } from "@supabase/supabase-js";
+import type { AuthError, PostgrestError } from "@supabase/supabase-js";
 
 export type NotificationType =
   "candidature" | "admin" | "evenement" | "offre" | "contact" | "job" | "blog";
@@ -31,7 +31,7 @@ export type NotificationUpdate = Partial<Omit<NotificationRecord, "id" | "create
 type NotificationInsertPayload = Database["public"]["Tables"]["notifications"]["Insert"];
 type NotificationUpdatePayload = Database["public"]["Tables"]["notifications"]["Update"];
 type NotificationListResult = { data: NotificationRecord[] | null; error: PostgrestError | null };
-type NotificationSingleResult = { data: NotificationRecord | null; error: PostgrestError | null };
+type NotificationSingleResult = { data: NotificationRecord | null; error: PostgrestError | AuthError | null };
 
 function normalizeNotification(row: Record<string, unknown>): NotificationRecord {
   return {

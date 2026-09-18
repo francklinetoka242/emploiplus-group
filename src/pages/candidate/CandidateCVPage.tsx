@@ -19,13 +19,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { deleteCandidateCV, deleteCandidateDocument, getCandidateDocuments, uploadAndProcessCandidateCV, uploadCandidateDocument, type CandidateCVState, type CandidateDocument } from "@/features/candidates/api/documentsApi";
 
 const documentTypes = {
-  motivation: { label: "Lettre de motivation" },
-  diploma: { label: "Diplôme" },
-  certificate: { label: "Certificat" },
-  attestation: { label: "Attestation" },
-  portfolio: { label: "Portfolio" },
-  other: { label: "Autre" },
-  recepisse: { label: "Récépissé ACPE" },
+  motivation: { label: "Lettre de motivation", icon: FileText, color: "text-cyan-600" },
+  diploma: { label: "Diplôme", icon: FileText, color: "text-blue-600" },
+  certificate: { label: "Certificat", icon: FileText, color: "text-emerald-600" },
+  attestation: { label: "Attestation", icon: FileText, color: "text-amber-600" },
+  portfolio: { label: "Portfolio", icon: FileText, color: "text-violet-600" },
+  other: { label: "Autre", icon: FileText, color: "text-slate-600" },
+  recepisse: { label: "Récépissé ACPE", icon: FileText, color: "text-rose-600" },
 };
 
 const formatFileSize = (size: number) => {
@@ -80,7 +80,7 @@ export function CandidateCVPage() {
         if (!isActive) return;
         // If there is no client-side stored CV but the server has a cv_url (may be a storage path), prefer server value
         const serverCvUrl = profile?.cv_url;
-        let resolvedServerUrl: string | undefined = serverCvUrl;
+        let resolvedServerUrl: string | undefined = serverCvUrl ?? undefined;
         if (serverCvUrl && !serverCvUrl.startsWith("http")) {
           try {
             const { data: signed, error } = await supabase.storage.from(CANDIDATE_DOCUMENTS_BUCKET).createSignedUrl(serverCvUrl, 60 * 60);
@@ -90,8 +90,22 @@ export function CandidateCVPage() {
           }
         }
 
-        const preferServerCv = !data.cv && resolvedServerUrl;
-        setCv((currentCv) => currentCv ?? (preferServerCv ? { id: `cv-server-${profile.id}`, name: "CV", displayName: "Mon CV", date: new Date().toISOString(), size: "", url: resolvedServerUrl } : data.cv) ?? null);
+        const serverUrlForCv = resolvedServerUrl;
+        setCv((currentCv) => {
+          if (currentCv) return currentCv;
+          if (data.cv) return data.cv;
+          if (serverUrlForCv) {
+            return {
+              id: `cv-server-${profile.id}`,
+              name: "CV",
+              displayName: "Mon CV",
+              date: new Date().toISOString(),
+              size: "",
+              url: serverUrlForCv,
+            };
+          }
+          return null;
+        });
         setDocuments((currentDocuments) => (currentDocuments.length > 0 ? currentDocuments : data.documents ?? []));
       })
       .catch((error) => {

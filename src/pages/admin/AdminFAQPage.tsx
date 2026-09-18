@@ -34,7 +34,13 @@ export default function AdminFAQPage() {
         faqService.listCategories(),
       ]);
       setFaqs(faqsData);
-      const nextCategories = categoriesData.length > 0 ? categoriesData : DEFAULT_FAQ_CATEGORIES;
+      const nextCategories: FAQCategory[] = categoriesData.length > 0
+        ? categoriesData
+        : DEFAULT_FAQ_CATEGORIES.map((name, index) => ({
+            id: `default-${index}`,
+            name,
+            sort_order: index + 1,
+          }));
       setCategories(nextCategories);
       if (!nextCategories.some((entry) => entry.name === category)) {
         setCategory(nextCategories[0]?.name ?? DEFAULT_FAQ_CATEGORIES[0]);

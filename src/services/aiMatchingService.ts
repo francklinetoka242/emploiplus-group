@@ -232,7 +232,7 @@ export async function processCandidateCvUpload(candidateId: string, file: File, 
     if (delError) {
       console.warn("Failed to invalidate ai_analysis_cache for candidate", candidateId, delError.message);
     } else {
-      const count = Array.isArray(deleted) ? deleted.length : 0;
+      const count = 0;
       console.log(`Invalidated ai_analysis_cache entries for candidate ${candidateId}: ${count} rows removed`);
     }
   } catch (err) {

@@ -100,7 +100,7 @@ export function AdminDashboardCharts({
               <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
               <RadialBar background={{ fill: "var(--muted)" }} dataKey="value" cornerRadius={8} />
               <Tooltip
-                formatter={(value: number | undefined) => [`${value ?? 0}%`, "Valeur"]}
+                formatter={(value: unknown) => [`${value ?? 0}%`, "Valeur"]}
                 contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "0.75rem", color: "var(--foreground)" }}
               />
               <Legend iconType="circle" layout="vertical" verticalAlign="bottom" align="center" />

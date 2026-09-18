@@ -6,6 +6,10 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+if (typeof window !== "undefined" || typeof document !== "undefined") {
+  throw new Error("scripts/prerender.js must run in a Node.js runtime only.");
+}
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, "..");
 const staticRoutes = ["/", "/about", "/services", "/jobs", "/blog", "/contact"];
@@ -22,7 +26,16 @@ function getSupabaseCredentials() {
     "";
 
   if (!supabaseUrl || !supabaseKey) {
+    console.warn(
+      "[prerender] Missing Supabase credentials; prerender will skip dynamic routes and continue with static fallback.",
+    );
     return null;
+  }
+
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY && supabaseKey === process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.warn(
+      "[prerender] Using SUPABASE_SERVICE_ROLE_KEY in a Node-only prerender script. Keep this value out of browser bundles.",
+    );
   }
 
   return { supabaseUrl, supabaseKey };

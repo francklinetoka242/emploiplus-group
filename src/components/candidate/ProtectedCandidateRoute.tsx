@@ -1,4 +1,4 @@
-import { useAuthContext } from "@/features/authentication/context/AuthContext";
+import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 import { useCandidate } from "@/hooks/useCandidate";
 import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
 import { Navigate } from "react-router-dom";

@@ -65,15 +65,15 @@ export function CandidateProfileCenter() {
   const tabContent = useMemo(() => {
     switch (currentTab) {
       case "experience":
-        return <ExperienceSection experiences={experiences} loading={experiencesLoading} onCreateExperience={createExperience} onUpdateExperience={updateExperience} onDeleteExperience={deleteExperience} />;
+        return <ExperienceSection experiences={experiences} loading={experiencesLoading} onCreateExperience={async (experience) => { await createExperience(experience); }} onUpdateExperience={async (id, experience) => { await updateExperience(id, experience); }} onDeleteExperience={deleteExperience} />;
       case "education":
-        return <EducationSection educations={educations} loading={educationsLoading} onCreateEducation={createEducation} onUpdateEducation={updateEducation} onDeleteEducation={deleteEducation} />;
+        return <EducationSection educations={educations} loading={educationsLoading} onCreateEducation={async (education) => { await createEducation(education); }} onUpdateEducation={async (id, education) => { await updateEducation(id, education); }} onDeleteEducation={deleteEducation} />;
       case "skills":
-        return <SkillsSection skills={skills} loading={skillsLoading} onCreateSkill={createSkill} onDeleteSkill={deleteSkill} />;
+        return <SkillsSection skills={skills} loading={skillsLoading} onCreateSkill={async (skill) => { await createSkill(skill); }} onDeleteSkill={deleteSkill} />;
       case "languages":
-        return <LanguagesSection languages={languages} loading={languagesLoading} onCreateLanguage={createLanguage} onUpdateLanguage={updateLanguage} onDeleteLanguage={deleteLanguage} />;
+        return <LanguagesSection languages={languages} loading={languagesLoading} onCreateLanguage={async (language) => { await createLanguage(language); }} onUpdateLanguage={async (id, language) => { await updateLanguage(id, language); }} onDeleteLanguage={deleteLanguage} />;
       case "preferences":
-        return <PreferencesSection preferences={preferences} loading={preferencesLoading} onSavePreferences={savePreferences} />;
+        return <PreferencesSection preferences={preferences} loading={preferencesLoading} onSavePreferences={async (values) => { await savePreferences(values); }} />;
       case "completion":
         return <CompletionSection completion={completion} />;
       case "documents":
@@ -84,7 +84,7 @@ export function CandidateProfileCenter() {
           return <ProfessionalPresentationSection />;
       case "profile":
       default:
-        return <ProfileSection profile={profile} onSave={updateProfile} loading={profileLoading} error={profileError} />;
+        return <ProfileSection profile={profile} onSave={async (updates) => { await updateProfile(updates); }} loading={profileLoading} error={profileError} />;
     }
   }, [currentTab, profile, updateProfile, profileLoading, profileError, experiences, experiencesLoading, createExperience, updateExperience, deleteExperience, educations, educationsLoading, createEducation, updateEducation, deleteEducation, skills, skillsLoading, createSkill, deleteSkill, languages, languagesLoading, createLanguage, updateLanguage, deleteLanguage, preferences, preferencesLoading, savePreferences, cv, documents, documentsLoading, deleteDocument, addDocument, completion]);
 

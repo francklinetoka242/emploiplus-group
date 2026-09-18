@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { centralAfricaCityGroups } from "@/data/locations";
 import type { JobOffer, JobOfferUpdate, JobOfferInsert } from "@/features/jobs/types";
+import type { Database } from "@/integrations/supabase/types";
 import { AdminSearchToolbar } from "./components/AdminSearchToolbar";
 
 type JobFormState = {
@@ -64,6 +65,7 @@ function createEmptyForm(): JobFormState {
     location_city: "",
     contract_type: "cdi",
     description: "",
+    requirements: "",
     salary: "",
     company_logo: "",
     cover_image: "",

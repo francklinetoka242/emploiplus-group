@@ -62,6 +62,8 @@ export function AdminLocalGuidesPage() {
       return;
     }
 
+    const selectedDocumentFile = documentFile;
+
     try {
       setSubmitting(true);
 
@@ -73,7 +75,7 @@ export function AdminLocalGuidesPage() {
           description: description.trim(),
           visible,
           imageFile,
-          documentFile,
+          documentFile: selectedDocumentFile,
         });
         toast.success("Fiche mise à jour avec succès.");
       } else {
@@ -83,7 +85,7 @@ export function AdminLocalGuidesPage() {
           category,
           description: description.trim(),
           imageFile,
-          documentFile,
+          documentFile: selectedDocumentFile as File,
         });
         toast.success("Fiche créée avec succès.");
       }

@@ -8,10 +8,10 @@ interface AdminTopbarProps {
 
 export default function AdminTopbar({ session }: AdminTopbarProps) {
   const name =
-    session.user?.user_metadata?.full_name || session.user?.user_metadata?.name || "Administrateur";
-  const email = session.user?.email || "admin@emploiplus.group";
+    session?.user?.user_metadata?.full_name || session?.user?.user_metadata?.name || "Administrateur";
+  const email = session?.user?.email || "admin@emploiplus.group";
   const avatar =
-    session.user?.user_metadata?.avatar_url || session.user?.user_metadata?.picture || "";
+    session?.user?.user_metadata?.avatar_url || session?.user?.user_metadata?.picture || "";
 
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-2.5 text-foreground shadow-soft sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:p-3">

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Trash2, Eye, CheckCircle2, Circle, Upload } from "lucide-react";
-import type { CandidateDocument, CandidateCVState } from "@/lib/candidate-documents";
+import type { CandidateDocument, CandidateCVState } from "@/features/candidates/api/documentsApi";
 import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES } from "@/services/storageService";
 import { uploadAndProcessCandidateCV, uploadCandidateDocument } from "@/features/candidates/api/documentsApi";
 import { supabase } from "@/integrations/supabase/client";

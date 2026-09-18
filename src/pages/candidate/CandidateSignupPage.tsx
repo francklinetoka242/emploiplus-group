@@ -313,7 +313,7 @@ export function CandidateSignupPage() {
               <p className="text-muted-foreground">
                 Vous avez déjà un compte?{" "}
                 <Link
-                  to={{ pathname: "/candidate/login", state: { from: state?.from } }}
+                    to="/candidate/login"
                   className="text-brand font-semibold hover:text-brand/80"
                 >
                   Se connecter

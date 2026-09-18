@@ -56,7 +56,7 @@ interface UseAnalyticsOffresState {
   lastRefresh: Date | null;
 }
 
-interface UseAnalyticsOffresHook extends UseAnalyticsOffresState {
+export interface UseAnalyticsOffresHook extends UseAnalyticsOffresState {
   fetchData: (filter: AnalyticsFilter) => Promise<void>;
   fetchOfferDetails: (
     filter: AnalyticsFilter,

@@ -99,7 +99,7 @@ export function CandidateSavedOffersPage() {
           getCandidateApplications(profile.id),
         ]);
 
-        const savedOffersData = savedData as SavedOffer[];
+        const savedOffersData = savedData as unknown as SavedOffer[];
         const appliedOfferIds = new Set(
           (applicationsData ?? []).map((application) => (application as { job_offer_id?: string }).job_offer_id).filter(Boolean) as string[],
         );

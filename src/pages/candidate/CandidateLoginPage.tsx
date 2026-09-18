@@ -410,7 +410,7 @@ export function CandidateLoginPage() {
                 <p className="text-muted-foreground">
                   Pas encore de compte?{" "}
                   <Link
-                    to={{ pathname: "/candidate/signup", state: { from: state?.from } }}
+                    to="/candidate/signup"
                     className="text-brand font-semibold hover:text-brand/80 inline-block"
                   >
                     S'inscrire

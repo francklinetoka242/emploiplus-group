@@ -18,4 +18,5 @@ export interface CandidateProfile {
   cv_last_updated_at?: string | null;
   created_at: string;
   updated_at: string;
+  linkedin_url?: string | null;
 }

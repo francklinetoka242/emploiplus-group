@@ -7,7 +7,7 @@ export default function CandidateApplicationDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  usePageSEO({ title: `Candidature ${id} - EmploiPlus Group` });
+  usePageSEO({ title: `Candidature ${id} - EmploiPlus Group`, description: "Détails de votre candidature" });
 
   return (
     <div>

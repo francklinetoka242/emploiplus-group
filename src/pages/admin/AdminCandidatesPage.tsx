@@ -23,6 +23,18 @@ type CandidateStatus = CandidateRow["status"];
 
 const PAGE_SIZE = 10;
 
+const statusStyles: Record<CandidateStatus, string> = {
+  active: "bg-emerald-100 text-emerald-700",
+  archived: "bg-slate-100 text-slate-700",
+  inactive: "bg-slate-100 text-slate-700",
+};
+
+const statusLabels: Record<CandidateStatus, string> = {
+  active: "admin.candidates.status.active",
+  archived: "admin.candidates.status.archived",
+  inactive: "admin.candidates.status.inactive",
+};
+
 function formatDate(value?: string | null) {
   if (!value) return "-";
   const date = new Date(value);

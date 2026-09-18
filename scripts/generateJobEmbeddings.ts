@@ -1,6 +1,10 @@
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 
+if (typeof window !== "undefined" || typeof document !== "undefined") {
+  throw new Error("scripts/generateJobEmbeddings.ts must run in a Node.js runtime only.");
+}
+
 const supabaseUrl =
   process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseServiceRoleKey =
@@ -13,6 +17,12 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
     "Missing Supabase credentials. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env or environment variables.",
   );
   process.exit(1);
+}
+
+if (supabaseServiceRoleKey === process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.warn(
+    "[generateJobEmbeddings] Using SUPABASE_SERVICE_ROLE_KEY in a Node-only maintenance script. Never import this file or these values into the frontend bundle.",
+  );
 }
 
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);

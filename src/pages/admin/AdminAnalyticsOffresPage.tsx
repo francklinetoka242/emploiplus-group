@@ -58,13 +58,13 @@ export default function AdminAnalyticsOffresPage() {
     analytics.fetchOfferDetails(filter, pageSize, 0);
   }, [filter, pageSize]);
 
-  const handleDateFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const date = new Date(e.target.value);
+  const handleDateFromChange = (value: string) => {
+    const date = new Date(value);
     setFilter((prev) => ({ ...prev, dateFrom: date, preset: "custom" }));
   };
 
-  const handleDateToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const date = new Date(e.target.value);
+  const handleDateToChange = (value: string) => {
+    const date = new Date(value);
     setFilter((prev) => ({ ...prev, dateTo: date, preset: "custom" }));
   };
 
@@ -176,7 +176,7 @@ export default function AdminAnalyticsOffresPage() {
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <DateInput
                   value={filter.dateFrom?.toISOString().split("T")[0] || ""}
-                  onChange={handleDateFromChange}
+                  onChange={(value) => handleDateFromChange(value)}
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
@@ -189,7 +189,7 @@ export default function AdminAnalyticsOffresPage() {
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <DateInput
                   value={filter.dateTo?.toISOString().split("T")[0] || ""}
-                  onChange={handleDateToChange}
+                  onChange={(value) => handleDateToChange(value)}
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed"
                 />
               </div>

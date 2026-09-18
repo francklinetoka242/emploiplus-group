@@ -772,7 +772,7 @@
 .welcome-ring {
   position: absolute;
   display: block;
-  border: 1px solid rgb(255 255 255 / 0.16);
+  border: 1px solid color-mix(in srgb, var(--card) 16%, transparent);
   border-radius: 9999px;
   animation: welcomeRingFloat 13s ease-in-out infinite;
   will-change: transform;
@@ -791,7 +791,7 @@
   bottom: -112px;
   width: 230px;
   height: 230px;
-  border-color: rgb(255 255 255 / 0.11);
+  border-color: color-mix(in srgb, var(--card) 11%, transparent);
   animation-delay: -5s;
   animation-duration: 21s;
 }
@@ -801,7 +801,7 @@
   right: 34%;
   width: 86px;
   height: 86px;
-  border-color: rgb(255 255 255 / 0.2);
+  border-color: color-mix(in srgb, var(--card) 20%, transparent);
   animation-delay: -9s;
   animation-duration: 11s;
 }
@@ -811,7 +811,7 @@
   bottom: 12%;
   width: 118px;
   height: 118px;
-  border-color: rgb(255 255 255 / 0.14);
+  border-color: color-mix(in srgb, var(--card) 14%, transparent);
   animation-delay: -2s;
   animation-duration: 15s;
 }
@@ -821,7 +821,7 @@
   right: 52%;
   width: 42px;
   height: 42px;
-  border-color: rgb(255 255 255 / 0.2);
+  border-color: color-mix(in srgb, var(--card) 20%, transparent);
   animation-delay: -7s;
   animation-duration: 9s;
 }
@@ -954,8 +954,12 @@
   width: 10px;
   height: 18px;
   border-radius: 9999px 9999px 9999px 0;
-  background: linear-gradient(180deg, rgba(251, 191, 36, 0.95), rgba(16, 185, 129, 0.8));
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 95%, transparent),
+    color-mix(in srgb, var(--success) 80%, transparent)
+  );
+  box-shadow: 0 0 12px color-mix(in srgb, var(--success) 25%, transparent);
   opacity: 0;
   animation: petalFall 2.6s ease-out forwards;
   will-change: transform, opacity;
@@ -971,8 +975,8 @@
 
 .card-lift:hover {
   transform: translateY(-4px);
-  border-color: rgb(17 24 39 / 0.12);
-  box-shadow: 0 18px 40px -28px rgb(15 23 42 / 0.3);
+  border-color: color-mix(in srgb, var(--foreground) 12%, transparent);
+  box-shadow: 0 18px 40px -28px color-mix(in srgb, var(--foreground) 30%, transparent);
 }
 
 .ambient-glow::before {
@@ -982,7 +986,7 @@
   width: 160px;
   height: 160px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(30, 64, 175, 0.14), transparent 65%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand) 14%, transparent), transparent 65%);
   filter: blur(8px);
   animation: softPulse 9s ease-in-out infinite;
 }

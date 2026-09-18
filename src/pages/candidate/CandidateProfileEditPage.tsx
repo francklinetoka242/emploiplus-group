@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 export default function CandidateProfileEditPage() {
   const navigate = useNavigate();
 
-  usePageSEO({ title: "Modifier mon profil - EmploiPlus Group" });
+  usePageSEO({ title: "Modifier mon profil - EmploiPlus Group", description: "Mettez à jour votre profil candidat" });
 
   return (
     <div>

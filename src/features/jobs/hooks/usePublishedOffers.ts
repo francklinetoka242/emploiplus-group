@@ -146,9 +146,10 @@ export function useJobOfferBySlug(slug?: string) {
       return;
     }
 
+    const requestedSlug = slug;
     let mounted = true;
     async function fetchJob() {
-      const foundJob = await jobService.getOfferBySlug(slug);
+      const foundJob = await jobService.getOfferBySlug(requestedSlug);
       if (!mounted) return;
       setJob(foundJob as JobOfferDetail | null);
       setLoading(false);

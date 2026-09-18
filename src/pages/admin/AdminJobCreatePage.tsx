@@ -342,7 +342,7 @@ export function AdminJobCreatePage() {
                 name="publish_at"
                 value={form.publish_at}
                 onChange={(value) => setForm((prev) => ({ ...prev, publish_at: value }))}
-                dateFormat="Y-m-d\\TH:i"
+                dateFormat="Y-m-d\TH:i"
                 placeholder="YYYY-MM-DDTHH:mm"
               />
             </div>

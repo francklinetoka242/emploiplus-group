@@ -5,7 +5,7 @@ export const experienceSchema = z.object({
   company: z.string().min(1, "L'entreprise est requise"),
   start_date: z.string().min(1, "La date de début est requise"),
   end_date: z.string().nullable().optional(),
-  is_current: z.boolean().default(false),
+  is_current: z.boolean().optional(),
   description: z.string().optional(),
 });
 
@@ -15,7 +15,7 @@ export const educationSchema = z.object({
   field_of_study: z.string().optional(),
   start_date: z.string().min(1, "La date de début est requise"),
   end_date: z.string().nullable().optional(),
-  is_current: z.boolean().default(false),
+  is_current: z.boolean().optional(),
   description: z.string().optional(),
 });
 

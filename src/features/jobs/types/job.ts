@@ -1,6 +1,6 @@
 import type { Database } from "@/integrations/supabase/types";
 
-export interface JobOffer extends Database["public"]["Tables"]["job_offers"]["Row"] {}
+export type JobOffer = Database["public"]["Tables"]["job_offers"]["Row"];
 
 export type JobOfferInsert = Database["public"]["Tables"]["job_offers"]["Insert"];
 export type JobOfferUpdate = Database["public"]["Tables"]["job_offers"]["Update"];

@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
+import type { Pluggable } from "unified";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { supabase } from "@/integrations/supabase/client";
@@ -105,8 +106,8 @@ export function LegalDocumentsPage() {
             ) : (
               <article className="prose prose-invert max-w-none prose-a:text-brand prose-a:no-underline prose-img:rounded-3xl">
                 <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                  remarkPlugins={[remarkGfm as unknown as Pluggable]}
+                  rehypePlugins={[rehypeRaw as unknown as Pluggable, rehypeSanitize as unknown as Pluggable]}
                   children={content}
                 />
               </article>

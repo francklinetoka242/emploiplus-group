@@ -26,20 +26,19 @@ export function resolveAuthRoles(
 }
 
 export function normalizeAppMetadataRoles(
-  appMetadata?: {
-    role?: string | null;
-    roles?: unknown;
-  } | null,
+  appMetadata?: Record<string, unknown> | null,
 ): DatabaseAppRole[] {
   const claimRoles: string[] = [];
 
-  if (typeof appMetadata?.role === "string" && appMetadata.role.trim()) {
-    claimRoles.push(appMetadata.role.trim());
+  const role = appMetadata?.role;
+  if (typeof role === "string" && role.trim()) {
+    claimRoles.push(role.trim());
   }
 
-  if (Array.isArray(appMetadata?.roles)) {
+  const roles = appMetadata?.roles;
+  if (Array.isArray(roles)) {
     claimRoles.push(
-      ...appMetadata.roles
+      ...roles
         .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
         .map((value) => value.trim()),
     );

@@ -364,7 +364,7 @@ export function JobsPage() {
       query: hasNaturalCriteria ? parsed.criteria.query : searchInput.trim(),
       company: companyInput.trim(),
       location: locationInput.trim() || parsed.criteria.location || "",
-      contractType: contractTypeInput || parsed.criteria.contractType || "",
+      contractType: (contractTypeInput || parsed.criteria.contractType || "") as JobSearchCriteria["contractType"],
       domain: domainInput || parsed.criteria.domain || "",
       salaryMin: parsed.criteria.salaryMin || "",
     };
