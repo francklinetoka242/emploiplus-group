@@ -2,7 +2,7 @@
 
 ## Résumé
 
-Les quatre catégories ont maintenant des routes de callback séparées. Le callback **Deposits** existant est conservé. Les trois nouveaux handlers vérifient le type et l'identifiant attendu, valident la signature RFC 9421 selon la configuration, interrogent l'API PawaPay authentifiée et enregistrent un événement idempotent sans initier de transaction ni modifier les droits d'abonnement.
+Les quatre catégories ont des chemins publics de callback séparés. Pour respecter la limite de 12 fonctions du forfait Vercel Hobby, les neuf chemins API PawaPay sont maintenant réécrits vers une seule fonction Serverless (`api/payments/pawapay.ts`) qui distribue les requêtes vers les handlers internes. Le callback **Deposits** conserve son traitement. Les handlers vérifient le type et l'identifiant attendu, valident la signature RFC 9421 selon la configuration, interrogent l'API PawaPay authentifiée et enregistrent un événement idempotent sans initier de transaction ni modifier les droits d'abonnement.
 
 Une migration additive crée le stockage idempotent pour les callbacks Checkouts, Payouts et Refunds et un registre Refund → dépôt payé. **La migration n'a pas été exécutée.** Les endpoints nécessitant cette migration ne seront opérationnels dans l'environnement déployé qu'après examen puis application de celle-ci. Les tests font appel à une API et à un stockage simulés ; aucun paiement, déploiement, accès aux paramètres PawaPay/Vercel ou SQL distant n'a été effectué.
 
@@ -12,9 +12,8 @@ PawaPay documente les callbacks comme des POST portant l'objet de transaction à
 
 **Créés**
 
-- `api/payments/pawapay/checkouts/callback.ts`
-- `api/payments/pawapay/payouts/callback.ts`
-- `api/payments/pawapay/refunds/callback.ts`
+- `api/payments/pawapay.ts` — point d'entrée unique; les URL publiques historiques sont conservées par les réécritures Vercel.
+- `server/billing/routes/pawapay/` — handlers internes pour les neuf opérations/chemins PawaPay, y compris les quatre callbacks.
 - `server/billing/callbacks.ts`
 - `supabase/migrations/20261012170000_add_pawapay_callback_categories.sql` — migration additive, non exécutée.
 - `tests/server/pawapay-callback-categories.test.ts`
@@ -22,12 +21,14 @@ PawaPay documente les callbacks comme des POST portant l'objet de transaction à
 
 **Modifiés**
 
+- Les neuf anciens fichiers de fonction sous `api/payments/pawapay/` ont été déplacés sous `server/billing/routes/pawapay/` pour ne plus créer neuf fonctions Vercel distinctes.
+- `vercel.json` — ajoute les réécritures explicites vers le dispatcher PawaPay; le cron quotidien reste inchangé.
 - `server/billing/config.ts` — configuration des URL par catégorie.
-- `server/billing/signatures.ts` — vérification RFC 9421 à partir de l'URL de callback propre à la route.
+- `server/billing/signatures.ts` — vérification RFC 9421 à partir de l'URL de callback propre à la route, en permettant la route interne réécrite tout en conservant le chemin canonique signé.
 - `server/billing/pawapay.ts` — interrogation des ressources Checkout, Payout et Refund par l'API authentifiée.
 - `PAWAPAY_SANDBOX_SETUP.md` — variables, routes et prérequis.
 
-Le handler Deposits et `vercel.json` n'ont pas été modifiés. Les fichiers `api/` sont les fonctions Vercel selon l'architecture décrite dans le dépôt ; le domaine et le routage du déploiement réel restent à vérifier.
+Les neuf URL PawaPay existantes restent utilisables. Les onze autres fichiers de fonctions du dossier `api/` sont inchangés; avec le nouveau dispatcher, le dépôt expose douze fichiers d'entrée API au total. Le déploiement réel et la disponibilité du domaine restent à vérifier.
 
 ## URL et traitement par catégorie
 
@@ -70,6 +71,8 @@ node --loader ts-node/esm --test tests\server\pawapay-callback-categories.test.t
 
 La migration n'a pas été appliquée ni testée contre une base réelle. Aucun client PostgreSQL n'était disponible dans l'environnement ; l'exécution SQL est volontairement différée jusqu'à validation de cette migration. Les tests utilisent des réponses simulées et ne prouvent ni le déploiement Vercel ni la configuration distante.
 
+Après le regroupement des fonctions PawaPay, les tests ciblés ont été rejoués : **17 réussis, 0 échec**, incluant le dispatch, les callbacks et la vérification du chemin RFC 9421 réécrit. ESLint, Prettier, la vérification TypeScript du point d'entrée et `npm run build` ont réussi. La configuration contient douze fichiers d'entrée sous `api/` et neuf règles de réécriture PawaPay. Aucun déploiement Vercel n'a été réalisé ; le respect de la limite doit encore être confirmé par un déploiement réel.
+
 ## Variables et étapes restantes
 
 Configurer côté serveur uniquement, sans préfixe `VITE_` :
@@ -81,7 +84,7 @@ Configurer côté serveur uniquement, sans préfixe `VITE_` :
 
 Avant configuration finale ou utilisation dans Sandbox :
 
-1. Confirmer dans Vercel le domaine HTTPS de production et vérifier que les quatre chemins arrivent à leurs fonctions Vercel. Le domaine canonique du site n'est pas une preuve de rattachement au projet. Adapter chaque URL d'environnement et du tableau de bord au domaine réellement confirmé.
+1. Confirmer dans Vercel le domaine HTTPS de production et vérifier que les quatre chemins arrivent au dispatcher Serverless par les réécritures. Le domaine canonique du site n'est pas une preuve de rattachement au projet. Adapter chaque URL d'environnement et du tableau de bord au domaine réellement confirmé.
 2. Vérifier les migrations réellement appliquées à Supabase. Après revue/validation, appliquer **une seule fois** `20261012170000_add_pawapay_callback_categories.sql`, sans rejouer les migrations antérieures. Cela n'a pas été fait dans cette tâche.
 3. Définir les quatre variables d'URL comme des URL HTTPS publiques exactes, sans query string, chacune avec le chemin correspondant. Saisir les mêmes URL dans les champs PawaPay Sandbox concernés et confirmer l'option de signature.
 4. Redéployer l'environnement Sandbox, puis contrôler que chaque chemin répond comme une fonction API (un `GET` doit renvoyer `405` avec `Allow: POST`, et non la page SPA).

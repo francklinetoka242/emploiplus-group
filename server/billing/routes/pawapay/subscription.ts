@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { replyWithError } from "../../../server/billing/http.js";
-import { authenticateCandidate, billingRpc } from "../../../server/billing/supabase.js";
+import { replyWithError } from "../../http.js";
+import { authenticateCandidate, billingRpc } from "../../supabase.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {

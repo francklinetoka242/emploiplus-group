@@ -83,6 +83,9 @@ test("verifies PawaPay RFC 9421 callback digest and signature", async () => {
   } as unknown as VercelRequest;
 
   assert.equal(await verifyPawaPayCallbackSignature(req, body), true);
+  const rewrittenReq = { ...req, url: "/api/payments/pawapay" } as VercelRequest;
+  await assert.rejects(verifyPawaPayCallbackSignature(rewrittenReq, body), /path does not match/);
+  assert.equal(await verifyPawaPayCallbackSignature(rewrittenReq, body, undefined, true), true);
   await assert.rejects(
     verifyPawaPayCallbackSignature(req, Buffer.from("tampered")),
     /digest verification failed/,

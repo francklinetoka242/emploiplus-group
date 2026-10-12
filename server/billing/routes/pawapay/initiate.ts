@@ -1,10 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createHash, randomUUID } from "node:crypto";
-import { BillingConfigError, getBillingConfig } from "../../../server/billing/config.js";
-import { getIdempotencyKey, parseJsonBody, replyWithError } from "../../../server/billing/http.js";
-import { initiateDeposit, PawaPayError, validatePayer } from "../../../server/billing/pawapay.js";
-import { authenticateCandidate, billingRpc } from "../../../server/billing/supabase.js";
-import { applyProviderStatus } from "../../../server/billing/reconcile.js";
+import { BillingConfigError, getBillingConfig } from "../../config.js";
+import { getIdempotencyKey, parseJsonBody, replyWithError } from "../../http.js";
+import { initiateDeposit, PawaPayError, validatePayer } from "../../pawapay.js";
+import { authenticateCandidate, billingRpc } from "../../supabase.js";
+import { applyProviderStatus } from "../../reconcile.js";
 
 type OrderResult = {
   orderId: string;

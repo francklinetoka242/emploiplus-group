@@ -1,12 +1,12 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { BillingConfigError, getBillingConfig } from "../../../server/billing/config.js";
-import { replyWithError } from "../../../server/billing/http.js";
+import { BillingConfigError, getBillingConfig } from "../../config.js";
+import { replyWithError } from "../../http.js";
 import {
   getReconciliationConfig,
   reconcileDeposit,
   constantTimeSecretMatches,
-} from "../../../server/billing/reconcile.js";
-import { getBillingSupabase, billingRpc } from "../../../server/billing/supabase.js";
+} from "../../reconcile.js";
+import { getBillingSupabase, billingRpc } from "../../supabase.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST" && req.method !== "GET") {

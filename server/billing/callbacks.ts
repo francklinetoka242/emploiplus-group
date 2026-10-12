@@ -94,7 +94,7 @@ export async function handlePawaPayCallback(
 
   try {
     const callbackUrl = getPawaPayCallbackUrl(category);
-    const signatureVerified = await verifyPawaPayCallbackSignature(req, rawBody, callbackUrl);
+    const signatureVerified = await verifyPawaPayCallbackSignature(req, rawBody, callbackUrl, true);
     const providerStatus = await getPawaPayCallbackStatus(category, callback.id);
     if (!providerStatus || providerStatus !== callback.status) {
       return res.status(503).json({ error: "PawaPay callback status could not be confirmed." });

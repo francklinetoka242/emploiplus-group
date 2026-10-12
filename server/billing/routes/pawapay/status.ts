@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { billingRpc, authenticateCandidate } from "../../../server/billing/supabase.js";
-import { applyProviderStatus } from "../../../server/billing/reconcile.js";
-import { PawaPayError } from "../../../server/billing/pawapay.js";
-import { isUuid, parseJsonBody, replyWithError } from "../../../server/billing/http.js";
+import { billingRpc, authenticateCandidate } from "../../supabase.js";
+import { applyProviderStatus } from "../../reconcile.js";
+import { PawaPayError } from "../../pawapay.js";
+import { isUuid, parseJsonBody, replyWithError } from "../../http.js";
 
 type OrderLookup = {
   orderId: string;

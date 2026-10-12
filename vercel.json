@@ -4,6 +4,42 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
+      "source": "/api/payments/pawapay/callback",
+      "destination": "/api/payments/pawapay?pawapayRoute=deposit-callback"
+    },
+    {
+      "source": "/api/payments/pawapay/initiate",
+      "destination": "/api/payments/pawapay?pawapayRoute=initiate"
+    },
+    {
+      "source": "/api/payments/pawapay/providers",
+      "destination": "/api/payments/pawapay?pawapayRoute=providers"
+    },
+    {
+      "source": "/api/payments/pawapay/reconcile",
+      "destination": "/api/payments/pawapay?pawapayRoute=reconcile"
+    },
+    {
+      "source": "/api/payments/pawapay/status",
+      "destination": "/api/payments/pawapay?pawapayRoute=status"
+    },
+    {
+      "source": "/api/payments/pawapay/subscription",
+      "destination": "/api/payments/pawapay?pawapayRoute=subscription"
+    },
+    {
+      "source": "/api/payments/pawapay/checkouts/callback",
+      "destination": "/api/payments/pawapay?pawapayRoute=checkout-callback"
+    },
+    {
+      "source": "/api/payments/pawapay/payouts/callback",
+      "destination": "/api/payments/pawapay?pawapayRoute=payout-callback"
+    },
+    {
+      "source": "/api/payments/pawapay/refunds/callback",
+      "destination": "/api/payments/pawapay?pawapayRoute=refund-callback"
+    },
+    {
       "source": "/api/mobile",
       "destination": "/api/mobile"
     },

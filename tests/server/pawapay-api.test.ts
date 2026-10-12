@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import callbackHandler from "../../api/payments/pawapay/callback.ts";
-import initiateHandler from "../../api/payments/pawapay/initiate.ts";
-import statusHandler from "../../api/payments/pawapay/status.ts";
+import pawapayApiHandler from "../../api/payments/pawapay.ts";
+import callbackHandler from "../../server/billing/routes/pawapay/callback.ts";
+import initiateHandler from "../../server/billing/routes/pawapay/initiate.ts";
+import statusHandler from "../../server/billing/routes/pawapay/status.ts";
 
 const originalFetch = globalThis.fetch;
 const envNames = [
@@ -78,6 +79,39 @@ function mockRequest(
     body,
   } as unknown as VercelRequest;
 }
+
+test("PawaPay dispatcher parses JSON routes and rejects unknown route selectors", async () => {
+  globalThis.fetch = (async () =>
+    new Response(JSON.stringify({ message: "Invalid token" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    })) as typeof fetch;
+
+  const unknownRoute = mockResponse();
+  await pawapayApiHandler(
+    {
+      method: "POST",
+      url: "/api/payments/pawapay",
+      query: { pawapayRoute: "toString" },
+      headers: {},
+    } as unknown as VercelRequest,
+    unknownRoute as unknown as VercelResponse,
+  );
+  assert.equal(unknownRoute.statusCode, 404);
+
+  const initiationRequest = {
+    method: "POST",
+    url: "/api/payments/pawapay",
+    query: { pawapayRoute: "initiate" },
+    headers: { "content-type": "application/json" },
+    async *[Symbol.asyncIterator]() {
+      yield Buffer.from(JSON.stringify({ arbitrary: "payload" }));
+    },
+  } as unknown as VercelRequest;
+  const initiationResponse = mockResponse();
+  await pawapayApiHandler(initiationRequest, initiationResponse as unknown as VercelResponse);
+  assert.equal(initiationResponse.statusCode, 401);
+});
 
 test("payment initiation rejects missing or invalid authentication before billing operations", async () => {
   let rpcCalled = false;

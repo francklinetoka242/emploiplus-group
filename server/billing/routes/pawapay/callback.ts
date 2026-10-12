@@ -1,15 +1,15 @@
 import { createHash } from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getBillingConfig } from "../../../server/billing/config.js";
-import { PawaPayError } from "../../../server/billing/pawapay.js";
-import { isRecord, replyWithError, isUuid } from "../../../server/billing/http.js";
+import { getBillingConfig } from "../../config.js";
+import { PawaPayError } from "../../pawapay.js";
+import { isRecord, replyWithError, isUuid } from "../../http.js";
 import {
   applyProviderStatus,
   completeCallbackEvent,
   recordCallbackEvent,
-} from "../../../server/billing/reconcile.js";
-import { verifyPawaPayCallbackSignature } from "../../../server/billing/signatures.js";
-import { getBillingSupabase } from "../../../server/billing/supabase.js";
+} from "../../reconcile.js";
+import { verifyPawaPayCallbackSignature } from "../../signatures.js";
+import { getBillingSupabase } from "../../supabase.js";
 
 export const config = { api: { bodyParser: false } };
 
@@ -58,7 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (config.signedCallbacksRequired === undefined || !config.pawapayCallbackUrl) {
       return res.status(503).json({ error: "PawaPay callback verification is not configured." });
     }
-    const signatureVerified = await verifyPawaPayCallbackSignature(req, rawBody);
+    const signatureVerified = await verifyPawaPayCallbackSignature(req, rawBody, undefined, true);
     const supabase = getBillingSupabase();
     await recordCallbackEvent(
       supabase,

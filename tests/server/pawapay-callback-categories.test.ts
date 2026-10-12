@@ -1,9 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import checkoutHandler from "../../api/payments/pawapay/checkouts/callback.ts";
-import payoutHandler from "../../api/payments/pawapay/payouts/callback.ts";
-import refundHandler from "../../api/payments/pawapay/refunds/callback.ts";
+import pawapayHandler from "../../api/payments/pawapay.ts";
 
 const originalFetch = globalThis.fetch;
 const envNames = [
@@ -25,6 +23,11 @@ const callbackUrls = {
   payouts: "https://example.test/api/payments/pawapay/payouts/callback",
   refunds: "https://example.test/api/payments/pawapay/refunds/callback",
 };
+const callbackRoutes = {
+  checkouts: "checkout-callback",
+  payouts: "payout-callback",
+  refunds: "refund-callback",
+} as const;
 
 test.before(() => {
   process.env.SUPABASE_URL = "https://sandbox-project.supabase.co";
@@ -85,7 +88,8 @@ function mockRequest(
   const rawBody = Buffer.from(JSON.stringify(body));
   return {
     method: "POST",
-    url: new URL(callbackUrls[category]).pathname,
+    url: "/api/payments/pawapay",
+    query: { pawapayRoute: callbackRoutes[category] },
     headers,
     async *[Symbol.asyncIterator]() {
       yield rawBody;
@@ -130,7 +134,7 @@ test("checkout callback verifies the final checkout with PawaPay and records it 
   const id = "afb57b93-7849-49aa-babb-4c3ccbfe3d79";
   const requests = mockProviderAndRpc("checkouts", id, "COMPLETED");
   const response = mockResponse();
-  await checkoutHandler(
+  await pawapayHandler(
     mockRequest("checkouts", { checkoutId: id, status: "COMPLETED" }),
     response as unknown as VercelResponse,
   );
@@ -151,7 +155,7 @@ test("payout callback verifies the PawaPay record and does not initiate a payout
   const id = "62b54ba9-a988-42a8-80a5-911f2d7f5443";
   const requests = mockProviderAndRpc("payouts", id, "FAILED");
   const response = mockResponse();
-  await payoutHandler(
+  await pawapayHandler(
     mockRequest("payouts", { payoutId: id, status: "FAILED" }),
     response as unknown as VercelResponse,
   );
@@ -173,7 +177,7 @@ test("refund callback verifies status and records only against a pre-registered 
     },
   ]);
   const response = mockResponse();
-  await refundHandler(
+  await pawapayHandler(
     mockRequest("refunds", { refundId: id, status: "COMPLETED" }),
     response as unknown as VercelResponse,
   );
@@ -191,7 +195,7 @@ test("duplicate final callbacks return success without applying a second change"
     { accepted: true, is_new: false, source_deposit_id: null },
   ]);
   const response = mockResponse();
-  await checkoutHandler(
+  await pawapayHandler(
     mockRequest("checkouts", { checkoutId: id, status: "COMPLETED" }),
     response as unknown as VercelResponse,
   );
@@ -223,7 +227,7 @@ test("unregistered refunds are not acknowledged as processed", async () => {
   }) as typeof fetch;
 
   const response = mockResponse();
-  await refundHandler(
+  await pawapayHandler(
     mockRequest("refunds", { refundId: id, status: "COMPLETED" }),
     response as unknown as VercelResponse,
   );
@@ -234,7 +238,7 @@ test("callbacks with a different provider status are retried, not persisted as s
   const id = "afb57b93-7849-49aa-babb-4c3ccbfe3d79";
   mockProviderAndRpc("checkouts", id, "FAILED");
   const response = mockResponse();
-  await checkoutHandler(
+  await pawapayHandler(
     mockRequest("checkouts", { checkoutId: id, status: "COMPLETED" }),
     response as unknown as VercelResponse,
   );
@@ -249,7 +253,7 @@ test("malformed and wrong-category callbacks are rejected before provider access
   }) as typeof fetch;
 
   const wrongCategory = mockResponse();
-  await payoutHandler(
+  await pawapayHandler(
     mockRequest("payouts", {
       checkoutId: "afb57b93-7849-49aa-babb-4c3ccbfe3d79",
       status: "COMPLETED",
@@ -258,16 +262,30 @@ test("malformed and wrong-category callbacks are rejected before provider access
   );
   assert.equal(wrongCategory.statusCode, 400);
 
+  const mismatchedAlias = mockResponse();
+  await pawapayHandler(
+    {
+      ...mockRequest("payouts", {
+        payoutId: "62b54ba9-a988-42a8-80a5-911f2d7f5443",
+        status: "COMPLETED",
+      }),
+      url: new URL(callbackUrls.checkouts).pathname,
+    },
+    mismatchedAlias as unknown as VercelResponse,
+  );
+  assert.equal(mismatchedAlias.statusCode, 404);
+
   const malformed = {
     method: "POST",
-    url: new URL(callbackUrls.checkouts).pathname,
+    url: "/api/payments/pawapay",
+    query: { pawapayRoute: callbackRoutes.checkouts },
     headers: { "content-type": "application/json" },
     async *[Symbol.asyncIterator]() {
       yield Buffer.from("{");
     },
   } as unknown as VercelRequest;
   const invalidJson = mockResponse();
-  await checkoutHandler(malformed, invalidJson as unknown as VercelResponse);
+  await pawapayHandler(malformed, invalidJson as unknown as VercelResponse);
   assert.equal(invalidJson.statusCode, 400);
   assert.equal(providerCalled, false);
 });
@@ -281,7 +299,7 @@ test("required callback signatures reject missing signature headers", async () =
   }) as typeof fetch;
 
   const response = mockResponse();
-  await payoutHandler(
+  await pawapayHandler(
     mockRequest("payouts", {
       payoutId: "62b54ba9-a988-42a8-80a5-911f2d7f5443",
       status: "COMPLETED",
@@ -308,7 +326,7 @@ test("provider lookup failures do not persist callback events", async () => {
   }) as typeof fetch;
 
   const response = mockResponse();
-  await payoutHandler(
+  await pawapayHandler(
     mockRequest("payouts", {
       payoutId: "62b54ba9-a988-42a8-80a5-911f2d7f5443",
       status: "COMPLETED",

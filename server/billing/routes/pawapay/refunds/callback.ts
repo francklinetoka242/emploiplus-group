@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { handlePawaPayCallback } from "../../../../server/billing/callbacks.js";
+import { handlePawaPayCallback } from "../../../callbacks.js";
 
 export const config = { api: { bodyParser: false } };
 

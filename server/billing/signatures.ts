@@ -116,6 +116,7 @@ export async function verifyPawaPayCallbackSignature(
   req: VercelRequest,
   rawBody: Buffer,
   expectedCallbackUrl?: string,
+  allowRewrittenPath = false,
 ): Promise<boolean> {
   const config = getBillingConfig();
   const callbackUrl = expectedCallbackUrl ?? config.pawapayCallbackUrl;
@@ -142,7 +143,10 @@ export async function verifyPawaPayCallbackSignature(
   const input = decodeSignatureInput(signatureInput);
   const configUrl = new URL(callbackUrl);
   const requestPath = (req.url ?? "").split("?")[0];
-  if (requestPath !== configUrl.pathname) {
+  if (
+    requestPath !== configUrl.pathname &&
+    !(allowRewrittenPath && requestPath === "/api/payments/pawapay")
+  ) {
     throw new PawaPayError("Callback path does not match the configured URL", "RESPONSE");
   }
 
