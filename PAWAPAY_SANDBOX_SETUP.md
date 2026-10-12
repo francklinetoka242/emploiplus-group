@@ -30,7 +30,7 @@ No PawaPay fee schedule or profitability threshold is configured. Immediate pror
 
 ## Vercel Sandbox project
 
-Configure the same variable names in the Sandbox Vercel project environment. Keep all API tokens, Supabase service-role credentials and reconciliation secrets server-only (not `VITE_` variables). Set `CRON_SECRET` in Vercel for authenticated hourly reconciliation; the route also accepts manual `POST /api/payments/pawapay/reconcile` requests authenticated with `PAWAPAY_RECONCILE_SECRET`. The cron processes pending/ambiguous deposits and applies due expirations. Confirm that the Vercel plan supports hourly Cron Jobs before deploying this configuration.
+Configure the same variable names in the Sandbox Vercel project environment. Keep all API tokens, Supabase service-role credentials and reconciliation secrets server-only (not `VITE_` variables). Set `CRON_SECRET` in Vercel for authenticated daily reconciliation; the route also accepts manual `POST /api/payments/pawapay/reconcile` requests authenticated with `PAWAPAY_RECONCILE_SECRET`. The cron processes pending/ambiguous deposits and applies due expirations. It is scheduled once daily at 00:00 UTC to stay within the Hobby plan limit. On Hobby, Vercel may invoke it within the following hour, so a payment without a callback can remain pending until the next reconciliation. Manual authenticated reconciliation remains available when needed.
 
 Apply the billing migrations in order after confirming the Supabase migration history:
 
