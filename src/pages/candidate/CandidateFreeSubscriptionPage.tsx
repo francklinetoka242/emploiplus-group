@@ -11,6 +11,7 @@
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import { CandidateBillingPanel } from "@/features/billing/components/CandidateBillingPanel";
 
 const generativeFeatures = [
   {
@@ -137,7 +138,10 @@ export function CandidateFreeSubscriptionPage() {
 
             <div className="space-y-3">
               {generativeFeatures.map(({ label, description, icon: Icon }) => (
-                <div key={label} className="flex gap-4 border-t border-border py-4 first:border-t-0 first:pt-0">
+                <div
+                  key={label}
+                  className="flex gap-4 border-t border-border py-4 first:border-t-0 first:pt-0"
+                >
                   <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/5 text-primary">
                     <Icon className="h-4 w-4" />
                   </div>
@@ -211,22 +215,24 @@ export function CandidateFreeSubscriptionPage() {
               <div className="px-4 py-3 text-muted-foreground">4</div>
             </div>
             <div className="grid grid-cols-3 bg-primary/5 text-sm">
-              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">Premium</div>
+              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">
+                Premium
+              </div>
               <div className="border-r border-border px-4 py-3 text-muted-foreground">7</div>
               <div className="px-4 py-3 text-muted-foreground">7</div>
             </div>
             <div className="grid grid-cols-3 text-sm">
-              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">Premium+</div>
+              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">
+                Premium+
+              </div>
               <div className="border-r border-border px-4 py-3 text-muted-foreground">Toutes</div>
               <div className="px-4 py-3 text-muted-foreground">10</div>
             </div>
           </div>
         </section>
 
+        <CandidateBillingPanel />
         <div className="flex flex-col items-center justify-center gap-3 pt-2 text-center">
-          <Button type="button" variant="default" size="lg" className="min-w-[220px]">
-            Continuer avec le forfait gratuit
-          </Button>
           <p className="max-w-xl text-sm leading-6 text-muted-foreground">
             Le score de compatibilité est calculé de la même manière quel que soit le forfait.
           </p>

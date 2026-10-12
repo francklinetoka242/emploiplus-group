@@ -1,7 +1,18 @@
-﻿import { ArrowLeft, BellRing, Bookmark, Check, Crown, FileText, GitCompareArrows, Mail, Sparkles } from "lucide-react";
+﻿import {
+  ArrowLeft,
+  BellRing,
+  Bookmark,
+  Check,
+  Crown,
+  FileText,
+  GitCompareArrows,
+  Mail,
+  Sparkles,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import { CandidateBillingPanel } from "@/features/billing/components/CandidateBillingPanel";
 
 const generativeFeatures = [
   {
@@ -36,8 +47,7 @@ const generativeFeatures = [
   },
   {
     label: "Alertes e-mail",
-    description:
-      "Recevez par e-mail les offres qui correspondent le mieux à votre profil.",
+    description: "Recevez par e-mail les offres qui correspondent le mieux à votre profil.",
     icon: BellRing,
   },
   {
@@ -114,7 +124,9 @@ export function CandidatePremiumPlusSubscriptionPage() {
               <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
                 <div className="border border-border bg-background p-4">
                   <div className="flex items-end gap-2">
-                    <span className="text-4xl font-black tracking-tight text-secondary">Toutes</span>
+                    <span className="text-4xl font-black tracking-tight text-secondary">
+                      Toutes
+                    </span>
                   </div>
                 </div>
                 <div className="border border-border bg-background p-4">
@@ -139,7 +151,10 @@ export function CandidatePremiumPlusSubscriptionPage() {
 
             <div className="space-y-3">
               {generativeFeatures.map(({ label, description, icon: Icon }) => (
-                <div key={label} className="flex gap-4 border-t border-border py-4 first:border-t-0 first:pt-0">
+                <div
+                  key={label}
+                  className="flex gap-4 border-t border-border py-4 first:border-t-0 first:pt-0"
+                >
                   <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/5 text-primary">
                     <Icon className="h-4 w-4" />
                   </div>
@@ -158,7 +173,9 @@ export function CandidatePremiumPlusSubscriptionPage() {
             </p>
             <div className="mt-5 border-l border-secondary/30 pl-4">
               <p className="text-sm uppercase tracking-[0.2em] text-secondary">Impact</p>
-              <p className="mt-3 text-4xl font-black tracking-tight text-foreground">Accès complet</p>
+              <p className="mt-3 text-4xl font-black tracking-tight text-foreground">
+                Accès complet
+              </p>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 Votre score reste calculé de la même manière pour tous. Premium+ élargit simplement
                 le nombre de correspondances que vous pouvez explorer et conserver.
@@ -213,19 +230,23 @@ export function CandidatePremiumPlusSubscriptionPage() {
               <div className="px-4 py-3 text-muted-foreground">4</div>
             </div>
             <div className="grid grid-cols-3 text-sm">
-              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">Premium</div>
+              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">
+                Premium
+              </div>
               <div className="border-r border-border px-4 py-3 text-muted-foreground">7</div>
               <div className="px-4 py-3 text-muted-foreground">7</div>
             </div>
             <div className="grid grid-cols-3 bg-secondary/5 text-sm">
-              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">Premium+</div>
+              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">
+                Premium+
+              </div>
               <div className="border-r border-border px-4 py-3 text-muted-foreground">Toutes</div>
               <div className="px-4 py-3 text-muted-foreground">10</div>
             </div>
           </div>
         </section>
 
-
+        <CandidateBillingPanel targetPlanCode="premium_plus" />
       </main>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, BadgeCheck, Check, Crown, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { CandidateBillingPanel } from "@/features/billing/components/CandidateBillingPanel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -58,6 +59,7 @@ export function CandidateSubscriptionPage() {
 
   return (
     <div className="mx-auto mt-6 w-full max-w-6xl pb-8">
+      <CandidateBillingPanel />
       <div className="grid min-w-0 gap-5 lg:grid-cols-3">
         {plans.map((plan) => {
           const Icon = plan.icon;

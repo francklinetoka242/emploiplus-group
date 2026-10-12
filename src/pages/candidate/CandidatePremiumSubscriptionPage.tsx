@@ -1,7 +1,16 @@
-﻿import { ArrowLeft, Bookmark, Check, FileText, GitCompareArrows, Mail, Sparkles } from "lucide-react";
+﻿import {
+  ArrowLeft,
+  Bookmark,
+  Check,
+  FileText,
+  GitCompareArrows,
+  Mail,
+  Sparkles,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import { CandidateBillingPanel } from "@/features/billing/components/CandidateBillingPanel";
 
 const generativeFeatures = [
   {
@@ -128,7 +137,10 @@ export function CandidatePremiumSubscriptionPage() {
 
             <div className="space-y-3">
               {generativeFeatures.map(({ label, description, icon: Icon }) => (
-                <div key={label} className="flex gap-4 border-t border-border py-4 first:border-t-0 first:pt-0">
+                <div
+                  key={label}
+                  className="flex gap-4 border-t border-border py-4 first:border-t-0 first:pt-0"
+                >
                   <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/5 text-primary">
                     <Icon className="h-4 w-4" />
                   </div>
@@ -147,7 +159,9 @@ export function CandidatePremiumSubscriptionPage() {
             </p>
             <div className="mt-5 border-l border-secondary/30 pl-4">
               <p className="text-sm uppercase tracking-[0.2em] text-secondary">Impact</p>
-              <p className="mt-3 text-4xl font-black tracking-tight text-foreground">Plus de vues</p>
+              <p className="mt-3 text-4xl font-black tracking-tight text-foreground">
+                Plus de vues
+              </p>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 Votre score reste identique. Premium agrandit simplement le nombre de
                 correspondances que vous pouvez consulter et garder sous la main.
@@ -202,26 +216,23 @@ export function CandidatePremiumSubscriptionPage() {
               <div className="px-4 py-3 text-muted-foreground">4</div>
             </div>
             <div className="grid grid-cols-3 bg-secondary/5 text-sm">
-              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">Premium</div>
+              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">
+                Premium
+              </div>
               <div className="border-r border-border px-4 py-3 text-muted-foreground">7</div>
               <div className="px-4 py-3 text-muted-foreground">7</div>
             </div>
             <div className="grid grid-cols-3 text-sm">
-              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">Premium+</div>
+              <div className="border-r border-border px-4 py-3 font-semibold text-foreground">
+                Premium+
+              </div>
               <div className="border-r border-border px-4 py-3 text-muted-foreground">Toutes</div>
               <div className="px-4 py-3 text-muted-foreground">10</div>
             </div>
           </div>
         </section>
 
-        <div className="flex flex-col items-center justify-center gap-3 pt-2 text-center">
-          <Button type="button" variant="secondary" size="lg" className="min-w-[220px]" disabled>
-            Bientôt disponible
-          </Button>
-          <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-            Le paiement et l’activation de ce forfait seront disponibles prochainement.
-          </p>
-        </div>
+        <CandidateBillingPanel targetPlanCode="premium" />
       </main>
     </div>
   );
