@@ -6,10 +6,16 @@ import { resolve, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { ResolvedConfig } from "vite";
 
-function devApiHandlerPlugin() {
+function devApiHandlerPlugin(env: Record<string, string>) {
   return {
     name: "dev-api-handler",
     configureServer(server: ViteDevServer) {
+      for (const [key, value] of Object.entries(env)) {
+        if (process.env[key] === undefined) {
+          process.env[key] = value;
+        }
+      }
+
       server.middlewares.use(async (req: any, res: any, next: () => void) => {
         if (!req.url?.startsWith("/api/")) {
           return next();
@@ -204,7 +210,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
-    plugins: [react(), tailwindcss(), devApiHandlerPlugin(), sitemapGeneratorPlugin(env)],
+    plugins: [react(), tailwindcss(), devApiHandlerPlugin(env), sitemapGeneratorPlugin(env)],
 
     resolve: {
       alias: {

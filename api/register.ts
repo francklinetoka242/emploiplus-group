@@ -228,7 +228,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           ctaUrl: confirmLink,
           logoUrl,
           fromName,
-          bodyHtml: `<p style="margin:0 0 8px;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Bonjour ${firstName},</p><p style="margin:0;font-size:15px;line-height:1.7;color:#475569;font-family:Inter, Segoe UI, Arial, sans-serif;">Ce lien est valable 24 heures. Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.</p>`,
+          brandColor: "#00009E",
+          accentColor: "#00009E",
+          backgroundColor: "#ffffff",
+          textColor: "#0f172a",
+          ctaTextColor: "#ffffff",
+          showHeaderSubtitle: false,
+          borderless: true,
+          contactLayout: "icon-row",
+          whatsappIconUrl: `${confirmationBaseUrl}/whatsapp-icon.png`,
+          copyrightText: "© EmploiPlus Group · © 2025 Emploiplus Group. Tous droits réservés.",
+          bodyHtml: `<p style="margin:0 0 8px;font-size:15px;line-height:1.7;color:#0f172a;font-family:Inter, Segoe UI, Arial, sans-serif;">Bonjour ${firstName},</p><p style="margin:0;font-size:15px;line-height:1.7;color:#0f172a;font-family:Inter, Segoe UI, Arial, sans-serif;">Ce lien est valable 24 heures. Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.</p>`,
         }),
       });
     } catch (mailError) {
