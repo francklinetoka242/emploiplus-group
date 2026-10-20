@@ -210,9 +210,9 @@ export function AboutPage() {
           </p>
           <div className="mt-6 grid gap-5 sm:grid-cols-3 sm:gap-4">
             {[
-              { value: "1200+", label: t("about.stats.jobs") },
+              { value: "2000+", label: t("about.stats.jobs") },
               { value: "1", label: t("about.stats.companies") },
-              { value: "500+", label: t("about.stats.readers") },
+              { value: "1200+", label: t("about.stats.readers") },
             ].map((stat) => (
               <div key={stat.label} className="flex flex-col items-center">
                 <p className="font-display text-3xl font-extrabold text-secondary md:text-4xl">{stat.value}</p>

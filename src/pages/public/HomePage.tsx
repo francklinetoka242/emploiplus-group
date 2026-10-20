@@ -183,7 +183,7 @@ export function HomePage() {
 
   const stats = [
     {
-      value: "1200+",
+      value: "2000+",
       label: "home.stats.jobs",
       icon: <BarChart3 className="h-8 w-8 md:h-10 md:w-10 text-primary" />,
     },
@@ -193,7 +193,7 @@ export function HomePage() {
       icon: <Handshake className="h-8 w-8 md:h-10 md:w-10 text-primary" />,
     },
     {
-      value: "500+",
+      value: "1200+",
       label: "home.stats.readers",
       icon: <BookOpen className="h-8 w-8 md:h-10 md:w-10 text-primary" />,
     },
