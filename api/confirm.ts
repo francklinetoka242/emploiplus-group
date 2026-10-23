@@ -132,11 +132,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const token = String(req.query.token || "");
   const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET as string | undefined;
+  const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET?.trim();
   if (!EMAIL_SIGNING_SECRET) {
     throw new Error("EMAIL_SIGNING_SECRET missing");
   }
-  console.log("EMAIL_SIGNING_SECRET length", EMAIL_SIGNING_SECRET.length);
   const confirmationBaseUrl = process.env.SITE_URL || "https://www.emploiplus-group.com";
 
   if (!token || !SUPABASE_URL || !SERVICE_KEY) {
@@ -147,18 +146,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).send("Invalid confirmation token");
   }
 
-  console.log("TOKEN RECEIVED", token);
-  console.log("[CONFIRM-DEBUG][confirm] payloadEncoded", payloadEncoded);
-  console.log("RECEIVED SIGNATURE", signature);
-  console.log("[CONFIRM-DEBUG][confirm] confirmationBaseUrl", confirmationBaseUrl);
-
   const expectedSignature = base64url(
     createHmac("sha256", EMAIL_SIGNING_SECRET).update(payloadEncoded).digest(),
   );
-  console.log("EXPECTED SIGNATURE", expectedSignature);
-  console.log("SIGNATURE MATCH", expectedSignature === signature);
   if (expectedSignature !== signature) {
-    console.error("Token signature mismatch", { signature, expectedSignature });
+    console.error("Confirmation token signature mismatch");
     return res.status(400).send("Invalid or expired token");
   }
 

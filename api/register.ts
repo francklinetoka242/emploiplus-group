@@ -12,6 +12,20 @@ function base64url(input: string | Buffer) {
   return buffer.toString("base64").replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+
+    return entities[character];
+  });
+}
+
 export async function readResponseBody(response: Response): Promise<unknown> {
   const text = await response.text();
   if (!text || text.trim().length === 0) {
@@ -60,7 +74,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       requestBody = JSON.parse(requestBody);
     } catch (parseError) {
-      console.error("Unable to parse request body string", parseError, requestBody);
+      console.error("Unable to parse request body string", parseError);
     }
   }
 
@@ -71,17 +85,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     lastName?: string;
   };
 
-  console.log("register body", {
-    email,
-    firstName,
-    lastName,
-    passwordPresent: !!password,
-  });
-
   if (!email || !password) {
     console.error("Register request missing fields", {
-      headers: req.headers,
-      body: requestBody,
       emailPresent: Boolean(email),
       passwordPresent: Boolean(password),
       firstNamePresent: Boolean(firstName),
@@ -92,23 +97,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const EMAIL_SIGNING_SECRET = (process.env.EMAIL_SIGNING_SECRET || "dev-signing-secret").trim();
-  console.log("EMAIL_SIGNING_SECRET length", EMAIL_SIGNING_SECRET.length);
+  const EMAIL_SIGNING_SECRET = process.env.EMAIL_SIGNING_SECRET?.trim();
   const confirmationBaseUrl = process.env.SITE_URL || "https://www.emploiplus-group.com";
 
-  console.log({
-    hasSupabaseUrl: !!SUPABASE_URL,
-    hasServiceKey: !!SERVICE_KEY,
-    hasEmailSigningSecret: !!EMAIL_SIGNING_SECRET,
-    hasSmtpHost: !!process.env.SMTP_HOST,
-    hasSmtpPort: !!process.env.SMTP_PORT,
-    hasSmtpUser: !!process.env.SMTP_USER,
-    hasSmtpPass: !!process.env.SMTP_PASS,
-    hasFromEmail: !!process.env.FROM_EMAIL,
-    hasFromName: !!process.env.FROM_NAME,
-  });
-
-  if (!SUPABASE_URL || !SERVICE_KEY) {
+  if (!SUPABASE_URL || !SERVICE_KEY || !EMAIL_SIGNING_SECRET) {
     return res.status(500).json({ error: "Server misconfiguration" });
   }
 
@@ -128,9 +120,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     console.log("createUserResp", createUserResp.status);
-
     const createUserBody = (await readResponseBody(createUserResp as Response)) as unknown;
-    console.log("createUserBody", createUserBody);
     if (!createUserResp.ok) {
       const errorText = normalizeErrorMessage(createUserBody);
       console.error("Supabase admin create user failed", {
@@ -141,7 +131,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const userId = (createUserBody as any)?.id;
-    console.log("userId", userId);
     if (!userId) {
       return res.status(500).json({ error: "Failed to create user" });
     }
@@ -207,14 +196,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     );
     const token = `${payloadEncoded}.${signature}`;
     const confirmLink = `${confirmationBaseUrl}/api/confirm?token=${encodeURIComponent(token)}`;
-    console.log("TOKEN GENERATED", token);
-    console.log("EMAIL_SIGNING_SECRET length", EMAIL_SIGNING_SECRET.length);
-    console.log("[CONFIRM-DEBUG][register] confirmLink", confirmLink);
-    console.log("[CONFIRM-DEBUG][register] tokenPayload", tokenPayload);
-    console.log("[CONFIRM-DEBUG][register] confirmationBaseUrl", confirmationBaseUrl);
 
     try {
       const logoUrl = `${confirmationBaseUrl}/Logo.png`;
+      const safeFirstName = escapeHtml(typeof firstName === "string" ? firstName : "");
       await transporter.sendMail({
         from: `"${fromName}" <${fromEmail}>`,
         to: email,
@@ -238,7 +223,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           contactLayout: "icon-row",
           whatsappIconUrl: `${confirmationBaseUrl}/whatsapp-icon.png`,
           copyrightText: "© EmploiPlus Group · © 2025 Emploiplus Group. Tous droits réservés.",
-          bodyHtml: `<p style="margin:0 0 8px;font-size:15px;line-height:1.7;color:#0f172a;font-family:Inter, Segoe UI, Arial, sans-serif;">Bonjour ${firstName},</p><p style="margin:0;font-size:15px;line-height:1.7;color:#0f172a;font-family:Inter, Segoe UI, Arial, sans-serif;">Ce lien est valable 24 heures. Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.</p>`,
+          bodyHtml: `<p style="margin:0 0 8px;font-size:15px;line-height:1.7;color:#0f172a;font-family:Inter, Segoe UI, Arial, sans-serif;">Bonjour ${safeFirstName},</p><p style="margin:0;font-size:15px;line-height:1.7;color:#0f172a;font-family:Inter, Segoe UI, Arial, sans-serif;">Ce lien est valable 24 heures. Après expiration, vous pourrez demander un nouvel e-mail depuis la page de connexion.</p>`,
         }),
       });
     } catch (mailError) {
