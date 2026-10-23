@@ -212,7 +212,7 @@ export function AboutPage() {
             {[
               { value: "2000+", label: t("about.stats.jobs") },
               { value: "1", label: t("about.stats.companies") },
-              { value: "1200+", label: t("about.stats.readers") },
+              { value: "2500+", label: t("about.stats.readers") },
             ].map((stat) => (
               <div key={stat.label} className="flex flex-col items-center">
                 <p className="font-display text-3xl font-extrabold text-secondary md:text-4xl">{stat.value}</p>

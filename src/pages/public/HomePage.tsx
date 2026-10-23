@@ -193,7 +193,7 @@ export function HomePage() {
       icon: <Handshake className="h-8 w-8 md:h-10 md:w-10 text-primary" />,
     },
     {
-      value: "1200+",
+      value: "2500+",
       label: "home.stats.readers",
       icon: <BookOpen className="h-8 w-8 md:h-10 md:w-10 text-primary" />,
     },
