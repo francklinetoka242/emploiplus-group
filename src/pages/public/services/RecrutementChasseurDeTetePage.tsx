@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import {
-  Check,
-  ClipboardCheck,
-  FileSearch,
-  MessageSquareText,
-  Search,
-  ShieldCheck,
-  Target,
-  Users,
-} from "lucide-react";
+  CheckIcon as Check,
+  ClipboardTextIcon as ClipboardCheck,
+  FileMagnifyingGlassIcon as FileSearch,
+  ChatTextIcon as MessageSquareText,
+  MagnifyingGlassIcon as Search,
+  ShieldCheckIcon as ShieldCheck,
+  TargetIcon as Target,
+  UsersIcon as Users,
+} from "@phosphor-icons/react";
 import SEO from "@/components/SEO";
 import {
   Accordion,
@@ -259,7 +259,7 @@ export default function RecrutementChasseurDeTetePage() {
                         0{index + 1}
                       </span>
                       <span className="flex size-12 items-center justify-center rounded-xl bg-brand text-brand-foreground shadow-lg shadow-brand/20">
-                        <Icon className="size-5" aria-hidden="true" />
+                        <Icon className="size-5" weight="duotone" aria-hidden="true" />
                       </span>
                     </div>
                     <div

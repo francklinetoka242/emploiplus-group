@@ -1,23 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
-  ArrowLeft,
-  Building2,
-  BriefcaseBusiness,
-  MapPin,
-  BadgeDollarSign,
-  CalendarDays,
-  FileText,
-  Eye,
-  Trash2,
-  Upload,
-  X,
-  Sparkles,
-  Home,
-  Send,
-  AlertCircle,
-  CheckCircle2,
-} from "lucide-react";
+  ArrowLeftIcon as ArrowLeft,
+  BuildingsIcon as Building2,
+  IdentificationBadgeIcon as BriefcaseBusiness,
+  MapPinIcon as MapPin,
+  CurrencyCircleDollarIcon as BadgeDollarSign,
+  CalendarDotsIcon as CalendarDays,
+  FileTextIcon as FileText,
+  EyeIcon as Eye,
+  TrashIcon as Trash2,
+  UploadSimpleIcon as Upload,
+  XIcon as X,
+  SparkleIcon as Sparkles,
+  HouseIcon as Home,
+  PaperPlaneTiltIcon as Send,
+  WarningCircleIcon as AlertCircle,
+  CheckCircleIcon as CheckCircle2,
+} from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
 import { usePageSEO } from "@/features/seo";
 import { useJobOfferBySlug } from "@/features/jobs/hooks";

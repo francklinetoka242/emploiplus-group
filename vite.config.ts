@@ -237,7 +237,7 @@ export default defineConfig(({ mode }) => {
               return "vendor-supabase";
             }
 
-            if (id.includes("node_modules/lucide-react") || id.includes("node_modules/@radix-ui") || id.includes("node_modules/sonner") || id.includes("node_modules/clsx") || id.includes("node_modules/tailwind-merge")) {
+            if (id.includes("node_modules/@phosphor-icons/react") || id.includes("node_modules/@radix-ui") || id.includes("node_modules/sonner") || id.includes("node_modules/clsx") || id.includes("node_modules/tailwind-merge")) {
               return "vendor-ui";
             }
 

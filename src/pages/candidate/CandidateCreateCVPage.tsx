@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { usePageSEO } from "@/features/seo";
 import { cn } from "@/lib/utils";
-import { ArrowRight, Camera, Check, ChevronDown, Crown, Download, Eye, GraduationCap, Languages, Mail, MapPin, PanelRightClose, PanelRightOpen, PenLine, Phone, Plus, Trash2, UserRound, BriefcaseBusiness, X } from "lucide-react";
+import { ArrowRightIcon as ArrowRight, CameraIcon as Camera, CheckIcon as Check, CaretDownIcon as ChevronDown, CrownIcon as Crown, DownloadSimpleIcon as Download, EyeIcon as Eye, GraduationCapIcon as GraduationCap, TranslateIcon as Languages, EnvelopeIcon as Mail, MapPinIcon as MapPin, ArrowLineRightIcon as PanelRightClose, ArrowLineLeftIcon as PanelRightOpen, PenIcon as PenLine, PhoneIcon as Phone, PlusIcon as Plus, TrashIcon as Trash2, UserIcon as UserRound, IdentificationBadgeIcon as BriefcaseBusiness, XIcon as X } from "@phosphor-icons/react";
 
 interface CVData {
   name: string;

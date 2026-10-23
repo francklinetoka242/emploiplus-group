@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Upload, Download, Eye, Trash2, FileText, Plus, AlertCircle } from "lucide-react";
+import { UploadSimpleIcon as Upload, DownloadSimpleIcon as Download, EyeIcon as Eye, TrashIcon as Trash2, FileTextIcon as FileText, PlusIcon as Plus, WarningCircleIcon as AlertCircle } from "@phosphor-icons/react";
 import {
   ALLOWED_DOCUMENT_MIME_TYPES,
   MAX_DOCUMENT_SIZE_BYTES,

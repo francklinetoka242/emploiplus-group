@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { CandidateExperience, CandidateExperienceInsert } from "@/features/candidates/api/types";
-import { Briefcase, Trash2, Edit2, X } from "lucide-react";
+import { BriefcaseIcon as Briefcase, TrashIcon as Trash2, PencilSimpleIcon as Edit2, XIcon as X } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 import { DateInput } from "@/components/ui/date-input";

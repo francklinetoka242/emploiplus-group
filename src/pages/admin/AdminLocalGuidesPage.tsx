@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Eye,
-  EyeOff,
-  PencilLine,
-  PlusCircle,
-  Trash2,
-  UploadCloud,
-  FileText,
-  ShieldCheck,
-  FolderOpen,
-} from "lucide-react";
+  EyeIcon as Eye,
+  EyeSlashIcon as EyeOff,
+  PencilLineIcon as PencilLine,
+  PlusCircleIcon as PlusCircle,
+  TrashIcon as Trash2,
+  CloudArrowUpIcon as UploadCloud,
+  FileTextIcon as FileText,
+  ShieldCheckIcon as ShieldCheck,
+  FolderOpenIcon as FolderOpen,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

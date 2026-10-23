@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { usePageSEO } from "@/features/seo";
 import { SecuritySettingsCard } from "@/features/candidates/components/settings/SecuritySettingsCard";
 import { AccountSettingsCard } from "@/features/candidates/components/settings/AccountSettingsCard";
-import { Settings } from "lucide-react";
+import { GearIcon as Settings } from "@phosphor-icons/react";
 
 export function CandidateSettingsPage() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);

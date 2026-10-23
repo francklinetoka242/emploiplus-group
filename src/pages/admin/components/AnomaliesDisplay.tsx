@@ -6,7 +6,7 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle, AlertCircle, Info } from "lucide-react";
+import { WarningIcon as AlertTriangle, WarningCircleIcon as AlertCircle, InfoIcon as Info } from "@phosphor-icons/react";
 import type { Anomaly } from "@/features/admin/utils/anomalyDetection";
 
 interface AnomaliesDisplayProps {

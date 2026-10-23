@@ -4,7 +4,7 @@ import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, MapPin, Send, CheckCircle } from "lucide-react";
+import { PhoneIcon as Phone, EnvelopeIcon as Mail, MapPinIcon as MapPin, PaperPlaneTiltIcon as Send, CheckCircleIcon as CheckCircle } from "@phosphor-icons/react";
 import { staggerContainer, staggerItem, fadeUp } from "@/lib/animations/animations";
 
 export function ContactPage() {

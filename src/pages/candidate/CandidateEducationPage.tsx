@@ -16,7 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Edit2, Trash2, GraduationCap } from "lucide-react";
+import { PlusIcon as Plus, PencilSimpleIcon as Edit2, TrashIcon as Trash2, GraduationCapIcon as GraduationCap } from "@phosphor-icons/react";
 import type { CandidateEducation } from "@/features/candidates/api/types";
 import { useCandidate } from "@/features/candidates/hooks/useCandidate";
 import { useCandidateEducation } from "@/features/candidates/hooks/useCandidateEducation";

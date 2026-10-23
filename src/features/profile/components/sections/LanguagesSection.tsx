@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { CandidateLanguage, CandidateLanguageInsert } from "@/features/candidates/api/types";
-import { Languages, Trash2, Edit2 } from "lucide-react";
+import { TranslateIcon as Languages, TrashIcon as Trash2, PencilSimpleIcon as Edit2 } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 

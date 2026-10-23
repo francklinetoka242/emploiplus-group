@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { BASE_URL } from "@/features/seo";
-import { Search, Star, FileText, Send, BriefcaseBusiness, Compass, GraduationCap, Trophy } from "lucide-react";
+import { MagnifyingGlassIcon as Search, StarIcon as Star, FileTextIcon as FileText, PaperPlaneTiltIcon as Send, IdentificationBadgeIcon as BriefcaseBusiness, CompassIcon as Compass, GraduationCapIcon as GraduationCap, TrophyIcon as Trophy } from "@phosphor-icons/react";
 
 const canonical = `${BASE_URL}/services/hub-candidat-intelligent`;
 
@@ -98,7 +98,7 @@ export default function HubCandidatPage() {
                     style={{ animationDelay: `${index * 120}ms` }}
                   >
                     <div className="float-soft flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand/10 text-brand">
-                      <Icon className="h-5 w-5" aria-hidden />
+                      <Icon className="h-5 w-5" weight="duotone" aria-hidden />
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-foreground">{title}</h2>
@@ -133,7 +133,7 @@ export default function HubCandidatPage() {
                   >
                     <div className="flex items-center gap-3 md:block">
                       <div className="soft-pulse flex h-10 w-10 items-center justify-center rounded-xl bg-brand/10 text-brand md:h-12 md:w-12">
-                        <Icon className="h-5 w-5" aria-hidden />
+                        <Icon className="h-5 w-5" weight="duotone" aria-hidden />
                       </div>
                       <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand md:mt-3">{label}</p>
                     </div>

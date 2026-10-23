@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CaretLeftIcon as ChevronLeft, CaretRightIcon as ChevronRight } from "@phosphor-icons/react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ProfileTabValue } from "../types";
 

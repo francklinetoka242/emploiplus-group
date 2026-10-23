@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { usePageSEO } from "@/features/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Building2, CalendarDays, ClipboardList, Eye, Trash2 } from "lucide-react";
+import { WarningCircleIcon as AlertCircle, BuildingsIcon as Building2, CalendarDotsIcon as CalendarDays, ClipboardTextIcon as ClipboardList, EyeIcon as Eye, TrashIcon as Trash2 } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Table,

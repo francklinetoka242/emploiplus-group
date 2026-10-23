@@ -5,7 +5,7 @@
 
 import React from "react";
 import { Card } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Users, Briefcase, Activity } from "lucide-react";
+import { TrendUpIcon as TrendingUp, TrendDownIcon as TrendingDown, UsersIcon as Users, BriefcaseIcon as Briefcase, ActivityIcon as Activity } from "@phosphor-icons/react";
 import type { UseAnalyticsOffresHook } from "@/features/admin/hooks/useAnalyticsOffres";
 import { PeriodComparisonDisplay } from "./PeriodComparisonDisplay";
 

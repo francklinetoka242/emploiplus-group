@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Facebook, Globe, Instagram, Linkedin } from "lucide-react";
+import { FacebookLogoIcon as Facebook, GlobeHemisphereWestIcon as Globe, InstagramLogoIcon as Instagram, LinkedinLogoIcon as Linkedin } from "@phosphor-icons/react";
 import { useI18n, type Locale } from "@/i18n";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { openCookieBanner } from "@/components/site/CookieConsentBanner";

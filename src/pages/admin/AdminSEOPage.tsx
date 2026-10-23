@@ -10,7 +10,7 @@ import {
   saveSiteSeoSettings,
   type SiteSEOSettings,
 } from "@/features/seo";
-import { RotateCcw, Save, Sparkles } from "lucide-react";
+import { ArrowCounterClockwiseIcon as RotateCcw, FloppyDiskIcon as Save, SparkleIcon as Sparkles } from "@phosphor-icons/react";
 
 export function AdminSEOPage() {
   const [form, setForm] = React.useState<SiteSEOSettings>(() => getSiteSeoSettings());

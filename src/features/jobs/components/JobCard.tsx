@@ -1,16 +1,16 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  BadgeDollarSign,
-  BriefcaseBusiness,
-  Building2,
-  CalendarDays,
-  ExternalLink,
-  Mail,
-  MapPin,
-  Sparkles,
-  ArrowUpRight,
-} from "lucide-react";
+  CurrencyCircleDollarIcon as BadgeDollarSign,
+  IdentificationBadgeIcon as BriefcaseBusiness,
+  BuildingsIcon as Building2,
+  CalendarDotsIcon as CalendarDays,
+  ArrowSquareOutIcon as ExternalLink,
+  EnvelopeIcon as Mail,
+  MapPinIcon as MapPin,
+  SparkleIcon as Sparkles,
+  ArrowUpRightIcon as ArrowUpRight,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { ShareButtons } from "@/components/site/ShareButtons";
 

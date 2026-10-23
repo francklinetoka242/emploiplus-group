@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { BellRing, Trash2, Check } from "lucide-react";
+import { BellRingingIcon as BellRing, TrashIcon as Trash2, CheckIcon as Check } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -62,7 +62,11 @@ export function NotificationsDropdown({
           aria-label={hasUnread ? `Notifications, ${unreadCount} non lue${unreadCount > 1 ? "s" : ""}` : "Notifications"}
           className="relative size-10 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/50"
         >
-          <BellRing className={hasUnread ? "notification-bell-ring size-6" : "size-6"} />
+          <BellRing
+            className={hasUnread ? "notification-bell-ring size-6" : "size-6"}
+            weight={hasUnread ? "fill" : "bold"}
+            aria-hidden="true"
+          />
           {hasUnread && (
             <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full">
               {unreadCount > 99 ? "99+" : unreadCount}

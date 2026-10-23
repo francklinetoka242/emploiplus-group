@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircleIcon as CheckCircle2 } from "@phosphor-icons/react";
 import { useCandidate } from "@/hooks/useCandidate";
 
 export function ProfessionalPresentationSection() {

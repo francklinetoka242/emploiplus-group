@@ -5,7 +5,7 @@ import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { SERVICES } from "@/constants/services";
-import { Briefcase, Building2, GraduationCap, BriefcaseBusiness } from "lucide-react";
+import { BriefcaseIcon as Briefcase, BuildingsIcon as Building2, GraduationCapIcon as GraduationCap, IdentificationBadgeIcon as BriefcaseBusiness } from "@phosphor-icons/react";
 
 const SERVICE_DETAILS = {
   "hub-emploi-recrutement": {

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import type { CandidatePreferences, CandidatePreferencesInsert } from "@/features/candidates/api/types";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontalIcon as SlidersHorizontal } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DateInput } from "@/components/ui/date-input";
 

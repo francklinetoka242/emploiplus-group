@@ -7,15 +7,15 @@ import backgroundPage from "@/assets/backgroun-page-services/208is.jpg";
 import heroImage from "@/assets/backgroun-page-services/4ade292be.jpg";
 import modalityImage from "@/assets/backgroun-page-services/office-girl-f-c.webp";
 import {
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  GraduationCap,
-  Users,
-  ShieldCheck,
-  Lightbulb,
-  Clock3,
-} from "lucide-react";
+  CheckIcon as Check,
+  CaretLeftIcon as ChevronLeft,
+  CaretRightIcon as ChevronRight,
+  GraduationCapIcon as GraduationCap,
+  UsersIcon as Users,
+  ShieldCheckIcon as ShieldCheck,
+  LightbulbIcon as Lightbulb,
+  ClockIcon as Clock3,
+} from "@phosphor-icons/react";
 
 const heroVisual = {
   src: heroImage,

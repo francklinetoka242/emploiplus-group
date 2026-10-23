@@ -1,22 +1,22 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  BadgeDollarSign,
-  BriefcaseBusiness,
-  Building2,
-  CalendarDays,
-  CircleAlert,
-  CircleUserRound,
-  Bot,
-  MapPin,
-  MessageCircle,
-  Plus,
-  Search,
-  SlidersHorizontal,
-  Sparkles,
-  ArrowRight,
-  X,
-} from "lucide-react";
+  CurrencyCircleDollarIcon as BadgeDollarSign,
+  IdentificationBadgeIcon as BriefcaseBusiness,
+  BuildingsIcon as Building2,
+  CalendarDotsIcon as CalendarDays,
+  WarningCircleIcon as CircleAlert,
+  UserCircleIcon as CircleUserRound,
+  RobotIcon as Bot,
+  MapPinIcon as MapPin,
+  ChatCircleIcon as MessageCircle,
+  PlusIcon as Plus,
+  MagnifyingGlassIcon as Search,
+  SlidersHorizontalIcon as SlidersHorizontal,
+  SparkleIcon as Sparkles,
+  ArrowRightIcon as ArrowRight,
+  XIcon as X,
+} from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { JobCard } from "@/features/jobs/components";

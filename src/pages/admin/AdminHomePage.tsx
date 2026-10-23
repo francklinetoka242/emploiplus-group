@@ -5,15 +5,15 @@ import { supabase } from "@/integrations/supabase/client";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import {
-  Activity,
-  BadgeCheck,
-  BriefcaseBusiness,
-  FileText,
-  MessagesSquare,
-  RefreshCw,
-  Sparkles,
-  Users2,
-} from "lucide-react";
+  ActivityIcon as Activity,
+  SealCheckIcon as BadgeCheck,
+  IdentificationBadgeIcon as BriefcaseBusiness,
+  FileTextIcon as FileText,
+  ChatsIcon as MessagesSquare,
+  ArrowClockwiseIcon as RefreshCw,
+  SparkleIcon as Sparkles,
+  UsersThreeIcon as Users2,
+} from "@phosphor-icons/react";
 import { AdminDashboardCharts } from "./components/AdminDashboardCharts";
 
 function AdminDashboardView() {

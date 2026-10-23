@@ -1,4 +1,4 @@
-import { Moon, Sun } from "lucide-react";
+import { MoonIcon as Moon, SunIcon as Sun } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 interface ThemeSwitchProps {

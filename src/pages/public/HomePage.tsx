@@ -17,21 +17,21 @@ import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 import { usePublishedJobOffers, usePublishedBlogPosts } from "@/features/jobs/hooks";
 import { fadeUp, staggerContainer, staggerItem } from "@/lib/animations/animations";
 import {
-  BadgeDollarSign,
-  BriefcaseBusiness,
-  Building2,
-  ClipboardCheck,
-  Users,
-  CalendarDays,
-  ExternalLink,
-  Mail,
-  MapPin,
-  Sparkles,
-  BarChart3,
-  Handshake,
-  BookOpen,
-  ArrowUp,
-} from "lucide-react";
+  CurrencyCircleDollarIcon as BadgeDollarSign,
+  IdentificationBadgeIcon as BriefcaseBusiness,
+  BuildingsIcon as Building2,
+  ClipboardTextIcon as ClipboardCheck,
+  UsersIcon as Users,
+  CalendarDotsIcon as CalendarDays,
+  ArrowSquareOutIcon as ExternalLink,
+  EnvelopeIcon as Mail,
+  MapPinIcon as MapPin,
+  SparkleIcon as Sparkles,
+  ChartBarIcon as BarChart3,
+  HandshakeIcon as Handshake,
+  BookOpenIcon as BookOpen,
+  ArrowUpIcon as ArrowUp,
+} from "@phosphor-icons/react";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { JobCard } from "@/features/jobs/components";
 
@@ -213,17 +213,17 @@ export function HomePage() {
     {
       value: "2000+",
       label: "home.stats.jobs",
-      icon: <BarChart3 className="h-8 w-8 md:h-10 md:w-10 text-primary" />,
+      icon: <BarChart3 className="h-8 w-8 md:h-10 md:w-10 text-primary" weight="duotone" />,
     },
     {
       value: "1",
       label: "home.stats.companies",
-      icon: <Handshake className="h-8 w-8 md:h-10 md:w-10 text-primary" />,
+      icon: <Handshake className="h-8 w-8 md:h-10 md:w-10 text-primary" weight="duotone" />,
     },
     {
       value: "2500+",
       label: "home.stats.readers",
-      icon: <BookOpen className="h-8 w-8 md:h-10 md:w-10 text-primary" />,
+      icon: <BookOpen className="h-8 w-8 md:h-10 md:w-10 text-primary" weight="duotone" />,
     },
   ];
 

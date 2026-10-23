@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { CandidateEducation, CandidateEducationInsert } from "@/features/candidates/api/types";
-import { GraduationCap, Trash2, Edit2 } from "lucide-react";
+import { GraduationCapIcon as GraduationCap, TrashIcon as Trash2, PencilSimpleIcon as Edit2 } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DateInput } from "@/components/ui/date-input";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";

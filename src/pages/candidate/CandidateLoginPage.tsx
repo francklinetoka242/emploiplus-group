@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { WarningCircleIcon as AlertCircle, CheckCircleIcon as CheckCircle2, EyeIcon as Eye, EyeSlashIcon as EyeOff } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 import { parseAuthErrorMessage, resendConfirmationEmail } from "@/features/authentication/api/authApi";

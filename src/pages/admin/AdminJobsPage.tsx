@@ -1,16 +1,16 @@
 import React from "react";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  EyeOff,
-  ExternalLink,
-  PencilLine,
-  Plus,
-  RefreshCw,
-  Trash2,
-  UploadCloud,
-} from "lucide-react";
+  CaretLeftIcon as ChevronLeft,
+  CaretRightIcon as ChevronRight,
+  EyeIcon as Eye,
+  EyeSlashIcon as EyeOff,
+  ArrowSquareOutIcon as ExternalLink,
+  PencilLineIcon as PencilLine,
+  PlusIcon as Plus,
+  ArrowClockwiseIcon as RefreshCw,
+  TrashIcon as Trash2,
+  CloudArrowUpIcon as UploadCloud,
+} from "@phosphor-icons/react";
 import { uploadFileToStorage } from "@/services/storageService";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";

@@ -6,7 +6,7 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileDown, X } from "lucide-react";
+import { FileArrowDownIcon as FileDown, XIcon as X } from "@phosphor-icons/react";
 import type { AnalyticsFilter } from "@/features/admin/types/analytics";
 import type { UseAnalyticsOffresHook } from "@/features/admin/hooks/useAnalyticsOffres";
 

@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendUpIcon as TrendingUp, TrendDownIcon as TrendingDown } from "@phosphor-icons/react";
 import type { PeriodComparison } from "@/features/admin/types/analytics";
 
 interface PeriodComparisonDisplayProps {

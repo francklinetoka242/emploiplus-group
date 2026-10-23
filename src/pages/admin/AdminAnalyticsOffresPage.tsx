@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Download, Calendar, Filter, RotateCw } from "lucide-react";
+import { DownloadSimpleIcon as Download, CalendarBlankIcon as Calendar, FunnelIcon as Filter, ArrowClockwiseIcon as RotateCw } from "@phosphor-icons/react";
 import { useAnalyticsOffres } from "@/features/admin/hooks/useAnalyticsOffres";
 import type { AnalyticsFilter, DatePreset } from "@/features/admin/types/analytics";
 import { getDateRangeForPreset } from "@/features/admin/utils/datePresets";

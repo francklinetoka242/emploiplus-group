@@ -1,5 +1,5 @@
 import React from "react";
-import { MessageSquareText } from "lucide-react";
+import { ChatTextIcon as MessageSquareText } from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";

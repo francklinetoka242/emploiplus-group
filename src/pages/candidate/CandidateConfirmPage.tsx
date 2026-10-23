@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { CheckCircleIcon as CheckCircle } from "@phosphor-icons/react";
 
 export function CandidateConfirmPage() {
   const [searchParams] = useSearchParams();
@@ -23,19 +24,7 @@ export function CandidateConfirmPage() {
       <div className="w-full max-w-2xl rounded-[32px] border border-border bg-card p-10 shadow-xl">
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 text-blue-700">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M9 12l2 2 4-4" />
-              <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10Z" />
-            </svg>
+            <CheckCircle className="h-10 w-10" weight="duotone" aria-hidden="true" />
           </div>
           <h1 className="text-3xl font-semibold text-foreground">Confirmation réussie</h1>
           <p className="max-w-xl text-base leading-7 text-muted-foreground">

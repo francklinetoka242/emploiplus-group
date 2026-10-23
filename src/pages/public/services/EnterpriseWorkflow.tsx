@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Building2, Briefcase, Users } from "lucide-react";
+import { BuildingsIcon as Building2, BriefcaseIcon as Briefcase, UsersIcon as Users } from "@phosphor-icons/react";
 import { fadeUp } from "@/lib/animations/animations";
 
 const ENTERPRISE_FLOW = [
@@ -65,7 +65,7 @@ function WorkflowStep({ step, index }: StepProps) {
       className="group relative overflow-hidden rounded-[32px] border border-white/10 bg-slate-950 p-8 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.35)] transition hover:-translate-y-1 hover:shadow-2xl"
     >
       <div className="absolute left-4 top-8 h-12 w-12 rounded-full border border-secondary/20 bg-secondary/10 text-secondary shadow-sm shadow-secondary/10">
-        <step.icon className="m-3 h-6 w-6" />
+        <step.icon className="m-3 h-6 w-6" weight="duotone" />
       </div>
       <div className="ml-16 space-y-4">
         <p className="text-sm uppercase tracking-[0.35em] text-secondary/80">{step.phase}</p>

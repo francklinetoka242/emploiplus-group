@@ -1,5 +1,5 @@
 import React from "react";
-import { Filter, Search, X } from "lucide-react";
+import { FunnelIcon as Filter, MagnifyingGlassIcon as Search, XIcon as X } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 

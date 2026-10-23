@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, BadgeCheck, Check, Crown, Sparkles } from "lucide-react";
+import { ArrowRightIcon as ArrowRight, SealCheckIcon as BadgeCheck, CheckIcon as Check, CrownIcon as Crown, SparkleIcon as Sparkles } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import { CandidateBillingPanel } from "@/features/billing/components/CandidateBillingPanel";
 import { Badge } from "@/components/ui/badge";

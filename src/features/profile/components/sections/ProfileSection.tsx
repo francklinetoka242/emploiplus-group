@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle2, Save, User } from "lucide-react";
+import { CheckCircleIcon as CheckCircle2, FloppyDiskIcon as Save, UserIcon as User } from "@phosphor-icons/react";
 import type { CandidateProfile } from "@/features/candidates/api/types";
 import { centralAfricaCityGroups } from "@/data/locations";
 import { DateInput } from "@/components/ui/date-input";

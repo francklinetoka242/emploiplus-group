@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
-import { Megaphone, Users, Database, Search } from "lucide-react";
+import { MegaphoneIcon as Megaphone, UsersIcon as Users, DatabaseIcon as Database, MagnifyingGlassIcon as Search } from "@phosphor-icons/react";
 import hubImage from "@/assets/home/hub-emploi-main.webp";
 
 const canonical = `${BASE_URL}/services/hub-emploi-recrutement`;

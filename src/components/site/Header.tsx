@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { CaretDownIcon as ChevronDown, ListIcon as Menu, XIcon as X } from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
 import { useCandidate } from "@/hooks/useCandidate";
 import { Button } from "@/components/ui/button";

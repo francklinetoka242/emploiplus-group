@@ -18,21 +18,21 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
-  Bot,
-  Check,
-  ExternalLink,
-  LockKeyhole,
-  Loader2,
-  Mic,
-  MessageCircle,
-  MessageSquareText,
-  Power,
-  RefreshCcw,
-  Send,
-  ShieldCheck,
-  Settings2,
-  X,
-} from "lucide-react";
+  RobotIcon as Bot,
+  CheckIcon as Check,
+  ArrowSquareOutIcon as ExternalLink,
+  LockKeyIcon as LockKeyhole,
+  CircleNotchIcon as Loader2,
+  MicrophoneIcon as Mic,
+  ChatCircleIcon as MessageCircle,
+  ChatTextIcon as MessageSquareText,
+  PowerIcon as Power,
+  ArrowsCounterClockwiseIcon as RefreshCcw,
+  PaperPlaneTiltIcon as Send,
+  ShieldCheckIcon as ShieldCheck,
+  GearSixIcon as Settings2,
+  XIcon as X,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";

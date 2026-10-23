@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AuthProvider } from "@/features/authentication/context/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
+import { CandidateLoadingIndicator } from "@/components/candidate/CandidateLoadingIndicator";
 import { PublicLayout } from "@/components/site/PublicLayout";
 import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 import { ProtectedRoute } from "@/features/authentication/guards";
@@ -512,9 +513,9 @@ function AppContent() {
           <ProtectedRoute
             fallbackPath="/candidate/login"
             requiredPermissions={["dashboard.candidate"]}
-            loadingSkeleton={<CandidateDashboardSkeleton />}
+            loadingSkeleton={<CandidateLoadingIndicator />}
           >
-            {withSuspense(<CandidateLayout />, <CandidateDashboardSkeleton />)}
+            {withSuspense(<CandidateLayout />, <CandidateLoadingIndicator />)}
           </ProtectedRoute>
         }
       >

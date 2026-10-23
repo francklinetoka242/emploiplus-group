@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontalIcon as SlidersHorizontal } from "@phosphor-icons/react";
 
 interface AccountSettingsCardProps {
   onStatus: (message: string, type: "success" | "error") => void;

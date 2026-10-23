@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { MapPin } from "lucide-react";
+import { MapPinIcon as MapPin } from "@phosphor-icons/react";
 import { CandidateAvatar } from "@/components/candidate/CandidateAvatar";
 
 interface ProfileHeaderProps {

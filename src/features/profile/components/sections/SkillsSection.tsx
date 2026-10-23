@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { CandidateSkill, CandidateSkillInsert } from "@/features/candidates/api/types";
-import { Sparkles, Trash2, Edit2 } from "lucide-react";
+import { SparkleIcon as Sparkles, TrashIcon as Trash2, PencilSimpleIcon as Edit2 } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 

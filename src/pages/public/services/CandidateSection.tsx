@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Clock, FileText, ListChecks, Sparkles } from "lucide-react";
+import { ClockIcon as Clock, FileTextIcon as FileText, ListChecksIcon as ListChecks, SparkleIcon as Sparkles } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { fadeLeft, fadeRight, staggerContainer, staggerItem } from "@/lib/animations/animations";
 import { useJobs } from "@/features/jobs/hooks/useJobs";

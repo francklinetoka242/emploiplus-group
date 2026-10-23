@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { usePageSEO, BASE_URL } from "@/features/seo";
 import { supabase } from "@/integrations/supabase/client";
-import { Save, ScrollText } from "lucide-react";
+import { FloppyDiskIcon as Save, ScrollIcon as ScrollText } from "@phosphor-icons/react";
 
 const LEGAL_DOCUMENTS_KEY = "mentions_legales";
 

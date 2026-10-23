@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, X, Trash2 } from "lucide-react";
+import { PlusIcon as Plus, XIcon as X, TrashIcon as Trash2 } from "@phosphor-icons/react";
 import type { CandidateSkill } from "@/features/candidates/api/types";
 import { useCandidate } from "@/features/candidates/hooks/useCandidate";
 import { useCandidateSkills } from "@/features/candidates/hooks/useCandidateSkills";

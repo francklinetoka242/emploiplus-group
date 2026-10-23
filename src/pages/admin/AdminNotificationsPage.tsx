@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Eye, EyeOff, Plus } from "lucide-react";
+import { PencilSimpleIcon as Pencil, TrashIcon as Trash2, EyeIcon as Eye, EyeSlashIcon as EyeOff, PlusIcon as Plus } from "@phosphor-icons/react";
 import {
   createNotification,
   deleteNotification,

@@ -1,12 +1,12 @@
 ﻿import {
-  ArrowLeft,
-  Bookmark,
-  Check,
-  FileText,
-  GitCompareArrows,
-  Mail,
-  Sparkles,
-} from "lucide-react";
+  ArrowLeftIcon as ArrowLeft,
+  BookmarkSimpleIcon as Bookmark,
+  CheckIcon as Check,
+  FileTextIcon as FileText,
+  GitDiffIcon as GitCompareArrows,
+  EnvelopeIcon as Mail,
+  SparkleIcon as Sparkles,
+} from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";

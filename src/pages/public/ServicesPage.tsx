@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Briefcase,
-  Check,
-  User,
-  Sparkles,
-  Bell,
-  Zap,
-  Eye,
-  MapPin,
-  Users,
-  Layers,
-  TrendingUp,
-} from "lucide-react";
+  BriefcaseIcon as Briefcase,
+  CheckIcon as Check,
+  UserIcon as User,
+  SparkleIcon as Sparkles,
+  BellIcon as Bell,
+  LightningIcon as Zap,
+  EyeIcon as Eye,
+  MapPinIcon as MapPin,
+  UsersIcon as Users,
+  StackIcon as Layers,
+  TrendUpIcon as TrendingUp,
+} from "@phosphor-icons/react";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import candidateIllustration1 from "@/assets/services/candidate-section/candidate-step-01.webp";
@@ -162,7 +162,7 @@ export function ServicesPage() {
                       }
                     >
                       <div className="flex items-center gap-3 text-brand">
-                        <Icon className="h-5 w-5" />
+                        <Icon className="h-5 w-5" weight="duotone" />
                         <span className="font-semibold text-slate-900">{label}</span>
                       </div>
                     </div>
@@ -231,7 +231,7 @@ export function ServicesPage() {
                       }
                     >
                       <div className="flex items-center gap-3 text-secondary">
-                        <Icon className="h-5 w-5" />
+                        <Icon className="h-5 w-5" weight="duotone" />
                         <span className="font-semibold text-slate-900">{label}</span>
                       </div>
                     </div>

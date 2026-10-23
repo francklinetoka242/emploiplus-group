@@ -3,7 +3,7 @@ import FloatingBackground from "@/components/FloatingBackground";
 import AnimatedHeading from "@/components/AnimatedHeading";
 import { motion } from "framer-motion";
 import { fadeUp, fadeLeft, staggerContainer, staggerItem } from "@/lib/animations/animations";
-import { ListChecks, Sparkles, FileText, Clock } from "lucide-react";
+import { ListChecksIcon as ListChecks, SparkleIcon as Sparkles, FileTextIcon as FileText, ClockIcon as Clock } from "@phosphor-icons/react";
 
 function FeatureCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (

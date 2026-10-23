@@ -6,7 +6,7 @@ import { EcoImage } from "@/components/EcoImage";
 import { BASE_URL } from "@/features/seo";
 import { useBlogPostBySlug, usePublishedBlogPosts } from "@/hooks/usePublishedOffers";
 import { ShareButtons } from "@/components/site/ShareButtons";
-import { ArrowLeft, CalendarDays, Tag } from "lucide-react";
+import { ArrowLeftIcon as ArrowLeft, CalendarDotsIcon as CalendarDays, TagIcon as Tag } from "@phosphor-icons/react";
 
 function NotFoundPage() {
   return (

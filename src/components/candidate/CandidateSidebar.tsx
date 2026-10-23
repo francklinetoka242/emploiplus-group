@@ -16,25 +16,25 @@ import {
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { useCandidate } from "@/hooks/useCandidate";
 import {
-  Home,
-  User,
-  LogOut,
-  ChevronLeft,
-  Menu,
-  X,
-  BriefcaseBusiness,
-  BookOpen,
-  Info,
-  Mail,
-  Search,
-  ChevronDown,
-  PlusCircle,
-  Bell,
-  Heart,
-  Send,
-  Crown,
-  FilePlus,
-} from "lucide-react";
+  HouseIcon as Home,
+  UserIcon as User,
+  SignOutIcon as LogOut,
+  CaretLeftIcon as ChevronLeft,
+  ListIcon as Menu,
+  XIcon as X,
+  IdentificationBadgeIcon as BriefcaseBusiness,
+  BookOpenIcon as BookOpen,
+  InfoIcon as Info,
+  EnvelopeIcon as Mail,
+  MagnifyingGlassIcon as Search,
+  CaretDownIcon as ChevronDown,
+  PlusCircleIcon as PlusCircle,
+  BellIcon as Bell,
+  HeartIcon as Heart,
+  PaperPlaneTiltIcon as Send,
+  CrownIcon as Crown,
+  FilePlusIcon as FilePlus,
+} from "@phosphor-icons/react";
 import EcoModeToggle from "@/components/sidebar/EcoModeToggle";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 import { useEcoMode } from "@/contexts/EcoModeContext";
@@ -286,13 +286,13 @@ export function CandidateSidebar({
                             className={cn(
                               "flex h-9 w-9 items-center justify-center rounded-lg",
                               active
-                                ? "bg-secondary text-white"
+                                ? "text-white"
                                 : isDarkMode
                                   ? "bg-slate-950/90 text-white"
                                   : "bg-slate-100 text-slate-700",
                             )}
                           >
-                            <Icon className="h-5 w-5" />
+                            <Icon className="h-5 w-5" weight={active ? "fill" : "bold"} />
                           </div>
                           <span
                             className={cn(
@@ -399,13 +399,13 @@ export function CandidateSidebar({
                           className={cn(
                             "flex h-9 w-9 items-center justify-center rounded-lg",
                             active
-                              ? "bg-secondary text-white"
+                              ? "text-white"
                               : isDarkMode
                                 ? "bg-slate-950/90 text-white"
                                 : "bg-slate-100 text-slate-700",
                           )}
                         >
-                          <Icon className="h-5 w-5" />
+                          <Icon className="h-5 w-5" weight={active ? "fill" : "bold"} />
                         </div>
                         <span
                           className={cn(
@@ -546,43 +546,50 @@ export function CandidateSidebar({
         )}
         style={{ minWidth: open ? 240 : 48 }}
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onOpenChange?.(!open)}
+        <div
           className={cn(
-            "absolute right-2 top-1 z-10 h-10 w-10 rounded-lg",
-            isDarkMode
-              ? "text-slate-300 hover:bg-white/10 hover:text-white"
-              : "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
+            "relative z-20 flex shrink-0 items-center",
+            open ? "h-14 justify-between px-2 pt-2" : "h-24 flex-col justify-center gap-1 pt-2",
+            isDarkMode ? "bg-slate-950" : "bg-slate-100",
           )}
-          aria-label={open ? "Réduire le menu candidat" : "Agrandir le menu candidat"}
         >
-          {open ? <ChevronLeft className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+          <Link
+            to="/"
+            onClick={handleMenuClick}
+            aria-label="EmploiPlus Group"
+            className={cn(
+              "flex h-10 items-center rounded-lg",
+              open ? "gap-2 px-1" : "justify-center",
+            )}
+          >
+            <img src="/Logo.png" alt="" className="h-8 w-8 rounded-lg object-cover" />
+            {open && (
+              <span className="font-display text-sm font-bold text-foreground">EmploiPlus</span>
+            )}
+          </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onOpenChange?.(!open)}
+            className={cn(
+              "h-10 w-10 rounded-lg",
+              isDarkMode
+                ? "text-slate-300 hover:bg-white/10 hover:text-white"
+                : "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
+            )}
+            aria-label={open ? "Réduire le menu candidat" : "Agrandir le menu candidat"}
+          >
+            {open ? <ChevronLeft className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
 
         <TooltipProvider delayDuration={200}>
           <nav
             className={cn(
               "min-h-0 flex-1 overflow-y-auto px-2 pb-1 scrollbar-hide",
-              open ? "pt-2" : "pt-12",
             )}
           >
             <div className={cn(open ? "space-y-1.5" : "space-y-1")}>
-              <Link
-                to="/"
-                onClick={handleMenuClick}
-                aria-label="EmploiPlus Group"
-                className={cn(
-                  "flex h-10 items-center rounded-lg",
-                  open ? "gap-2 px-2" : "justify-center",
-                )}
-              >
-                <img src="/Logo.png" alt="" className="h-8 w-8 rounded-lg object-cover" />
-                {open && (
-                  <span className="font-display text-sm font-bold text-foreground">EmploiPlus</span>
-                )}
-              </Link>
               <Link
                 to="/jobs"
                 onClick={handleMenuClick}
@@ -632,7 +639,7 @@ export function CandidateSidebar({
                               ? "flex h-8 w-8 items-center justify-center rounded-lg"
                               : "flex h-8 w-8 items-center justify-center rounded-lg",
                             active
-                              ? "bg-primary/10 text-primary"
+                              ? "text-primary"
                               : isDarkMode
                                 ? "text-slate-200"
                                 : "bg-slate-100 text-slate-700",
@@ -647,6 +654,7 @@ export function CandidateSidebar({
                                   ? "text-slate-200"
                                   : "text-slate-700",
                             )}
+                            weight={active ? "fill" : "bold"}
                           />
                         </div>
                         {open && (

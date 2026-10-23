@@ -1,6 +1,6 @@
 import React from "react";
 import AnimatedHeading from "@/components/AnimatedHeading";
-import { Circle } from "lucide-react";
+import { CircleIcon as Circle } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations/animations";
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Eye, Ban, CheckCircle2, Trash2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { EyeIcon as Eye, ProhibitIcon as Ban, CheckCircleIcon as CheckCircle2, TrashIcon as Trash2, CaretDownIcon as ChevronDown, CaretUpIcon as ChevronUp, CaretLeftIcon as ChevronLeft, CaretRightIcon as ChevronRight } from "@phosphor-icons/react";
 
 import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Menu, Settings, LogOut, Loader2 } from "lucide-react";
+import { ListIcon as Menu, GearIcon as Settings, SignOutIcon as LogOut, CircleNotchIcon as Loader2 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

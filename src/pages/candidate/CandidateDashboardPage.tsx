@@ -9,20 +9,20 @@ import { Progress } from "@/components/ui/progress";
 import { SaasCard, SaasCardHeader, SaasCardContent } from "@/components/candidate/SaasCard";
 import { SaasGrid } from "@/components/candidate/SaasLayout";
 import {
-  ArrowRight,
-  CheckCircle2,
-  Circle,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  TrendingUp,
-  Calendar,
-  MapPin,
-  DollarSign,
-  BookOpen,
-  Target,
-  Send,
-} from "lucide-react";
+  ArrowRightIcon as ArrowRight,
+  CheckCircleIcon as CheckCircle2,
+  CircleIcon as Circle,
+  CaretDownIcon as ChevronDown,
+  CaretLeftIcon as ChevronLeft,
+  CaretRightIcon as ChevronRight,
+  TrendUpIcon as TrendingUp,
+  CalendarBlankIcon as Calendar,
+  MapPinIcon as MapPin,
+  CurrencyDollarIcon as DollarSign,
+  BookOpenIcon as BookOpen,
+  TargetIcon as Target,
+  PaperPlaneTiltIcon as Send,
+} from "@phosphor-icons/react";
 import { JobCard } from "@/features/jobs/components";
 import { getRecommendedJobsWithStatus, RecommendedJob } from "@/services/aiMatchingService";
 import { getCandidateCvAnalysisState, hasAnalyzableCandidateCv, hasCandidateCv } from "@/features/candidates/api/cvApi";
@@ -517,13 +517,7 @@ export function CandidateDashboardPage() {
       </Card>
 
       <Card
-        className={`next-action-card border-primary/15 shadow-sm ${
-          nextActionMode === "success"
-            ? "bg-gradient-to-r from-primary/10 via-emerald-50 to-amber-50"
-            : nextActionMode === "active"
-              ? "bg-gradient-to-r from-primary/5 via-white to-primary/10"
-              : "bg-gradient-to-r from-slate-100 via-white to-slate-50"
-        }`}
+        className="next-action-card border-primary/15 bg-card shadow-sm"
       >
         <CardContent className="relative overflow-hidden p-5 sm:p-6">
           {nextActionMode === "success" ? (

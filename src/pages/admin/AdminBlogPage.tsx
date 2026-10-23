@@ -1,21 +1,21 @@
 import React from "react";
 import {
-  Bold,
-  Eye,
-  EyeOff,
-  ExternalLink,
-  FileText,
-  Heading2,
-  Italic,
-  Link as LinkIcon,
-  List,
-  ListOrdered,
-  PencilLine,
-  Plus,
-  RefreshCw,
-  Trash2,
-  UploadCloud,
-} from "lucide-react";
+  TextBolderIcon as Bold,
+  EyeIcon as Eye,
+  EyeSlashIcon as EyeOff,
+  ArrowSquareOutIcon as ExternalLink,
+  FileTextIcon as FileText,
+  TextHTwoIcon as Heading2,
+  TextItalicIcon as Italic,
+  LinkSimpleIcon as LinkIcon,
+  ListBulletsIcon as List,
+  ListNumbersIcon as ListOrdered,
+  PencilLineIcon as PencilLine,
+  PlusIcon as Plus,
+  ArrowClockwiseIcon as RefreshCw,
+  TrashIcon as Trash2,
+  CloudArrowUpIcon as UploadCloud,
+} from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";

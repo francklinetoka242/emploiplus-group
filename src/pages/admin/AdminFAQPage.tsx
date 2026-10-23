@@ -1,7 +1,7 @@
 import React from "react";
 import { faqService, type FAQ, type FAQCategory } from "@/features/faq/api/faqService";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, X, FolderOpen } from "lucide-react";
+import { PlusIcon as Plus, PencilSimpleIcon as Pencil, TrashIcon as Trash2, XIcon as X, FolderOpenIcon as FolderOpen } from "@phosphor-icons/react";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const DEFAULT_FAQ_CATEGORIES = ["Compte", "Services", "Autres"];

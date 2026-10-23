@@ -1,4 +1,4 @@
-import { Briefcase, FileText, GraduationCap, UserCheck } from "lucide-react";
+import { BriefcaseIcon as Briefcase, FileTextIcon as FileText, GraduationCapIcon as GraduationCap, UserCheckIcon as UserCheck } from "@phosphor-icons/react";
 
 export const CANDIDATE_SERVICES = [
   {

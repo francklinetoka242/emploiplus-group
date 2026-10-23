@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { AlertCircle, Ban, CheckCircle2, Pencil, Plus, Trash2, Users } from "lucide-react";
+import { WarningCircleIcon as AlertCircle, ProhibitIcon as Ban, CheckCircleIcon as CheckCircle2, PencilSimpleIcon as Pencil, PlusIcon as Plus, TrashIcon as Trash2, UsersIcon as Users } from "@phosphor-icons/react";
 import { buildAdminCreateUserPayload } from "@/features/authentication/utils/adminCreateUserPayload";
 import { AdminSearchToolbar } from "./components/AdminSearchToolbar";
 

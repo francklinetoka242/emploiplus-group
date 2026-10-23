@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowRight, CheckCircle2, Circle } from "lucide-react";
+import { ArrowRightIcon as ArrowRight, CheckCircleIcon as CheckCircle2, CircleIcon as Circle } from "@phosphor-icons/react";
 import type { ProfileCompletionResult } from "../../types";
 
 interface CompletionSectionProps {

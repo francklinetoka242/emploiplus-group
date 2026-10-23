@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { AlertCircle, CheckCircle2, Clock3, RefreshCw } from "lucide-react";
+import { WarningCircleIcon as AlertCircle, CheckCircleIcon as CheckCircle2, ClockIcon as Clock3, ArrowClockwiseIcon as RefreshCw } from "@phosphor-icons/react";
 import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

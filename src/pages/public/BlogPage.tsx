@@ -9,7 +9,7 @@ import { ShareButtons } from "@/components/site/ShareButtons";
 import { SectionHeader } from "@/components/page/SectionHeader";
 import { PaginationNav } from "@/components/ui/pagination";
 import { staggerContainer, staggerItem } from "@/lib/animations/animations";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRightIcon as ArrowRight, StarIcon as Star } from "@phosphor-icons/react";
 
 export function BlogPage() {
   const { t } = useI18n();
@@ -66,7 +66,7 @@ export function BlogPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
                 <div className="absolute bottom-0 left-0 max-w-3xl p-5 text-white sm:p-7">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-primary">
-                  <Star className="h-3 w-3 fill-current" /> À la une
+                  <Star className="h-3 w-3" weight="fill" /> À la une
                   </span>
                   <h2 className="mt-3 font-display text-2xl font-bold leading-tight sm:text-3xl">
                     {featuredPost?.title || t("blog.title")}
@@ -151,14 +151,14 @@ export function BlogPage() {
                                   className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                                 />
                                 <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-blue-950/85 px-3 py-1.5 text-xs font-semibold text-white shadow-sm">
-                                  <Star className="size-3.5 fill-current" aria-hidden="true" />
+                                  <Star className="size-3.5" weight="fill" aria-hidden="true" />
                                   À la une
                                 </span>
                               </div>
                             ) : (
                               <div className="relative h-48 w-full bg-gradient-to-br from-secondary/20 to-brand/10">
                                 <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-blue-950/85 px-3 py-1.5 text-xs font-semibold text-white shadow-sm">
-                                  <Star className="size-3.5 fill-current" aria-hidden="true" />
+                                  <Star className="size-3.5" weight="fill" aria-hidden="true" />
                                   À la une
                                 </span>
                               </div>

@@ -53,6 +53,40 @@
   }
 }
 
+.candidate-loading-progress {
+  width: 11rem;
+  height: 0.25rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: color-mix(in srgb, var(--primary) 14%, transparent);
+}
+
+.candidate-loading-progress span {
+  display: block;
+  width: 35%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--primary);
+  animation: candidate-loading-progress 1.2s ease-in-out infinite;
+}
+
+@keyframes candidate-loading-progress {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(300%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .candidate-loading-progress span {
+    width: 60%;
+    animation: none;
+  }
+}
+
 .fab {
   position: relative;
   z-index: 20;

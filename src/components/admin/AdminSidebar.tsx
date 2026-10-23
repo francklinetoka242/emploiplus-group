@@ -3,20 +3,20 @@ import React from "react";
 import { useI18n } from "@/i18n";
 import { cn } from "@/lib/utils";
 import {
-  Bell,
-  Briefcase,
-  ChevronLeft,
-  ChevronRight,
-  FileText,
-  LayoutDashboard,
-  LogOut,
-  ScrollText,
-  ShieldCheck,
-  Sparkles,
-  Users,
-  BarChart3,
-  type LucideIcon,
-} from "lucide-react";
+  BellIcon as Bell,
+  BriefcaseIcon as Briefcase,
+  CaretLeftIcon as ChevronLeft,
+  CaretRightIcon as ChevronRight,
+  FileTextIcon as FileText,
+  SquaresFourIcon as LayoutDashboard,
+  SignOutIcon as LogOut,
+  ScrollIcon as ScrollText,
+  ShieldCheckIcon as ShieldCheck,
+  SparkleIcon as Sparkles,
+  UsersIcon as Users,
+  ChartBarIcon as BarChart3,
+  type Icon as PhosphorIcon,
+} from "@phosphor-icons/react";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 
 type AdminView =
@@ -75,7 +75,7 @@ export function AdminSidebar({
       // ignore
     }
   }, [darkMode]);
-  const navItems: { id: AdminView; label: string; icon: LucideIcon }[] = [
+  const navItems: { id: AdminView; label: string; icon: PhosphorIcon }[] = [
     {
       id: "dashboard",
       label: t("admin.sidebar.dashboard") || "Tableau de bord",
@@ -138,7 +138,11 @@ export function AdminSidebar({
                 )}
                 title={item.label}
               >
-                <Icon className={cn("h-4 w-4 flex-shrink-0", !open && "mx-auto")} />
+                <Icon
+                  className={cn("h-4 w-4 flex-shrink-0", !open && "mx-auto")}
+                  weight={active ? "fill" : "bold"}
+                  aria-hidden="true"
+                />
                 <span className={cn("text-sm font-medium", open ? "" : "hidden")}>
                   {item.label}
                 </span>

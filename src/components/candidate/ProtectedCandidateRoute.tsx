@@ -2,8 +2,8 @@ import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 import { useCandidate } from "@/hooks/useCandidate";
 import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
 import { Navigate } from "react-router-dom";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ProtectedRoute } from "@/features/authentication/guards";
+import { CandidateLoadingIndicator } from "./CandidateLoadingIndicator";
 
 interface ProtectedCandidateRouteProps {
   children: React.ReactNode;
@@ -14,15 +14,7 @@ export function ProtectedCandidateRoute({ children }: ProtectedCandidateRoutePro
   const { isLoading: authLoading } = useAuthContext();
 
   if (authLoading || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="space-y-4 w-full max-w-md p-4">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-        </div>
-      </div>
-    );
+    return <CandidateLoadingIndicator />;
   }
 
   if (!profile) {

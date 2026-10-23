@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { FileText, Download, BookOpen, Eye } from "lucide-react";
+import { FileTextIcon as FileText, DownloadSimpleIcon as Download, BookOpenIcon as BookOpen, EyeIcon as Eye } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { FilePreviewDialog } from "@/components/site/FilePreviewDialog";
 import { fetchLocalGuides } from "@/features/local-guides/localGuideService";

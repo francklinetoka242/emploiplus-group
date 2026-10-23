@@ -5,7 +5,7 @@ import { useI18n } from "@/i18n";
 import { usePageSEO, BASE_URL } from "@/features/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { ListIcon as Menu, XIcon as X } from "@phosphor-icons/react";
 import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 
 // Import sub-components from here

@@ -145,16 +145,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      const profileRequest = getCandidateProfileByUserId(session.user.id)
+        .then((profile) => ({ data: profile, error: null }))
+        .catch((candidateError) => ({ data: null, error: candidateError }));
+
+      // Avoid locking the protected route forever if the candidate profile lookup hangs.
+      const timeoutRequest = new Promise<{
+        data: Awaited<ReturnType<typeof getCandidateProfileByUserId>>;
+        error: unknown | null;
+      }>((resolve) => {
+        setTimeout(() => {
+          resolve({ data: null, error: null });
+        }, 4000);
+      });
+
       try {
-        const { data, error } = await getCandidateProfileByUserId(session.user.id)
-          .then((profile) => ({ data: profile, error: null }))
-          .catch((candidateError) => ({ data: null, error: candidateError }));
+        const result = await Promise.race([profileRequest, timeoutRequest]);
 
         if (!isMounted) {
           return;
         }
 
-        const nextHasCandidateProfile = !error && Boolean(data);
+        const nextHasCandidateProfile = Boolean(result?.data);
         setHasCandidateProfile((current) =>
           current === nextHasCandidateProfile ? current : nextHasCandidateProfile,
         );
@@ -259,8 +271,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const nextSession = data.session ?? null;
 
       setSession(nextSession);
-      // candidateAccessResolved will be reset and detectCandidateAccess will run again
-      setCandidateAccessResolved(false);
+      if (!nextSession) {
+        setCandidateAccessResolved(true);
+      } else if (sessionRef.current?.user?.id !== nextSession.user.id) {
+        setCandidateAccessResolved(false);
+      }
       setAuthLoading(false);
       setError(null);
 
@@ -271,7 +286,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setError(nextError);
       setSession(null);
-      setCandidateAccessResolved(false);
+      setCandidateAccessResolved(true);
       setAuthLoading(false);
 
       return null;
@@ -321,8 +336,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           notifyAuthStateToNative(nextSession);
         }
 
-        // Reset candidateAccessResolved so detectCandidateAccess runs again if session changed
-        setCandidateAccessResolved(false);
+        if (!nextSession) {
+          setCandidateAccessResolved(true);
+        } else if (sessionRef.current?.user?.id !== nextSession.user.id) {
+          setCandidateAccessResolved(false);
+        }
         setAuthLoading(false);
         setError(null);
       } catch (err) {
@@ -333,7 +351,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           err instanceof Error ? err.message : "Erreur lors de l’initialisation de session";
         setError(nextError);
         setSession(null);
-        setCandidateAccessResolved(false);
+        setCandidateAccessResolved(true);
         setAuthLoading(false);
       }
     };
@@ -368,7 +386,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Keep protected pages mounted when Supabase re-emits an event for the same user.
       if (identityChanged) {
-        setCandidateAccessResolved(false);
+        setCandidateAccessResolved(Boolean(normalizedNextSession) ? false : true);
       }
       setAuthLoading(false);
       setError(null);
@@ -439,7 +457,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await authApi.logoutCandidate();
       setSession(null);
       notifyAuthStateToNative(null);
-      setCandidateAccessResolved(false);
+      setCandidateAccessResolved(true);
       setAuthLoading(false);
       return true;
     } catch (err) {

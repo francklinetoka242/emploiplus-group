@@ -1,24 +1,24 @@
 import React from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
-  BadgeCheck,
-  Bookmark,
-  BookmarkCheck,
-  BriefcaseBusiness,
-  Building2,
-  CalendarDays,
-  Clipboard,
-  ClipboardCheck,
-  Clock3,
-  DollarSign,
-  ExternalLink,
-  FileText,
-  MapPin,
-  MessageSquare,
-  Send,
-  Sparkles,
-} from "lucide-react";
+  ArrowLeftIcon as ArrowLeft,
+  SealCheckIcon as BadgeCheck,
+  BookmarkSimpleIcon as Bookmark,
+  BookmarkSimpleIcon as BookmarkCheck,
+  IdentificationBadgeIcon as BriefcaseBusiness,
+  BuildingsIcon as Building2,
+  CalendarDotsIcon as CalendarDays,
+  ClipboardIcon as Clipboard,
+  ClipboardTextIcon as ClipboardCheck,
+  ClockIcon as Clock3,
+  CurrencyDollarIcon as DollarSign,
+  ArrowSquareOutIcon as ExternalLink,
+  FileTextIcon as FileText,
+  MapPinIcon as MapPin,
+  ChatIcon as MessageSquare,
+  PaperPlaneTiltIcon as Send,
+  SparkleIcon as Sparkles,
+} from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
@@ -849,9 +849,9 @@ export function JobOfferDetailPage() {
                       className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {savedOfferState ? (
-                        <BookmarkCheck className="size-4 text-primary" />
+                        <BookmarkCheck className="size-4 text-primary" weight="fill" />
                       ) : (
-                        <Bookmark className="size-4" />
+                        <Bookmark className="size-4" weight="bold" />
                       )}
                       {savingSavedOffer
                         ? "Traitement..."

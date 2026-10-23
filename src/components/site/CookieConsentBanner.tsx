@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Cookie, ShieldCheck, BarChart3, X } from "lucide-react";
+import { CookieIcon as Cookie, ShieldCheckIcon as ShieldCheck, ChartBarIcon as BarChart3, XIcon as X } from "@phosphor-icons/react";
 
 interface CookiePreferences {
   supabase: boolean;

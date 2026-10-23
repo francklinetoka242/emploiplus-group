@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom";
 import {
-  Building2,
-  Check,
-  ClipboardList,
-  FileCheck2,
-  FileText,
-  Globe2,
-  LockKeyhole,
-  Settings2,
-  Users,
-  Zap,
-} from "lucide-react";
+  BuildingsIcon as Building2,
+  CheckIcon as Check,
+  ClipboardTextIcon as ClipboardList,
+  FileTextIcon as FileCheck2,
+  FileTextIcon as FileText,
+  GlobeIcon as Globe2,
+  LockKeyIcon as LockKeyhole,
+  GearSixIcon as Settings2,
+  UsersIcon as Users,
+  LightningIcon as Zap,
+} from "@phosphor-icons/react";
 import SEO from "@/components/SEO";
 import {
   Accordion,
@@ -234,7 +234,7 @@ export default function SolutionsEntreprisePage() {
                       <div className="p-6 pb-5 md:p-7 md:pb-5">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                            <Icon className="size-5" aria-hidden="true" />
+                            <Icon className="size-5" weight="duotone" aria-hidden="true" />
                           </div>
                         </div>
                         <h3 className="mt-7 text-2xl font-bold leading-tight tracking-tight text-slate-950">
@@ -360,7 +360,7 @@ export default function SolutionsEntreprisePage() {
                     className={`absolute h-8 w-14 border-t-2 border-dashed border-primary ${index % 2 === 1 ? "-bottom-4 right-5" : "-top-4 right-5"}`}
                   />
                   <div className="relative z-10 flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-                    <Icon className="size-5" aria-hidden="true" />
+                    <Icon className="size-5" weight="duotone" aria-hidden="true" />
                   </div>
                   <h3 className="relative z-10 mt-5 text-base font-bold leading-tight text-slate-950">
                     {title}

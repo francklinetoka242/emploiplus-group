@@ -12,17 +12,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  AlertCircle,
-  BadgeDollarSign,
-  Bookmark,
-  BriefcaseBusiness,
-  Building2,
-  CalendarDays,
-  Clock3,
-  Eye,
-  Loader2,
-  Trash2,
-} from "lucide-react";
+  WarningCircleIcon as AlertCircle,
+  CurrencyCircleDollarIcon as BadgeDollarSign,
+  BookmarkSimpleIcon as Bookmark,
+  IdentificationBadgeIcon as BriefcaseBusiness,
+  BuildingsIcon as Building2,
+  CalendarDotsIcon as CalendarDays,
+  ClockIcon as Clock3,
+  EyeIcon as Eye,
+  CircleNotchIcon as Loader2,
+  TrashIcon as Trash2,
+} from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCandidate } from "@/hooks/useCandidate";
 import {

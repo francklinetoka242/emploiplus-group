@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { BarChart3, BookOpen, BriefcaseBusiness, Handshake, Plus, Settings2, TrendingUp } from "lucide-react";
+import { ChartBarIcon as BarChart3, BookOpenIcon as BookOpen, IdentificationBadgeIcon as BriefcaseBusiness, HandshakeIcon as Handshake, PlusIcon as Plus, GearSixIcon as Settings2, TrendUpIcon as TrendingUp } from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
@@ -18,22 +18,22 @@ export function AboutPage() {
 
   const values = [
     {
-      icon: <Handshake className="h-7 w-7 text-brand" aria-hidden="true" />,
+      icon: <Handshake className="h-7 w-7 text-brand" weight="duotone" aria-hidden="true" />,
       title: t("about.values.item1.title"),
       description: t("about.values.item1.description"),
     },
     {
-      icon: <Settings2 className="h-7 w-7 text-brand" aria-hidden="true" />,
+      icon: <Settings2 className="h-7 w-7 text-brand" weight="duotone" aria-hidden="true" />,
       title: t("about.values.item2.title"),
       description: t("about.values.item2.description"),
     },
     {
-      icon: <TrendingUp className="h-7 w-7 text-brand" aria-hidden="true" />,
+      icon: <TrendingUp className="h-7 w-7 text-brand" weight="duotone" aria-hidden="true" />,
       title: t("about.values.item3.title"),
       description: t("about.values.item3.description"),
     },
     {
-      icon: <BriefcaseBusiness className="h-7 w-7 text-brand" aria-hidden="true" />,
+      icon: <BriefcaseBusiness className="h-7 w-7 text-brand" weight="duotone" aria-hidden="true" />,
       title: "Accompagnement",
       description:
         "Accompagner les talents dans leur développement professionnel et aider les organisations à renforcer leurs opérations, leur performance et leurs ressources humaines.",

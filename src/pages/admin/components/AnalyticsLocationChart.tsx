@@ -6,7 +6,7 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin } from "lucide-react";
+import { MapPinIcon as MapPin } from "@phosphor-icons/react";
 import type { LocationAnalytics } from "@/features/admin/types/analytics";
 
 interface AnalyticsLocationChartProps {

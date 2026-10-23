@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
+import { CheckCircleIcon as CheckCircle2, WarningCircleIcon as AlertCircle, ArrowLeftIcon as ArrowLeft } from "@phosphor-icons/react";
 import { parseAuthErrorMessage, requestPasswordReset } from "@/features/authentication/api/authApi";
 import favicon from "@/assets/favicon.ico";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";

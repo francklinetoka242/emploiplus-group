@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  BriefcaseBusiness,
-  Check,
-  Clock3,
-  FileCheck2,
-  Scale,
-  ShieldCheck,
-  Users,
-  Zap,
-} from "lucide-react";
+  IdentificationBadgeIcon as BriefcaseBusiness,
+  CheckIcon as Check,
+  ClockIcon as Clock3,
+  FileTextIcon as FileCheck2,
+  ScalesIcon as Scale,
+  ShieldCheckIcon as ShieldCheck,
+  UsersIcon as Users,
+  LightningIcon as Zap,
+} from "@phosphor-icons/react";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { BASE_URL } from "@/features/seo";

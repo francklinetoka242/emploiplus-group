@@ -7,7 +7,7 @@
 - Templates : apercus inline `CVPreview`, `CompactCVPreview` et `TemplateThumbnail` ; donnees additionnelles dans `src/data/cvTemplates.ts`.
 - Routes : selection `/candidate/create-cv`, categories `/minimaliste` et `/modern`, editeurs avec `:modelId`.
 - UI : composants locaux de style shadcn/Radix dans `src/components/ui` (Card, Button, Dialog, Input, Label, Textarea).
-- Icones : `lucide-react` (Eye, Download, Phone, Mail, MapPin, UserRound).
+- Icones : `@phosphor-icons/react` ; Bold pour les interfaces denses, Duotone pour les services et Fill pour les elements actifs.
 - Design tokens : variables CSS exposees via `@theme inline` dans `src/styles.css` ; couleurs, rayons et ombres en tokens.
 - Typographie : Inter pour le texte et Plus Jakarta Sans pour l’affichage, declarees dans `src/styles.css`.
 - Mise en page CV : CSS Grid pour le modele deux colonnes, Flex pour les en-tetes/contact ; format A4 via `aspect-ratio`.

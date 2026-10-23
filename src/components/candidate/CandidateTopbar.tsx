@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Settings, LogOut, ChevronDown, Menu, Loader2, User } from "lucide-react";
+import { GearIcon as Settings, SignOutIcon as LogOut, CaretDownIcon as ChevronDown, ListIcon as Menu, CircleNotchIcon as Loader2, UserIcon as User } from "@phosphor-icons/react";
 import { NotificationsDropdown } from "./NotificationsDropdown";
 import { CandidateAvatar } from "./CandidateAvatar";
 import { useNotifications } from "@/hooks/useNotifications";

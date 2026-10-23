@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { usePageSEO, BASE_URL } from "@/features/seo";
 import { supabase } from "@/integrations/supabase/client";
-import { Save, FileText } from "lucide-react";
+import { FloppyDiskIcon as Save, FileTextIcon as FileText } from "@phosphor-icons/react";
 
 function getDefaultCguContent(): string {
   return `# Conditions Générales d'Utilisation

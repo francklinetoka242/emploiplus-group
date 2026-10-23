@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { usePageSEO, BASE_URL } from "@/features/seo";
 import { supabase } from "@/integrations/supabase/client";
-import { Save, ShieldCheck } from "lucide-react";
+import { FloppyDiskIcon as Save, ShieldCheckIcon as ShieldCheck } from "@phosphor-icons/react";
 
 export function AdminPrivacyPolicyPage() {
   const [content, setContent] = React.useState<string>("");

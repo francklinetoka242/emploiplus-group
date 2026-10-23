@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Download, FileText, Loader2 } from "lucide-react";
+import { DownloadSimpleIcon as Download, FileTextIcon as FileText, CircleNotchIcon as Loader2 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { jsPDF } from "jspdf";

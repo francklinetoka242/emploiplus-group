@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useState } from "react";
 import { usePageSEO } from "@/features/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings } from "lucide-react";
+import { GearIcon as Settings } from "@phosphor-icons/react";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 
 const CANDIDATE_THEME_STORAGE_KEY = "candidate-theme";

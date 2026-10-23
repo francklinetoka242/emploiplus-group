@@ -23,7 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Edit2, Trash2, Globe, AlertCircle } from "lucide-react";
+import { PlusIcon as Plus, PencilSimpleIcon as Edit2, TrashIcon as Trash2, GlobeHemisphereWestIcon as Globe, WarningCircleIcon as AlertCircle } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCandidate } from "@/features/candidates/hooks/useCandidate";
 import type { CandidateLanguage } from "@/features/candidates/api/types";

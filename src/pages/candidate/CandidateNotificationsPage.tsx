@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { NotificationRecord } from "@/integrations/supabase/notifications";
-import { Trash2, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
+import { TrashIcon as Trash2, CheckCircleIcon as CheckCircle2, CircleNotchIcon as Loader2, ArrowRightIcon as ArrowRight } from "@phosphor-icons/react";
 import { useNotifications } from "@/hooks/useNotifications";
 
 const typeColors: Record<string, string> = {

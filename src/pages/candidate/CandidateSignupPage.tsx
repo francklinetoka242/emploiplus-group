@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { WarningCircleIcon as AlertCircle, CheckCircleIcon as CheckCircle2, EyeIcon as Eye, EyeSlashIcon as EyeOff } from "@phosphor-icons/react";
 import { parseAuthErrorMessage } from "@/features/authentication/api/authApi";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { signupSchema, type SignupFormValues } from "@/features/forms/schemas/auth.schemas";

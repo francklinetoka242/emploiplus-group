@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link2, Check, Facebook, Linkedin, Share2, MessageSquare } from "lucide-react";
+import { LinkSimpleIcon as Link2, CheckIcon as Check, FacebookLogoIcon as Facebook, LinkedinLogoIcon as Linkedin, ShareNetworkIcon as Share2, ChatIcon as MessageSquare } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { buildShareUrls } from "@/utils/share";
 import { BASE_URL } from "@/features/seo";

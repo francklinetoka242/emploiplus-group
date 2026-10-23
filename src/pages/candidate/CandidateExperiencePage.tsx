@@ -17,7 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Edit2, Trash2, Briefcase } from "lucide-react";
+import { PlusIcon as Plus, PencilSimpleIcon as Edit2, TrashIcon as Trash2, BriefcaseIcon as Briefcase } from "@phosphor-icons/react";
 import type { CandidateExperience } from "@/features/candidates/api/types";
 import { useCandidate } from "@/features/candidates/hooks/useCandidate";
 import { useCandidateExperiences } from "@/features/candidates/hooks/useCandidateExperiences";

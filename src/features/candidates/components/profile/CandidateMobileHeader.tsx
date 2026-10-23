@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { ListIcon as Menu } from "@phosphor-icons/react";
 
 export function CandidateMobileHeader() {
   return (

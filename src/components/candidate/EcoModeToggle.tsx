@@ -13,7 +13,7 @@ import React from "react";
 import { useEcoMode } from "@/contexts/EcoModeContext";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { Leaf, Zap, ToggleLeft, ToggleRight } from "lucide-react";
+import { LeafIcon as Leaf, LightningIcon as Zap, ToggleLeftIcon as ToggleLeft, ToggleRightIcon as ToggleRight } from "@phosphor-icons/react";
 
 interface EcoModeToggleProps {
   /**
