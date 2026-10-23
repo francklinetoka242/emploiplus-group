@@ -130,7 +130,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
         {/* Contenu principal */}
         <div
           className={cn(
-            "flex min-h-0 min-w-0 flex-1 flex-col transition-all duration-300 ease-in-out",
+            "flex min-h-0 min-w-0 flex-1 flex-col bg-slate-100 transition-all duration-300 ease-in-out dark:bg-slate-900",
             open ? "md:ml-60" : "md:ml-12",
           )}
         >
@@ -153,7 +153,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
               "min-w-0 touch-pan-y",
               isCvPage
                 ? "w-full flex-none overflow-visible"
-                : "min-h-0 flex-1 overflow-y-auto overflow-x-clip overscroll-y-contain",
+                : "min-h-0 flex-1 overflow-y-auto overflow-x-clip overscroll-y-contain bg-background md:rounded-[20px]",
             )}
           >
             <div className="min-w-0 w-full">

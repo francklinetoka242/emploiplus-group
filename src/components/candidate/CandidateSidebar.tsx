@@ -191,10 +191,10 @@ export function CandidateSidebar({
         )}
         <aside
           className={cn(
-            "fixed left-0 top-0 z-50 h-screen w-4/5 flex flex-col shadow-2xl md:hidden",
+            "fixed left-0 top-0 z-50 h-screen w-4/5 flex flex-col md:hidden",
             isDarkMode
               ? "bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100"
-              : "bg-white text-slate-900",
+              : "bg-slate-100 text-slate-900",
             open ? "translate-x-0" : "-translate-x-full",
           )}
         >
@@ -222,7 +222,7 @@ export function CandidateSidebar({
           <nav
             className={cn(
               "flex-1 overflow-y-auto px-2 py-2 scrollbar-hide",
-              isDarkMode ? "" : "bg-white",
+              isDarkMode ? "" : "bg-slate-100",
             )}
           >
             <div className="space-y-2">
@@ -358,8 +358,8 @@ export function CandidateSidebar({
                 className={cn(
                   `relative flex items-center gap-2.5 rounded-xl px-3 py-1.5 ${sidebarHoverMotion}`,
                   isDarkMode
-                    ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
-                    : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                    ? "bg-transparent text-slate-200 hover:bg-white/5"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200/70",
                 )}
               >
                 <div
@@ -538,10 +538,10 @@ export function CandidateSidebar({
       {renderSupportDialog()}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 hidden h-screen flex-col shadow-2xl md:flex",
+          "fixed left-0 top-0 z-40 hidden h-screen flex-col md:flex",
           isDarkMode
             ? "bg-gradient-to-b from-slate-950 to-slate-900 text-slate-100"
-            : "bg-white text-slate-900",
+            : "bg-slate-100 text-slate-900",
           open ? "w-60" : "w-12",
         )}
         style={{ minWidth: open ? 240 : 48 }}
@@ -565,21 +565,35 @@ export function CandidateSidebar({
           <nav
             className={cn(
               "min-h-0 flex-1 overflow-y-auto px-2 pb-1 scrollbar-hide",
-              open ? "pt-1" : "pt-12",
+              open ? "pt-2" : "pt-12",
             )}
           >
             <div className={cn(open ? "space-y-1.5" : "space-y-1")}>
+              <Link
+                to="/"
+                onClick={handleMenuClick}
+                aria-label="EmploiPlus Group"
+                className={cn(
+                  "flex h-10 items-center rounded-lg",
+                  open ? "gap-2 px-2" : "justify-center",
+                )}
+              >
+                <img src="/Logo.png" alt="" className="h-8 w-8 rounded-lg object-cover" />
+                {open && (
+                  <span className="font-display text-sm font-bold text-foreground">EmploiPlus</span>
+                )}
+              </Link>
               <Link
                 to="/jobs"
                 onClick={handleMenuClick}
                 className={cn(
                   cn(
-                    `relative flex items-center rounded-lg ${sidebarHoverMotion}`,
+                    `relative mt-3 flex items-center rounded-lg ${sidebarHoverMotion}`,
                     open ? "gap-2 px-3 py-1" : "justify-center gap-1 px-1 py-1",
                   ),
                   isDarkMode
-                    ? "bg-slate-950/90 text-slate-200 hover:bg-slate-900/90"
-                    : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                    ? "bg-transparent text-slate-200 hover:bg-white/5"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200/70",
                 )}
               >
                 <div

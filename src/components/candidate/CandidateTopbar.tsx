@@ -64,7 +64,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
   };
 
   return (
-    <header className="hidden md:flex bg-background border-b border-border px-6 py-4 w-full">
+    <header className="hidden w-full bg-slate-100 px-6 py-2 dark:bg-slate-900 md:flex">
       <div className="flex items-center justify-between max-w-full w-full">
         {/* Left: Menu Toggle and public links */}
         <div className="flex items-center gap-2 overflow-x-auto">

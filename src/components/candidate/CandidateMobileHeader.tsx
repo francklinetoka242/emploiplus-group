@@ -39,7 +39,7 @@ export function CandidateMobileHeader({ title, onMenuOpen, onLogout }: Candidate
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-background px-4 shadow-sm md:hidden">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border bg-slate-100 px-4 shadow-sm dark:bg-slate-900 md:hidden">
       {/* Hamburger Button */}
       <Button
         variant="ghost"
