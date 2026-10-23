@@ -5,6 +5,7 @@ import { useI18n } from "@/i18n";
 import { useCandidate } from "@/hooks/useCandidate";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { SERVICE_NAV_LINKS } from "@/constants/serviceNavigation";
 
 export function SiteHeader() {
   const { t } = useI18n();
@@ -28,13 +29,6 @@ export function SiteHeader() {
     { to: "/about", label: t("nav.about") },
     { to: "/faq", label: t("nav.faq") },
   ];
-  const serviceLinks = [
-    { to: "/services/mise-disposition-rh", label: "Mise à disposition" },
-    { to: "/services/recrutement", label: "Recrutement" },
-    { to: "/services/externalisation", label: "Externalisation" },
-    { to: "/services/conseil-formation", label: "Formation & Conseil" },
-  ];
-
   return (
     <header
       className={cn(
@@ -89,15 +83,15 @@ export function SiteHeader() {
                 {servicesOpen ? (
                   <div
                     role="menu"
-                    className="absolute left-0 top-full z-50 mt-1 w-64 rounded-xl border border-border bg-background p-2 shadow-lg"
+                    className="absolute left-0 top-full z-50 mt-1 w-max max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-background/80 p-2 shadow-lg backdrop-blur-md"
                   >
-                    {serviceLinks.map((service) => (
+                    {SERVICE_NAV_LINKS.map((service) => (
                       <NavLink
                         key={service.to}
                         to={service.to}
                         role="menuitem"
                         onClick={() => setServicesOpen(false)}
-                        className="block rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        className="block whitespace-nowrap rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                       >
                         {service.label}
                       </NavLink>
@@ -177,7 +171,7 @@ export function SiteHeader() {
                   </button>
                   {servicesOpen ? (
                     <div role="menu" className="mt-1 space-y-1 border-l border-border pl-3">
-                      {serviceLinks.map((service) => (
+                      {SERVICE_NAV_LINKS.map((service) => (
                         <Link
                           key={service.to}
                           to={service.to}

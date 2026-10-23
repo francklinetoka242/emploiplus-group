@@ -8,6 +8,7 @@ import mainJcImage from "@/assets/home/main-j-c.webp";
 import { useEcoMode } from "@/contexts/EcoModeContext";
 import logoMonago from "@/assets/partners/logo-monago.webp";
 import { Button } from "@/components/ui/button";
+import { SERVICE_NAV_LINKS } from "@/constants/serviceNavigation";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { DEFAULT_SEO, BASE_URL } from "@/features/seo";
@@ -37,6 +38,7 @@ import { JobCard } from "@/features/jobs/components";
 function HeroSection() {
   const { isEcoMode } = useEcoMode();
   const { t } = useI18n();
+  const [servicesOpen, setServicesOpen] = useState(false);
 
   if (isEcoMode) {
     return (
@@ -105,13 +107,39 @@ function HeroSection() {
               >
                 <Link to="/jobs">{t("home.hero.cta.jobs")}</Link>
               </Button>
-              <Button
-                asChild
-                size="lg"
-                className="bg-accent text-secondary-foreground hover:bg-accent/90 shadow-lg"
+              <div
+                className="relative"
+                onMouseEnter={() => setServicesOpen(true)}
+                onMouseLeave={() => setServicesOpen(false)}
               >
-                <Link to="/services">{t("home.hero.cta.services")}</Link>
-              </Button>
+                <Button
+                  size="lg"
+                  aria-expanded={servicesOpen}
+                  aria-haspopup="menu"
+                  onClick={() => setServicesOpen((isOpen) => !isOpen)}
+                  className="bg-accent text-secondary-foreground hover:bg-accent/90 shadow-lg"
+                >
+                  {t("home.hero.cta.services")}
+                </Button>
+                {servicesOpen ? (
+                  <div
+                    role="menu"
+                    className="absolute left-0 top-full z-50 mt-1 w-max max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-background/80 p-2 shadow-lg backdrop-blur-md"
+                  >
+                    {SERVICE_NAV_LINKS.map((service) => (
+                      <Link
+                        key={service.to}
+                        to={service.to}
+                        role="menuitem"
+                        onClick={() => setServicesOpen(false)}
+                        className="block whitespace-nowrap rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      >
+                        {service.label}
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             </motion.div>
           </motion.div>
         </div>
