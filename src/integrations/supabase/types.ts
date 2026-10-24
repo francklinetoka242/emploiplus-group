@@ -381,6 +381,24 @@ export type Database = {
         };
         Relationships: [];
       };
+      notification_dismissals: {
+        Row: {
+          notification_id: string;
+          dismissed_at: string;
+          user_id: string;
+        };
+        Insert: {
+          notification_id: string;
+          dismissed_at?: string;
+          user_id: string;
+        };
+        Update: {
+          notification_id?: string;
+          dismissed_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       candidates: {
         Row: {
           id: string;

@@ -45,9 +45,8 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   const location = useLocation();
   const { open, setOpen } = useCandidateSidebar();
   const { logout } = useCandidate();
-  const [isMaeliseCollapsed, setIsMaeliseCollapsed] = useState(false);
+  const [isMaeliseCollapsed, setIsMaeliseCollapsed] = useState(true);
   const toggleMaelise = () => setIsMaeliseCollapsed((previous) => !previous);
-  const isCvPage = location.pathname.startsWith("/candidate/create-cv");
   const isCandidateHomePage = location.pathname === "/candidate/public";
   const keepHeaderVisible =
     location.pathname === "/candidate/public/jobs" || location.pathname === "/candidate/profile";
@@ -105,7 +104,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   }, [keepHeaderVisible]);
 
   return (
-    <div className={cn("flex min-h-screen flex-col bg-background text-foreground", !isCvPage && "h-screen overflow-hidden")}>
+    <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
       {/* Mobile Header (visible uniquement sur mobile) */}
       <div
         className={cn(
@@ -126,14 +125,9 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
       <CandidateSidebar open={open} onOpenChange={setOpen} onLogout={logout} isDrawer={true} />
 
       {/* Layout Desktop */}
-      <div className={cn("flex min-h-0 flex-1 flex-col md:flex-row", isCvPage && "min-h-screen")}>
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         {/* Sidebar Desktop (visible uniquement sur desktop) */}
-        <CandidateSidebar
-          open={open}
-          onOpenChange={setOpen}
-          onLogout={logout}
-          isDrawer={false}
-        />
+        <CandidateSidebar open={open} onOpenChange={setOpen} onLogout={logout} isDrawer={false} />
 
         {/* Contenu principal */}
         <div
@@ -164,10 +158,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
               <main
                 ref={mainRef}
                 className={cn(
-                  "candidate-main-scroll min-w-0 touch-pan-y bg-background",
-                  isCvPage
-                    ? "w-full flex-none overflow-visible"
-                    : "min-h-0 flex-1 overflow-y-auto overflow-x-clip overscroll-y-contain",
+                  "candidate-main-scroll min-h-0 min-w-0 flex-1 touch-pan-y overflow-y-auto overflow-x-clip overscroll-y-contain bg-background",
                 )}
               >
                 <div className="min-w-0 w-full">

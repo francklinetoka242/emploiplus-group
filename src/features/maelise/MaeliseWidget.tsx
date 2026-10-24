@@ -597,11 +597,7 @@ export function MaeliseWidget({
             ) : (
               <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/25">
-                  <img
-                    src="/robot-maélise-IA.png"
-                    alt=""
-                    className="h-6 w-6 object-contain"
-                  />
+                  <img src="/robot-maélise-IA.png" alt="" className="h-6 w-6 object-contain" />
                 </div>
                 <div className="min-w-0">
                   <h2 className="truncate font-display text-sm font-bold">Maélise</h2>
@@ -632,7 +628,7 @@ export function MaeliseWidget({
                 size="icon"
                 className={`${
                   isCandidateAccount
-                  ? "h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
                     : "text-white hover:bg-white/15 hover:text-white"
                 }`}
                 aria-label="Paramètres Maélise"
@@ -738,67 +734,72 @@ export function MaeliseWidget({
                         </p>
                       </>
                     )}
-                  {!isWelcome && (
-                    <p className="whitespace-pre-wrap">
-                      {message.response?.quota_exceeded && message.response.available_at
-                        ? quotaMessage(message.response.available_at)
-                        : message.content}
-                    </p>
-                  )}
-                  {message.response?.sources.length ? (
-                    <div
-                      className={`space-y-1 border-t border-border/70 ${
-                        isCandidateAccount ? "mt-2 pt-1.5" : "mt-3 pt-2"
-                      }`}
-                    >
-                      {message.response.sources.map((source, index) =>
-                        source.url && isInternalPath(source.url) ? (
-                          <button
-                            key={`${source.title}-${index}`}
-                            type="button"
-                            className="flex w-full items-center gap-1.5 text-left text-xs font-medium text-brand hover:underline"
-                            onClick={() => handleAction(source.url!)}
-                          >
-                            <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
-                            {source.title}
-                          </button>
-                        ) : (
-                          <p
-                            key={`${source.title}-${index}`}
-                            className="flex items-center gap-1.5 text-xs text-muted-foreground"
-                          >
-                            <Check className="h-3 w-3 shrink-0 text-secondary" aria-hidden="true" />
-                            {source.title}
-                          </p>
-                        ),
-                      )}
-                    </div>
-                  ) : null}
-                  {message.response?.actions.map((action, index) =>
-                    action.type === "open_privacy_section" && action.category ? (
-                      <button
-                        key={`${action.category}-${action.label}-${index}`}
-                        type="button"
-                        className={`mr-3 text-xs font-semibold text-brand underline underline-offset-2 ${
-                          isCandidateAccount ? "mt-2" : "mt-3"
+                    {!isWelcome && (
+                      <p className="whitespace-pre-wrap">
+                        {message.response?.quota_exceeded && message.response.available_at
+                          ? quotaMessage(message.response.available_at)
+                          : message.content}
+                      </p>
+                    )}
+                    {message.response?.sources.length ? (
+                      <div
+                        className={`space-y-1 border-t border-border/70 ${
+                          isCandidateAccount ? "mt-2 pt-1.5" : "mt-3 pt-2"
                         }`}
-                        onClick={() => handlePrivacyAction(action.category!)}
                       >
-                        {action.label}
-                      </button>
-                    ) : action.type === "navigate" && action.path && isInternalPath(action.path) ? (
-                      <button
-                        key={`${action.path}-${action.label}-${index}`}
-                        type="button"
-                        className={`mr-3 text-xs font-semibold text-brand underline underline-offset-2 ${
-                          isCandidateAccount ? "mt-2" : "mt-3"
-                        }`}
-                        onClick={() => handleAction(action.path!)}
-                      >
-                        {action.label}
-                      </button>
-                    ) : null,
-                  )}
+                        {message.response.sources.map((source, index) =>
+                          source.url && isInternalPath(source.url) ? (
+                            <button
+                              key={`${source.title}-${index}`}
+                              type="button"
+                              className="flex w-full items-center gap-1.5 text-left text-xs font-medium text-brand hover:underline"
+                              onClick={() => handleAction(source.url!)}
+                            >
+                              <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
+                              {source.title}
+                            </button>
+                          ) : (
+                            <p
+                              key={`${source.title}-${index}`}
+                              className="flex items-center gap-1.5 text-xs text-muted-foreground"
+                            >
+                              <Check
+                                className="h-3 w-3 shrink-0 text-secondary"
+                                aria-hidden="true"
+                              />
+                              {source.title}
+                            </p>
+                          ),
+                        )}
+                      </div>
+                    ) : null}
+                    {message.response?.actions.map((action, index) =>
+                      action.type === "open_privacy_section" && action.category ? (
+                        <button
+                          key={`${action.category}-${action.label}-${index}`}
+                          type="button"
+                          className={`mr-3 text-xs font-semibold text-brand underline underline-offset-2 ${
+                            isCandidateAccount ? "mt-2" : "mt-3"
+                          }`}
+                          onClick={() => handlePrivacyAction(action.category!)}
+                        >
+                          {action.label}
+                        </button>
+                      ) : action.type === "navigate" &&
+                        action.path &&
+                        isInternalPath(action.path) ? (
+                        <button
+                          key={`${action.path}-${action.label}-${index}`}
+                          type="button"
+                          className={`mr-3 text-xs font-semibold text-brand underline underline-offset-2 ${
+                            isCandidateAccount ? "mt-2" : "mt-3"
+                          }`}
+                          onClick={() => handleAction(action.path!)}
+                        >
+                          {action.label}
+                        </button>
+                      ) : null,
+                    )}
                   </div>
                 </div>
               );
@@ -842,18 +843,14 @@ export function MaeliseWidget({
               <div
                 className={`flex flex-wrap justify-center ${
                   isCandidateAccount ? "gap-1.5" : "gap-2"
-                } ${
-                  isCandidateAccount ? "mx-auto max-w-[390px]" : ""
-                }`}
+                } ${isCandidateAccount ? "mx-auto max-w-[390px]" : ""}`}
               >
                 {suggestions.map((suggestion) => (
                   <button
                     key={suggestion}
                     type="button"
                     className={`rounded-full border border-border bg-card text-center text-xs font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-muted ${
-                      isCandidateAccount
-                        ? "max-w-full px-3 py-1.5 text-[11px]"
-                        : "px-4 py-2.5"
+                      isCandidateAccount ? "max-w-full px-3 py-1.5 text-[11px]" : "px-4 py-2.5"
                     }`}
                     onClick={() => void send(suggestion)}
                   >
@@ -868,11 +865,7 @@ export function MaeliseWidget({
             onSubmit={submit}
             className={`flex shrink-0 gap-2 border-t border-border ${
               isCandidateAccount ? "p-2" : "p-3"
-            } ${
-              isCandidateAccount
-                ? "bg-background min-[900px]:border-t-0"
-                : "bg-card"
-            }`}
+            } ${isCandidateAccount ? "bg-background min-[900px]:border-t-0" : "bg-card"}`}
             aria-label={t("maelise.sendFormLabel")}
           >
             <div
@@ -909,7 +902,9 @@ export function MaeliseWidget({
                 type="button"
                 size="icon"
                 variant={isCandidateAccount ? "ghost" : "outline"}
-                disabled={!speechRecognitionSupported || isLoading || (!isListening && quotaBlocked)}
+                disabled={
+                  !speechRecognitionSupported || isLoading || (!isListening && quotaBlocked)
+                }
                 aria-label={isListening ? "Arrêter la saisie vocale" : "Démarrer la saisie vocale"}
                 title={
                   speechRecognitionSupported
@@ -944,9 +939,7 @@ export function MaeliseWidget({
           {speechError && (
             <p
               className={`border-t border-border px-2 text-xs text-muted-foreground ${
-                isCandidateAccount
-                  ? "bg-background py-1.5 text-[11px]"
-                  : "bg-card pt-2"
+                isCandidateAccount ? "bg-background py-1.5 text-[11px]" : "bg-card pt-2"
               }`}
               role="status"
             >
@@ -970,7 +963,7 @@ export function MaeliseWidget({
           ref={triggerRef}
           type="button"
           size="icon"
-          className={`pointer-events-auto mb-4 mr-4 h-14 w-14 shrink-0 rounded-full bg-brand shadow-brand hover:bg-brand-deep sm:mb-0 sm:mr-0 ${
+          className={`maelise-icon-hover-trigger pointer-events-auto mb-4 mr-4 h-14 w-14 shrink-0 rounded-full bg-brand shadow-brand hover:bg-brand-deep sm:mb-0 sm:mr-0 ${
             isCandidateAccount ? "min-[900px]:hidden" : ""
           }`}
           aria-label={t("maelise.open")}
@@ -979,7 +972,7 @@ export function MaeliseWidget({
           <img
             src="/robot-maélise-IA.png"
             alt=""
-            className="h-8 w-8 object-contain"
+            className="maelise-icon-hover h-8 w-8 object-contain"
           />
         </Button>
       )}

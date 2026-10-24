@@ -5,7 +5,13 @@ import type { AuthError, PostgrestError } from "@supabase/supabase-js";
 export type NotificationType =
   "candidature" | "admin" | "evenement" | "offre" | "contact" | "job" | "blog";
 export type NotificationStatus = "active" | "masked";
-export const BROADCAST_NOTIFICATION_TYPES: NotificationType[] = ["admin", "offre", "job", "blog", "evenement"];
+export const BROADCAST_NOTIFICATION_TYPES: NotificationType[] = [
+  "admin",
+  "offre",
+  "job",
+  "blog",
+  "evenement",
+];
 
 export type NotificationRecord = {
   id: string;
@@ -31,7 +37,10 @@ export type NotificationUpdate = Partial<Omit<NotificationRecord, "id" | "create
 type NotificationInsertPayload = Database["public"]["Tables"]["notifications"]["Insert"];
 type NotificationUpdatePayload = Database["public"]["Tables"]["notifications"]["Update"];
 type NotificationListResult = { data: NotificationRecord[] | null; error: PostgrestError | null };
-type NotificationSingleResult = { data: NotificationRecord | null; error: PostgrestError | AuthError | null };
+type NotificationSingleResult = {
+  data: NotificationRecord | null;
+  error: PostgrestError | AuthError | null;
+};
 
 function normalizeNotification(row: Record<string, unknown>): NotificationRecord {
   return {
@@ -79,7 +88,8 @@ function toPostgrestError(error: unknown): PostgrestError | null {
   return null;
 }
 
-const NOTIFICATION_LIST_SELECT = "id, user_id, type, title, body, is_read, status, created_at, link, read_at";
+const NOTIFICATION_LIST_SELECT =
+  "id, user_id, type, title, body, is_read, status, created_at, link, read_at";
 
 function buildInsertPayload(payload: NotificationInsert): NotificationInsertPayload {
   return {
@@ -110,20 +120,43 @@ export async function getNotificationsForUser(userId: string): Promise<Notificat
     .from("notifications")
     .select(NOTIFICATION_LIST_SELECT)
     .eq("status", "active")
-    .or(`user_id.eq.${userId},and(user_id.is.null,type.in.(${BROADCAST_NOTIFICATION_TYPES.join(",")}))`)
+    .or(
+      `user_id.eq.${userId},and(user_id.is.null,type.in.(${BROADCAST_NOTIFICATION_TYPES.join(",")}))`,
+    )
     .order("created_at", { ascending: false });
 
   if (error) {
     return { data: null, error };
   }
 
-  const notifications = (data ?? []).map((row) => normalizeNotification(row as Record<string, unknown>));
-  const broadcastIds = notifications
+  const notifications = (data ?? []).map((row) =>
+    normalizeNotification(row as Record<string, unknown>),
+  );
+  const notificationIds = notifications.map((notification) => notification.id);
+  if (notificationIds.length === 0) {
+    return { data: notifications, error: null };
+  }
+
+  const { data: dismissals, error: dismissalsError } = await supabase
+    .from("notification_dismissals")
+    .select("notification_id")
+    .eq("user_id", userId)
+    .in("notification_id", notificationIds);
+
+  if (dismissalsError) {
+    return { data: null, error: dismissalsError };
+  }
+
+  const dismissedIds = new Set((dismissals ?? []).map((dismissal) => dismissal.notification_id));
+  const visibleNotifications = notifications.filter(
+    (notification) => !dismissedIds.has(notification.id),
+  );
+  const broadcastIds = visibleNotifications
     .filter((notification) => notification.user_id === null)
     .map((notification) => notification.id);
 
   if (broadcastIds.length === 0) {
-    return { data: notifications, error: null };
+    return { data: visibleNotifications, error: null };
   }
 
   const { data: readReceipts, error: receiptsError } = await supabase
@@ -141,11 +174,9 @@ export async function getNotificationsForUser(userId: string): Promise<Notificat
   );
 
   return {
-    data: notifications.map((notification) => {
+    data: visibleNotifications.map((notification) => {
       const readAt = receiptsByNotification.get(notification.id);
-      return readAt
-        ? { ...notification, is_read: true, read_at: readAt }
-        : notification;
+      return readAt ? { ...notification, is_read: true, read_at: readAt } : notification;
     }),
     error: null,
   };
@@ -188,7 +219,11 @@ export async function markNotificationsAsRead(ids: string[], userId: string) {
 
   if (broadcastIds.length > 0) {
     const { error } = await supabase.from("notification_reads").upsert(
-      broadcastIds.map((notification_id) => ({ notification_id, user_id: userId, read_at: readAt })),
+      broadcastIds.map((notification_id) => ({
+        notification_id,
+        user_id: userId,
+        read_at: readAt,
+      })),
       { onConflict: "notification_id,user_id" },
     );
     if (error) return { error };
@@ -197,7 +232,11 @@ export async function markNotificationsAsRead(ids: string[], userId: string) {
   return { error: null };
 }
 
-export async function maskNotificationsForUser(userId: string, type: NotificationType, title: string) {
+export async function maskNotificationsForUser(
+  userId: string,
+  type: NotificationType,
+  title: string,
+) {
   const { error } = await supabase
     .from("notifications")
     .update({ status: "masked" })
@@ -280,7 +319,7 @@ export async function createCandidateWelcomeNotification(): Promise<Notification
     type: "evenement",
     title: "Bienvenue dans votre espace candidat 👋",
     content:
-      "Bienvenue sur votre espace candidat EMPLOI+ ! Votre compte vous permet de découvrir des offres adaptées à votre profil, de gérer vos candidatures et de profiter pleinement des fonctionnalités de la plateforme. Prenez le temps de compléter votre profil pour mieux valoriser votre parcours.",
+      "Bienvenue sur votre espace candidat ! Votre compte vous permet de découvrir des offres adaptées à votre profil, de gérer vos candidatures et de profiter pleinement des fonctionnalités de la plateforme. Prenez le temps de compléter votre profil pour mieux valoriser votre parcours.",
     status: "active",
     is_read: false,
     link: "/candidate/notifications",
@@ -320,7 +359,10 @@ export async function createNotification(
   try {
     if (payload.user_id === null) {
       if (!BROADCAST_NOTIFICATION_TYPES.includes(payload.type)) {
-        return { data: null, error: toPostgrestError(new Error("This notification type cannot be broadcast.")) };
+        return {
+          data: null,
+          error: toPostgrestError(new Error("This notification type cannot be broadcast.")),
+        };
       }
 
       const { data, error } = await supabase
@@ -394,10 +436,7 @@ export async function updateNotification(
   };
 
   try {
-    let query = supabase
-      .from("notifications")
-      .update(primaryPayload)
-      .eq("id", id);
+    let query = supabase.from("notifications").update(primaryPayload).eq("id", id);
 
     if (userId) {
       query = query.eq("user_id", userId);
@@ -409,10 +448,7 @@ export async function updateNotification(
 
     if (error) {
       if (isSchemaError(error)) {
-        let fallbackQuery = supabase
-          .from("notifications")
-          .update(legacyPayload)
-          .eq("id", id);
+        let fallbackQuery = supabase.from("notifications").update(legacyPayload).eq("id", id);
 
         if (userId) {
           fallbackQuery = fallbackQuery.eq("user_id", userId);
@@ -436,10 +472,7 @@ export async function updateNotification(
       error: null,
     };
   } catch (error) {
-    let fallbackQuery = supabase
-      .from("notifications")
-      .update(legacyPayload)
-      .eq("id", id);
+    let fallbackQuery = supabase.from("notifications").update(legacyPayload).eq("id", id);
 
     if (userId) {
       fallbackQuery = fallbackQuery.eq("user_id", userId);
@@ -459,10 +492,7 @@ export async function toggleNotificationVisibility(
   userId?: string,
 ): Promise<NotificationSingleResult> {
   try {
-    let query = supabase
-      .from("notifications")
-      .update({ status })
-      .eq("id", id);
+    let query = supabase.from("notifications").update({ status }).eq("id", id);
 
     if (userId) {
       query = query.eq("user_id", userId);
@@ -474,10 +504,7 @@ export async function toggleNotificationVisibility(
 
     if (error) {
       if (isSchemaError(error)) {
-        let fallbackQuery = supabase
-          .from("notifications")
-          .update({ title: "" })
-          .eq("id", id);
+        let fallbackQuery = supabase.from("notifications").update({ title: "" }).eq("id", id);
 
         if (userId) {
           fallbackQuery = fallbackQuery.eq("user_id", userId);
@@ -511,4 +538,41 @@ export async function deleteNotification(id: string, userId?: string) {
     return query.eq("user_id", userId);
   }
   return query;
+}
+
+export async function dismissNotificationsForUser(ids: string[], userId: string) {
+  if (ids.length === 0) return { error: null };
+
+  const { data: notifications, error: selectError } = await supabase
+    .from("notifications")
+    .select("id, user_id")
+    .in("id", ids)
+    .or(`user_id.eq.${userId},user_id.is.null`);
+  if (selectError) return { error: selectError };
+
+  const personalIds = (notifications ?? [])
+    .filter((notification) => notification.user_id === userId)
+    .map((notification) => notification.id);
+  const broadcastIds = (notifications ?? [])
+    .filter((notification) => notification.user_id === null)
+    .map((notification) => notification.id);
+
+  if (broadcastIds.length > 0) {
+    const { error } = await supabase.from("notification_dismissals").upsert(
+      broadcastIds.map((notification_id) => ({ notification_id, user_id: userId })),
+      { onConflict: "notification_id,user_id" },
+    );
+    if (error) return { error };
+  }
+
+  if (personalIds.length > 0) {
+    const { error } = await supabase
+      .from("notifications")
+      .delete()
+      .in("id", personalIds)
+      .eq("user_id", userId);
+    if (error) return { error };
+  }
+
+  return { error: null };
 }

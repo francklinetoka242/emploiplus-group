@@ -147,12 +147,12 @@ export function CandidateTopbar({
               onClick={onMaeliseToggle}
               aria-label={isMaeliseCollapsed ? "Ouvrir Maélise" : "Fermer Maélise"}
               title={isMaeliseCollapsed ? "Ouvrir Maélise" : "Fermer Maélise"}
-              className="size-10 text-muted-foreground hover:text-foreground"
+              className="maelise-icon-hover-trigger size-10 text-muted-foreground hover:text-foreground"
             >
               <img
                 src="/robot-maélise-IA.png"
                 alt=""
-                className="h-7 w-7 object-contain"
+                className="maelise-icon-hover h-7 w-7 object-contain"
               />
             </Button>
           )}
@@ -182,13 +182,21 @@ export function CandidateTopbar({
               >
                 <CandidateAvatar name={userName} avatarUrl={avatarUrl} className="h-7 w-7 border" />
                 <div className="flex max-w-[190px] flex-col items-start text-left">
-                  <p className="w-full truncate text-sm font-semibold text-foreground">{userName}</p>
-                  {userEmail && <p className="w-full truncate text-xs text-muted-foreground">{userEmail}</p>}
+                  <p className="w-full truncate text-sm font-semibold text-foreground">
+                    {userName}
+                  </p>
+                  {userEmail && (
+                    <p className="w-full truncate text-xs text-muted-foreground">{userEmail}</p>
+                  )}
                 </div>
                 <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" sideOffset={8} className="w-64 rounded-2xl border-border/80 p-2 shadow-lg">
+            <DropdownMenuContent
+              align="end"
+              sideOffset={8}
+              className="w-64 rounded-2xl border-border/80 p-2 shadow-lg"
+            >
               <DropdownMenuItem asChild>
                 <Link to="/candidate/profile" className="cursor-pointer rounded-xl py-2.5">
                   <User className="mr-2 h-4 w-4 text-primary" />
@@ -202,7 +210,10 @@ export function CandidateTopbar({
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer rounded-xl py-2.5 text-destructive focus:text-destructive">
+              <DropdownMenuItem
+                onSelect={handleLogout}
+                className="cursor-pointer rounded-xl py-2.5 text-destructive focus:text-destructive"
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 Déconnexion
               </DropdownMenuItem>

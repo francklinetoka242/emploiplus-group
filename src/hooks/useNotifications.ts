@@ -1,6 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { deleteNotification as deleteNotificationFromApi, getNotificationsForUser, markNotificationsAsRead, NotificationRecord } from "@/integrations/supabase/notifications";
+import {
+  dismissNotificationsForUser,
+  getNotificationsForUser,
+  markNotificationsAsRead,
+  NotificationRecord,
+} from "@/integrations/supabase/notifications";
 import { toast } from "sonner";
 
 interface NotificationState {
@@ -48,7 +53,15 @@ const loadNotifications = async () => {
     if (notifError) throw notifError;
 
     const notifications = Array.isArray(data) ? data : [];
-    const allowedTypes = ["admin", "offre", "candidature", "evenement", "job", "contact", "blog"] as const;
+    const allowedTypes = [
+      "admin",
+      "offre",
+      "candidature",
+      "evenement",
+      "job",
+      "contact",
+      "blog",
+    ] as const;
     const userNotifications = notifications.filter(
       (notif: NotificationRecord) =>
         notif.status === "active" &&
@@ -96,8 +109,11 @@ export function useNotifications() {
       if (authError) throw authError;
       if (!user) return;
 
-      const notification = notificationState.notifications.find((item) => item.id === notificationId);
-      if (!notification || (notification.user_id !== user.id && notification.user_id !== null)) return;
+      const notification = notificationState.notifications.find(
+        (item) => item.id === notificationId,
+      );
+      if (!notification || (notification.user_id !== user.id && notification.user_id !== null))
+        return;
       const { error: updateError } = await markNotificationsAsRead([notificationId], user.id);
       if (updateError) throw updateError;
 
@@ -135,7 +151,10 @@ export function useNotifications() {
       const notifications = notificationState.notifications.map((notif) => ({
         ...notif,
         is_read: notif.user_id === user.id || notif.user_id === null ? true : notif.is_read,
-        read_at: notif.user_id === user.id || notif.user_id === null ? new Date().toISOString() : notif.read_at,
+        read_at:
+          notif.user_id === user.id || notif.user_id === null
+            ? new Date().toISOString()
+            : notif.read_at,
       }));
       const unreadCount = notifications.filter((notif) => !notif.is_read).length;
       updateState({ notifications, unreadCount });
@@ -145,25 +164,44 @@ export function useNotifications() {
     }
   }, []);
 
-  const deleteNotification = useCallback(async (notificationId: string) => {
+  const deleteNotifications = useCallback(async (notificationIds: string[]) => {
+    if (notificationIds.length === 0) return true;
+
     try {
       const {
         data: { user },
         error: authError,
       } = await supabase.auth.getUser();
       if (authError) throw authError;
-      if (!user) return;
+      if (!user) throw new Error("Vous devez être connecté pour supprimer des notifications.");
 
-      const { error: deleteError } = await deleteNotificationFromApi(notificationId, user.id);
+      const { error: deleteError } = await dismissNotificationsForUser(notificationIds, user.id);
       if (deleteError) throw deleteError;
 
-      const notifications = notificationState.notifications.filter((n) => n.id !== notificationId);
+      const deletedIds = new Set(notificationIds);
+      const notifications = notificationState.notifications.filter((n) => !deletedIds.has(n.id));
       const unreadCount = notifications.filter((notif) => !notif.is_read).length;
       updateState({ notifications, unreadCount });
+      toast.success(
+        notificationIds.length === 1
+          ? "Notification supprimée."
+          : `${notificationIds.length} notifications supprimées.`,
+      );
+      return true;
     } catch (err) {
-      console.error("Error deleting notification:", err);
+      console.error("Error deleting notifications:", err);
+      toast.error("Impossible de supprimer les notifications sélectionnées.");
+      void loadNotifications();
+      return false;
     }
   }, []);
+
+  const deleteNotification = useCallback(
+    async (notificationId: string) => {
+      await deleteNotifications([notificationId]);
+    },
+    [deleteNotifications],
+  );
 
   return {
     notifications: state.notifications,
@@ -173,6 +211,7 @@ export function useNotifications() {
     markAsRead,
     markAllAsRead,
     deleteNotification,
+    deleteNotifications,
     refetch: loadNotifications,
   };
 }

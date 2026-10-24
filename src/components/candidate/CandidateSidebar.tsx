@@ -31,7 +31,7 @@ import {
   PlusCircleIcon as PlusCircle,
   BellIcon as Bell,
   HeartIcon as Heart,
-  PaperPlaneTiltIcon as   Send,
+  PaperPlaneTiltIcon as Send,
   CrownIcon as Crown,
   FilePlusIcon as FilePlus,
 } from "@phosphor-icons/react";
@@ -80,6 +80,8 @@ const menuItems = [
     external: true,
   },
 ];
+
+const newMenuItemIds = new Set(["create-cv", "subscription", "support"]);
 
 const CANDIDATE_THEME_STORAGE_KEY = "candidate-theme";
 
@@ -393,6 +395,7 @@ export function CandidateSidebar({
                   {candidateMenuItems.map((item) => {
                     const Icon = item.icon;
                     const active = isActive(item.href);
+                    const isNew = newMenuItemIds.has(item.id);
                     const content = (
                       <>
                         <div
@@ -409,7 +412,7 @@ export function CandidateSidebar({
                         </div>
                         <span
                           className={cn(
-                            "truncate text-sm font-medium",
+                            "flex min-w-0 items-center gap-1.5 text-sm font-medium",
                             active
                               ? "text-white"
                               : isDarkMode
@@ -417,7 +420,15 @@ export function CandidateSidebar({
                                 : "text-slate-700",
                           )}
                         >
-                          {item.label}
+                          <span className="truncate">{item.label}</span>
+                          {isNew && (
+                            <span
+                              aria-hidden="true"
+                              className="shrink-0 rounded-full bg-red-600 px-1.5 py-0.5 text-[8px] font-bold leading-none text-white"
+                            >
+                              Nouveau
+                            </span>
+                          )}
                         </span>
                       </>
                     );
@@ -577,11 +588,7 @@ export function CandidateSidebar({
         </div>
 
         <TooltipProvider delayDuration={200}>
-          <nav
-            className={cn(
-              "min-h-0 flex-1 overflow-y-auto px-2 pb-1 scrollbar-hide",
-            )}
-          >
+          <nav className={cn("min-h-0 flex-1 overflow-y-auto px-2 pb-1 scrollbar-hide")}>
             <div className={cn(open ? "space-y-1.5" : "space-y-1")}>
               <Link
                 to="/jobs"
@@ -624,13 +631,12 @@ export function CandidateSidebar({
                   {candidateMenuItems.map((item) => {
                     const Icon = item.icon;
                     const active = isActive(item.href);
+                    const isNew = newMenuItemIds.has(item.id);
                     const content = (
                       <>
                         <div
                           className={cn(
-                            open
-                              ? "flex h-8 w-8 items-center justify-center rounded-lg"
-                              : "flex h-8 w-8 items-center justify-center rounded-lg",
+                            "relative flex h-8 w-8 items-center justify-center rounded-lg",
                             active
                               ? "text-primary"
                               : isDarkMode
@@ -649,11 +655,19 @@ export function CandidateSidebar({
                             )}
                             weight={active ? "fill" : "bold"}
                           />
+                          {isNew && !open && (
+                            <span
+                              aria-hidden="true"
+                              className="absolute -right-3 -top-1 rounded-full bg-red-600 px-1 py-0.5 text-[7px] font-bold leading-none text-white"
+                            >
+                              Nouveau
+                            </span>
+                          )}
                         </div>
                         {open && (
                           <span
                             className={cn(
-                              "truncate text-sm font-medium",
+                              "flex min-w-0 items-center gap-1.5 text-sm font-medium",
                               active
                                 ? "text-primary"
                                 : isDarkMode
@@ -661,7 +675,15 @@ export function CandidateSidebar({
                                   : "text-slate-700 group-hover:text-slate-900",
                             )}
                           >
-                            {item.label}
+                            <span className="truncate">{item.label}</span>
+                            {isNew && (
+                              <span
+                                aria-hidden="true"
+                                className="shrink-0 rounded-full bg-red-600 px-1.5 py-0.5 text-[8px] font-bold leading-none text-white"
+                              >
+                                Nouveau
+                              </span>
+                            )}
                           </span>
                         )}
                       </>

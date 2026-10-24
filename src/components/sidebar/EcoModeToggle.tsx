@@ -29,8 +29,14 @@ export const EcoModeToggle: React.FC<Props> = ({ className = "" }) => {
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-950/90 dark:text-slate-200">
           <Leaf className="h-5 w-5" />
         </span>
-        <span className="min-w-0 flex-1 truncate text-sm font-medium">
-          Économie de données (Mo)
+        <span className="flex min-w-0 flex-1 items-center gap-1.5 text-sm font-medium">
+          <span className="truncate">Économie de données (Mo)</span>
+          <span
+            aria-hidden="true"
+            className="shrink-0 rounded-full bg-red-600 px-1.5 py-0.5 text-[8px] font-bold leading-none text-white"
+          >
+            Nouveau
+          </span>
         </span>
         <span
           className={`relative flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${

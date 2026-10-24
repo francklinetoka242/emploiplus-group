@@ -251,6 +251,31 @@
   }
 }
 
+.maelise-icon-hover-trigger:hover .maelise-icon-hover,
+.maelise-icon-hover-trigger:focus-visible .maelise-icon-hover {
+  animation: maelise-icon-hover 480ms ease-in-out;
+}
+
+@keyframes maelise-icon-hover {
+  0%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  35% {
+    transform: rotate(-12deg) scale(1.12);
+  }
+  70% {
+    transform: rotate(8deg) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .maelise-icon-hover-trigger:hover .maelise-icon-hover,
+  .maelise-icon-hover-trigger:focus-visible .maelise-icon-hover {
+    animation: none;
+  }
+}
+
 .data-table-shell {
   border: 1px solid var(--border);
   border-radius: 0.75rem;

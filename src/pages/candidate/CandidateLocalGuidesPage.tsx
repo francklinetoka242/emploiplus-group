@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { FileTextIcon as FileText, DownloadSimpleIcon as Download, BookOpenIcon as BookOpen, EyeIcon as Eye } from "@phosphor-icons/react";
+import {
+  FileTextIcon as FileText,
+  DownloadSimpleIcon as Download,
+  EyeIcon as Eye,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { FilePreviewDialog } from "@/components/site/FilePreviewDialog";
 import { fetchLocalGuides } from "@/features/local-guides/localGuideService";
@@ -69,16 +73,11 @@ export function CandidateLocalGuidesPage() {
     <>
       <div className="space-y-6">
         <div className="p-1">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted text-foreground">
-              <BookOpen className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">Fiches conseils locales</h1>
-              <p className="text-sm text-muted-foreground">
-                Retrouvez des ressources pratiques pour mieux préparer vos démarches.
-              </p>
-            </div>
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Fiches conseils locales</h1>
+            <p className="text-sm text-muted-foreground">
+              Retrouvez des ressources pratiques pour mieux préparer vos démarches.
+            </p>
           </div>
         </div>
 
@@ -95,7 +94,11 @@ export function CandidateLocalGuidesPage() {
               >
                 <div className="flex h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border bg-muted">
                   {guide.image_url ? (
-                    <img src={guide.image_url} alt={guide.title} className="h-full w-full object-cover" />
+                    <img
+                      src={guide.image_url}
+                      alt={guide.title}
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground">
                       <FileText className="h-7 w-7" />
@@ -112,7 +115,9 @@ export function CandidateLocalGuidesPage() {
                       {guide.category}
                     </span>
                   </div>
-                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{guide.description}</p>
+                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                    {guide.description}
+                  </p>
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2 sm:justify-end">
@@ -133,7 +138,11 @@ export function CandidateLocalGuidesPage() {
                     </a>
                   </Button>
                   <ShareButtons
-                    url={typeof window !== "undefined" ? `${window.location.origin}/candidate/guides#${guide.slug}` : ""}
+                    url={
+                      typeof window !== "undefined"
+                        ? `${window.location.origin}/candidate/guides#${guide.slug}`
+                        : ""
+                    }
                     text={guide.title}
                     variant="compact"
                     showCopyLink={false}

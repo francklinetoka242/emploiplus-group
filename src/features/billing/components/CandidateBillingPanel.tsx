@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { WarningCircleIcon as AlertCircle, CheckCircleIcon as CheckCircle2, ClockIcon as Clock3, ArrowClockwiseIcon as RefreshCw } from "@phosphor-icons/react";
+import {
+  WarningCircleIcon as AlertCircle,
+  CheckCircleIcon as CheckCircle2,
+  ClockIcon as Clock3,
+  ArrowClockwiseIcon as RefreshCw,
+} from "@phosphor-icons/react";
 import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -167,9 +172,16 @@ export function CandidateBillingPanel({ targetPlanCode }: Props) {
   const hasPendingDeposit = Boolean(pendingDepositId);
 
   return (
-    <section className="space-y-4 rounded-xl border border-border bg-background p-5">
+    <section className="space-y-4 p-5">
       <div>
-        <h2 className="text-lg font-semibold text-foreground">Votre abonnement</h2>
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h2 className="text-lg font-semibold text-foreground">Votre abonnement</h2>
+          {error && (
+            <p role="alert" className="text-sm text-destructive">
+              {error}
+            </p>
+          )}
+        </div>
         {authLoading || loading ? (
           <p className="mt-2 text-sm text-muted-foreground">Chargement de votre abonnement…</p>
         ) : subscription ? (
@@ -289,15 +301,6 @@ export function CandidateBillingPanel({ targetPlanCode }: Props) {
           <RefreshCw className="mr-2 h-4 w-4" />
           Actualiser le statut auprès de PawaPay
         </Button>
-      )}
-
-      {error && (
-        <p
-          role="alert"
-          className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
-        >
-          {error}
-        </p>
       )}
 
       <Button
