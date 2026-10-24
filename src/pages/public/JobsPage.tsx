@@ -9,7 +9,6 @@ import {
   MapPinIcon as MapPin,
   MagnifyingGlassIcon as Search,
   SlidersHorizontalIcon as SlidersHorizontal,
-  SparkleIcon as Sparkles,
   XIcon as X,
 } from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
@@ -354,7 +353,9 @@ export function JobsPage() {
       query: hasNaturalCriteria ? parsed.criteria.query : searchInput.trim(),
       company: companyInput.trim(),
       location: locationInput.trim() || parsed.criteria.location || "",
-      contractType: (contractTypeInput || parsed.criteria.contractType || "") as JobSearchCriteria["contractType"],
+      contractType: (contractTypeInput ||
+        parsed.criteria.contractType ||
+        "") as JobSearchCriteria["contractType"],
       domain: domainInput || parsed.criteria.domain || "",
       salaryMin: parsed.criteria.salaryMin || "",
     };
@@ -913,11 +914,7 @@ export function JobsPage() {
                     className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl"
                   >
                     <SheetHeader className="border-b border-border px-5 py-5 pr-14 text-left sm:px-7">
-                      <SheetTitle
-                        id="recommended-for-you"
-                        className="flex items-center gap-2 text-xl"
-                      >
-                        <Sparkles className="h-5 w-5 text-primary" />
+                      <SheetTitle id="recommended-for-you" className="flex items-center text-xl">
                         Recommandé pour vous
                       </SheetTitle>
                       <SheetDescription className="leading-6">

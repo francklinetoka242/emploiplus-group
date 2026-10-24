@@ -7,7 +7,13 @@ import { deleteCandidateCV } from "@/features/candidates/api/documentsApi";
 
 export function CandidateDocumentsPage() {
   const { profile, loading } = useCandidate();
-  const { cv, documents, loading: documentsLoading, deleteDocument, addDocument } = useCandidateDocuments(profile?.id);
+  const {
+    cv,
+    documents,
+    loading: documentsLoading,
+    deleteDocument,
+    addDocument,
+  } = useCandidateDocuments(profile?.id, profile?.cv_url);
 
   usePageSEO({
     title: "Documents - EmploiPlus Group",
@@ -21,7 +27,11 @@ export function CandidateDocumentsPage() {
     }
 
     if (!profile) {
-      return <p className="text-sm text-slate-500">Veuillez vous reconnecter pour accéder à vos documents.</p>;
+      return (
+        <p className="text-sm text-slate-500">
+          Veuillez vous reconnecter pour accéder à vos documents.
+        </p>
+      );
     }
 
     const handleDeleteCv = async () => {

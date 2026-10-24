@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
-import { getCandidateDocuments, type CandidateCVState, type CandidateDocument } from "@/features/candidates/api/documentsApi";
+import {
+  getCandidateDocuments,
+  resolveCandidateDocumentUrl,
+  type CandidateCVState,
+  type CandidateDocument,
+} from "@/features/candidates/api/documentsApi";
 export type { CandidateCVState, CandidateDocument } from "@/features/candidates/api/documentsApi";
 
-export function useCandidateDocuments(profileId?: string | null) {
+export function useCandidateDocuments(profileId?: string | null, serverCvUrl?: string | null) {
   const [cv, setCv] = useState<CandidateCVState | null>(null);
   const [documents, setDocuments] = useState<CandidateDocument[]>([]);
   const [loading, setLoading] = useState(false);
@@ -30,14 +35,43 @@ export function useCandidateDocuments(profileId?: string | null) {
       try {
         setLoading(true);
         const result = await getCandidateDocuments(profileId);
+        const cv =
+          result.cv ??
+          (serverCvUrl
+            ? {
+                id: `cv-server-${profileId}`,
+                name: "CV",
+                displayName: "Mon CV",
+                date: new Date().toISOString(),
+                size: "",
+                url: await resolveCandidateDocumentUrl(serverCvUrl),
+              }
+            : null);
 
         if (!isMounted) return;
-        setCv(result.cv);
+        setCv(cv);
         setDocuments(result.documents);
       } catch (error) {
         console.error("Unable to restore candidate documents", error);
         if (isMounted) {
-          setCv(null);
+          if (serverCvUrl) {
+            try {
+              const fallbackCv = {
+                id: `cv-server-${profileId}`,
+                name: "CV",
+                displayName: "Mon CV",
+                date: new Date().toISOString(),
+                size: "",
+                url: await resolveCandidateDocumentUrl(serverCvUrl),
+              };
+              if (isMounted) setCv(fallbackCv);
+            } catch (cvError) {
+              console.error("Unable to restore candidate CV", cvError);
+              if (isMounted) setCv(null);
+            }
+          } else {
+            setCv(null);
+          }
           setDocuments([]);
         }
       } finally {
@@ -51,7 +85,7 @@ export function useCandidateDocuments(profileId?: string | null) {
     return () => {
       isMounted = false;
     };
-  }, [profileId]);
+  }, [profileId, serverCvUrl]);
 
   return { cv, documents, setCv, setDocuments, loading, addDocument, deleteDocument };
 }

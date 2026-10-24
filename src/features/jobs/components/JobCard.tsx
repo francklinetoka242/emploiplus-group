@@ -8,7 +8,6 @@ import {
   ArrowSquareOutIcon as ExternalLink,
   EnvelopeIcon as Mail,
   MapPinIcon as MapPin,
-  SparkleIcon as Sparkles,
   ArrowUpRightIcon as ArrowUpRight,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
@@ -66,7 +65,8 @@ export function JobCard({
       : null,
   ].filter(Boolean) as Array<{ label: string; href: string; icon: typeof Mail }>;
 
-  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/jobs/${job.slug}` : undefined;
+  const shareUrl =
+    typeof window !== "undefined" ? `${window.location.origin}/jobs/${job.slug}` : undefined;
   const shareText = `Offre d'emploi : ${job.title} chez ${job.company}\n\n${previewText.slice(0, 220)}\n\nOffre partagée depuis https://emploiplus-group.com`;
 
   const handleApplyClick = () => {
@@ -100,17 +100,17 @@ export function JobCard({
             </h3>
           </div>
           <div className="flex min-w-0 flex-wrap items-center gap-2 sm:justify-end">
-          {typeof matchScore === "number" ? (
-            <span className="inline-flex items-center rounded-full border border-secondary/20 bg-secondary/10 px-2.5 py-1 text-xs font-semibold text-secondary">
-              {Math.round(Math.max(0, Math.min(100, matchScore)))}% de match
-            </span>
-          ) : null}
-          {contractLabel ? (
-            <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-2.5 py-1 text-xs font-semibold uppercase text-brand">
-              <BriefcaseBusiness className="size-3.5" />
-              {contractLabel}
-            </span>
-          ) : null}
+            {typeof matchScore === "number" ? (
+              <span className="inline-flex items-center rounded-full border border-secondary/20 bg-secondary/10 px-2.5 py-1 text-xs font-semibold text-secondary">
+                {Math.round(Math.max(0, Math.min(100, matchScore)))}% de match
+              </span>
+            ) : null}
+            {contractLabel ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-brand/20 bg-brand/10 px-2.5 py-1 text-xs font-semibold uppercase text-brand">
+                <BriefcaseBusiness className="size-3.5" />
+                {contractLabel}
+              </span>
+            ) : null}
           </div>
         </div>
 
@@ -127,9 +127,12 @@ export function JobCard({
               </span>
             ) : null}
             {deadlineValue ? (
-              <span className={`flex min-w-0 items-center gap-2 ${isExpired ? "text-destructive" : ""}`}>
+              <span
+                className={`flex min-w-0 items-center gap-2 ${isExpired ? "text-destructive" : ""}`}
+              >
                 <CalendarDays className="size-4 shrink-0 text-brand" />
-                {isExpired ? "Expirée le" : "Jusqu'au"} {new Date(deadlineValue).toLocaleDateString("fr-FR")}
+                {isExpired ? "Expirée le" : "Jusqu'au"}{" "}
+                {new Date(deadlineValue).toLocaleDateString("fr-FR")}
               </span>
             ) : null}
           </div>
@@ -142,28 +145,31 @@ export function JobCard({
         ) : null}
       </div>
 
-      {!isList ? <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-y border-border/60 py-3 text-sm text-muted-foreground">
-        <div className="flex min-w-0 items-center gap-2">
-          <MapPin className="size-4 shrink-0 text-brand" />
-          <span className="truncate">{location}</span>
-        </div>
-        {deadlineValue ? (
-          <div
-            className={`flex min-w-0 items-center gap-2 ${isExpired ? "text-destructive" : ""}`}
-          >
-            <CalendarDays className="size-4 shrink-0 text-brand" />
-            <span className="truncate">
-              {isExpired ? "Expirée le" : "Jusqu'au"} {new Date(deadlineValue).toLocaleDateString("fr-FR")}
-            </span>
-          </div>
-        ) : null}
-        {job.salary ? (
+      {!isList ? (
+        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-y border-border/60 py-3 text-sm text-muted-foreground">
           <div className="flex min-w-0 items-center gap-2">
-            <BadgeDollarSign className="size-4 shrink-0 text-brand" />
-            <span className="truncate">{job.salary}</span>
+            <MapPin className="size-4 shrink-0 text-brand" />
+            <span className="truncate">{location}</span>
           </div>
-        ) : null}
-      </div> : null}
+          {deadlineValue ? (
+            <div
+              className={`flex min-w-0 items-center gap-2 ${isExpired ? "text-destructive" : ""}`}
+            >
+              <CalendarDays className="size-4 shrink-0 text-brand" />
+              <span className="truncate">
+                {isExpired ? "Expirée le" : "Jusqu'au"}{" "}
+                {new Date(deadlineValue).toLocaleDateString("fr-FR")}
+              </span>
+            </div>
+          ) : null}
+          {job.salary ? (
+            <div className="flex min-w-0 items-center gap-2">
+              <BadgeDollarSign className="size-4 shrink-0 text-brand" />
+              <span className="truncate">{job.salary}</span>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {previewText && !isList ? (
         <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-foreground/75">
@@ -173,7 +179,9 @@ export function JobCard({
 
       {!isList && !hideRequirementsSection && job.requirements ? (
         <div className="mt-3 border-l-2 border-brand/30 pl-3 text-sm leading-relaxed text-foreground/75">
-          <div className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Profil recherché</div>
+          <div className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Profil recherché
+          </div>
           <p className="line-clamp-3 whitespace-pre-line">{job.requirements}</p>
         </div>
       ) : null}
@@ -183,16 +191,17 @@ export function JobCard({
           {tags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/70 px-2.5 py-1 text-xs text-muted-foreground"
+              className="inline-flex items-center rounded-full border border-border/60 bg-background/70 px-2.5 py-1 text-xs text-muted-foreground"
             >
-              <Sparkles className="size-3" />
               {tag}
             </span>
           ))}
         </div>
       ) : null}
 
-      <div className={`${isList ? "mt-1 shrink-0 border-t border-border/60 pt-3 sm:mt-0 sm:border-0 sm:pt-0" : "mt-auto border-t border-border/60 pt-4"} flex flex-wrap items-center gap-2`}>
+      <div
+        className={`${isList ? "mt-1 shrink-0 border-t border-border/60 pt-3 sm:mt-0 sm:border-0 sm:pt-0" : "mt-auto border-t border-border/60 pt-4"} flex flex-wrap items-center gap-2`}
+      >
         <Link
           to={detailUrl}
           className="inline-flex min-h-10 items-center justify-center gap-1 rounded-xl border border-border px-3.5 py-2 text-sm font-semibold text-foreground transition hover:border-brand/40 hover:bg-brand/5 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:ring-offset-2"

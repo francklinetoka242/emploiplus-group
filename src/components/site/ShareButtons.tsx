@@ -1,5 +1,10 @@
-import { useState } from "react";
-import { LinkSimpleIcon as Link2, CheckIcon as Check, FacebookLogoIcon as Facebook, LinkedinLogoIcon as Linkedin, ShareNetworkIcon as Share2, ChatIcon as MessageSquare } from "@phosphor-icons/react";
+import { useEffect, useRef, useState } from "react";
+import {
+  LinkSimpleIcon as Link2,
+  CheckIcon as Check,
+  LinkedinLogoIcon as Linkedin,
+  ShareNetworkIcon as Share2,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { buildShareUrls } from "@/utils/share";
 import { BASE_URL } from "@/features/seo";
@@ -24,6 +29,7 @@ export function ShareButtons({
   className = "",
   showCopyLink = true,
   showQuickActions = false,
+  showFacebookAndLinkedIn = true,
   shareData,
 }: {
   url: string;
@@ -32,11 +38,26 @@ export function ShareButtons({
   className?: string;
   showCopyLink?: boolean;
   showQuickActions?: boolean;
+  showFacebookAndLinkedIn?: boolean;
   shareData?: ShareJobData;
 }) {
   const { t } = useI18n();
+  const containerRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (!(event.target instanceof Node) || !containerRef.current?.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    return () => document.removeEventListener("pointerdown", closeOnOutsideClick);
+  }, [open]);
 
   const buildShareText = (data?: ShareJobData) => {
     const lines: string[] = [];
@@ -82,7 +103,7 @@ export function ShareButtons({
 
   if (variant === "compact") {
     return (
-      <div className={`relative flex items-center gap-2 ${className}`}>
+      <div ref={containerRef} className={`relative flex items-center gap-2 ${className}`}>
         {!showQuickActions ? (
           <Button
             type="button"
@@ -90,9 +111,9 @@ export function ShareButtons({
             size="icon"
             onClick={() => setOpen((value) => !value)}
             aria-label="Partager l'offre"
-            className="h-9 w-9 rounded-full border-border bg-background/90 shadow-sm"
+            className="h-10 w-10 rounded-full border-border bg-background text-brand shadow-sm transition-colors hover:bg-primary/10 hover:text-brand [&_svg]:size-5"
           >
-            <Share2 className="size-4" />
+            <Share2 className="size-5" />
           </Button>
         ) : null}
         {showQuickActions ? (
@@ -103,30 +124,34 @@ export function ShareButtons({
               rel="noopener noreferrer"
               title="Partager sur WhatsApp"
               aria-label="Partager sur WhatsApp"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#25D366] text-white hover:opacity-90"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full hover:opacity-80"
             >
-              <MessageSquare className="size-4" />
+              <img src="/whatsapp-icon.png" alt="" className="size-8 object-contain" />
             </a>
-            <a
-              href={links.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Partager sur Facebook"
-              aria-label="Partager sur Facebook"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#1877F2] text-white hover:opacity-90"
-            >
-              <Facebook className="size-4" />
-            </a>
-            <a
-              href={links.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Partager sur LinkedIn"
-              aria-label="Partager sur LinkedIn"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#0A66C2] text-white hover:opacity-90"
-            >
-              <Linkedin className="size-4" />
-            </a>
+            {showFacebookAndLinkedIn ? (
+              <>
+                <a
+                  href={links.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Partager sur Facebook"
+                  aria-label="Partager sur Facebook"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#1877F2] text-white hover:opacity-90"
+                >
+                  <img src="/Facebook-icon.png" alt="" className="size-4 object-contain" />
+                </a>
+                <a
+                  href={links.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Partager sur LinkedIn"
+                  aria-label="Partager sur LinkedIn"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#0A66C2] text-white hover:opacity-90"
+                >
+                  <Linkedin className="size-4" />
+                </a>
+              </>
+            ) : null}
             {showCopyLink ? (
               <Button
                 type="button"
@@ -143,31 +168,38 @@ export function ShareButtons({
           </>
         ) : null}
         {open ? (
-          <div className="absolute bottom-full right-0 z-50 mb-2 flex min-w-[180px] flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-elev">
+          <div className="absolute right-0 top-full z-50 mt-2 flex min-w-[180px] items-center gap-2 rounded-2xl border border-border bg-card p-2 shadow-elev">
             <a
               href={links.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-3 py-2 text-sm font-medium text-white hover:opacity-90"
+              title="Partager sur WhatsApp"
+              aria-label="Partager sur WhatsApp"
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full hover:opacity-80"
             >
-              <MessageSquare className="size-3.5" /> WhatsApp
+              <img src="/whatsapp-icon.png" alt="" className="size-8 object-contain" />
             </a>
-            <a
-              href={links.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#1877F2] px-3 py-2 text-sm font-medium text-white hover:opacity-90"
-            >
-              <Facebook className="size-3.5" /> Facebook
-            </a>
-            <a
-              href={links.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#0A66C2] px-3 py-2 text-sm font-medium text-white hover:opacity-90"
-            >
-              <Linkedin className="size-3.5" /> LinkedIn
-            </a>
+            {showFacebookAndLinkedIn ? (
+              <>
+                <a
+                  href={links.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#1877F2] px-3 py-2 text-sm font-medium text-white hover:opacity-90"
+                >
+                  <img src="/Facebook-icon.png" alt="" className="size-3.5 object-contain" />{" "}
+                  Facebook
+                </a>
+                <a
+                  href={links.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#0A66C2] px-3 py-2 text-sm font-medium text-white hover:opacity-90"
+                >
+                  <Linkedin className="size-3.5" /> LinkedIn
+                </a>
+              </>
+            ) : null}
             {showCopyLink ? (
               <Button
                 type="button"
@@ -202,7 +234,7 @@ export function ShareButtons({
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md bg-[#1877F2] text-white hover:opacity-90 transition"
       >
-        <Facebook className="size-3.5" /> Facebook
+        <img src="/Facebook-icon.png" alt="" className="size-3.5 object-contain" /> Facebook
       </a>
       <a
         href={links.linkedin}

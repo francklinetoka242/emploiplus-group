@@ -12,13 +12,11 @@ import {
   ClipboardTextIcon as ClipboardCheck,
   ClockIcon as Clock3,
   CurrencyDollarIcon as DollarSign,
-  ArrowSquareOutIcon as ExternalLink,
   FileTextIcon as FileText,
   MapPinIcon as MapPin,
-  ChatIcon as MessageSquare,
   PaperPlaneTiltIcon as Send,
-  SparkleIcon as Sparkles,
 } from "@phosphor-icons/react";
+import { AIIcon } from "@/components/ui/AIIcon";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
@@ -138,7 +136,8 @@ export function JobOfferDetailPage() {
   }, [profile?.id, job?.id]);
 
   const isExpired = Boolean(
-    job && (job.status === "expired" || (job.deadline && new Date(job.deadline).getTime() < Date.now())),
+    job &&
+    (job.status === "expired" || (job.deadline && new Date(job.deadline).getTime() < Date.now())),
   );
 
   React.useEffect(() => {
@@ -173,7 +172,17 @@ export function JobOfferDetailPage() {
     return () => {
       mounted = false;
     };
-  }, [job?.id, job?.title, job?.company, job?.description, job?.requirements, job?.location_city, job?.location_country, job?.contract_type, isExpired]);
+  }, [
+    job?.id,
+    job?.title,
+    job?.company,
+    job?.description,
+    job?.requirements,
+    job?.location_city,
+    job?.location_country,
+    job?.contract_type,
+    isExpired,
+  ]);
 
   const canonical = slug ? `${BASE_URL}/jobs/${slug}` : `${BASE_URL}/jobs`;
   const title = job
@@ -318,7 +327,6 @@ export function JobOfferDetailPage() {
     return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString("fr-FR");
   };
 
-  const tags = (job?.tags || []).filter(Boolean);
   const requirementItems = (job?.requirements || "")
     .split(/\n+/)
     .map((item) => item.trim())
@@ -329,24 +337,21 @@ export function JobOfferDetailPage() {
       ? {
           label: applyByEmailLabel,
           href: `mailto:${job.application_email}`,
-          icon: Send,
         }
       : null,
     job?.external_link
       ? {
           label: applyExternalLabel,
           href: job.external_link,
-          icon: ExternalLink,
         }
       : null,
     job?.application_whatsapp
       ? {
           label: applyByWhatsappLabel,
           href: `https://wa.me/${job.application_whatsapp.replace(/\D/g, "")}`,
-          icon: MessageSquare,
         }
       : null,
-  ].filter(Boolean) as Array<{ label: string; href: string; icon: typeof Send }>;
+  ].filter(Boolean) as Array<{ label: string; href: string }>;
 
   // Navigate to the candidate apply flow (same behavior as the jobs listing)
   const handleApplyClick = () => {
@@ -461,10 +466,10 @@ export function JobOfferDetailPage() {
           modifiedTime={job?.updated_at || undefined}
           structuredData={seoStructuredData}
         />
-        <section className="container-page mt-0 pt-0 pb-20 md:pb-28">
-          <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
-            <div className="min-w-0 space-y-6">
-              <div className="overflow-hidden border-b border-border/70 bg-gradient-to-br from-background via-card to-primary/5 p-8">
+        <section className="container-page mt-0 pt-0 pb-20 md:pb-28 lg:h-full lg:min-h-0 lg:overflow-hidden lg:pb-0">
+          <div className="grid min-w-0 gap-8 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
+            <div className="min-w-0 space-y-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-y-contain">
+              <div className="overflow-hidden border-b border-border/70 px-8 pb-8 pt-0">
                 <div className="flex flex-col gap-6">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <Skeleton className="h-5 w-36 rounded-full" />
@@ -498,7 +503,7 @@ export function JobOfferDetailPage() {
                 ))}
               </div>
 
-              <div className="border-t border-border/70 bg-card/40 p-8">
+              <div className="border-t border-border/70 p-8">
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-11 w-11 rounded-2xl" />
                   <div className="space-y-2">
@@ -515,7 +520,7 @@ export function JobOfferDetailPage() {
                 </div>
               </div>
 
-              <div className="border-t border-border/70 bg-card/40 p-8">
+              <div className="border-t border-border/70 p-8">
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-11 w-11 rounded-2xl" />
                   <div className="space-y-2">
@@ -531,7 +536,7 @@ export function JobOfferDetailPage() {
               </div>
             </div>
 
-            <aside className="min-w-0 space-y-6">
+            <aside className="min-w-0 space-y-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-y-contain">
               <div className="rounded-xl border border-border/70 bg-card p-7">
                 <Skeleton className="h-7 w-32 rounded-xl" />
                 <Skeleton className="mt-3 h-4 w-full rounded-xl" />
@@ -585,7 +590,7 @@ export function JobOfferDetailPage() {
     {
       icon: DollarSign,
       label: t("admin.jobs.field.salary"),
-      value: job.salary || getLabel("jobs.detail.notSpecified", "À préciser"),
+      value: job.salary || getLabel("jobs.detail.salaryNotSpecified", "Non précisé"),
     },
     {
       icon: CalendarDays,
@@ -617,10 +622,10 @@ export function JobOfferDetailPage() {
         ]}
         structuredData={seoStructuredData}
       />
-      <section className="container-page mt-0 pt-0 pb-20 md:pb-28">
-        <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
-          <div className="min-w-0 space-y-6">
-            <div className="overflow-hidden border-b border-border/70 bg-gradient-to-br from-background via-card to-primary/5 p-8">
+      <section className="container-page mt-0 pt-0 pb-20 md:pb-28 lg:h-full lg:min-h-0 lg:overflow-hidden lg:pb-0">
+        <div className="grid min-w-0 gap-8 lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)] lg:grid-rows-[minmax(0,1fr)]">
+          <div className="min-w-0 space-y-6 lg:min-h-0 lg:overflow-y-auto lg:overscroll-y-contain">
+            <div className="overflow-hidden border-b border-border/70 p-8">
               <div className="flex flex-col gap-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <Link
@@ -634,6 +639,7 @@ export function JobOfferDetailPage() {
                     url={canonical}
                     text={job.title}
                     variant="compact"
+                    showFacebookAndLinkedIn={false}
                     shareData={{
                       title: job.title,
                       company: job.company,
@@ -648,38 +654,32 @@ export function JobOfferDetailPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-sm font-medium text-brand">
-                    <Sparkles className="size-4" />
-                    {getContractLabel(job.contract_type) ||
-                      getLabel("jobs.detail.opportunity", "Opportunité")}
-                  </div>
                   <div className="space-y-3">
                     <h1 className="break-words font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
                       {job.title}
                     </h1>
-                    <p className="break-words text-base text-muted-foreground">
-                      {job.company} · {location}
+                    <p className="break-words text-base text-muted-foreground">{job.company}</p>
+                  </div>
+                  <div className="max-w-3xl space-y-2">
+                    <div>
+                      <h2 className="font-display text-xl font-semibold text-foreground md:text-2xl">
+                        {getLabel("jobs.detail.descriptionTitle", "Description du poste")}
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        Ce que vous découvrirez en rejoignant l’équipe.
+                      </p>
+                    </div>
+                    <p className="whitespace-pre-line text-base leading-relaxed text-foreground/90">
+                      {job.description}
                     </p>
                   </div>
-                  <p className="max-w-3xl text-base leading-relaxed text-foreground/90">{description}</p>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-border/70 bg-background/70 px-3 py-1 text-sm text-muted-foreground"
-                    >
-                      {tag}
-                    </span>
-                  ))}
                 </div>
               </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               {overviewItems.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="border-b border-border/70 bg-card/40 p-4">
+                <div key={label} className="border-b border-border/70 p-4">
                   <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                     <Icon className="size-4 text-brand" />
                     {label}
@@ -689,29 +689,10 @@ export function JobOfferDetailPage() {
               ))}
             </div>
 
-            <div className="border-t border-border/70 bg-card/40 p-8">
-              <div className="flex items-center gap-3">
-                <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
-                  <FileText className="size-5" />
-                </div>
-                <div>
-                  <h2 className="font-display text-xl font-semibold text-foreground md:text-2xl">
-                    {getLabel("jobs.detail.descriptionTitle", "Description du poste")}
-                  </h2>
-                  <p className="text-sm text-muted-foreground">
-                    Ce que vous découvrirez en rejoignant l’équipe.
-                  </p>
-                </div>
-              </div>
-              <p className="mt-6 whitespace-pre-line text-base leading-relaxed text-foreground/90">
-                {job.description}
-              </p>
-            </div>
-
             {job.requirements ? (
-              <div className="border-t border-border/70 bg-card/40 p-8">
+              <div className="border-t border-border/70 p-8">
                 <div className="flex items-center gap-3">
-                  <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
+                  <div className="p-2.5">
                     <BadgeCheck className="size-5" />
                   </div>
                   <div>
@@ -727,9 +708,8 @@ export function JobOfferDetailPage() {
                   {requirementItems.map((item) => (
                     <li
                       key={item}
-                      className="flex gap-3 rounded-2xl border border-border/60 bg-background/70 p-3 text-sm leading-relaxed text-foreground/90"
+                      className="flex gap-3 p-3 text-sm leading-relaxed text-foreground/90"
                     >
-                      <span className="mt-2 size-2 rounded-full bg-brand" />
                       <span className="min-w-0 break-words">{item}</span>
                     </li>
                   ))}
@@ -738,7 +718,7 @@ export function JobOfferDetailPage() {
             ) : null}
 
             {isExpired ? (
-              <div className="border-t border-border/70 bg-card/40 p-8">
+              <div className="border-t border-border/70 p-8">
                 <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
                   Voici des offres similaires actuellement disponibles.
                 </h3>
@@ -760,19 +740,25 @@ export function JobOfferDetailPage() {
                       <Link
                         key={similarJob.id}
                         to={`/jobs/${similarJob.slug}`}
-                        className="block rounded-2xl border border-border/70 bg-background/70 p-4 transition hover:border-brand/30 hover:bg-primary/5"
+                        className="block rounded-2xl border border-border/70 p-4 transition hover:border-brand/30 hover:bg-primary/5"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div>
-                            <div className="text-sm font-semibold text-foreground">{similarJob.title}</div>
-                            <div className="mt-1 text-sm text-muted-foreground">{similarJob.company}</div>
+                            <div className="text-sm font-semibold text-foreground">
+                              {similarJob.title}
+                            </div>
+                            <div className="mt-1 text-sm text-muted-foreground">
+                              {similarJob.company}
+                            </div>
                           </div>
                           <span className="rounded-full border border-brand/20 bg-brand/10 px-2 py-1 text-xs font-semibold uppercase text-brand">
                             {getContractLabel(similarJob.contract_type)}
                           </span>
                         </div>
                         <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
-                          {similarJob.location_city ? <span>{similarJob.location_city}</span> : null}
+                          {similarJob.location_city ? (
+                            <span>{similarJob.location_city}</span>
+                          ) : null}
                           {similarJob.salary ? <span>{similarJob.salary}</span> : null}
                         </div>
                       </Link>
@@ -785,7 +771,7 @@ export function JobOfferDetailPage() {
                 )}
               </div>
             ) : similarJobs.length > 0 ? (
-              <div className="border-t border-border/70 bg-card/40 p-8">
+              <div className="border-t border-border/70 p-8">
                 <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
                   Vous pourriez également être intéressé
                 </h3>
@@ -794,12 +780,16 @@ export function JobOfferDetailPage() {
                     <Link
                       key={similarJob.id}
                       to={`/jobs/${similarJob.slug}`}
-                      className="block rounded-2xl border border-border/70 bg-background/70 p-4 transition hover:border-brand/30 hover:bg-primary/5"
+                      className="block rounded-2xl border border-border/70 p-4 transition hover:border-brand/30 hover:bg-primary/5"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <div className="text-sm font-semibold text-foreground">{similarJob.title}</div>
-                          <div className="mt-1 text-sm text-muted-foreground">{similarJob.company}</div>
+                          <div className="text-sm font-semibold text-foreground">
+                            {similarJob.title}
+                          </div>
+                          <div className="mt-1 text-sm text-muted-foreground">
+                            {similarJob.company}
+                          </div>
                         </div>
                         <span className="rounded-full border border-brand/20 bg-brand/10 px-2 py-1 text-xs font-semibold uppercase text-brand">
                           {getContractLabel(similarJob.contract_type)}
@@ -816,57 +806,66 @@ export function JobOfferDetailPage() {
             ) : null}
           </div>
 
-          <aside className="min-w-0 space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:overscroll-contain">
-            <div className="rounded-xl border border-border/70 bg-card p-7">
-              <h3 className="font-display text-base font-semibold text-foreground md:text-lg">{applyTitle}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{applyDescription}</p>
+          <aside className="min-w-0 space-y-4 lg:min-h-0 lg:overflow-y-auto lg:overscroll-y-contain">
+            <div className="rounded-xl border border-border/70 bg-card p-4">
+              <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
+                {applyTitle}
+              </h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                {applyDescription}
+              </p>
               {isExpired ? (
-                <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
                   Cette offre n'est plus disponible.
                 </div>
               ) : null}
-              <div className="mt-6 space-y-3">
-                {applyOptions.length > 0 ? (
-                  <div>
+              <div className="mt-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  {applyOptions.length > 0 ? (
                     <button
                       type="button"
                       onClick={handleApplyClick}
                       disabled={isExpired}
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="inline-flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-brand px-3 py-2.5 text-sm font-semibold text-brand-foreground transition hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <Send className="size-4" />
                       {isExpired ? "Offre expirée" : applyTitle}
                     </button>
-                  </div>
-                ) : null}
-
-                {profile?.id ? (
-                  <div className="mt-3">
+                  ) : null}
+                  {profile?.id ? (
                     <button
                       type="button"
                       onClick={() => void handleToggleSavedOffer()}
                       disabled={savingSavedOffer}
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-70"
+                      aria-label={
+                        savingSavedOffer
+                          ? "Enregistrement en cours"
+                          : savedOfferState
+                            ? "Retirer l’offre des offres enregistrées"
+                            : "Enregistrer l’offre"
+                      }
+                      title={
+                        savingSavedOffer
+                          ? "Enregistrement en cours"
+                          : savedOfferState
+                            ? "Offre enregistrée"
+                            : "Enregistrer l’offre"
+                      }
+                      aria-pressed={savedOfferState}
+                      className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-border text-foreground transition hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {savedOfferState ? (
                         <BookmarkCheck className="size-4 text-primary" weight="fill" />
                       ) : (
                         <Bookmark className="size-4" weight="bold" />
                       )}
-                      {savingSavedOffer
-                        ? "Traitement..."
-                        : savedOfferState
-                          ? "Offre enregistrée"
-                          : "Enregistrer l'offre"}
                     </button>
-                    {savedOfferError ? (
-                      <p className="mt-2 text-xs text-red-600">{savedOfferError}</p>
-                    ) : null}
-                  </div>
-                ) : null}
+                  ) : null}
+                </div>
+                {savedOfferError ? <p className="text-xs text-red-600">{savedOfferError}</p> : null}
 
                 {!job.application_email && !job.application_whatsapp && !job.external_link ? (
-                  <div className="rounded-2xl border border-dashed border-border/70 bg-background/60 p-4 text-sm text-muted-foreground">
+                  <div className="rounded-xl border border-dashed border-border/70 bg-background/60 p-3 text-sm text-muted-foreground">
                     Veuillez retrouver l'adresse mail de cette entreprise en bas dans la description
                   </div>
                 ) : null}
@@ -875,41 +874,37 @@ export function JobOfferDetailPage() {
 
             {/* IA Evaluation: show disabled state for anonymous visitors */}
             {!profile?.id ? (
-              <div className="rounded-xl border border-border/70 bg-background/60 p-7 text-center text-muted-foreground">
-                <div className="flex items-center gap-3 justify-center">
-                  <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
-                    <Sparkles className="size-5" />
-                  </div>
+              <div className="rounded-xl border border-border/70 bg-background/60 p-4 text-center text-muted-foreground">
+                <div className="flex items-center justify-center gap-2">
+                  <AIIcon className="h-10 w-10 shrink-0 object-contain" />
                   <div>
                     <h3 className="font-display text-base font-semibold text-muted-foreground md:text-lg">
                       Évaluation IA de votre candidature
                     </h3>
-                    <p className="text-sm mt-2 text-muted-foreground">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       Connectez-vous pour utiliser cette fonctionnalité gratuitement
                     </p>
                   </div>
                 </div>
-                <div className="mt-6 flex items-center justify-center gap-3">
+                <div className="mt-3 flex items-center justify-center gap-2">
                   <Link
                     to="/candidate/login"
-                    className="inline-flex items-center justify-center rounded-2xl border border-border px-4 py-3 text-sm font-semibold text-foreground hover:bg-primary/5"
+                    className="inline-flex items-center justify-center rounded-xl border border-border px-3 py-2 text-sm font-semibold text-foreground hover:bg-primary/5"
                   >
                     Se connecter
                   </Link>
                   <Link
                     to="/candidate/signup"
-                    className="inline-flex items-center justify-center rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-foreground hover:bg-brand/90"
+                    className="inline-flex items-center justify-center rounded-xl bg-brand px-3 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/90"
                   >
                     Créer un compte
                   </Link>
                 </div>
               </div>
             ) : (
-              <div className="rounded-xl border border-border/70 bg-card p-7">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-2xl bg-brand/10 p-2.5 text-brand">
-                    <Sparkles className="size-5" />
-                  </div>
+              <div className="rounded-xl border border-border/70 bg-card p-4">
+                <div className="flex items-center gap-2">
+                  <AIIcon className="h-10 w-10 shrink-0 object-contain" />
                   <div>
                     <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
                       Évaluation IA de votre candidature
@@ -924,9 +919,9 @@ export function JobOfferDetailPage() {
                   type="button"
                   onClick={handleAnalyzeClick}
                   disabled={analysisLoading || !profile?.id}
-                  className="mt-5 w-full rounded-2xl bg-brand text-brand-foreground hover:bg-brand/90"
+                  className="mt-3 w-full rounded-xl bg-brand py-2 text-brand-foreground hover:bg-brand/90"
                 >
-                  {analysisLoading ? "Analyse en cours…" : "Lancer l’analyse de ma compatibilité"}
+                  {analysisLoading ? "Analyse en cours…" : "Analyse de compatibilité"}
                 </Button>
 
                 {analysisLoading ? (
@@ -1045,32 +1040,6 @@ export function JobOfferDetailPage() {
                 ) : null}
               </div>
             )}
-
-            <div className="border-t border-border/70 pt-7">
-              <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
-                Informations utiles
-              </h3>
-              <div className="mt-5 space-y-3 text-sm text-muted-foreground">
-                <div className="flex items-start gap-3 rounded-2xl bg-background/70 p-3">
-                  <Building2 className="mt-0.5 size-4 text-brand" />
-                  <span>
-                    Une description claire pour aider les candidats à se projeter rapidement dans le
-                    poste.
-                  </span>
-                </div>
-                <div className="flex items-start gap-3 rounded-2xl bg-background/70 p-3">
-                  <MapPin className="mt-0.5 size-4 text-brand" />
-                  <span>
-                    Les informations de localisation et de type de contrat sont regroupées pour un
-                    repérage rapide.
-                  </span>
-                </div>
-                <div className="flex items-start gap-3 rounded-2xl bg-background/70 p-3">
-                  <Send className="mt-0.5 size-4 text-brand" />
-                  <span>Les boutons de candidature vous mènent directement vers le bon canal.</span>
-                </div>
-              </div>
-            </div>
           </aside>
         </div>
       </section>

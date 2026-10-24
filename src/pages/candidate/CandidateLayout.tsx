@@ -47,6 +47,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   const { logout } = useCandidate();
   const [isMaeliseCollapsed, setIsMaeliseCollapsed] = useState(true);
   const toggleMaelise = () => setIsMaeliseCollapsed((previous) => !previous);
+  const isJobDetailPage = location.pathname.startsWith("/jobs/");
   const isCandidateHomePage = location.pathname === "/candidate/public";
   const keepHeaderVisible =
     location.pathname === "/candidate/public/jobs" || location.pathname === "/candidate/profile";
@@ -158,13 +159,20 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
               <main
                 ref={mainRef}
                 className={cn(
-                  "candidate-main-scroll min-h-0 min-w-0 flex-1 touch-pan-y overflow-y-auto overflow-x-clip overscroll-y-contain bg-background",
+                  "candidate-main-scroll min-h-0 min-w-0 flex-1 touch-pan-y overflow-y-auto overflow-x-clip overscroll-y-contain bg-background lg:flex lg:flex-col",
+                  isJobDetailPage && "lg:overflow-hidden lg:overflow-y-hidden",
                 )}
               >
-                <div className="min-w-0 w-full">
+                <div
+                  className={cn(
+                    "min-w-0 w-full",
+                    isJobDetailPage && "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col",
+                  )}
+                >
                   <div
                     className={cn(
                       "candidate-main-content w-full max-w-none px-4 py-5 sm:px-6 sm:py-6 lg:px-8",
+                      isJobDetailPage && "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col",
                       isCandidateHomePage && "lg:p-0",
                     )}
                   >

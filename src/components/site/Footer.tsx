@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom";
-import { FacebookLogoIcon as Facebook, GlobeHemisphereWestIcon as Globe, InstagramLogoIcon as Instagram, LinkedinLogoIcon as Linkedin } from "@phosphor-icons/react";
+import {
+  GlobeHemisphereWestIcon as Globe,
+  InstagramLogoIcon as Instagram,
+  LinkedinLogoIcon as Linkedin,
+} from "@phosphor-icons/react";
 import { useI18n, type Locale } from "@/i18n";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { openCookieBanner } from "@/components/site/CookieConsentBanner";
@@ -29,18 +33,29 @@ export function SiteFooter() {
           <div className="mb-4 text-sm font-medium text-white/65">Navigation</div>
           <ul className="space-y-3 text-sm text-white">
             <li>
-              <Link to="/about" className="transition-colors hover:text-white/70">{t("nav.about")}</Link>
+              <Link to="/about" className="transition-colors hover:text-white/70">
+                {t("nav.about")}
+              </Link>
             </li>
             <li>
-              <Link to="/services" className="transition-colors hover:text-white/70">{t("nav.services")}</Link>
+              <Link to="/services" className="transition-colors hover:text-white/70">
+                {t("nav.services")}
+              </Link>
             </li>
             <li>
-              <a href="https://support.emploiplus-group.com/" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white/70">
+              <a
+                href="https://support.emploiplus-group.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-white/70"
+              >
                 Support
               </a>
             </li>
             <li>
-              <Link to="/contact" className="transition-colors hover:text-white/70">{t("nav.contact")}</Link>
+              <Link to="/contact" className="transition-colors hover:text-white/70">
+                {t("nav.contact")}
+              </Link>
             </li>
           </ul>
         </div>
@@ -48,22 +63,30 @@ export function SiteFooter() {
           <div className="mb-4 text-sm font-medium text-white/65">Contact</div>
           <ul className="space-y-3 text-sm text-white">
             <li>
-              <a href="tel:+242067311033" className="transition-colors hover:text-white/70">+242 0673 11033</a>
+              <a href="tel:+242067311033" className="transition-colors hover:text-white/70">
+                +242 0673 11033
+              </a>
             </li>
             <li>
-              <a href="mailto:contact@emploiplus-group.com" className="transition-colors hover:text-white/70">
+              <a
+                href="mailto:contact@emploiplus-group.com"
+                className="transition-colors hover:text-white/70"
+              >
                 contact@emploiplus-group.com
               </a>
             </li>
             <li>
-              <Link to="/contact" className="transition-colors hover:text-white/70">{t("nav.contact")}</Link>
+              <Link to="/contact" className="transition-colors hover:text-white/70">
+                {t("nav.contact")}
+              </Link>
             </li>
           </ul>
         </div>
         <div>
           <div className="mb-4 text-sm font-medium text-white/65">Adresse</div>
           <address className="not-italic text-sm leading-relaxed text-white">
-            Brazzaville<br />
+            Brazzaville
+            <br />
             République du Congo
           </address>
           <Select value={locale} onValueChange={(value) => setLocale(value as Locale)}>
@@ -89,19 +112,45 @@ export function SiteFooter() {
             © {year} EmploiPlus Group. {t("footer.rights")}
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/politique-de-confidentialite" className="transition-colors hover:text-white">Confidentialité</Link>
-            <Link to="/mentions-legales" className="transition-colors hover:text-white">Mentions légales</Link>
-            <button type="button" onClick={() => openCookieBanner()} className="transition-colors hover:text-white">
+            <Link to="/politique-de-confidentialite" className="transition-colors hover:text-white">
+              Confidentialité
+            </Link>
+            <Link to="/mentions-legales" className="transition-colors hover:text-white">
+              Mentions légales
+            </Link>
+            <button
+              type="button"
+              onClick={() => openCookieBanner()}
+              className="transition-colors hover:text-white"
+            >
               Cookies
             </button>
-            <a href="https://www.linkedin.com/company/emploiplus-consulting/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-white transition-colors hover:text-white/70">
+            <a
+              href="https://www.linkedin.com/company/emploiplus-consulting/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="text-white transition-colors hover:text-white/70"
+            >
               <Linkedin className="size-5" />
             </a>
-            <a href="https://www.instagram.com/emploiplus/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-white transition-colors hover:text-white/70">
+            <a
+              href="https://www.instagram.com/emploiplus/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="text-white transition-colors hover:text-white/70"
+            >
               <Instagram className="size-5" />
             </a>
-            <a href="https://www.facebook.com/EmploiplusConsulting" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-white transition-colors hover:text-white/70">
-              <Facebook className="size-5" />
+            <a
+              href="https://www.facebook.com/EmploiplusConsulting"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              className="text-white transition-colors hover:text-white/70"
+            >
+              <img src="/Facebook-icon.png" alt="" className="size-5 object-contain" />
             </a>
           </div>
         </div>

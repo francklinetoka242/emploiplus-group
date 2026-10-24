@@ -6,12 +6,12 @@ import {
   FileTextIcon as FileText,
   GitDiffIcon as GitCompareArrows,
   EnvelopeIcon as Mail,
-  SparkleIcon as Sparkles,
 } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { CandidateBillingPanel } from "@/features/billing/components/CandidateBillingPanel";
+import { AIIcon } from "@/components/ui/AIIcon";
 
 const generativeFeatures = [
   {
@@ -36,7 +36,7 @@ const generativeFeatures = [
     label: "Résumé personnalisé",
     description:
       "Une lecture simple de votre profil met en évidence les éléments les plus importants pour le poste.",
-    icon: Sparkles,
+    icon: AIIcon,
   },
   {
     label: "Lettre de motivation",
@@ -51,7 +51,7 @@ const featureGroups = [
     title: "Recommandations",
     value: "3",
     subtitle: "Jusqu’à 3 recommandations",
-    icon: Sparkles,
+    icon: AIIcon,
   },
   {
     title: "Offres enregistrées",
@@ -130,10 +130,9 @@ export function CandidateFreeSubscriptionPage() {
         <section className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="space-y-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/5 text-primary">
-                <Sparkles className="h-4 w-4" />
-              </div>
-              <h2 className="text-xl font-semibold text-foreground md:text-2xl">Ce que ce forfait comprend</h2>
+              <h2 className="text-xl font-semibold text-foreground md:text-2xl">
+                Ce que ce forfait comprend
+              </h2>
             </div>
 
             <div className="space-y-3">
@@ -174,7 +173,9 @@ export function CandidateFreeSubscriptionPage() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
               <GitCompareArrows className="h-4 w-4" />
             </div>
-            <h2 className="text-xl font-semibold text-foreground md:text-2xl">Les limites de ce forfait</h2>
+            <h2 className="text-xl font-semibold text-foreground md:text-2xl">
+              Les limites de ce forfait
+            </h2>
           </div>
 
           <div className="mt-5 grid gap-4 md:grid-cols-3">

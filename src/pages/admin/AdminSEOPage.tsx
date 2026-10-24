@@ -10,7 +10,11 @@ import {
   saveSiteSeoSettings,
   type SiteSEOSettings,
 } from "@/features/seo";
-import { ArrowCounterClockwiseIcon as RotateCcw, FloppyDiskIcon as Save, SparkleIcon as Sparkles } from "@phosphor-icons/react";
+import {
+  ArrowCounterClockwiseIcon as RotateCcw,
+  FloppyDiskIcon as Save,
+  MagnifyingGlassIcon as Search,
+} from "@phosphor-icons/react";
 
 export function AdminSEOPage() {
   const [form, setForm] = React.useState<SiteSEOSettings>(() => getSiteSeoSettings());
@@ -69,7 +73,7 @@ export function AdminSEOPage() {
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div className="flex items-start gap-2.5">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-cyan-100 text-cyan-700">
-                <Sparkles className="h-3.5 w-3.5" />
+                <Search className="h-3.5 w-3.5" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -186,7 +190,10 @@ export function AdminSEOPage() {
             </div>
 
             <div className="flex flex-wrap gap-3 border-t border-slate-200 pt-3">
-              <Button type="submit" className="gap-2 rounded-full bg-slate-900 text-white hover:bg-slate-800">
+              <Button
+                type="submit"
+                className="gap-2 rounded-full bg-slate-900 text-white hover:bg-slate-800"
+              >
                 <Save className="h-4 w-4" />
                 Enregistrer
               </Button>
@@ -204,9 +211,7 @@ export function AdminSEOPage() {
 
           <div className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
             <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Aperçu
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Aperçu</p>
               <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-slate-500">
                   emploiplus.group

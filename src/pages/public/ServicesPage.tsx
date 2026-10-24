@@ -4,7 +4,6 @@ import {
   BriefcaseIcon as Briefcase,
   CheckIcon as Check,
   UserIcon as User,
-  SparkleIcon as Sparkles,
   BellIcon as Bell,
   LightningIcon as Zap,
   EyeIcon as Eye,
@@ -13,6 +12,7 @@ import {
   StackIcon as Layers,
   TrendUpIcon as TrendingUp,
 } from "@phosphor-icons/react";
+import { AIIcon } from "@/components/ui/AIIcon";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import candidateIllustration1 from "@/assets/services/candidate-section/candidate-step-01.webp";
@@ -138,22 +138,22 @@ export function ServicesPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   {[
                     {
-                      icon: Sparkles,
+                      icon: <AIIcon className="h-5 w-5" />,
                       label: "Matching intelligent adapté à votre profil",
                     },
                     {
-                      icon: Bell,
+                      icon: <Bell className="h-5 w-5" weight="duotone" />,
                       label: "Offres recommandées et mises à jour",
                     },
                     {
-                      icon: Zap,
+                      icon: <Zap className="h-5 w-5" weight="duotone" />,
                       label: "Candidature express en quelques clics",
                     },
                     {
-                      icon: Eye,
+                      icon: <Eye className="h-5 w-5" weight="duotone" />,
                       label: "Outils de visibilité professionnelle",
                     },
-                  ].map(({ icon: Icon, label }, index) => (
+                  ].map(({ icon, label }, index) => (
                     <div
                       key={label}
                       className={
@@ -162,7 +162,7 @@ export function ServicesPage() {
                       }
                     >
                       <div className="flex items-center gap-3 text-brand">
-                        <Icon className="h-5 w-5" weight="duotone" />
+                        {icon}
                         <span className="font-semibold text-slate-900">{label}</span>
                       </div>
                     </div>

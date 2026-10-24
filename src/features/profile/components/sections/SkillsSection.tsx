@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { CandidateSkill, CandidateSkillInsert } from "@/features/candidates/api/types";
-import { SparkleIcon as Sparkles, TrashIcon as Trash2, PencilSimpleIcon as Edit2 } from "@phosphor-icons/react";
+import { TrashIcon as Trash2, PencilSimpleIcon as Edit2 } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
 
@@ -106,7 +106,11 @@ export function SkillsSection({
             <Button variant="outline" onClick={handleCancel} disabled={saving}>
               Annuler
             </Button>
-            <Button onClick={handleSave} disabled={saving} className="bg-cyan-600 hover:bg-cyan-700">
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              className="bg-cyan-600 hover:bg-cyan-700"
+            >
               {saving ? "Enregistrement…" : "Ajouter"}
             </Button>
           </div>
@@ -128,7 +132,10 @@ export function SkillsSection({
     return (
       <div className="space-y-3">
         {skills.map((skill) => (
-          <div key={skill.id} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div
+            key={skill.id}
+            className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 p-4"
+          >
             <p className="font-medium text-slate-700">{skill.skill_name}</p>
             <Button
               size="sm"
@@ -146,7 +153,18 @@ export function SkillsSection({
         </Button>
       </div>
     );
-  }, [skills, loading, isAdding, formData, saving, error, handleAddClick, handleCancel, handleSave, handleDelete]);
+  }, [
+    skills,
+    loading,
+    isAdding,
+    formData,
+    saving,
+    error,
+    handleAddClick,
+    handleCancel,
+    handleSave,
+    handleDelete,
+  ]);
 
   return (
     <Card>
@@ -154,10 +172,7 @@ export function SkillsSection({
       <CardHeader>
         <div className="flex items-center justify-between gap-2">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-cyan-600" />
-              Compétences
-            </CardTitle>
+            <CardTitle>Compétences</CardTitle>
             <CardDescription>Vos compétences clés et spécialisations.</CardDescription>
           </div>
         </div>

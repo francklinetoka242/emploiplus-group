@@ -26,12 +26,12 @@ import {
   ArrowSquareOutIcon as ExternalLink,
   EnvelopeIcon as Mail,
   MapPinIcon as MapPin,
-  SparkleIcon as Sparkles,
   ChartBarIcon as BarChart3,
   HandshakeIcon as Handshake,
   BookOpenIcon as BookOpen,
   ArrowUpIcon as ArrowUp,
 } from "@phosphor-icons/react";
+import { AIIcon } from "@/components/ui/AIIcon";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { JobCard } from "@/features/jobs/components";
 
@@ -44,9 +44,7 @@ function HeroSection({ isCandidateShellHome = false }: { isCandidateShellHome?: 
     return (
       <section
         className={`relative overflow-hidden min-h-[340px] md:min-h-[360px] bg-slate-100 ${
-          isCandidateShellHome
-            ? "lg:min-h-[300px]"
-            : ""
+          isCandidateShellHome ? "lg:min-h-[300px]" : ""
         }`}
       >
         <div
@@ -76,9 +74,7 @@ function HeroSection({ isCandidateShellHome = false }: { isCandidateShellHome?: 
   return (
     <motion.section
       className={`relative overflow-hidden min-h-[480px] md:min-h-[560px] bg-cover bg-center bg-no-repeat ${
-        isCandidateShellHome
-          ? "lg:min-h-[420px]"
-          : ""
+        isCandidateShellHome ? "lg:min-h-[420px]" : ""
       }`}
       style={{ backgroundImage: `url(${heroBg})` }}
       initial={{ opacity: 0 }}
@@ -550,7 +546,11 @@ export function HomePage() {
                             transition={{ type: "spring", stiffness: 180, damping: 16, delay: 0.2 }}
                             whileHover={{ scale: 1.1, rotate: 8 }}
                           >
-                            <Sparkles className="h-9 w-9" />
+                            {i === 0 ? (
+                              <AIIcon className="h-9 w-9" />
+                            ) : (
+                              <Handshake className="h-9 w-9" />
+                            )}
                           </motion.div>
                         </div>
                         {item.bullets.map((bullet, bulletIndex) => (

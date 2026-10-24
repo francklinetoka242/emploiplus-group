@@ -1,7 +1,13 @@
 import { useState } from "react";
-import { ArrowRightIcon as ArrowRight, SealCheckIcon as BadgeCheck, CheckIcon as Check, CrownIcon as Crown, SparkleIcon as Sparkles } from "@phosphor-icons/react";
+import {
+  ArrowRightIcon as ArrowRight,
+  SealCheckIcon as BadgeCheck,
+  CheckIcon as Check,
+  CrownIcon as Crown,
+} from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import { CandidateBillingPanel } from "@/features/billing/components/CandidateBillingPanel";
+import { AIIcon } from "@/components/ui/AIIcon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +34,7 @@ const plans = [
     name: "Premium",
     price: "550 FCFA",
     description: "Pour aller plus loin dans votre recherche d’emploi.",
-    icon: Sparkles,
+    icon: AIIcon,
     features: [
       "Jusqu’à 7 recommandations",
       "Accès à davantage de correspondances",

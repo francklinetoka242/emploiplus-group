@@ -12,16 +12,16 @@ import {
   TrashIcon as Trash2,
   UploadSimpleIcon as Upload,
   XIcon as X,
-  SparkleIcon as Sparkles,
-  HouseIcon as Home,
   PaperPlaneTiltIcon as Send,
   WarningCircleIcon as AlertCircle,
   CheckCircleIcon as CheckCircle2,
+  CaretDownIcon as ChevronDown,
 } from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
 import { usePageSEO } from "@/features/seo";
 import { useJobOfferBySlug } from "@/features/jobs/hooks";
 import { useCandidate } from "@/hooks/useCandidate";
+import { useCandidateDocuments } from "@/features/candidates/hooks/useCandidateDocuments";
 import { getCandidateSession } from "@/features/authentication/api/authApi";
 import { applyToJob } from "@/features/candidates/api/applicationsApi";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES } from "@/services/storageService";
-import { getCandidateDocuments, getCandidateDocumentsList, type CandidateDocument } from "@/features/candidates/api/documentsApi";
+import {
+  getCandidateDocumentsList,
+  type CandidateDocument,
+} from "@/features/candidates/api/documentsApi";
 
 interface TemporaryDocument {
   id: string;
@@ -57,31 +60,10 @@ const formatFileSize = (bytes: number) => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
 };
 
-const formatDate = (dateString: string) => {
-  try {
-    return new Date(dateString).toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-  } catch {
-    return dateString;
-  }
-};
-
 // Breadcrumb Component
 function Breadcrumb({ jobTitle }: { jobTitle: string }) {
-  const navigate = useNavigate();
-
   return (
     <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-      <span className="flex items-center gap-1 text-foreground/80">
-        <Home className="h-4 w-4" />
-        <span>Accueil</span>
-      </span>
-      <span className="text-border/60">/</span>
-      <span className="text-foreground/80">Dashboard</span>
-      <span className="text-border/60">/</span>
       <span className="text-foreground/80">Offres</span>
       <span className="text-border/60">/</span>
       <span className="font-medium text-foreground">{jobTitle}</span>
@@ -94,7 +76,7 @@ function Breadcrumb({ jobTitle }: { jobTitle: string }) {
 // Skeleton Loaders
 function HeroSkeleton() {
   return (
-    <div className="mb-8 rounded-3xl border border-border/80 bg-card p-8 shadow-soft">
+    <div className="mb-8 border border-border/80 bg-card p-8">
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <Skeleton className="h-24 w-24 rounded-2xl shrink-0" />
         <div className="flex-1 space-y-3">
@@ -119,7 +101,7 @@ function HeroSkeleton() {
 
 function FormSectionSkeleton() {
   return (
-    <Card className="rounded-3xl border border-border/80 shadow-soft mb-4">
+    <Card className="rounded-none border border-border/80 mb-4">
       <CardHeader className="pb-3 px-6 pt-6">
         <Skeleton className="h-5 w-32" />
       </CardHeader>
@@ -137,8 +119,6 @@ type JobApplyHeroJob = {
   location_city?: string | null;
   location_country?: string | null;
   contract_type?: string | null;
-  tags?: string[] | null;
-  publish_at?: string | null;
   deadline?: string | null;
   company_logo?: string | null;
   company?: string | null;
@@ -146,17 +126,9 @@ type JobApplyHeroJob = {
   salary?: string | null;
 };
 
-type JobApplyHeroProfile = {
-  first_name?: string | null;
-  last_name?: string | null;
-  phone?: string | null;
-  headline?: string | null;
-  avatar_url?: string | null;
-  email?: string | null;
-};
-
 // Hero Section
-function HeroSection({ job, profile }: { job: JobApplyHeroJob; profile: JobApplyHeroProfile }) {
+function HeroSection({ job }: { job: JobApplyHeroJob }) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const jobLocation =
     [job.location_city, job.location_country].filter(Boolean).join(", ") || "Télétravail";
 
@@ -176,8 +148,6 @@ function HeroSection({ job, profile }: { job: JobApplyHeroJob; profile: JobApply
   };
 
   const contractLabel = getContractLabel(job.contract_type);
-  const jobTags = (job.tags || []).filter(Boolean);
-
   const formatJobDate = (date?: string | null) => {
     if (!date) return null;
     try {
@@ -187,89 +157,86 @@ function HeroSection({ job, profile }: { job: JobApplyHeroJob; profile: JobApply
     }
   };
 
-  const jobPublished = formatJobDate(job.publish_at);
   const jobDeadline = formatJobDate(job.deadline);
 
   return (
-    <div className="mb-8 sm:mb-12 rounded-3xl border border-border/80 bg-gradient-to-br from-brand/5 via-card to-secondary/5 p-4 sm:p-8 shadow-soft">
-      {/* Single row header with all elements */}
-      <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-        {/* Logo */}
-        {job.company_logo && (
-          <div className="h-16 w-16 sm:h-20 sm:w-20 shrink-0 rounded-2xl border border-border/60 bg-background/80 flex items-center justify-center p-2">
-            <img
-              src={job.company_logo}
-              alt={job.company ?? "Entreprise"}
-              className="h-full w-full object-contain"
-            />
-          </div>
-        )}
-
-        {/* Company & Title */}
-        <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">
-            Entreprise
-          </p>
-          <h1 className="text-lg sm:text-xl font-bold text-foreground break-words">
+    <div className="mb-8 sm:mb-12 border border-border/80">
+      <button
+        type="button"
+        aria-expanded={isExpanded}
+        onClick={() => setIsExpanded((expanded) => !expanded)}
+        className="flex w-full items-center justify-between gap-4 p-4 text-left sm:px-8"
+      >
+        <span className="min-w-0">
+          <span className="block text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Détails de l’offre
+          </span>
+          <span className="mt-1 block truncate text-sm font-semibold text-foreground">
             {job.title}
-          </h1>
-          <p className="text-sm font-medium text-foreground/80 break-words">
-            {job.company}
-          </p>
-        </div>
+          </span>
+        </span>
+        <ChevronDown
+          aria-hidden="true"
+          className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`}
+        />
+      </button>
+      {isExpanded && (
+        <div className="border-t border-border/60 p-4 sm:p-8">
+          {/* Single row header with all elements */}
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            {/* Logo */}
+            {job.company_logo && (
+              <div className="h-16 w-16 sm:h-20 sm:w-20 shrink-0 rounded-2xl border border-border/60 bg-background/80 flex items-center justify-center p-2">
+                <img
+                  src={job.company_logo}
+                  alt={job.company ?? "Entreprise"}
+                  className="h-full w-full object-contain"
+                />
+              </div>
+            )}
 
-        {/* Contract Type */}
-        {contractLabel && (
-          <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand shrink-0">
-            <BriefcaseBusiness className="h-3 w-3" />
-            {contractLabel}
-          </div>
-        )}
+            {/* Company & Title */}
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">
+                Entreprise
+              </p>
+              <h1 className="text-lg sm:text-xl font-bold text-foreground break-words">
+                {job.title}
+              </h1>
+              <p className="text-sm font-medium text-foreground/80 break-words">{job.company}</p>
+            </div>
 
-        {/* Location */}
-        <div className="flex items-center gap-2 text-sm shrink-0">
-          <MapPin className="h-4 w-4 text-brand shrink-0" />
-          <span className="font-medium text-foreground">{jobLocation}</span>
-        </div>
+            <div className="flex items-center gap-3 sm:gap-4 flex-nowrap shrink-0">
+              {/* Contract Type */}
+              {contractLabel && (
+                <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand shrink-0">
+                  <BriefcaseBusiness className="h-3 w-3" />
+                  {contractLabel}
+                </div>
+              )}
 
-        {/* Salary */}
-        {job.salary && (
-          <div className="flex items-center gap-2 text-sm shrink-0">
-            <BadgeDollarSign className="h-4 w-4 text-brand shrink-0" />
-            <span className="font-medium text-foreground">{job.salary}</span>
-          </div>
-        )}
+              {/* Location */}
+              <div className="flex items-center gap-2 text-sm shrink-0">
+                <MapPin className="h-4 w-4 text-brand shrink-0" />
+                <span className="font-medium text-foreground">{jobLocation}</span>
+              </div>
 
-        {/* Published Date */}
-        {jobPublished && (
-          <div className="flex items-center gap-2 text-sm shrink-0">
-            <CalendarDays className="h-4 w-4 text-brand shrink-0" />
-            <span className="font-medium text-foreground">{jobPublished}</span>
-          </div>
-        )}
+              {/* Deadline */}
+              {jobDeadline && (
+                <div className="flex items-center gap-2 text-sm shrink-0">
+                  <CalendarDays className="h-4 w-4 text-brand shrink-0" />
+                  <span className="font-medium text-foreground">{jobDeadline}</span>
+                </div>
+              )}
+            </div>
 
-        {/* Deadline */}
-        {jobDeadline && (
-          <div className="flex items-center gap-2 text-sm shrink-0">
-            <CalendarDays className="h-4 w-4 text-brand shrink-0" />
-            <span className="font-medium text-foreground">{jobDeadline}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Tags */}
-      {jobTags.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-border/60">
-          <div className="flex flex-wrap gap-2">
-            {jobTags.map((tag: string) => (
-              <span
-                key={tag}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/70 px-2.5 py-1 text-xs font-medium text-foreground"
-              >
-                <Sparkles className="h-3 w-3 text-brand" />
-                {tag}
-              </span>
-            ))}
+            {/* Salary */}
+            {job.salary && (
+              <div className="flex items-center gap-2 text-sm shrink-0">
+                <BadgeDollarSign className="h-4 w-4 text-brand shrink-0" />
+                <span className="font-medium text-foreground">{job.salary}</span>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -290,6 +257,7 @@ function DocumentCard({
   isTemporary?: boolean;
 }) {
   const isDoc = "type" in document;
+  const isCv = isDoc && document.type === "cv";
   const displayName = isDoc ? document.displayName : document.file.name;
   const size = isDoc ? document.size : document.size;
   const docType = isDoc ? documentTypeLabels[document.type] : "Document";
@@ -308,9 +276,9 @@ function DocumentCard({
       aria-pressed={selected}
       onClick={() => onSelect(!selected)}
       onKeyDown={handleKeyDown}
-      className={`text-left w-full min-w-0 p-4 rounded-2xl border-2 transition-all duration-200 flex flex-col sm:flex-row items-start gap-4 hover:shadow-md cursor-pointer ${
+      className={`text-left w-full min-w-0 p-4 rounded-none border-2 transition-all duration-200 flex flex-col sm:flex-row items-start gap-4 cursor-pointer ${
         selected
-          ? "border-brand bg-brand/5 shadow-md"
+          ? "border-brand bg-brand/5"
           : "border-border/60 bg-background/70 hover:border-brand/30 hover:bg-background"
       }`}
     >
@@ -328,13 +296,14 @@ function DocumentCard({
       {/* Icon & Info */}
       <div className="flex-1 min-w-0">
         <div className="flex flex-col sm:flex-row items-start gap-3 w-full">
-          <FileText className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+          <FileText
+            className={`h-5 w-5 ${isCv ? "text-foreground" : "text-red-600"} shrink-0 mt-0.5`}
+          />
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-semibold text-foreground break-words">{displayName}</h4>
             <p className="text-xs text-muted-foreground mt-1 break-words">
               {docType}
               {size && ` • ${size}`}
-              {isDoc && document.date && ` • ${formatDate(document.date)}`}
             </p>
           </div>
         </div>
@@ -363,11 +332,26 @@ export function CandidateJobApplyPage() {
   const location = useLocation();
   const { slug } = useParams<{ slug: string }>();
   const { job, loading: jobLoading } = useJobOfferBySlug(slug);
-  const { profile, loading: profileLoading, updateProfile, refetch: refetchCandidateProfile } = useCandidate();
+  const {
+    profile,
+    loading: profileLoading,
+    updateProfile,
+    refetch: refetchCandidateProfile,
+  } = useCandidate();
 
-  const [savedDocuments, setSavedDocuments] = useState<CandidateDocument[]>([]);
+  const {
+    cv: savedCv,
+    documents: savedDocumentRecords,
+    loading: documentsLoading,
+  } = useCandidateDocuments(profile?.id, profile?.cv_url);
+  const savedDocuments = React.useMemo(
+    () => getCandidateDocumentsList({ cv: savedCv, documents: savedDocumentRecords }),
+    [savedCv, savedDocumentRecords],
+  );
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set());
   const [temporaryDocuments, setTemporaryDocuments] = useState<TemporaryDocument[]>([]);
+  const [temporaryDocumentsExpanded, setTemporaryDocumentsExpanded] = useState(false);
+  const [recruiterMessageExpanded, setRecruiterMessageExpanded] = useState(false);
   const [message, setMessage] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
   const [isDragging, setIsDragging] = useState(false);
@@ -401,24 +385,6 @@ export function CandidateJobApplyPage() {
     description: "Postulez à cette offre d'emploi",
     robots: "noindex,nofollow",
   });
-
-  // Load saved documents
-  useEffect(() => {
-    if (!profile?.id) return;
-
-    let isMounted = true;
-    const loadDocuments = async () => {
-      const serverDocuments = await getCandidateDocuments(profile.id);
-
-      if (!isMounted) return;
-      setSavedDocuments(getCandidateDocumentsList(serverDocuments));
-    };
-
-    void loadDocuments();
-    return () => {
-      isMounted = false;
-    };
-  }, [profile?.id]);
 
   useEffect(() => {
     if (!profile) return;
@@ -613,9 +579,12 @@ export function CandidateJobApplyPage() {
       ]);
 
       const candidateMessage = (message || "").replace(/\r\n/g, "\n");
-      const outgoingSubject = emailSubject.trim() || `Nouvelle candidature - ${job?.title ?? "Offre"}`;
+      const outgoingSubject =
+        emailSubject.trim() || `Nouvelle candidature - ${job?.title ?? "Offre"}`;
       const documentsList = [
-        ...savedDocuments.filter((doc) => selectedDocuments.has(doc.id)).map((doc) => doc.displayName || doc.name || "Document joint"),
+        ...savedDocuments
+          .filter((doc) => selectedDocuments.has(doc.id))
+          .map((doc) => doc.displayName || doc.name || "Document joint"),
         ...temporaryDocuments.map((doc) => doc.file.name || "Document joint"),
       ];
 
@@ -624,9 +593,11 @@ export function CandidateJobApplyPage() {
           <p style="margin: 0 0 12px;"><strong>Objet :</strong> ${escapeHtml(outgoingSubject)}</p>
           <div style="white-space: pre-wrap; margin: 0 0 16px;">${escapeHtml(candidateMessage || "Aucun message fourni.").replace(/\n/g, "<br />")}</div>
           <p style="margin: 0 0 12px;"><strong>Ci-joints</strong></p>
-          ${documentsList.length > 0
-            ? `<ul style="margin: 0 0 0 20px; padding: 0;">${documentsList.map((name) => `<li>${escapeHtml(name)}</li>`).join("")}</ul>`
-            : "<p style=\"margin: 0;\">Aucun document sélectionné.</p>"}
+          ${
+            documentsList.length > 0
+              ? `<ul style="margin: 0 0 0 20px; padding: 0;">${documentsList.map((name) => `<li>${escapeHtml(name)}</li>`).join("")}</ul>`
+              : '<p style="margin: 0;">Aucun document sélectionné.</p>'
+          }
         </div>
       `;
       const applicationText = [
@@ -750,9 +721,6 @@ export function CandidateJobApplyPage() {
   const submissionChannelAvailable = Boolean(job.application_email?.trim());
   const isFormValid = submissionChannelAvailable && totalDocuments > 0 && consent;
   const displayedDocuments = savedDocuments;
-  const submissionChannelStatusLabel = submissionChannelAvailable
-    ? "Canal de candidature disponible"
-    : "Veuillez rechercher l'adresse mail dans la description de l'offre";
 
   return (
     <div className="container-page pt-2 pb-8 md:pt-4 md:pb-12 min-h-screen overflow-x-hidden w-full max-w-full">
@@ -773,57 +741,13 @@ export function CandidateJobApplyPage() {
       <Breadcrumb jobTitle={job.title} />
 
       {/* Hero Section */}
-      <HeroSection job={job} profile={profile} />
+      <HeroSection job={job} />
 
       {/* Main Form Layout */}
       <div className="space-y-6 w-full">
-        {/* Block 2: Message */}
-        <Card
-            className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full"
-            style={{ animationDelay: "0.1s" }}
-          >
-            <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
-              <CardTitle className="text-base">Message au recruteur</CardTitle>
-              <CardDescription className="text-xs mt-1">
-                Présentez votre motivation (optionnel)
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="application-subject" className="text-sm font-medium">
-                    Objet
-                  </Label>
-                  <Input
-                    id="application-subject"
-                    value={emailSubject}
-                    onChange={(e) => setEmailSubject(e.target.value.slice(0, 200))}
-                    placeholder="Objet de votre candidature"
-                    className="w-full"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="application-message" className="text-sm font-medium">
-                    Message au recruteur
-                  </Label>
-                  <textarea
-                    id="application-message"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value.slice(0, 2000))}
-                    placeholder="Dites-nous ce qui vous motive à postuler pour cette offre..."
-                    className="w-full h-32 p-4 rounded-2xl border border-border/60 bg-background text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-transparent resize-none transition-all"
-                  />
-                </div>
-                <div className="flex justify-end text-xs text-muted-foreground">
-                  {message.length} / 2000 caractères
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
         {/* Block 3: Saved Documents */}
         <Card
-          className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full"
+          className="border border-border/80 rounded-none overflow-hidden transition-all duration-300 animate-fade-in w-full max-w-full"
           style={{ animationDelay: "0.2s" }}
         >
           <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
@@ -833,7 +757,9 @@ export function CandidateJobApplyPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">
-            {!hasDocuments ? (
+            {documentsLoading ? (
+              <p className="text-sm text-muted-foreground">Chargement de vos documents...</p>
+            ) : !hasDocuments ? (
               <Alert className="border-yellow-200/60 bg-yellow-50/80">
                 <AlertCircle className="h-4 w-4 text-yellow-700" />
                 <AlertDescription className="text-sm text-foreground/80 ml-2">
@@ -864,169 +790,222 @@ export function CandidateJobApplyPage() {
 
         {/* Block 4: Temporary Documents */}
         <Card
-          className="border border-border/80 shadow-soft rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-lg animate-fade-in w-full max-w-full"
+          className="border border-border/80 rounded-none overflow-hidden transition-all duration-300 animate-fade-in w-full max-w-full"
           style={{ animationDelay: "0.3s" }}
         >
-          <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
-            <CardTitle className="text-base">Ajouter des documents</CardTitle>
-            <CardDescription className="text-xs mt-1">
-              Pour cette candidature uniquement
-            </CardDescription>
+          <CardHeader className="p-0 border-b border-border/60 bg-secondary/20">
+            <button
+              type="button"
+              aria-expanded={temporaryDocumentsExpanded}
+              onClick={() => setTemporaryDocumentsExpanded((expanded) => !expanded)}
+              className="flex w-full items-center justify-between gap-4 px-6 py-6 text-left"
+            >
+              <span>
+                <CardTitle className="text-base">Ajouter des documents</CardTitle>
+                <CardDescription className="text-xs mt-1">
+                  Pour cette candidature uniquement
+                </CardDescription>
+              </span>
+              <ChevronDown
+                aria-hidden="true"
+                className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${temporaryDocumentsExpanded ? "rotate-180" : ""}`}
+              />
+            </button>
           </CardHeader>
-          <CardContent className="p-6 space-y-4">
-              {/* Drag & Drop Zone */}
-              <div
-                ref={dragZoneRef}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                className={`relative w-full min-w-0 border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 ${
-                  isDragging ? "border-brand/60 bg-brand/5" : "border-border/40 bg-background/60"
-                }`}
-              >
-                <div className="flex flex-col items-center gap-3">
-                  <div
-                    className={`h-12 w-12 rounded-full flex items-center justify-center transition-all ${
-                      isDragging ? "bg-brand/20 text-brand" : "bg-secondary text-muted-foreground"
-                    }`}
-                  >
-                    <Upload className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">
-                      {isDragging ? "Déposez vos fichiers ici" : "Glissez-déposez vos fichiers PDF"}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">ou cliquez pour parcourir</p>
-                  </div>
-                </div>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  multiple
-                  accept=".pdf"
-                  onChange={(e) => handleFileInput(e.target.files)}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                />
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="relative gap-2 mt-4 w-full sm:w-auto"
+          {temporaryDocumentsExpanded && (
+            <CardContent className="p-6 space-y-4">
+            {/* Drag & Drop Zone */}
+            <div
+              ref={dragZoneRef}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={`relative w-full min-w-0 border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-200 ${
+                isDragging ? "border-brand/60 bg-brand/5" : "border-border/40 bg-background/60"
+              }`}
+            >
+              <div className="flex flex-col items-center gap-3">
+                <div
+                  className={`h-12 w-12 rounded-full flex items-center justify-center transition-all ${
+                    isDragging ? "bg-brand/20 text-brand" : "bg-secondary text-muted-foreground"
+                  }`}
                 >
-                  <Upload className="h-4 w-4" />
-                  Parcourir les fichiers
-                </Button>
+                  <Upload className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">
+                    {isDragging ? "Déposez vos fichiers ici" : "Glissez-déposez vos fichiers PDF"}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">ou cliquez pour parcourir</p>
+                </div>
               </div>
 
-              {/* Temporary Files List */}
-              {temporaryDocuments.length > 0 && (
-                <div className="space-y-3 border-t border-border/60 pt-4">
-                  {temporaryDocuments.map((doc) => (
-                    <div
-                      key={doc.id}
-                      className="flex items-center gap-3 p-3 rounded-2xl border border-border/60 bg-background/70 hover:bg-background transition-colors"
-                    >
-                      <FileText className="h-5 w-5 text-red-600 shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground break-words">
-                          {doc.file.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground break-words">{doc.size}</p>
-                      </div>
-                      <button
-                        onClick={() => removeTemporaryDocument(doc.id)}
-                        className="p-2 rounded-lg hover:bg-secondary transition-colors shrink-0"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept=".pdf"
+                onChange={(e) => handleFileInput(e.target.files)}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
 
-              <p className="text-xs text-muted-foreground italic pt-2 border-t border-border/60">
-                Ces documents seront utilisés uniquement pour cette candidature.
-                <br />
-                Ils ne seront pas ajoutés à votre espace documentaire.
-              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                className="relative gap-2 mt-4 w-full sm:w-auto"
+              >
+                <Upload className="h-4 w-4" />
+                Parcourir les fichiers
+              </Button>
+            </div>
+
+            {/* Temporary Files List */}
+            {temporaryDocuments.length > 0 && (
+              <div className="space-y-3 border-t border-border/60 pt-4">
+                {temporaryDocuments.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center gap-3 p-3 rounded-none border border-border/60 bg-background/70 hover:bg-background transition-colors"
+                  >
+                    <FileText className="h-5 w-5 text-red-600 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground break-words">
+                        {doc.file.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground break-words">{doc.size}</p>
+                    </div>
+                    <button
+                      onClick={() => removeTemporaryDocument(doc.id)}
+                      className="p-2 rounded-lg hover:bg-secondary transition-colors shrink-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="text-xs text-muted-foreground italic pt-2 border-t border-border/60">
+              Ces documents seront utilisés uniquement pour cette candidature.
+              <br />
+              Ils ne seront pas ajoutés à votre espace documentaire.
+            </p>
             </CardContent>
-          </Card>
+          )}
+        </Card>
+
+        {/* Block 4: Message */}
+        <Card
+          className="border border-border/80 rounded-none overflow-hidden transition-all duration-300 animate-fade-in w-full max-w-full"
+          style={{ animationDelay: "0.3s" }}
+        >
+          <CardHeader className="p-0 border-b border-border/60 bg-secondary/20">
+            <button
+              type="button"
+              aria-expanded={recruiterMessageExpanded}
+              onClick={() => setRecruiterMessageExpanded((expanded) => !expanded)}
+              className="flex w-full items-center justify-between gap-4 px-6 py-6 text-left"
+            >
+              <span>
+                <CardTitle className="text-base">Message au recruteur</CardTitle>
+                <CardDescription className="text-xs mt-1">
+                  Présentez votre motivation (optionnel)
+                </CardDescription>
+              </span>
+              <ChevronDown
+                aria-hidden="true"
+                className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${recruiterMessageExpanded ? "rotate-180" : ""}`}
+              />
+            </button>
+          </CardHeader>
+          {recruiterMessageExpanded && (
+            <CardContent className="p-6">
+              <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="application-subject" className="text-sm font-medium">
+                  Objet
+                </Label>
+                <Input
+                  id="application-subject"
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value.slice(0, 200))}
+                  placeholder="Objet de votre candidature"
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="application-message" className="text-sm font-medium">
+                  Message au recruteur
+                </Label>
+                <textarea
+                  id="application-message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value.slice(0, 2000))}
+                  placeholder="Dites-nous ce qui vous motive à postuler pour cette offre..."
+                  className="w-full h-32 p-4 rounded-2xl border border-border/60 bg-background text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-transparent resize-none transition-all"
+                />
+              </div>
+              <div className="flex justify-end text-xs text-muted-foreground">
+                {message.length} / 2000 caractères
+              </div>
+              </div>
+            </CardContent>
+          )}
+        </Card>
 
         {/* Block 5: Summary */}
         <Card
-          className="border border-brand/30 shadow-soft rounded-3xl overflow-hidden bg-gradient-to-br from-brand/5 to-secondary/5 animate-fade-in w-full max-w-full"
+          className="border border-brand/30 rounded-none overflow-hidden animate-fade-in w-full max-w-full"
           style={{ animationDelay: "0.4s" }}
         >
-          <CardHeader className="pb-4 px-6 pt-6 border-b border-brand/20 bg-brand/10">
+          <CardHeader className="pb-4 px-6 pt-6 border-b border-brand/20">
             <CardTitle className="text-base flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-brand" />
               Résumé de votre candidature
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6 space-y-4 text-sm">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">
-                  État du canal de candidature
-                </p>
-                <div
-                  className={`inline-flex flex-wrap items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium ${submissionChannelAvailable ? "border-secondary/30 bg-secondary/10 text-secondary" : "border-rose-200 bg-rose-50 text-rose-700"}`}
-                >
-                  {submissionChannelAvailable ? (
-                    <CheckCircle2 className="h-4 w-4" />
-                  ) : (
-                    <AlertCircle className="h-4 w-4" />
-                  )}
-                  {submissionChannelStatusLabel}
-                </div>
-                <p className="mt-2 text-sm text-foreground/70">
-                  {submissionChannelAvailable
-                    ? "Cette offre est correctement configurée pour recevoir les candidatures."
-                    : "Cette offre ne possède pas d'adresse email de réception des candidatures. L'envoi est actuellement impossible."}
-                </p>
-              </div>
-
-              <div className="border-t border-border/60 pt-4">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">
-                  Documents sélectionnés ({totalDocuments})
-                </p>
-                {totalDocuments === 0 ? (
-                  <p className="text-foreground/60 italic">Aucun document sélectionné</p>
-                ) : (
-                  <ul className="space-y-1">
-                    {savedDocuments
-                      .filter((doc) => selectedDocuments.has(doc.id))
-                      .map((doc) => (
-                        <li key={doc.id} className="text-foreground break-words">
-                          ✓ {doc.displayName}
-                        </li>
-                      ))}
-                    {temporaryDocuments.map((doc) => (
-                      <li key={doc.id} className="text-foreground">
-                        ✓ {doc.file.name}
+            <div className="border-t border-border/60 pt-4">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">
+                Documents sélectionnés ({totalDocuments})
+              </p>
+              {totalDocuments === 0 ? (
+                <p className="text-foreground/60 italic">Aucun document sélectionné</p>
+              ) : (
+                <ul className="space-y-1">
+                  {savedDocuments
+                    .filter((doc) => selectedDocuments.has(doc.id))
+                    .map((doc) => (
+                      <li key={doc.id} className="text-foreground break-words">
+                        ✓ {doc.displayName}
                       </li>
                     ))}
-                  </ul>
-                )}
-              </div>
-
-              {message && (
-                <div className="border-t border-border/60 pt-4">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">
-                    Votre message
-                  </p>
-                  <p className="text-foreground/80 italic">
-                    {message.length > 120 ? `${message.slice(0, 120)}...` : message}
-                  </p>
-                </div>
+                  {temporaryDocuments.map((doc) => (
+                    <li key={doc.id} className="text-foreground">
+                      ✓ {doc.file.name}
+                    </li>
+                  ))}
+                </ul>
               )}
-            </CardContent>
-          </Card>
+            </div>
+
+            {message && (
+              <div className="border-t border-border/60 pt-4">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">
+                  Votre message
+                </p>
+                <p className="text-foreground/80 italic">
+                  {message.length > 120 ? `${message.slice(0, 120)}...` : message}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Block 6: Consent */}
         <Card
-          className="border border-border/80 shadow-soft rounded-3xl animate-fade-in w-full max-w-full"
+          className="border-0 bg-transparent shadow-none rounded-3xl animate-fade-in w-full max-w-full"
           style={{ animationDelay: "0.5s" }}
         >
           <CardContent className="p-6">
@@ -1058,9 +1037,9 @@ export function CandidateJobApplyPage() {
                   Candidature momentanément indisponible
                 </p>
                 <p className="mt-1 text-sm text-amber-900">
-                  Cette offre ne possède actuellement aucune adresse de réception des
-                  candidatures. Le recrutement n'est donc pas disponible pour le moment. Nous vous
-                  invitons à consulter d'autres offres ou à revenir ultérieurement.
+                  Cette offre ne possède actuellement aucune adresse de réception des candidatures.
+                  Le recrutement n'est donc pas disponible pour le moment. Nous vous invitons à
+                  consulter d'autres offres ou à revenir ultérieurement.
                 </p>
               </AlertDescription>
             </Alert>
@@ -1070,18 +1049,13 @@ export function CandidateJobApplyPage() {
               className={`border ${submitFeedback.type === "success" ? "border-primary/40 bg-primary/10" : "border-rose-200 bg-rose-50"}`}
             >
               <AlertDescription
-                className={
-                  submitFeedback.type === "success" ? "text-primary" : "text-rose-800"
-                }
+                className={submitFeedback.type === "success" ? "text-primary" : "text-rose-800"}
               >
                 {submitFeedback.message}
               </AlertDescription>
             </Alert>
           )}
-          <div className="flex flex-col gap-3 sm:flex-row sm:sticky sm:bottom-0 bg-background/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-border/60 shadow-lg z-10 w-full max-w-full">
-            <Button variant="outline" onClick={handleCancel} className="w-full sm:flex-1">
-              Annuler
-            </Button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:sticky sm:bottom-0 bg-background/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-border/60 z-10 w-full max-w-full">
             <Button
               onClick={handleSubmit}
               disabled={!isFormValid || isSubmitting}

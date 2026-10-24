@@ -11,7 +11,6 @@ import {
   FileTextIcon as FileText,
   ChatsIcon as MessagesSquare,
   ArrowClockwiseIcon as RefreshCw,
-  SparkleIcon as Sparkles,
   UsersThreeIcon as Users2,
 } from "@phosphor-icons/react";
 import { AdminDashboardCharts } from "./components/AdminDashboardCharts";
@@ -50,24 +49,25 @@ function AdminDashboardView() {
           setRefreshing(true);
         }
 
-        const [jobsRes, postsRes, featuredRes, requestsRes, adminsRes, candidatesRes] = await Promise.all([
-          supabase
-            .from("job_offers")
-            .select("id", { count: "exact", head: true })
-            .eq("status", "published"),
-          supabase
-            .from("blog_posts")
-            .select("id", { count: "exact", head: true })
-            .eq("status", "published"),
-          supabase
-            .from("blog_posts")
-            .select("id", { count: "exact", head: true })
-            .eq("status", "published")
-            .eq("is_featured", true),
-          supabase.from("contacts_messages").select("id", { count: "exact", head: true }),
-          supabase.from("user_roles").select("id, role, is_active"),
-          supabase.from("candidates").select("status"),
-        ]);
+        const [jobsRes, postsRes, featuredRes, requestsRes, adminsRes, candidatesRes] =
+          await Promise.all([
+            supabase
+              .from("job_offers")
+              .select("id", { count: "exact", head: true })
+              .eq("status", "published"),
+            supabase
+              .from("blog_posts")
+              .select("id", { count: "exact", head: true })
+              .eq("status", "published"),
+            supabase
+              .from("blog_posts")
+              .select("id", { count: "exact", head: true })
+              .eq("status", "published")
+              .eq("is_featured", true),
+            supabase.from("contacts_messages").select("id", { count: "exact", head: true }),
+            supabase.from("user_roles").select("id, role, is_active"),
+            supabase.from("candidates").select("status"),
+          ]);
 
         if (!mounted) return;
 
@@ -90,9 +90,12 @@ function AdminDashboardView() {
           featuredPosts: featuredRes.count ?? 0,
           receivedRequests: requestsRes.count ?? 0,
           totalCandidates: candidatesRes.data?.length ?? 0,
-          activeCandidates: candidatesRes.data?.filter((candidate) => candidate.status === "active").length ?? 0,
-          inactiveCandidates: candidatesRes.data?.filter((candidate) => candidate.status === "inactive").length ?? 0,
-          archivedCandidates: candidatesRes.data?.filter((candidate) => candidate.status === "archived").length ?? 0,
+          activeCandidates:
+            candidatesRes.data?.filter((candidate) => candidate.status === "active").length ?? 0,
+          inactiveCandidates:
+            candidatesRes.data?.filter((candidate) => candidate.status === "inactive").length ?? 0,
+          archivedCandidates:
+            candidatesRes.data?.filter((candidate) => candidate.status === "archived").length ?? 0,
         });
         setAdminStats({
           total: adminData.length,
@@ -138,7 +141,7 @@ function AdminDashboardView() {
     {
       label: t("admin.dashboard.metric.featuredPosts"),
       value: counts.featuredPosts.toString(),
-      icon: Sparkles,
+      icon: FileText,
       tone: "from-cyan-500/15 to-cyan-500/5 text-cyan-600",
     },
     {
@@ -176,14 +179,25 @@ function AdminDashboardView() {
 
   const operationalScore = Math.min(
     100,
-    Math.round((counts.activeJobs + counts.publishedPosts + counts.featuredPosts + counts.receivedRequests) / 6),
+    Math.round(
+      (counts.activeJobs + counts.publishedPosts + counts.featuredPosts + counts.receivedRequests) /
+        6,
+    ),
   );
 
   const activityBars = [
     { label: "Offres actives", value: counts.activeJobs, max: Math.max(counts.activeJobs, 10) },
-    { label: "Articles publiés", value: counts.publishedPosts, max: Math.max(counts.publishedPosts, 10) },
+    {
+      label: "Articles publiés",
+      value: counts.publishedPosts,
+      max: Math.max(counts.publishedPosts, 10),
+    },
     { label: "À la une", value: counts.featuredPosts, max: Math.max(counts.featuredPosts, 10) },
-    { label: "Demandes reçues", value: counts.receivedRequests, max: Math.max(counts.receivedRequests, 10) },
+    {
+      label: "Demandes reçues",
+      value: counts.receivedRequests,
+      max: Math.max(counts.receivedRequests, 10),
+    },
   ];
 
   return (
@@ -234,7 +248,8 @@ function AdminDashboardView() {
               ? "/admin/candidates"
               : metric.label === t("admin.dashboard.metric.activeJobs")
                 ? "/admin/jobs"
-                : metric.label === t("admin.dashboard.metric.publishedPosts") || metric.label === t("admin.dashboard.metric.featuredPosts")
+                : metric.label === t("admin.dashboard.metric.publishedPosts") ||
+                    metric.label === t("admin.dashboard.metric.featuredPosts")
                   ? "/admin/blog"
                   : "/admin";
 
@@ -244,7 +259,9 @@ function AdminDashboardView() {
               to={href}
               className="group block rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.15rem] sm:p-3.5"
             >
-              <div className={`inline-flex rounded-lg bg-gradient-to-br ${metric.tone} p-2 sm:p-2.5`}>
+              <div
+                className={`inline-flex rounded-lg bg-gradient-to-br ${metric.tone} p-2 sm:p-2.5`}
+              >
                 <Icon className="h-4 w-4 sm:h-4 sm:w-4" />
               </div>
               <p className="mt-3 text-xs uppercase tracking-wide text-slate-500 sm:text-xs">
@@ -275,7 +292,10 @@ function AdminDashboardView() {
       />
 
       <div className="grid gap-4 sm:gap-5 xl:grid-cols-[1.2fr_0.8fr]">
-        <Link to="/admin/jobs" className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.35rem] sm:p-5">
+        <Link
+          to="/admin/jobs"
+          className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.35rem] sm:p-5"
+        >
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-wide text-slate-500">Système</p>
@@ -320,7 +340,10 @@ function AdminDashboardView() {
           </div>
         </Link>
 
-        <Link to="/admin/team" className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.35rem] sm:p-5">
+        <Link
+          to="/admin/team"
+          className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.35rem] sm:p-5"
+        >
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-wide text-slate-500">Accès</p>
@@ -341,7 +364,10 @@ function AdminDashboardView() {
                     <span className="font-semibold text-foreground">{role.value}</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-slate-900/10">
-                    <div className={`h-full rounded-full ${role.color}`} style={{ width: `${ratio}%` }} />
+                    <div
+                      className={`h-full rounded-full ${role.color}`}
+                      style={{ width: `${ratio}%` }}
+                    />
                   </div>
                 </div>
               );
@@ -355,14 +381,19 @@ function AdminDashboardView() {
             </div>
             <div className="rounded-2xl border border-border bg-background/70 p-3">
               <div className="text-xs uppercase tracking-wide text-slate-500">Bloqués</div>
-              <div className="mt-1 text-2xl font-semibold text-foreground">{adminStats.blocked}</div>
+              <div className="mt-1 text-2xl font-semibold text-foreground">
+                {adminStats.blocked}
+              </div>
             </div>
           </div>
         </Link>
       </div>
 
       <div className="grid gap-4 sm:gap-5 grid-cols-1 lg:grid-cols-3">
-        <Link to="/admin/jobs" className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.2rem] sm:p-4">
+        <Link
+          to="/admin/jobs"
+          className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.2rem] sm:p-4"
+        >
           <div className="flex items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
               <p className="text-xs uppercase tracking-wide text-slate-500 sm:text-xs">
@@ -372,17 +403,24 @@ function AdminDashboardView() {
                 {t("admin.dashboard.jobs.subtitle")}
               </h3>
             </div>
-            <div className="rounded-2xl bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-600 whitespace-nowrap flex-shrink-0 sm:text-xs">Stable</div>
+            <div className="rounded-2xl bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-600 whitespace-nowrap flex-shrink-0 sm:text-xs">
+              Stable
+            </div>
           </div>
           <div className="mt-4 rounded-lg border border-border bg-background/70 p-3 sm:p-3.5">
             <div className="flex items-center gap-2 text-xs font-medium text-slate-700">
               <BadgeCheck className="h-3.5 w-3.5 text-emerald-500 flex-shrink-0" />
-              <span className="line-clamp-2">Les offres sont visibles et prêtes à être gérées.</span>
+              <span className="line-clamp-2">
+                Les offres sont visibles et prêtes à être gérées.
+              </span>
             </div>
           </div>
         </Link>
 
-        <Link to="/admin/blog" className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.2rem] sm:p-4">
+        <Link
+          to="/admin/blog"
+          className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.2rem] sm:p-4"
+        >
           <div className="flex items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
               <p className="text-xs uppercase tracking-wide text-slate-500 sm:text-xs">
@@ -392,7 +430,9 @@ function AdminDashboardView() {
                 {t("admin.dashboard.blog.subtitle")}
               </h3>
             </div>
-            <div className="rounded-2xl bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-600 whitespace-nowrap flex-shrink-0 sm:text-xs">À la une</div>
+            <div className="rounded-2xl bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-600 whitespace-nowrap flex-shrink-0 sm:text-xs">
+              À la une
+            </div>
           </div>
           <div className="mt-4 rounded-lg border border-border bg-background/70 p-3 sm:p-3.5">
             <div className="flex items-center justify-between text-xs font-medium text-slate-700">
@@ -402,7 +442,10 @@ function AdminDashboardView() {
           </div>
         </Link>
 
-        <Link to="/admin/team" className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.2rem] sm:p-4">
+        <Link
+          to="/admin/team"
+          className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.2rem] sm:p-4"
+        >
           <div className="flex items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
               <p className="text-xs uppercase tracking-wide text-slate-500 sm:text-xs">

@@ -5,12 +5,12 @@ import {
   FileTextIcon as FileText,
   GitDiffIcon as GitCompareArrows,
   EnvelopeIcon as Mail,
-  SparkleIcon as Sparkles,
 } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { CandidateBillingPanel } from "@/features/billing/components/CandidateBillingPanel";
+import { AIIcon } from "@/components/ui/AIIcon";
 
 const generativeFeatures = [
   {
@@ -35,7 +35,7 @@ const generativeFeatures = [
     label: "Résumé personnalisé",
     description:
       "Une lecture simple de votre profil met en évidence les éléments les plus importants pour le poste.",
-    icon: Sparkles,
+    icon: AIIcon,
   },
   {
     label: "Lettre de motivation",
@@ -50,7 +50,7 @@ const featureGroups = [
     title: "Recommandations",
     value: "7",
     subtitle: "Jusqu’à 7 recommandations",
-    icon: Sparkles,
+    icon: AIIcon,
   },
   {
     title: "Offres enregistrées",
@@ -79,9 +79,6 @@ export function CandidatePremiumSubscriptionPage() {
       <main className="mt-6 space-y-8">
         <section className="border-b border-border pb-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-secondary/20 bg-secondary/10 text-secondary">
-              <Sparkles className="h-5 w-5" />
-            </div>
             <span className="inline-flex rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-secondary">
               Premium
             </span>
@@ -129,10 +126,9 @@ export function CandidatePremiumSubscriptionPage() {
         <section className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="space-y-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/5 text-primary">
-                <Sparkles className="h-4 w-4" />
-              </div>
-              <h2 className="text-xl font-semibold text-foreground md:text-2xl">Ce que ce forfait comprend</h2>
+              <h2 className="text-xl font-semibold text-foreground md:text-2xl">
+                Ce que ce forfait comprend
+              </h2>
             </div>
 
             <div className="space-y-3">
