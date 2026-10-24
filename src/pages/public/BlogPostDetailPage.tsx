@@ -19,7 +19,7 @@ function NotFoundPage() {
       />
       <div className="bg-background px-4 py-16 sm:px-6 md:py-24">
         <div className="container-page rounded-xl border border-border bg-white p-10 text-center shadow-sm">
-          <h1 className="font-display text-4xl font-bold text-foreground">404</h1>
+          <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">404</h1>
           <p className="mt-4 text-muted-foreground">Page introuvable.</p>
           <Link
             to="/"
@@ -155,10 +155,10 @@ export function BlogPostDetailPage() {
                         ) : null}
                       </div>
                       <div className="min-w-0">
-                        <p className="line-clamp-2 text-xs font-semibold leading-4 text-[#27211e]">
+                        <p className="line-clamp-2 text-xs font-semibold leading-[1.5] text-[#27211e]">
                           {latestPost.title}
                         </p>
-                        <p className="mt-1 text-[10px] text-[#907b6c]">
+                        <p className="mt-1 text-xs text-[#907b6c]">
                           {latestPost.publish_at
                             ? new Date(latestPost.publish_at).toLocaleDateString("fr-FR")
                             : "Article"}
@@ -170,7 +170,7 @@ export function BlogPostDetailPage() {
             </section>
 
             <section className="rounded-xl border border-border bg-white p-5 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1B2CE3]">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#1B2CE3]">
                 {t("blog.article.information")}
               </p>
               <div className="mt-4 space-y-4 text-sm leading-6 text-[#3f342e]">
@@ -223,13 +223,13 @@ export function BlogPostDetailPage() {
               ) : null}
               <div className="absolute inset-0 bg-gradient-to-t from-[#000079]/95 via-[#000079]/25 to-transparent" />
               <div className="absolute bottom-0 left-0 max-w-3xl p-5 text-white sm:p-8">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-[10px] font-semibold text-secondary-foreground">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-secondary-foreground">
                   <Tag className="h-3 w-3" /> {post.category || "Article"}
                 </span>
-                <h1 className="mt-3 font-display text-2xl font-bold leading-tight sm:text-4xl">
+                <h1 className="mt-3 font-display text-2xl font-bold leading-tight md:text-3xl">
                   {post.title}
                 </h1>
-                <div className="mt-3 flex items-center gap-2 text-[11px] text-white/75">
+                <div className="mt-3 flex items-center gap-2 text-xs text-white/75">
                   <CalendarDays className="h-3.5 w-3.5" />
                   {post.publish_at ? new Date(post.publish_at).toLocaleDateString("fr-FR") : ""}
                 </div>
@@ -250,21 +250,21 @@ export function BlogPostDetailPage() {
               />
             </div>
             {post.excerpt ? (
-              <p className="rounded-xl border border-border bg-white p-5 text-base leading-7 text-muted-foreground shadow-sm sm:p-7">
+              <p className="rounded-xl border border-border bg-white p-5 text-base leading-relaxed text-muted-foreground shadow-sm sm:p-7">
                 {post.excerpt}
               </p>
             ) : null}
             <article className="min-w-0 rounded-xl border border-border bg-white p-5 shadow-sm sm:p-8">
-              <h2 className="font-display text-xl font-semibold tracking-tight text-[#171717] sm:text-2xl">
+              <h2 className="font-display text-xl font-semibold tracking-tight text-[#171717] md:text-2xl">
                 {t("blog.article.content")}
               </h2>
-              <div className="mt-6 max-w-3xl break-words whitespace-pre-line text-base leading-8 text-[#3f342e] [overflow-wrap:anywhere] sm:text-[17px]">
+              <div className="mt-6 max-w-3xl break-words whitespace-pre-line text-base leading-relaxed text-[#3f342e] [overflow-wrap:anywhere] sm:text-[17px]">
                 {post.content}
               </div>
             </article>
             {post.external_link || post.video_url ? (
               <section className="rounded-xl border border-border bg-white p-5 shadow-sm">
-                <p className="text-sm uppercase tracking-[0.2em] text-[#1B2CE3]">
+                <p className="text-sm uppercase tracking-wide text-[#1B2CE3]">
                   {t("blog.article.resources")}
                 </p>
                 <div className="mt-4 space-y-2">

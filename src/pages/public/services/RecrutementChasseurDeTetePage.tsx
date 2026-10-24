@@ -141,10 +141,10 @@ export default function RecrutementChasseurDeTetePage() {
           >
             <div className="mx-auto max-w-6xl grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.8fr)] lg:items-center lg:gap-16">
               <div className="max-w-3xl">
-                <h1 className="mt-5 font-display text-4xl font-extrabold leading-tight tracking-tight text-white md:text-6xl">
+                <h1 className="mt-5 font-display text-2xl font-extrabold leading-tight tracking-tight text-white md:text-3xl">
                   Besoin d'une nouvelle ressource ?
                 </h1>
-                <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-200">
                   Nous accompagnons les entreprises dans la constitution d'équipes performantes dans
                   des environnements de plus en plus concurrentiels et exigeants.
                 </p>
@@ -171,7 +171,7 @@ export default function RecrutementChasseurDeTetePage() {
           <section className="scroll-mt-20 border-b border-border py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-6 md:px-10">
               <div className="max-w-2xl">
-                <h2 className="mt-4 font-display text-3xl font-bold leading-tight tracking-tight text-foreground md:text-5xl">
+                <h2 className="mt-4 font-display text-xl font-bold leading-tight tracking-tight text-foreground md:text-2xl">
                   Découvrez nos trois principaux avantages
                 </h2>
               </div>
@@ -188,7 +188,7 @@ export default function RecrutementChasseurDeTetePage() {
                     }`}
                   >
                     <span className="text-5xl font-light leading-none tracking-tight">0{index + 1}.</span>
-                    <h3 className="mt-8 max-w-[15rem] text-xl font-bold leading-tight">{title}</h3>
+                    <h3 className="mt-8 max-w-[15rem] text-base font-semibold leading-tight md:text-lg">{title}</h3>
                     <p
                       className={`mt-7 text-sm leading-6 ${
                         index === 2 ? "text-slate-700" : "text-white/85"
@@ -206,18 +206,18 @@ export default function RecrutementChasseurDeTetePage() {
             <div className="mx-auto max-w-6xl px-6 md:px-10">
               <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,1fr)] lg:gap-16">
                 <div className="max-w-xl">
-                  <h2 className="font-display text-3xl font-bold leading-tight tracking-tight text-foreground md:text-5xl">
+                  <h2 className="font-display text-xl font-bold leading-tight tracking-tight text-foreground md:text-2xl">
                     Aider votre entreprise à réussir
                   </h2>
-                  <p className="mt-5 max-w-lg text-base leading-8 text-muted-foreground">
+                  <p className="mt-5 max-w-lg text-base leading-relaxed text-muted-foreground">
                     Une large gamme de solutions de recrutement et de conseil associées à un objectif
                     commun : aider votre entreprise à réussir.
                   </p>
                   <div className="mt-10 space-y-7">
                     {engagements.map(({ title, description }) => (
                       <article key={title} className="border-l-2 border-primary/30 pl-5">
-                        <h3 className="text-xl font-semibold text-foreground">{title}</h3>
-                        <p className="mt-2 text-sm leading-7 text-muted-foreground">{description}</p>
+                        <h3 className="text-base font-semibold text-foreground md:text-lg">{title}</h3>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
                       </article>
                     ))}
                   </div>
@@ -237,10 +237,10 @@ export default function RecrutementChasseurDeTetePage() {
           <section className="scroll-mt-20 py-14 md:py-20">
             <div className="mx-auto max-w-5xl px-6 md:px-10">
               <div className="mx-auto max-w-2xl text-center">
-                <h2 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-5xl">
+                <h2 className="font-display text-xl font-bold tracking-tight text-foreground md:text-2xl">
                   Quatre étapes pour avancer avec précision
                 </h2>
-                <p className="mt-5 text-sm leading-7 text-muted-foreground md:text-base">
+                <p className="mt-5 text-sm leading-relaxed text-muted-foreground md:text-base">
                   Une méthode structurée pour identifier les bons profils et accompagner leur
                   intégration avec efficacité.
                 </p>
@@ -255,7 +255,7 @@ export default function RecrutementChasseurDeTetePage() {
                     }`}
                   >
                     <div className="absolute left-0 top-0 z-10 flex flex-col items-center gap-2 md:left-1/2 md:-translate-x-1/2">
-                      <span className="flex size-10 items-center justify-center rounded-full border border-brand/20 bg-background text-[0.65rem] font-bold tracking-[0.12em] text-brand shadow-sm">
+                      <span className="flex size-10 items-center justify-center rounded-full border border-brand/20 bg-background text-xs font-bold tracking-wide text-brand shadow-sm">
                         0{index + 1}
                       </span>
                       <span className="flex size-12 items-center justify-center rounded-xl bg-brand text-brand-foreground shadow-lg shadow-brand/20">
@@ -267,8 +267,8 @@ export default function RecrutementChasseurDeTetePage() {
                         index % 2 === 0 ? "md:text-right" : "md:text-left"
                       }`}
                     >
-                      <h3 className="text-xl font-semibold text-foreground">{title}</h3>
-                      <p className="mt-3 text-sm leading-7 text-muted-foreground">{description}</p>
+                      <h3 className="text-base font-semibold text-foreground md:text-lg">{title}</h3>
+                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{description}</p>
                       <ul
                         className={`mt-4 space-y-2 text-sm leading-6 text-muted-foreground ${
                           index % 2 === 0 ? "md:border-r md:pr-4" : "md:border-l md:pl-4"
@@ -288,10 +288,10 @@ export default function RecrutementChasseurDeTetePage() {
           <section className="scroll-mt-20 py-14 md:py-20">
             <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-16 md:px-10">
               <div>
-                <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                <h2 className="mt-4 font-display text-xl font-bold tracking-tight text-foreground md:text-2xl">
                   Questions les plus fréquentes
                 </h2>
-                <p className="mt-5 text-base leading-8 text-muted-foreground">
+                <p className="mt-5 text-base leading-relaxed text-muted-foreground">
                   Voici quelques questions fréquentes sur notre entreprise et nos services de
                   recrutement.
                 </p>
@@ -306,7 +306,7 @@ export default function RecrutementChasseurDeTetePage() {
                     <AccordionTrigger className="py-5 text-left text-base font-semibold text-foreground hover:text-brand hover:no-underline">
                       {question}
                     </AccordionTrigger>
-                    <AccordionContent className="bg-muted/40 px-4 py-4 text-sm leading-7 text-muted-foreground">
+                    <AccordionContent className="bg-muted/40 px-4 py-4 text-sm leading-relaxed text-muted-foreground">
                       Réponse à compléter avec les informations validées par EmploiPlus Group.
                     </AccordionContent>
                   </AccordionItem>
@@ -316,14 +316,14 @@ export default function RecrutementChasseurDeTetePage() {
           </section>
 
           <section className="mx-6 max-w-6xl rounded-[1.5rem] bg-brand px-5 py-7 text-center text-brand-foreground md:mx-auto md:px-8 md:py-9">
-            <h2 className="mx-auto max-w-4xl font-display text-xl font-bold tracking-tight md:text-3xl">
+            <h2 className="mx-auto max-w-4xl font-display text-xl font-bold tracking-tight md:text-2xl">
               À la recherche de profils rares ou stratégiques pour faire la différence ?
             </h2>
-            <p className="mx-auto mt-3 max-w-3xl text-sm leading-7 text-brand-foreground/80 md:text-base">
+            <p className="mx-auto mt-3 max-w-3xl text-sm leading-relaxed text-brand-foreground/80 md:text-base">
               Notre service de chasse de tête identifie, approche et vous présente les meilleurs
               talents du marché, y compris les profils les plus discrets.
             </p>
-            <p className="mx-auto mt-2 max-w-3xl text-sm leading-7 text-brand-foreground/80 md:text-base">
+            <p className="mx-auto mt-2 max-w-3xl text-sm leading-relaxed text-brand-foreground/80 md:text-base">
               Confiez-nous vos recrutements critiques et accédez à un vivier de compétences ciblées,
               sélectionnées avec exigence et discrétion.
             </p>

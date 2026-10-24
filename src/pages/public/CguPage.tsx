@@ -101,10 +101,10 @@ export function CguPage() {
         <div className="space-y-8">
           <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
             <div className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
                 Conditions Générales d'Utilisation
               </p>
-              <h1 className="text-3xl font-semibold text-foreground">Conditions Générales d'Utilisation</h1>
+              <h1 className="text-2xl font-semibold text-foreground md:text-3xl">Conditions Générales d'Utilisation</h1>
             </div>
           </div>
 

@@ -21,14 +21,14 @@ export function CandidateSettingsPage() {
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-4">
-      <div className="overflow-hidden rounded-3xl border border-primary/15 bg-card shadow-sm">
+      <div className="overflow-hidden rounded-3xl border border-primary/15 bg-card shadow-none">
         <div className="flex items-center gap-3 bg-primary/[0.03] px-4 py-3 sm:px-5">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
             <Settings className="h-4 w-4 text-primary" />
           </div>
           <div className="min-w-0">
             <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">Paramètres du compte</h1>
-            <p className="text-xs leading-5 text-muted-foreground sm:text-sm">
+            <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
               Gérez la sécurité et les options de votre espace candidat.
             </p>
           </div>

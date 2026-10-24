@@ -6,15 +6,10 @@ import {
   BuildingsIcon as Building2,
   CalendarDotsIcon as CalendarDays,
   WarningCircleIcon as CircleAlert,
-  UserCircleIcon as CircleUserRound,
-  RobotIcon as Bot,
   MapPinIcon as MapPin,
-  ChatCircleIcon as MessageCircle,
-  PlusIcon as Plus,
   MagnifyingGlassIcon as Search,
   SlidersHorizontalIcon as SlidersHorizontal,
   SparkleIcon as Sparkles,
-  ArrowRightIcon as ArrowRight,
   XIcon as X,
 } from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
@@ -63,7 +58,6 @@ import { centralAfricaCityGroups } from "@/data/locations";
 import { useCandidate } from "@/hooks/useCandidate";
 import { useCandidatePreferences as useCandidateJobPreferences } from "@/features/candidates/hooks/useCandidatePreferences";
 import { getRecommendedJobs, type RecommendedJob } from "@/services/aiMatchingService";
-import { useMaelise } from "@/features/maelise";
 import { hasAnalyzableCandidateCv, hasCandidateCv } from "@/features/candidates/api/cvApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -81,7 +75,6 @@ export function JobsPage() {
   const location = useLocation();
   const { user, isLoading, roles } = useAuthContext();
   const { profile } = useCandidate();
-  const { open: openMaelise } = useMaelise();
   const isCandidateShell = Boolean(user && (roles.includes("candidate") || profile?.id));
   const canUseAdvancedFilters = Boolean(user);
   const { preferences } = useCandidateJobPreferences(profile?.id);
@@ -106,7 +99,6 @@ export function JobsPage() {
   });
   const [filtersOpen, setFiltersOpen] = React.useState(false);
   const [loginPromptSlug, setLoginPromptSlug] = React.useState<string | null>(null);
-  const [whatsappOpen, setWhatsappOpen] = React.useState(false);
   const [page, setPage] = React.useState(1);
   const [recommendedJobs, setRecommendedJobs] = React.useState<RecommendedJob[]>([]);
   const [recommendedLoading, setRecommendedLoading] = React.useState(false);
@@ -122,8 +114,6 @@ export function JobsPage() {
   const [searchesLoading, setSearchesLoading] = React.useState(false);
   const [nearbyOnly, setNearbyOnly] = React.useState(false);
   const [candidateToolsOpen, setCandidateToolsOpen] = React.useState(false);
-  const [floatingActionsOpen, setFloatingActionsOpen] = React.useState(false);
-  const [candidatePromoOpen, setCandidatePromoOpen] = React.useState(false);
   const recommendationContextRef = React.useRef<string | null>(null);
   const pageSize = 8;
   const recommendedPageSize = 3;
@@ -547,15 +537,23 @@ export function JobsPage() {
         <div className="grid min-w-0 gap-8">
           <div className="flex min-w-0 flex-col gap-6 text-foreground/90 leading-relaxed">
             <div
-              className="order-1 sticky top-0 z-40 isolate mt-0 mb-0 w-full min-w-0 self-start rounded-[1.25rem] bg-card/95 backdrop-blur-sm"
+              className={`order-1 sticky top-0 z-40 isolate mt-0 mb-0 w-full min-w-0 self-start rounded-[1.25rem] ${
+                isCandidateShell ? "bg-transparent" : "bg-card/95 backdrop-blur-sm"
+              }`}
               style={{
                 top: mobileApp || isCandidateShell ? 0 : 64,
               }}
             >
-              <div className="flex min-w-0 flex-col overflow-hidden rounded-[1.25rem] border-0 bg-card shadow-none ring-0">
+              <div
+                className={`flex min-w-0 flex-col overflow-hidden rounded-[1.25rem] border-0 shadow-none ring-0 ${
+                  isCandidateShell ? "bg-transparent" : "bg-card"
+                }`}
+              >
                 <form
                   onSubmit={handleSearchSubmit}
-                  className="order-1 flex min-w-0 flex-col gap-3 bg-card/95 p-3 sm:p-4"
+                  className={`order-1 flex min-w-0 flex-col gap-3 p-3 sm:p-4 ${
+                    isCandidateShell ? "bg-transparent" : "bg-card/95"
+                  }`}
                 >
                   <label
                     className="text-sm font-semibold text-foreground"
@@ -802,7 +800,7 @@ export function JobsPage() {
                   >
                     <div className="flex items-end gap-2 overflow-x-auto bg-card px-3 py-2.5 sm:px-4">
                       <div className="shrink-0">
-                        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Type de contrat
                         </label>
                         <select
@@ -822,7 +820,7 @@ export function JobsPage() {
                       </div>
 
                       <div className="shrink-0">
-                        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Localisation
                         </label>
                         <Select value={locationInput} onValueChange={setLocationInput}>
@@ -847,7 +845,7 @@ export function JobsPage() {
 
                       {availableDomains.length > 0 ? (
                         <div className="shrink-0">
-                          <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                          <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             Domaine
                           </label>
                           <select
@@ -866,7 +864,7 @@ export function JobsPage() {
                       ) : null}
 
                       <div className="shrink-0">
-                        <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Trier par
                         </label>
                         <select
@@ -1179,7 +1177,7 @@ export function JobsPage() {
 
               <div className="order-3 flex flex-col gap-3 pt-6 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 className="text-xl font-bold text-foreground sm:text-2xl">
+                  <h2 className="text-xl font-bold text-foreground md:text-2xl">
                     Offres disponibles
                   </h2>
                   {hasActiveSearchCriteria ? (
@@ -1278,151 +1276,6 @@ export function JobsPage() {
           </div>
         </div>
       </section>
-      <div className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-40 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
-        {!isCandidateShell && whatsappOpen ? (
-          <div
-            role="dialog"
-            aria-label="Accès rapide WhatsApp"
-            className="w-[min(calc(100vw-2rem),24rem)] rounded-2xl border border-border bg-card p-5 shadow-2xl"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="font-display text-lg font-bold text-foreground">Accès rapide</h2>
-                <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                  Visitez nos chaînes WhatsApp pour recevoir les dernières offres et mises à jour
-                  emploi.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setWhatsappOpen(false)}
-                className="rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
-                aria-label="Fermer l'accès rapide WhatsApp"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-            <div className="mt-4 grid gap-2">
-              <a
-                href="https://whatsapp.com/channel/0029VbBQ1qtATRSfKsByJC43"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-xl bg-[#25D366] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1ea952]"
-              >
-                Chaîne Emploiplus-group
-              </a>
-              <a
-                href="https://whatsapp.com/channel/0029Vb5pc270VycKAb1tc631"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-xl border border-[#25D366]/40 bg-[#25D366]/10 px-4 py-3 text-sm font-semibold text-foreground transition hover:bg-[#25D366]/20"
-              >
-                Chaîne Offres d'emploi (gratuit)
-              </a>
-            </div>
-          </div>
-        ) : null}
-
-        <div className={isCandidateShell ? "fab fab-flower" : "flex items-end gap-3"}>
-          {isCandidateShell ? (
-            <>
-              <div
-                tabIndex={0}
-                role="button"
-                aria-expanded={floatingActionsOpen}
-                aria-label={floatingActionsOpen ? "Masquer les actions" : "Afficher les actions"}
-                className="btn btn-lg btn-circle btn-primary"
-                onClick={() => setFloatingActionsOpen((open) => !open)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    setFloatingActionsOpen((open) => !open);
-                  }
-                }}
-              >
-                {floatingActionsOpen ? (
-                  <X className="size-5" aria-hidden="true" />
-                ) : (
-                  <Plus className="size-5" aria-hidden="true" />
-                )}
-              </div>
-              {floatingActionsOpen ? (
-                <>
-                  {!recommendationsOpen ? (
-                    <button
-                      type="button"
-                      onClick={() => setRecommendationsOpen(true)}
-                      aria-label="Voir mes recommandations"
-                      className="btn btn-lg btn-recommendation rounded-full border border-primary/20 bg-card px-4 text-primary shadow-lg transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-                    >
-                      <Sparkles className="size-5" aria-hidden="true" />
-                      <span>Recommandation</span>
-                    </button>
-                  ) : null}
-                  {candidatePromoOpen ? (
-                    <aside className="hidden w-[min(calc(100vw-6rem),22rem)] overflow-hidden rounded-2xl border border-brand/20 bg-card text-left shadow-2xl md:block">
-                      <div className="flex items-start justify-between gap-4 border-b border-border/70 px-5 pb-3 pt-4">
-                        <div>
-                          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand">Espace candidat</p>
-                          <p className="mt-1 text-xs text-muted-foreground">Des outils pour avancer plus vite</p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setCandidatePromoOpen(false)}
-                          className="-mr-1 -mt-1 rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-                          aria-label="Replier l'espace candidat"
-                          title="Replier"
-                        >
-                          <X className="size-4" aria-hidden="true" />
-                        </button>
-                      </div>
-                      <div className="px-5 pb-5 pt-4">
-                        <h2 className="max-w-[17rem] text-lg font-semibold leading-6 text-foreground">Donnez un nouvel élan à votre recherche</h2>
-                        <p className="mt-3 text-sm leading-6 text-muted-foreground">Retrouvez des outils intelligents pour préparer votre profil et accéder aux opportunités qui vous correspondent.</p>
-                        <Button asChild className="mt-4 h-10 w-full rounded-xl bg-brand text-sm font-semibold text-brand-foreground shadow-sm hover:bg-brand/90">
-                          <Link to="/services/hub-candidat-intelligent">Découvrir l'espace candidat<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Link>
-                        </Button>
-                      </div>
-                    </aside>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setCandidatePromoOpen(true)}
-                      aria-label="Afficher l'espace candidat"
-                      className="btn btn-lg btn-recommendation rounded-full border border-primary/20 bg-card px-4 text-primary shadow-lg transition hover:border-primary/40 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-                    >
-                      <CircleUserRound className="size-5" aria-hidden="true" />
-                      <span>Espace candidat</span>
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={openMaelise}
-                    aria-label="Ouvrir Maélise"
-                    className="btn btn-lg btn-circle border border-brand/20 bg-brand text-brand-foreground shadow-brand transition hover:bg-brand/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/60"
-                  >
-                    <Bot className="size-5" aria-hidden="true" />
-                  </button>
-                </>
-              ) : null}
-            </>
-          ) : null}
-
-          {!isCandidateShell && (
-            <button
-              type="button"
-              onClick={() => setWhatsappOpen((open) => !open)}
-              aria-expanded={whatsappOpen}
-              aria-label={
-                whatsappOpen ? "Fermer les chaînes WhatsApp" : "Ouvrir les chaînes WhatsApp"
-              }
-              className="flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition hover:scale-105 hover:bg-[#1ea952] focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
-            >
-              <MessageCircle className="size-7" />
-            </button>
-          )}
-        </div>
-      </div>
       <Dialog
         open={Boolean(loginPromptSlug)}
         onOpenChange={(open) => !open && setLoginPromptSlug(null)}

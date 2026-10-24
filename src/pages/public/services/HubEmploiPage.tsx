@@ -28,10 +28,10 @@ export default function HubEmploiPage() {
                   <div className="inline-flex items-center gap-3 rounded-full border border-brand/15 bg-white/80 px-4 py-2 text-sm font-semibold text-brand shadow-sm">
                     <span>Accompagnement carrière</span>
                   </div>
-                  <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground">
+                  <h2 className="mt-4 text-xl font-semibold tracking-tight text-foreground md:text-2xl">
                     Pour les candidats
                   </h2>
-                  <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+                  <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
                     Des services pensés pour valoriser vos compétences, renforcer votre visibilité
                     et accélérer votre insertion professionnelle.
                   </p>
@@ -52,7 +52,7 @@ export default function HubEmploiPage() {
                       <div className="inline-flex items-center rounded-full bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">
                         Positionnement professionnel
                       </div>
-                      <h3 className="mt-4 text-2xl font-semibold text-foreground">
+                      <h3 className="mt-4 text-base font-semibold text-foreground md:text-lg">
                         Optimisation de CV & lettres
                       </h3>
                       <p className="mt-3 text-base leading-relaxed text-muted-foreground">
@@ -68,10 +68,10 @@ export default function HubEmploiPage() {
                       <div className="inline-flex items-center rounded-full bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">
                         Accompagnement carrière
                       </div>
-                      <h3 className="mt-4 text-2xl font-semibold text-foreground">
+                      <h3 className="mt-4 text-base font-semibold text-foreground md:text-lg">
                         Évaluation des compétences
                       </h3>
-                      <p className="mt-3 text-base leading-7 text-muted-foreground">
+                      <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                         Des tests concrets et des feedbacks utiles pour valider votre profil et
                         révéler votre potentiel.
                       </p>
@@ -92,10 +92,10 @@ export default function HubEmploiPage() {
                       <div className="inline-flex items-center rounded-full bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">
                         Conseil personnalisé
                       </div>
-                      <h3 className="mt-4 text-2xl font-semibold text-foreground">
+                      <h3 className="mt-4 text-base font-semibold text-foreground md:text-lg">
                         Accompagnement personnalisé
                       </h3>
-                      <p className="mt-3 text-base leading-7 text-muted-foreground">
+                      <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                         Un suivi humain et structuré pour vous aider à faire les bons choix à chaque
                         étape.
                       </p>
@@ -123,10 +123,10 @@ export default function HubEmploiPage() {
                       <div className="inline-flex items-center rounded-full bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">
                         Préparation à l'embauche
                       </div>
-                      <h3 className="mt-4 text-2xl font-semibold text-foreground">
+                      <h3 className="mt-4 text-base font-semibold text-foreground md:text-lg">
                         Préparation aux entretiens
                       </h3>
-                      <p className="mt-3 text-base leading-7 text-muted-foreground">
+                      <p className="mt-3 text-base leading-relaxed text-muted-foreground">
                         Des simulations réalistes pour gagner en confiance et faire la différence le
                         jour J.
                       </p>
@@ -191,10 +191,10 @@ export default function HubEmploiPage() {
                     <span>Recrutement stratégique</span>
                   </div>
                   <div className="space-y-4">
-                    <h2 className="text-3xl font-semibold tracking-tight text-foreground">
+                    <h2 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
                       Pour les entreprises
                     </h2>
-                    <p className="max-w-2xl text-base leading-7 text-muted-foreground">
+                    <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
                       Solutions dédiées pour recruter mieux et plus vite — services sur-mesure et
                       opérationnels pour répondre à vos besoins RH.
                     </p>
@@ -352,7 +352,7 @@ function AlternateBlock({
         </div>
       </div>
       <div className={`${reverse ? "sm:order-1 text-right sm:text-left" : ""}`}>
-        <h3 className="text-2xl font-semibold text-foreground">{title}</h3>
+        <h3 className="text-base font-semibold text-foreground md:text-lg">{title}</h3>
         <p className="mt-3 text-muted-foreground">{detail}</p>
       </div>
     </div>

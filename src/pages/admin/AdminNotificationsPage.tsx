@@ -252,7 +252,7 @@ export function AdminNotificationsPage() {
         <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
-              <p className="text-[9px] font-medium uppercase tracking-[0.22em] text-slate-500">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 Administration
               </p>
               <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">

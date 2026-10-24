@@ -153,7 +153,7 @@ export function AuthPage() {
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-100 border border-slate-200">
               <img src={favicon} alt="EmploiPlus" className="h-10 w-10 object-contain" />
             </div>
-            <h1 className="font-display text-3xl font-bold text-slate-900">{t("auth.heading")}</h1>
+            <h1 className="font-display text-2xl font-bold text-slate-900 md:text-3xl">{t("auth.heading")}</h1>
             <p className="mt-4 text-slate-600">{t("auth.subtitle")}</p>
           </div>
 

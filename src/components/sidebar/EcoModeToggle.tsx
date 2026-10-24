@@ -1,4 +1,5 @@
 import React from "react";
+import { LeafIcon as Leaf } from "@phosphor-icons/react";
 import { useEcoMode } from "../../contexts/EcoModeContext";
 
 type Props = {
@@ -23,32 +24,24 @@ export const EcoModeToggle: React.FC<Props> = ({ className = "" }) => {
         role="switch"
         aria-checked={isEcoMode}
         aria-label={`Économie de données ${isEcoMode ? "activée" : "désactivée"}`}
-        className="w-full flex items-center justify-between gap-2 px-2 py-1.5 min-h-[40px] rounded-md hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+        className="group flex w-full items-center gap-2.5 rounded-lg px-3 py-1.5 text-left text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 dark:text-slate-300 dark:hover:bg-white/5"
       >
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="min-w-0">
-            <div className="truncate text-sm font-medium text-slate-700 dark:text-slate-200">
-              Économie de données (Mo)
-            </div>
-            <div className="hidden text-[10px] leading-tight text-slate-500 dark:text-slate-400 sm:block">
-              Réduit le chargement des médias et animations
-            </div>
-          </div>
-        </div>
-
-        {/* Switch visuel */}
-        <span className="flex-none">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-950/90 dark:text-slate-200">
+          <Leaf className="h-5 w-5" />
+        </span>
+        <span className="min-w-0 flex-1 truncate text-sm font-medium">
+          Économie de données (Mo)
+        </span>
+        <span
+          className={`relative flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
+            isEcoMode ? "bg-primary" : "bg-slate-300 dark:bg-slate-700"
+          }`}
+        >
           <span
-            className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors duration-200 ${
-              isEcoMode ? "bg-emerald-500" : "bg-slate-300"
+            className={`h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+              isEcoMode ? "translate-x-4" : "translate-x-0.5"
             }`}
-          >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${
-                isEcoMode ? "translate-x-5" : "translate-x-0"
-              }`}
-            />
-          </span>
+          />
         </span>
       </button>
     </div>

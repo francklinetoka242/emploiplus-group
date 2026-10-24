@@ -180,7 +180,7 @@ export function AdminLocalGuidesPage() {
               <PlusCircle className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-slate-500">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 Administration
               </p>
               <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">
@@ -410,7 +410,7 @@ export function AdminLocalGuidesPage() {
                           <div className="flex min-w-0 flex-wrap items-center gap-2">
                             <p className="truncate font-medium text-slate-900">{guide.title}</p>
                             <span
-                              className={`inline-flex shrink-0 rounded-full px-2 py-1 text-[10px] font-semibold ${
+                              className={`inline-flex shrink-0 rounded-full px-2 py-1 text-xs font-semibold ${
                                 guide.visible
                                   ? "bg-emerald-500/10 text-emerald-700"
                                   : "bg-slate-500/10 text-slate-600"
@@ -500,7 +500,7 @@ export function AdminLocalGuidesPage() {
                         <div className="flex min-w-0 flex-wrap items-center gap-2">
                           <p className="truncate font-medium text-slate-900">{guide.title}</p>
                           <span
-                            className={`inline-flex shrink-0 rounded-full px-2 py-1 text-[10px] font-semibold ${
+                            className={`inline-flex shrink-0 rounded-full px-2 py-1 text-xs font-semibold ${
                               guide.visible
                                 ? "bg-emerald-500/10 text-emerald-700"
                                 : "bg-slate-500/10 text-slate-600"

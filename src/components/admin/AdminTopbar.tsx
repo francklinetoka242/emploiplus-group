@@ -16,11 +16,11 @@ export default function AdminTopbar({ session }: AdminTopbarProps) {
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-2.5 text-foreground shadow-soft sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:p-3">
       <div className="min-w-0 space-y-1">
-        <p className="truncate text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+        <p className="truncate text-xs uppercase tracking-wide text-muted-foreground">
           Administration Emploi+
         </p>
         <h2 className="truncate text-base font-semibold text-foreground sm:text-lg">Bienvenue, {name}</h2>
-        <p className="line-clamp-2 text-[11px] text-muted-foreground sm:text-xs">
+        <p className="line-clamp-2 text-xs text-muted-foreground sm:text-xs">
           Gérez vos offres, contenus et équipe depuis un espace premium.
         </p>
       </div>
@@ -34,7 +34,7 @@ export default function AdminTopbar({ session }: AdminTopbarProps) {
         </div>
         <div className="min-w-0">
           <p className="truncate text-xs font-semibold text-foreground">{name}</p>
-          <p className="truncate text-[10px] text-muted-foreground">{email}</p>
+          <p className="truncate text-xs text-muted-foreground">{email}</p>
         </div>
       </div>
     </div>

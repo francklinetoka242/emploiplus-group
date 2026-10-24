@@ -6,6 +6,7 @@ import { CandidateTopbar } from "@/components/candidate/CandidateTopbar";
 import { useCandidate } from "@/hooks/useCandidate";
 import { useCandidateSidebar } from "@/contexts/CandidateSidebarContext";
 import { usePageSEO } from "@/features/seo";
+import { MaeliseWidget } from "@/features/maelise";
 import { cn } from "@/lib/utils";
 
 interface CandidateAppShellProps {
@@ -44,8 +45,10 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   const location = useLocation();
   const { open, setOpen } = useCandidateSidebar();
   const { logout } = useCandidate();
-  const isPublicCandidatePage = location.pathname.startsWith("/candidate/public");
+  const [isMaeliseCollapsed, setIsMaeliseCollapsed] = useState(false);
+  const toggleMaelise = () => setIsMaeliseCollapsed((previous) => !previous);
   const isCvPage = location.pathname.startsWith("/candidate/create-cv");
+  const isCandidateHomePage = location.pathname === "/candidate/public";
   const keepHeaderVisible =
     location.pathname === "/candidate/public/jobs" || location.pathname === "/candidate/profile";
   const mainRef = useRef<HTMLElement | null>(null);
@@ -125,7 +128,12 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
       {/* Layout Desktop */}
       <div className={cn("flex min-h-0 flex-1 flex-col md:flex-row", isCvPage && "min-h-screen")}>
         {/* Sidebar Desktop (visible uniquement sur desktop) */}
-        <CandidateSidebar open={open} onOpenChange={setOpen} onLogout={logout} isDrawer={false} />
+        <CandidateSidebar
+          open={open}
+          onOpenChange={setOpen}
+          onLogout={logout}
+          isDrawer={false}
+        />
 
         {/* Contenu principal */}
         <div
@@ -142,32 +150,53 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
             )}
           >
             <div className="min-h-0">
-              <CandidateTopbar onMenuToggle={() => setOpen(!open)} onLogout={logout} />
+              <CandidateTopbar
+                onMenuToggle={() => setOpen(!open)}
+                onMaeliseToggle={toggleMaelise}
+                isMaeliseCollapsed={isMaeliseCollapsed}
+                onLogout={logout}
+              />
             </div>
           </div>
 
-          {/* Contenu avec scroll */}
-          <main
-            ref={mainRef}
-            className={cn(
-              "min-w-0 touch-pan-y",
-              isCvPage
-                ? "w-full flex-none overflow-visible"
-                : "min-h-0 flex-1 overflow-y-auto overflow-x-clip overscroll-y-contain bg-background md:rounded-[20px]",
-            )}
-          >
-            <div className="min-w-0 w-full">
-              <div
+          <div className="flex min-h-0 flex-1 flex-col gap-3 min-[900px]:flex-row">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-t-[20px] border border-border bg-background">
+              <main
+                ref={mainRef}
                 className={cn(
-                  "w-full max-w-none",
-                  isPublicCandidatePage && "px-0 pt-0",
-                  !isPublicCandidatePage && "px-4 py-6 sm:px-6 lg:px-8",
+                  "candidate-main-scroll min-w-0 touch-pan-y bg-background",
+                  isCvPage
+                    ? "w-full flex-none overflow-visible"
+                    : "min-h-0 flex-1 overflow-y-auto overflow-x-clip overscroll-y-contain",
                 )}
               >
-                {children}
-              </div>
+                <div className="min-w-0 w-full">
+                  <div
+                    className={cn(
+                      "candidate-main-content w-full max-w-none px-4 py-5 sm:px-6 sm:py-6 lg:px-8",
+                      isCandidateHomePage && "lg:p-0",
+                    )}
+                  >
+                    {children}
+                  </div>
+                </div>
+              </main>
             </div>
-          </main>
+            <div
+              className={cn(
+                "min-w-0 overflow-hidden transition-[width,flex-basis] duration-300 ease-in-out",
+                isMaeliseCollapsed
+                  ? "min-[900px]:w-0 min-[900px]:basis-0"
+                  : "min-[900px]:w-[320px] min-[900px]:basis-[320px]",
+              )}
+            >
+              <MaeliseWidget
+                isEmbedded
+                isCollapsed={isMaeliseCollapsed}
+                onCollapse={() => setIsMaeliseCollapsed(true)}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

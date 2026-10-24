@@ -95,7 +95,7 @@ export function JobCard({
               <Building2 className="size-4 shrink-0 text-brand" />
               <span className="truncate">{job.company || "Entreprise non renseignée"}</span>
             </div>
-            <h3 className="mt-1 block min-w-0 max-w-full overflow-hidden break-words text-lg font-bold leading-snug !text-foreground [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] sm:text-xl">
+            <h3 className="mt-1 block min-w-0 max-w-full overflow-hidden break-words text-base font-semibold leading-snug !text-foreground [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] md:text-lg">
               {job.title || "Offre d'emploi"}
             </h3>
           </div>

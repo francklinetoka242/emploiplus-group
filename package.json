@@ -21,7 +21,6 @@
   "postinstall": "npx puppeteer install chrome",
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
-    "@fontsource/plus-jakarta-sans": "^5.2.8",
     "@hookform/resolvers": "^5.2.2",
     "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-accordion": "^1.2.12",

@@ -181,7 +181,7 @@ export function CookieConsentBanner() {
           <div className="w-full max-w-xl rounded-[1.75rem] border border-border bg-card p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand">Cookies</p>
+                <p className="text-sm font-semibold uppercase tracking-wide text-brand">Cookies</p>
                 <h2 className="mt-2 text-2xl font-semibold text-foreground">Personnaliser votre expérience</h2>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   Choisissez les catégories de cookies que vous souhaitez autoriser.

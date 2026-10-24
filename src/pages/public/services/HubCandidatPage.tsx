@@ -81,10 +81,10 @@ export default function HubCandidatPage() {
                   ✨ Hub Candidat Intelligent
                 </span>
                 <div className="space-y-4">
-                  <h1 className="text-4xl font-bold tracking-tight text-slate-950 slide-in-right slide-delay-2 md:text-5xl">
+                  <h1 className="text-2xl font-bold tracking-tight text-slate-950 slide-in-right slide-delay-2 md:text-3xl">
                     Un parcours candidat intelligent, de la recherche à l'embauche
                   </h1>
-                  <p className="max-w-2xl text-lg leading-8 text-slate-700 slide-in-up slide-delay-3">
+                  <p className="max-w-2xl text-lg leading-relaxed text-slate-700 slide-in-up slide-delay-3">
                     Une expérience digitale conçue pour connecter les talents aux meilleures opportunités grâce à des outils intelligents.
                   </p>
                 </div>
@@ -102,7 +102,7 @@ export default function HubCandidatPage() {
                     </div>
                     <div>
                       <h2 className="text-xl font-semibold text-foreground">{title}</h2>
-                      <p className="mt-2 text-sm leading-7 text-muted-foreground">{description}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
                     </div>
                   </article>
                 ))}
@@ -113,13 +113,13 @@ export default function HubCandidatPage() {
           <section className="w-full bg-card px-4 py-8 sm:px-6 lg:px-8 lg:py-12" style={{ borderRadius: 0, marginLeft: 0, marginRight: 0 }}>
             <div className="mx-auto max-w-6xl">
               <div className="max-w-3xl space-y-4">
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-brand slide-in-left slide-delay-1">
+                <p className="text-sm font-semibold uppercase tracking-wide text-brand slide-in-left slide-delay-1">
                   Parcours candidat
                 </p>
-                <h2 className="text-3xl font-semibold tracking-tight text-foreground slide-in-left slide-delay-2 md:text-4xl">
+                <h2 className="text-xl font-semibold tracking-tight text-foreground slide-in-left slide-delay-2 md:text-2xl">
                   Un parcours humain, étape par étape
                 </h2>
-                <p className="text-base leading-8 text-muted-foreground slide-in-up slide-delay-3">
+                <p className="text-base leading-relaxed text-muted-foreground slide-in-up slide-delay-3">
                   Préparer, optimiser, se perfectionner et réussir avec un accompagnement concret à chaque étape.
                 </p>
               </div>
@@ -135,12 +135,12 @@ export default function HubCandidatPage() {
                       <div className="soft-pulse flex h-10 w-10 items-center justify-center rounded-xl bg-brand/10 text-brand md:h-12 md:w-12">
                         <Icon className="h-5 w-5" weight="duotone" aria-hidden />
                       </div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand md:mt-3">{label}</p>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-brand md:mt-3">{label}</p>
                     </div>
 
                     <div className="space-y-2">
-                      <h3 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h3>
-                      <p className="text-base leading-7 text-muted-foreground">{intro}</p>
+                      <h3 className="text-base font-semibold tracking-tight text-foreground md:text-lg">{title}</h3>
+                      <p className="text-base leading-relaxed text-muted-foreground">{intro}</p>
                     </div>
                   </article>
                 ))}
@@ -151,11 +151,11 @@ export default function HubCandidatPage() {
           <section className="mt-8 border-y border-border py-8 slide-in-up slide-delay-6 sm:py-10">
             <div className="grid gap-9 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-center lg:gap-12">
               <div className="max-w-3xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand">Étape suivante</p>
-                <h3 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                <p className="text-xs font-semibold uppercase tracking-wide text-brand">Étape suivante</p>
+                <h3 className="mt-3 text-base font-semibold tracking-tight text-foreground md:text-lg">
                   Prêt à passer à l'étape suivante ?
                 </h3>
-                <p className="mt-4 max-w-2xl text-base leading-8 text-muted-foreground">
+                <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
                   Rejoignez notre hub candidat et accédez à des offres qualifiées, un accompagnement personnalisé et une visibilité renforcée.
                 </p>
 
@@ -170,9 +170,9 @@ export default function HubCandidatPage() {
               </div>
 
               <aside className="border-l-2 border-emerald-300 pl-6 lg:pl-8">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">WhatsApp</p>
-                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-foreground">Partage Multical</h2>
-                <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">WhatsApp</p>
+                <h2 className="mt-3 text-xl font-semibold tracking-tight text-foreground md:text-2xl">Partage Multical</h2>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   Recevez gratuitement les dernières offres d'emploi partagées en temps réel.
                 </p>
                 <a

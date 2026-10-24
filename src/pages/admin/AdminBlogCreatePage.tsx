@@ -116,7 +116,7 @@ export function AdminBlogCreatePage() {
       <div className="rounded-3xl border border-border bg-card p-8 shadow-soft">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="font-display text-3xl font-bold text-foreground">Nouvel article</h1>
+            <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">Nouvel article</h1>
             <p className="mt-2 text-sm text-muted-foreground">
               Créez un article clair, professionnel et orienté entreprise.
             </p>

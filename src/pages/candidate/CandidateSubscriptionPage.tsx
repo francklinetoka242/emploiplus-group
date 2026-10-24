@@ -69,7 +69,7 @@ export function CandidateSubscriptionPage() {
               className={`relative flex min-w-0 flex-col overflow-hidden ${plan.featured ? "border-primary shadow-lg lg:-translate-y-2" : "border-border/80"}`}
             >
               {plan.featured && (
-                <div className="bg-primary px-5 py-2 text-center text-xs font-bold uppercase tracking-[0.2em] text-primary-foreground">
+                <div className="bg-primary px-5 py-2 text-center text-xs font-bold uppercase tracking-wide text-primary-foreground">
                   Le plus choisi
                 </div>
               )}

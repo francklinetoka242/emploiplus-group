@@ -150,10 +150,10 @@ export function PrivacyPolicyPage() {
         <div className="space-y-8">
           <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
             <div className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
                 Politique de Confidentialité
               </p>
-              <h1 className="text-3xl font-semibold text-foreground">Politique de Confidentialité</h1>
+              <h1 className="text-2xl font-semibold text-foreground md:text-3xl">Politique de Confidentialité</h1>
             </div>
           </div>
 

@@ -26,8 +26,8 @@ export function CandidateConfirmPage() {
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 text-blue-700">
             <CheckCircle className="h-10 w-10" weight="duotone" aria-hidden="true" />
           </div>
-          <h1 className="text-3xl font-semibold text-foreground">Confirmation réussie</h1>
-          <p className="max-w-xl text-base leading-7 text-muted-foreground">
+          <h1 className="text-2xl font-semibold text-foreground md:text-3xl">Confirmation réussie</h1>
+          <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
             Votre e-mail a été validé. Vous êtes redirigé vers la page de connexion pour accéder à
             votre espace candidat.
           </p>

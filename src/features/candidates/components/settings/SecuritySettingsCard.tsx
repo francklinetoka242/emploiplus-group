@@ -42,7 +42,7 @@ export function SecuritySettingsCard({ onStatus }: SecuritySettingsCardProps) {
   };
 
   return (
-    <Card className="border-primary/15 shadow-sm">
+    <Card className="border-primary/15 shadow-none">
       <CardHeader className="bg-primary/[0.03] pb-5">
         <CardTitle className="flex items-center gap-2 text-primary">
           <Lock className="h-5 w-5" />

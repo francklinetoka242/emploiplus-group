@@ -18,13 +18,13 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
-  RobotIcon as Bot,
   CheckIcon as Check,
   ArrowSquareOutIcon as ExternalLink,
   LockKeyIcon as LockKeyhole,
   CircleNotchIcon as Loader2,
   MicrophoneIcon as Mic,
-  ChatCircleIcon as MessageCircle,
+  CaretDownIcon as ChevronDown,
+  CaretRightIcon as CollapsePanel,
   ChatTextIcon as MessageSquareText,
   PowerIcon as Power,
   ArrowsCounterClockwiseIcon as RefreshCcw,
@@ -105,7 +105,17 @@ const permissionLabels: Record<MaelisePermissionColumn, string> = {
   alerts: "Alertes et notifications",
 };
 
-export function MaeliseWidget() {
+interface MaeliseWidgetProps {
+  isEmbedded?: boolean;
+  isCollapsed?: boolean;
+  onCollapse?: () => void;
+}
+
+export function MaeliseWidget({
+  isEmbedded = false,
+  isCollapsed = false,
+  onCollapse,
+}: MaeliseWidgetProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { session, authLoading, rolesResolved } = useAuthContext();
@@ -137,6 +147,16 @@ export function MaeliseWidget() {
     location.pathname.startsWith("/candidate/reset-password") ||
     location.pathname.startsWith("/candidate/confirm") ||
     location.pathname.startsWith("/candidate/onboarding");
+  const isCandidateAccount =
+    isEmbedded || (location.pathname.startsWith("/candidate/") && !excluded);
+  const candidateName = String(
+    session?.user.user_metadata?.first_name ??
+      session?.user.user_metadata?.full_name ??
+      session?.user.user_metadata?.name ??
+      "",
+  )
+    .trim()
+    .split(/\s+/)[0];
   const suggestions = [
     t("maelise.suggestion.jobs"),
     t("maelise.suggestion.cv"),
@@ -347,7 +367,6 @@ export function MaeliseWidget() {
     await send(value);
   };
 
-  const remainingCharacters = 550 - draft.length;
   const quotaBlocked = Boolean(
     quotaAvailableAt && Date.now() < new Date(quotaAvailableAt).getTime(),
   );
@@ -387,7 +406,13 @@ export function MaeliseWidget() {
   const isCandidateJobsPage = location.pathname === "/jobs" && Boolean(session);
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-end pb-[env(safe-area-inset-bottom)] sm:inset-x-auto sm:bottom-5 sm:right-5 sm:pb-0">
+    <div
+      className={`pointer-events-none ${
+        isCandidateAccount
+          ? "fixed inset-x-0 bottom-0 z-50 flex justify-end pb-[env(safe-area-inset-bottom)] sm:inset-x-auto sm:bottom-5 sm:right-5 sm:pb-0 min-[900px]:static min-[900px]:z-auto min-[900px]:flex min-[900px]:h-full min-[900px]:w-[320px] min-[900px]:shrink-0 min-[900px]:items-stretch min-[900px]:justify-stretch min-[900px]:py-0 min-[900px]:pr-4 min-[900px]:pb-0"
+          : "fixed inset-x-0 bottom-0 z-50 flex justify-end pb-[env(safe-area-inset-bottom)] sm:inset-x-auto sm:bottom-5 sm:right-5 sm:pb-0"
+      }`}
+    >
       <AlertDialog open={showNewConversationDialog} onOpenChange={setShowNewConversationDialog}>
         <AlertDialogContent className="max-w-md rounded-xl border border-border bg-card p-0 shadow-xl">
           <AlertDialogHeader className="space-y-2 px-6 pt-6">
@@ -449,7 +474,7 @@ export function MaeliseWidget() {
                   </span>
                   <div>
                     <h3 className="text-sm font-semibold text-foreground">Confidentialité</h3>
-                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                       Autorisez séparément chaque catégorie de données. Les nouvelles permissions
                       sont désactivées par défaut.
                     </p>
@@ -486,7 +511,7 @@ export function MaeliseWidget() {
                         : "",
                     ].join(" ")}
                   >
-                    <span className="text-sm leading-5 text-foreground">
+                    <span className="text-sm leading-relaxed text-foreground">
                       {permissionLabels[column]}
                     </span>
                     <button
@@ -541,53 +566,103 @@ export function MaeliseWidget() {
         </SheetContent>
       </Sheet>
 
-      {isOpen && (
+      {(isOpen || (isCandidateAccount && !isCollapsed)) && (
         <section
           ref={conversationRef}
           aria-label={t("maelise.conversationLabel")}
-          className="pointer-events-auto mx-3 mb-3 flex h-[min(620px,calc(100dvh-1rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl sm:mx-0 sm:mb-3 sm:h-[min(620px,calc(100dvh-6rem))] sm:w-[390px]"
+          className={`pointer-events-auto mx-3 mb-3 flex h-[min(620px,calc(100dvh-1rem))] flex-col overflow-hidden rounded-2xl border border-border sm:mx-0 sm:mb-3 sm:h-[min(620px,calc(100dvh-6rem))] sm:w-[390px] ${
+            isCandidateAccount
+              ? `maelise-candidate-conversation bg-background min-[900px]:mx-0 min-[900px]:mb-0 min-[900px]:h-full min-[900px]:max-h-full min-[900px]:w-full min-[900px]:rounded-[20px] min-[900px]:shadow-none ${isOpen ? "" : "hidden min-[900px]:flex"}`
+              : "bg-card"
+          }`}
         >
-          <header className="flex shrink-0 items-center justify-between bg-brand px-4 py-3 text-brand-foreground">
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/25">
-                <Bot className="h-5 w-5" aria-hidden="true" />
+          <header
+            className={`flex shrink-0 items-center justify-between border-b border-border ${
+              isCandidateAccount
+                ? "bg-background px-3 py-1 text-foreground"
+                : "bg-brand px-4 py-2 text-brand-foreground"
+            }`}
+          >
+            {isCandidateAccount ? (
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-7 rounded-full bg-muted px-2.5 text-xs font-medium text-foreground hover:bg-muted/80"
+                onClick={handleNewConversationRequest}
+                aria-label={t("maelise.newConversation")}
+              >
+                {t("maelise.newConversation")}
+                <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+              </Button>
+            ) : (
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/25">
+                  <img
+                    src="/robot-maélise-IA.png"
+                    alt=""
+                    className="h-6 w-6 object-contain"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="truncate font-display text-sm font-bold">Maélise</h2>
+                  <p className="flex items-center gap-1.5 text-xs text-white/80">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" aria-hidden="true" />
+                    {t("maelise.subtitle")}
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <h2 className="truncate font-display text-sm font-bold">Maélise</h2>
-                <p className="flex items-center gap-1.5 text-xs text-white/80">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" aria-hidden="true" />
-                  {t("maelise.subtitle")}
-                </p>
-              </div>
-            </div>
+            )}
             <div className="flex items-center gap-1">
+              {isCandidateAccount && onCollapse && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="hidden h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground min-[900px]:inline-flex"
+                  aria-label="Replier Maélise dans la navigation"
+                  title="Replier Maélise"
+                  onClick={onCollapse}
+                >
+                  <CollapsePanel className="h-4 w-4" aria-hidden="true" />
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="text-white hover:bg-white/15 hover:text-white"
+                className={`${
+                  isCandidateAccount
+                  ? "h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    : "text-white hover:bg-white/15 hover:text-white"
+                }`}
                 aria-label="Paramètres Maélise"
                 title="Paramètres Maélise"
                 onClick={() => setSettingsOpen(true)}
               >
                 <Settings2 className="h-4 w-4" aria-hidden="true" />
               </Button>
+              {!isCandidateAccount && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-white/15 hover:text-white"
+                  aria-label="Nouvelle conversation"
+                  title="Nouvelle conversation"
+                  onClick={handleNewConversationRequest}
+                >
+                  <RefreshCcw className="h-4 w-4" aria-hidden="true" />
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="text-white hover:bg-white/15 hover:text-white"
-                aria-label="Nouvelle conversation"
-                title="Nouvelle conversation"
-                onClick={handleNewConversationRequest}
-              >
-                <RefreshCcw className="h-4 w-4" aria-hidden="true" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/15 hover:text-white"
+                className={`${
+                  isCandidateAccount
+                    ? "h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground min-[900px]:hidden"
+                    : "text-white hover:bg-white/15 hover:text-white"
+                }`}
                 aria-label={t("maelise.close")}
                 onClick={() => {
                   close();
@@ -600,28 +675,82 @@ export function MaeliseWidget() {
           </header>
 
           <div
-            className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain bg-background px-3 py-4 [touch-action:pan-y] sm:px-4"
+            className={`flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain bg-background [touch-action:pan-y] ${
+              isCandidateAccount ? "gap-2 px-3 py-2" : "gap-4 px-4 py-4 sm:px-5"
+            }`}
             aria-live="polite"
           >
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={message.role === "user" ? "flex justify-end" : "flex justify-start"}
-              >
+            {messages.map((message, index) => {
+              const isWelcome = isCandidateAccount && messages.length === 1 && index === 0;
+              return (
                 <div
+                  key={message.id}
                   className={
-                    message.role === "user"
-                      ? "max-w-[86%] rounded-2xl rounded-br-md bg-brand px-3.5 py-2.5 text-sm text-white"
-                      : "max-w-[92%] rounded-2xl rounded-bl-md border border-border bg-card px-3.5 py-2.5 text-sm leading-6 text-foreground shadow-sm"
+                    isWelcome
+                      ? "flex flex-1 flex-col justify-start pt-1"
+                      : message.role === "user"
+                        ? "flex justify-end"
+                        : "flex justify-start"
                   }
                 >
-                  <p className="whitespace-pre-wrap">
-                    {message.response?.quota_exceeded && message.response.available_at
-                      ? quotaMessage(message.response.available_at)
-                      : message.content}
-                  </p>
+                  <div
+                    className={
+                      isWelcome
+                        ? "mx-auto flex max-w-[360px] flex-col items-center px-1 text-center"
+                        : message.role === "user"
+                          ? `max-w-[86%] rounded-2xl rounded-br-md bg-brand text-white ${
+                              isCandidateAccount ? "px-3 py-2 text-xs" : "px-3.5 py-2.5 text-sm"
+                            }`
+                          : `max-w-[92%] rounded-2xl rounded-bl-md border border-border bg-card text-foreground shadow-sm ${
+                              isCandidateAccount
+                                ? "px-3 py-2 text-xs leading-5"
+                                : "px-3.5 py-2.5 text-sm leading-6"
+                            }`
+                    }
+                  >
+                    {isWelcome && (
+                      <>
+                        <div className="flex items-center gap-2 text-primary">
+                          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
+                            <img
+                              src="/robot-maélise-IA.png"
+                              alt=""
+                              className="h-6 w-6 object-contain"
+                            />
+                          </span>
+                          <span className="font-display text-lg font-semibold tracking-tight text-foreground">
+                            Maélise
+                          </span>
+                        </div>
+                        <span className="mt-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                          {t("maelise.subtitle")}
+                        </span>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          {candidateName
+                            ? t("maelise.greetingNamed").replace("{name}", candidateName)
+                            : t("maelise.greeting")}
+                        </p>
+                        <h3 className="mt-2 text-lg font-semibold leading-tight text-primary">
+                          {t("maelise.introTitle")}
+                        </h3>
+                        <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                          {t("maelise.introDescription")}
+                        </p>
+                      </>
+                    )}
+                  {!isWelcome && (
+                    <p className="whitespace-pre-wrap">
+                      {message.response?.quota_exceeded && message.response.available_at
+                        ? quotaMessage(message.response.available_at)
+                        : message.content}
+                    </p>
+                  )}
                   {message.response?.sources.length ? (
-                    <div className="mt-3 space-y-1 border-t border-border/70 pt-2">
+                    <div
+                      className={`space-y-1 border-t border-border/70 ${
+                        isCandidateAccount ? "mt-2 pt-1.5" : "mt-3 pt-2"
+                      }`}
+                    >
                       {message.response.sources.map((source, index) =>
                         source.url && isInternalPath(source.url) ? (
                           <button
@@ -650,7 +779,9 @@ export function MaeliseWidget() {
                       <button
                         key={`${action.category}-${action.label}-${index}`}
                         type="button"
-                        className="mt-3 mr-3 text-xs font-semibold text-brand underline underline-offset-2"
+                        className={`mr-3 text-xs font-semibold text-brand underline underline-offset-2 ${
+                          isCandidateAccount ? "mt-2" : "mt-3"
+                        }`}
                         onClick={() => handlePrivacyAction(action.category!)}
                       >
                         {action.label}
@@ -659,19 +790,24 @@ export function MaeliseWidget() {
                       <button
                         key={`${action.path}-${action.label}-${index}`}
                         type="button"
-                        className="mt-3 mr-3 text-xs font-semibold text-brand underline underline-offset-2"
+                        className={`mr-3 text-xs font-semibold text-brand underline underline-offset-2 ${
+                          isCandidateAccount ? "mt-2" : "mt-3"
+                        }`}
                         onClick={() => handleAction(action.path!)}
                       >
                         {action.label}
                       </button>
                     ) : null,
                   )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {isLoading && (
               <div
-                className="flex items-center gap-2 text-xs text-muted-foreground"
+                className={`flex items-center gap-2 text-xs text-muted-foreground ${
+                  isCandidateAccount ? "text-[11px]" : ""
+                }`}
                 role="status"
                 aria-live="polite"
               >
@@ -685,7 +821,9 @@ export function MaeliseWidget() {
             )}
             {error && (
               <div
-                className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive"
+                className={`rounded-lg border border-destructive/30 bg-destructive/5 px-3 text-xs text-destructive ${
+                  isCandidateAccount ? "py-1.5" : "py-2"
+                }`}
                 role="alert"
               >
                 {error}
@@ -701,12 +839,22 @@ export function MaeliseWidget() {
               </div>
             )}
             {!isLoading && messages.length === 1 && (
-              <div className="flex flex-wrap gap-2">
+              <div
+                className={`flex flex-wrap justify-center ${
+                  isCandidateAccount ? "gap-1.5" : "gap-2"
+                } ${
+                  isCandidateAccount ? "mx-auto max-w-[390px]" : ""
+                }`}
+              >
                 {suggestions.map((suggestion) => (
                   <button
                     key={suggestion}
                     type="button"
-                    className="rounded-full border border-brand/20 bg-card px-3 py-2 text-left text-xs font-medium text-brand transition-colors hover:border-brand hover:bg-brand/5"
+                    className={`rounded-full border border-border bg-card text-center text-xs font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-muted ${
+                      isCandidateAccount
+                        ? "max-w-full px-3 py-1.5 text-[11px]"
+                        : "px-4 py-2.5"
+                    }`}
                     onClick={() => void send(suggestion)}
                   >
                     {suggestion}
@@ -718,12 +866,22 @@ export function MaeliseWidget() {
 
           <form
             onSubmit={submit}
-            className="flex shrink-0 gap-2 border-t border-border bg-card p-3"
+            className={`flex shrink-0 gap-2 border-t border-border ${
+              isCandidateAccount ? "p-2" : "p-3"
+            } ${
+              isCandidateAccount
+                ? "bg-background min-[900px]:border-t-0"
+                : "bg-card"
+            }`}
             aria-label={t("maelise.sendFormLabel")}
           >
             <div
               className={[
-                "maelise-input-shell min-w-0 flex-1",
+                `maelise-input-shell min-w-0 flex-1 ${
+                  isCandidateAccount
+                    ? "flex items-center gap-1 rounded-2xl border border-input bg-background p-1"
+                    : ""
+                }`,
                 isLoading ? "maelise-input-shell--loading" : "",
               ].join(" ")}
             >
@@ -741,48 +899,68 @@ export function MaeliseWidget() {
                   if (event.key === "Enter" && isLoading) event.preventDefault();
                 }}
                 aria-label={t("maelise.messageLabel")}
-                className="h-10 min-w-0 bg-background"
+                className={`min-w-0 ${
+                  isCandidateAccount
+                    ? "h-9 border-0 bg-transparent text-xs shadow-none focus-visible:ring-0"
+                    : "h-10 bg-background"
+                }`}
               />
+              <Button
+                type="button"
+                size="icon"
+                variant={isCandidateAccount ? "ghost" : "outline"}
+                disabled={!speechRecognitionSupported || isLoading || (!isListening && quotaBlocked)}
+                aria-label={isListening ? "Arrêter la saisie vocale" : "Démarrer la saisie vocale"}
+                title={
+                  speechRecognitionSupported
+                    ? isListening
+                      ? "Arrêter la saisie vocale"
+                      : "Saisie vocale"
+                    : "La saisie vocale n’est pas prise en charge par ce navigateur"
+                }
+                className={`${
+                  isCandidateAccount ? "h-8 w-8 rounded-xl text-muted-foreground" : ""
+                } ${isListening ? "maelise-microphone--listening text-primary" : ""}`}
+                onClick={toggleSpeechRecognition}
+              >
+                <Mic aria-hidden="true" />
+              </Button>
+              <Button
+                type="submit"
+                size="icon"
+                variant={isCandidateAccount ? "ghost" : "default"}
+                disabled={!draft.trim() || isLoading || quotaBlocked}
+                aria-label={t("maelise.send")}
+                className={
+                  isCandidateAccount
+                    ? "h-8 w-8 rounded-xl bg-muted text-muted-foreground shadow-none hover:bg-muted/80"
+                    : ""
+                }
+              >
+                <Send aria-hidden="true" />
+              </Button>
             </div>
-            <Button
-              type="button"
-              size="icon"
-              variant="outline"
-              disabled={!speechRecognitionSupported || isLoading || (!isListening && quotaBlocked)}
-              aria-label={isListening ? "Arrêter la saisie vocale" : "Démarrer la saisie vocale"}
-              title={
-                speechRecognitionSupported
-                  ? isListening
-                    ? "Arrêter la saisie vocale"
-                    : "Saisie vocale"
-                  : "La saisie vocale n’est pas prise en charge par ce navigateur"
-              }
-              className={isListening ? "maelise-microphone--listening text-primary" : ""}
-              onClick={toggleSpeechRecognition}
-            >
-              <Mic aria-hidden="true" />
-            </Button>
-            <Button
-              type="submit"
-              size="icon"
-              disabled={!draft.trim() || isLoading || quotaBlocked}
-              aria-label={t("maelise.send")}
-            >
-              <Send aria-hidden="true" />
-            </Button>
           </form>
           {speechError && (
             <p
-              className="border-t border-border bg-card px-3 pt-2 text-xs text-muted-foreground"
+              className={`border-t border-border px-2 text-xs text-muted-foreground ${
+                isCandidateAccount
+                  ? "bg-background py-1.5 text-[11px]"
+                  : "bg-card pt-2"
+              }`}
               role="status"
             >
               {speechError}
             </p>
           )}
-          <p className="border-t border-border bg-card px-3 pb-2 text-right text-xs text-muted-foreground">
-            {remainingCharacters === 550
-              ? "550 caractères"
-              : `${remainingCharacters} caractères restants`}
+          <p
+            className={`m-0 leading-tight text-muted-foreground ${
+              isCandidateAccount
+                ? "bg-background px-2 pt-0 pb-0 text-center text-[6.6px]"
+                : "bg-card px-3 pt-1 text-xs"
+            }`}
+          >
+            {t("maelise.disclaimer")}
           </p>
         </section>
       )}
@@ -792,11 +970,17 @@ export function MaeliseWidget() {
           ref={triggerRef}
           type="button"
           size="icon"
-          className="pointer-events-auto mb-4 mr-4 h-14 w-14 shrink-0 rounded-full bg-brand shadow-brand hover:bg-brand-deep sm:mb-0 sm:mr-0"
+          className={`pointer-events-auto mb-4 mr-4 h-14 w-14 shrink-0 rounded-full bg-brand shadow-brand hover:bg-brand-deep sm:mb-0 sm:mr-0 ${
+            isCandidateAccount ? "min-[900px]:hidden" : ""
+          }`}
           aria-label={t("maelise.open")}
           onClick={open}
         >
-          <Bot className="h-6 w-6" aria-hidden="true" />
+          <img
+            src="/robot-maélise-IA.png"
+            alt=""
+            className="h-8 w-8 object-contain"
+          />
         </Button>
       )}
     </div>

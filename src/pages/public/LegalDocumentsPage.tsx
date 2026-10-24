@@ -88,10 +88,10 @@ export function LegalDocumentsPage() {
         <div className="space-y-8">
           <div className="rounded-[2rem] border border-border bg-card p-8 shadow-soft">
             <div className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
                 Informations légales
               </p>
-              <h1 className="text-3xl font-semibold text-foreground">Mentions Légales</h1>
+              <h1 className="text-2xl font-semibold text-foreground md:text-3xl">Mentions Légales</h1>
             </div>
           </div>
 

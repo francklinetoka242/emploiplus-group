@@ -87,8 +87,8 @@ export function AboutPage() {
             </div>
 
             <div className="text-left">
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-brand">Qui sommes-nous</p>
-              <h2 className="mt-4 max-w-xl font-display text-3xl font-extrabold leading-tight text-foreground md:text-4xl">
+              <p className="text-xs font-bold uppercase tracking-wide text-brand">Qui sommes-nous</p>
+              <h2 className="mt-4 max-w-xl font-display text-xl font-extrabold leading-tight text-foreground md:text-2xl">
                 Des personnes engagées pour des résultats concrets.
               </h2>
               <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
@@ -168,7 +168,7 @@ export function AboutPage() {
                         <h4 className="truncate font-display text-base font-bold text-foreground">
                           {member.name}
                         </h4>
-                        <p className="mt-1 truncate text-[0.65rem] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                        <p className="mt-1 truncate text-xs font-medium uppercase tracking-wide text-muted-foreground">
                           {member.role}
                         </p>
                       </div>
@@ -202,7 +202,7 @@ export function AboutPage() {
       >
         <div className="absolute inset-0 -z-10 bg-brand-deep/85" />
         <div className="container-page mx-auto max-w-5xl text-center text-white">
-          <h2 className="mx-auto max-w-3xl font-display text-2xl font-extrabold leading-tight md:text-4xl">
+          <h2 className="mx-auto max-w-3xl font-display text-xl font-extrabold leading-tight md:text-2xl">
             Construisons ensemble des résultats qui font la différence
           </h2>
           <p className="mx-auto mt-2 max-w-2xl text-xs leading-relaxed text-white/75 md:text-sm">

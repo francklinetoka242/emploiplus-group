@@ -185,10 +185,10 @@ export default function SolutionsEntreprisePage() {
           >
             <div className="mx-auto max-w-6xl grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.8fr)] lg:items-center lg:gap-16">
               <div className="max-w-3xl">
-                <h1 className="mt-5 font-display text-4xl font-extrabold leading-tight tracking-tight text-white md:text-6xl">
+                <h1 className="mt-5 font-display text-2xl font-extrabold leading-tight tracking-tight text-white md:text-3xl">
                   Externalisez vos processus
                 </h1>
-                <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-200">
                   Nous vous proposons une solution complète et personnalisée vous garantissant un gain
                   de temps, une réduction des coûts et une optimisation de vos opérations.
                 </p>
@@ -215,10 +215,10 @@ export default function SolutionsEntreprisePage() {
           <section className="scroll-mt-20 border-b border-border py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-6 md:px-10">
               <div className="max-w-3xl">
-                <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                <h2 className="mt-4 font-display text-xl font-bold tracking-tight text-foreground md:text-2xl">
                   Une gestion fiable au service de vos opérations
                 </h2>
-                <p className="mt-5 text-base leading-8 text-muted-foreground">
+                <p className="mt-5 text-base leading-relaxed text-muted-foreground">
                   Vous avez toutes les raisons d'opter pour l'externalisation administrative. Nous
                   vous assurons un travail de haute qualité, effectué avec fiabilité et
                   professionnalisme.
@@ -237,14 +237,14 @@ export default function SolutionsEntreprisePage() {
                             <Icon className="size-5" weight="duotone" aria-hidden="true" />
                           </div>
                         </div>
-                        <h3 className="mt-7 text-2xl font-bold leading-tight tracking-tight text-slate-950">
+                        <h3 className="mt-7 text-base font-semibold leading-tight tracking-tight text-slate-950 md:text-lg">
                           {title}
                         </h3>
                         <p className="mt-3 text-sm font-medium leading-6 text-slate-600">{intro}</p>
                       </div>
                       <div className="mx-6 border-t border-slate-200 md:mx-7" />
                       <div className="flex flex-1 flex-col p-6 pt-5 md:p-7 md:pt-5">
-                        <p className="text-sm leading-7 text-slate-600">{detail}</p>
+                        <p className="text-sm leading-relaxed text-slate-600">{detail}</p>
                         <p className="mt-6 text-xs font-bold uppercase tracking-[0.16em] text-slate-950">
                           Inclus
                         </p>
@@ -280,7 +280,7 @@ export default function SolutionsEntreprisePage() {
           <section className="externalisation-full-bleed relative border-b border-brand-deep bg-brand py-14 text-brand-foreground md:py-20">
             <div className="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-16 md:px-8">
               <div>
-                <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-white md:text-4xl">
+                <h2 className="mt-4 font-display text-xl font-bold tracking-tight text-white md:text-2xl">
                   Des outils essentiels pour votre réussite.
                 </h2>
               </div>
@@ -294,7 +294,7 @@ export default function SolutionsEntreprisePage() {
                       <Icon className="mt-1 size-4 shrink-0 text-cyan-300" aria-hidden="true" />
                       {title}
                     </h3>
-                    <p className="mt-3 text-sm leading-7 text-white/75">{description}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-white/75">{description}</p>
                   </article>
                 ))}
               </div>
@@ -304,15 +304,15 @@ export default function SolutionsEntreprisePage() {
           <section className="scroll-mt-20 border-b border-border py-14 md:py-20">
             <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start lg:gap-16 md:px-10">
               <div>
-                <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                <h2 className="mt-4 font-display text-xl font-bold tracking-tight text-foreground md:text-2xl">
                   Une tarification adaptée à vos besoins
                 </h2>
-                <p className="mt-5 text-base leading-8 text-muted-foreground">
+                <p className="mt-5 text-base leading-relaxed text-muted-foreground">
                   Nos tarifs sont adaptés à vos besoins spécifiques. Nous proposons des forfaits
                   mensuels pour des services récurrents et des prestations à la carte pour des
                   besoins ponctuels.
                 </p>
-                <p className="mt-4 text-base leading-8 text-muted-foreground">
+                <p className="mt-4 text-base leading-relaxed text-muted-foreground">
                   Nous offrons également une première consultation gratuite pour analyser vos
                   besoins et vous proposer un devis personnalisé.
                 </p>
@@ -337,10 +337,10 @@ export default function SolutionsEntreprisePage() {
 
           <section className="scroll-mt-20 border-b border-border bg-slate-50 py-14 md:py-20">
             <div className="mx-auto max-w-3xl px-6 text-center md:px-10">
-              <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+              <h2 className="mt-4 font-display text-xl font-bold tracking-tight text-foreground md:text-2xl">
                 Notre méthodologie
               </h2>
-              <p className="mt-5 text-base leading-8 text-muted-foreground">
+              <p className="mt-5 text-base leading-relaxed text-muted-foreground">
                 Notre méthodologie repose sur une approche structurée et personnalisée, garantissant
                 des solutions adaptées aux besoins spécifiques de chaque client.
               </p>
@@ -365,7 +365,7 @@ export default function SolutionsEntreprisePage() {
                   <h3 className="relative z-10 mt-5 text-base font-bold leading-tight text-slate-950">
                     {title}
                   </h3>
-                  <p className="relative z-10 mt-3 text-xs leading-5 text-slate-500">
+                  <p className="relative z-10 mt-3 text-xs leading-relaxed text-slate-500">
                     {description}
                   </p>
                 </article>
@@ -376,7 +376,7 @@ export default function SolutionsEntreprisePage() {
           <section className="scroll-mt-20 py-14 md:py-20">
             <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-16 md:px-10">
               <div>
-                <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                <h2 className="mt-4 font-display text-xl font-bold tracking-tight text-foreground md:text-2xl">
                   Questions les plus fréquentes
                 </h2>
               </div>
@@ -390,7 +390,7 @@ export default function SolutionsEntreprisePage() {
                     <AccordionTrigger className="py-5 text-left text-base font-semibold text-foreground hover:text-brand hover:no-underline">
                       {question}
                     </AccordionTrigger>
-                    <AccordionContent className="bg-muted/40 px-4 py-4 text-sm leading-7 text-muted-foreground">
+                    <AccordionContent className="bg-muted/40 px-4 py-4 text-sm leading-relaxed text-muted-foreground">
                       {answer}
                     </AccordionContent>
                   </AccordionItem>
@@ -400,10 +400,10 @@ export default function SolutionsEntreprisePage() {
           </section>
 
           <section className="mx-6 max-w-6xl rounded-[1.5rem] bg-brand px-5 py-7 text-center text-brand-foreground md:mx-auto md:px-8 md:py-9">
-            <h2 className="mx-auto max-w-4xl font-display text-xl font-bold tracking-tight md:text-3xl">
+            <h2 className="mx-auto max-w-4xl font-display text-xl font-bold tracking-tight md:text-2xl">
               Gagnez du temps sur votre gestion administrative
             </h2>
-            <p className="mx-auto mt-3 max-w-3xl text-sm leading-7 text-brand-foreground/80 md:text-base">
+            <p className="mx-auto mt-3 max-w-3xl text-sm leading-relaxed text-brand-foreground/80 md:text-base">
               Confiez-nous la gestion administrative de votre personnel et concentrez-vous sur
               l'essentiel : votre cœur de métier. Contrats, paie, déclarations sociales, suivi RH…
               Nous prenons en charge les prestations convenues avec rigueur et confidentialité.

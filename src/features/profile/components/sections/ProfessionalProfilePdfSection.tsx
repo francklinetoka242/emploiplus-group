@@ -333,7 +333,7 @@ export function ProfessionalProfilePdfSection({
       </div>
       {error ? <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert> : null}
       <div className="border-t border-border pt-4">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Aperçu des sections disponibles</p>
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Aperçu des sections disponibles</p>
         {sections.length ? <div className="grid gap-2 sm:grid-cols-2">{sections.map((section) => <div key={section.title} className="border border-border/70 px-3 py-2 text-sm text-foreground">{section.title}</div>)}</div> : <p className="text-sm text-muted-foreground">Ajoutez des informations à votre profil pour enrichir le document.</p>}
       </div>
     </section>

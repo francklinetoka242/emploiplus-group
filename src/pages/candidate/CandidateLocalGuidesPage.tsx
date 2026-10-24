@@ -48,7 +48,7 @@ export function CandidateLocalGuidesPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="rounded-3xl border border-border bg-card p-6 shadow-soft">
+        <div className="rounded-3xl border border-border bg-card p-6">
           <div className="h-8 w-48 animate-pulse rounded-full bg-muted" />
           <div className="mt-4 h-4 w-full animate-pulse rounded-full bg-muted" />
           <div className="mt-3 h-4 w-3/4 animate-pulse rounded-full bg-muted" />
@@ -68,7 +68,7 @@ export function CandidateLocalGuidesPage() {
   return (
     <>
       <div className="space-y-6">
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+        <div className="p-1">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted text-foreground">
               <BookOpen className="h-5 w-5" />
@@ -87,11 +87,11 @@ export function CandidateLocalGuidesPage() {
             Aucune fiche n’est disponible pour le moment.
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="-mx-4 space-y-3 sm:-mx-6 lg:-mx-8">
             {cards.map((guide) => (
               <article
                 key={guide.id}
-                className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-muted/30 sm:flex-row sm:items-center"
+                className="flex flex-col gap-4 rounded-none border-x-0 border-y border-border bg-card p-4 transition-colors hover:bg-muted/30 sm:flex-row sm:items-center"
               >
                 <div className="flex h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-border bg-muted">
                   {guide.image_url ? (
@@ -107,7 +107,7 @@ export function CandidateLocalGuidesPage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="text-base font-semibold text-foreground">{guide.title}</h2>
                     <span
-                      className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-medium ${categoryColors[guide.category] ?? categoryColors.default}`}
+                      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${categoryColors[guide.category] ?? categoryColors.default}`}
                     >
                       {guide.category}
                     </span>

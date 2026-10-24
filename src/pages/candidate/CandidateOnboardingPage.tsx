@@ -165,15 +165,15 @@ export function CandidateOnboardingPage() {
 
             <div className="flex items-center justify-center p-5 sm:p-7 lg:p-9">
               <div className="w-full max-w-[440px]">
-                <div className="mb-4 inline-flex items-center rounded-full border border-[#1B2CE3]/15 bg-[#1B2CE3]/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#1B2CE3]">
+                <div className="mb-4 inline-flex items-center rounded-full border border-[#1B2CE3]/15 bg-[#1B2CE3]/5 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[#1B2CE3]">
                   {currentStep.eyebrow}
                 </div>
 
                 <div className="text-left">
-                  <h1 className="text-[clamp(1.8rem,2.4vw,3rem)] font-bold leading-[1.08] tracking-[-0.04em] text-slate-900">
+                  <h1 className="text-[clamp(1.75rem,2.4vw,2.5rem)] font-bold leading-[1.15] tracking-tight text-slate-900">
                     {currentStep.title}
                   </h1>
-                  <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
+                  <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
                     {currentStep.description}
                   </p>
                 </div>

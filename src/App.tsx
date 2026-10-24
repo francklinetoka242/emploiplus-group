@@ -11,7 +11,7 @@ import { PublicLayout } from "@/components/site/PublicLayout";
 import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 import { ProtectedRoute } from "@/features/authentication/guards";
 import { isMobileApp } from "@/lib/isMobileApp";
-import { MaeliseProvider, MaeliseWidget } from "@/features/maelise";
+import { MaeliseProvider } from "@/features/maelise";
 import {
   getCandidateOnboardingForUser,
   getOrInitializeCandidateOnboarding,
@@ -360,13 +360,7 @@ function CandidateOnboardingGate() {
 function AppContent() {
   const location = useLocation();
   const mobileApp = isMobileApp();
-  const { session, isAuthenticated, roles, rolesResolved } = useAuthContext();
-  const showMaelise =
-    isAuthenticated &&
-    rolesResolved &&
-    roles.includes("candidate") &&
-    !roles.includes("admin") &&
-    !roles.includes("super_admin");
+  const { session } = useAuthContext();
 
   // Scroll to top when route changes
   useEffect(() => {
@@ -838,7 +832,6 @@ function AppContent() {
       <CandidateSidebarProvider>
         <MaeliseProvider>
           <Suspense fallback={<PageLoadingFallback />}>{routes}</Suspense>
-          {showMaelise ? <MaeliseWidget /> : null}
           <Toaster richColors position="top-right" />
         </MaeliseProvider>
       </CandidateSidebarProvider>

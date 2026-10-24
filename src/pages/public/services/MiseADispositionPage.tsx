@@ -148,10 +148,10 @@ export default function MiseADispositionPage() {
           >
             <div className="mx-auto max-w-6xl grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.8fr)] lg:items-center lg:gap-16">
               <div className="max-w-3xl">
-                <h1 className="mt-5 font-display text-4xl font-extrabold leading-tight tracking-tight text-white md:text-6xl">
+                <h1 className="mt-5 font-display text-2xl font-extrabold leading-tight tracking-tight text-white md:text-3xl">
                   Confiez-nous la gestion de vos intérimaires
                 </h1>
-                <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-200">
                   Nous vous garantissons une prestation complète, qui aboutira à la mise à disposition
                   du meilleur candidat correspondant à vos attentes.
                 </p>
@@ -178,10 +178,10 @@ export default function MiseADispositionPage() {
           <section className="scroll-mt-20 border-b border-border bg-[#f2f8fd] py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-6 md:px-10">
               <div className="max-w-2xl">
-                <h2 className="mt-4 font-display text-3xl font-bold leading-tight tracking-tight text-foreground md:text-5xl">
+                <h2 className="mt-4 font-display text-xl font-bold leading-tight tracking-tight text-foreground md:text-2xl">
                   Une gestion fiable, de la sélection à l'intégration
                 </h2>
-                <p className="mt-5 max-w-xl text-base leading-8 text-muted-foreground">
+                <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
                   Vous bénéficiez d'un service clé en main, sans avoir à supporter directement les
                   charges liées au recrutement ou à la gestion des ressources humaines.
                 </p>
@@ -199,7 +199,7 @@ export default function MiseADispositionPage() {
                     }`}
                   >
                     <span className="text-5xl font-light leading-none tracking-tight">0{index + 1}.</span>
-                    <h3 className="mt-8 max-w-[15rem] text-xl font-bold leading-tight">{title}</h3>
+                    <h3 className="mt-8 max-w-[15rem] text-base font-semibold leading-tight md:text-lg">{title}</h3>
                     <p
                       className={`mt-7 text-sm leading-6 ${
                         index === 2 ? "text-slate-700" : "text-white/85"
@@ -216,10 +216,10 @@ export default function MiseADispositionPage() {
           <section className="scroll-mt-20 border-b border-border py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-6 md:px-10">
               <div className="max-w-3xl">
-                <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                <h2 className="mt-4 font-display text-xl font-bold tracking-tight text-foreground md:text-2xl">
                   Une formule adaptée à votre réalité
                 </h2>
-                <p className="mt-4 text-base leading-8 text-muted-foreground">
+                <p className="mt-4 text-base leading-relaxed text-muted-foreground">
                   Nous renforçons vos équipes avec des collaborateurs qualifiés et immédiatement
                   opérationnels, pour des besoins ponctuels, saisonniers ou durables, quelle que soit
                   la taille de votre entreprise ou votre secteur d'activité.
@@ -232,11 +232,11 @@ export default function MiseADispositionPage() {
                     className={`border p-6 ${index === 1 ? "border-brand bg-brand text-brand-foreground" : "border-border bg-card"}`}
                   >
                     <p
-                      className={`text-xs font-semibold uppercase tracking-[0.2em] ${index === 1 ? "text-brand-foreground/75" : "text-brand"}`}
+                      className={`text-xs font-semibold uppercase tracking-wide ${index === 1 ? "text-brand-foreground/75" : "text-brand"}`}
                     >
                       Formule 0{index + 1}
                     </p>
-                    <h3 className="mt-4 text-xl font-semibold">{offer.title}</h3>
+                    <h3 className="mt-4 text-base font-semibold md:text-lg">{offer.title}</h3>
                     <p
                       className={`mt-5 min-h-14 text-sm leading-6 ${index === 1 ? "text-brand-foreground/80" : "text-muted-foreground"}`}
                     >
@@ -261,10 +261,10 @@ export default function MiseADispositionPage() {
           <section className="scroll-mt-20 py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-6 md:px-10">
               <div className="mx-auto max-w-3xl text-center">
-                <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                <h2 className="mt-4 font-display text-xl font-bold tracking-tight text-foreground md:text-2xl">
                   Une relation suivie et responsable
                 </h2>
-                <p className="mt-5 text-base leading-8 text-muted-foreground">
+                <p className="mt-5 text-base leading-relaxed text-muted-foreground">
                   Faites confiance à notre expertise pour renforcer vos équipes avec des talents
                   adaptés à vos besoins. Ensemble, nous construisons une solution sur mesure pour
                   garantir votre réussite.
@@ -324,10 +324,10 @@ export default function MiseADispositionPage() {
                       {String(activeCommitment + 1).padStart(2, "0")}
                     </span>
                   </div>
-                  <h3 className="mt-8 font-display text-3xl font-bold leading-tight text-foreground md:text-4xl">
+                  <h3 className="mt-8 font-display text-base font-semibold leading-tight text-foreground md:text-lg">
                     {selectedCommitment.title}
                   </h3>
-                  <p className="mt-5 text-base leading-8 text-muted-foreground">
+                  <p className="mt-5 text-base leading-relaxed text-muted-foreground">
                     {selectedCommitment.description}
                   </p>
                   <p className="mt-8 text-xs font-semibold uppercase tracking-[0.25em] text-primary">
@@ -339,10 +339,10 @@ export default function MiseADispositionPage() {
           </section>
 
           <section className="mx-6 max-w-6xl rounded-[1.5rem] bg-brand px-5 py-7 text-center text-brand-foreground md:mx-auto md:px-8 md:py-9">
-            <h2 className="mx-auto max-w-4xl font-display text-xl font-bold tracking-tight md:text-3xl">
+            <h2 className="mx-auto max-w-4xl font-display text-xl font-bold tracking-tight md:text-2xl">
               Renforcez vos équipes avec le bon profil
             </h2>
-            <p className="mx-auto mt-3 max-w-3xl text-sm leading-7 text-brand-foreground/80 md:text-base">
+            <p className="mx-auto mt-3 max-w-3xl text-sm leading-relaxed text-brand-foreground/80 md:text-base">
               Présentez-nous votre besoin, vos contraintes et votre calendrier. Notre équipe vous
               accompagne dans la construction d'une solution adaptée.
             </p>

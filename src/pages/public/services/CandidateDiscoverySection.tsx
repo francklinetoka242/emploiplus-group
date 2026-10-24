@@ -9,7 +9,7 @@ export default function CandidateDiscoverySection() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }} variants={staggerContainer} className="grid gap-8 lg:grid-cols-2 items-start">
           <motion.div variants={fadeLeft} className="space-y-6">
             <span className="inline-flex items-center gap-2 rounded-full bg-secondary/10 px-3 py-1 text-xs font-medium text-secondary">IA • Matching</span>
-            <h2 className="text-3xl font-semibold">Nous vous aidons à trouver les meilleures opportunités.</h2>
+            <h2 className="text-xl font-semibold md:text-2xl">Nous vous aidons à trouver les meilleures opportunités.</h2>
             <p className="text-muted-foreground max-w-xl">Les offres sont publiées en continu et notre moteur de recommandation analyse votre profil pour vous proposer des opportunités pertinentes. Rejoignez notre chaîne WhatsApp pour recevoir les nouvelles offres en temps réel.</p>
 
             <ul className="mt-4 space-y-3">
@@ -28,13 +28,13 @@ export default function CandidateDiscoverySection() {
             <motion.div variants={staggerItem} className="relative h-[420px] w-full max-w-lg">
               <motion.div variants={staggerItem} className="absolute -left-6 -top-6 w-64 rounded-2xl bg-white p-4 shadow-lg transform rotate-1">
                 <div className="text-xs text-secondary font-semibold">Nouvelle offre</div>
-                <h3 className="mt-2 text-lg font-semibold">Product Manager</h3>
+                <h3 className="mt-2 text-base font-semibold md:text-lg">Product Manager</h3>
                 <div className="mt-2 flex items-center justify-between text-sm text-muted-foreground"><div className="inline-flex items-center gap-2"><span className="rounded-full bg-secondary/10 px-2 py-0.5 text-secondary text-xs">CDI</span> Paris</div><div className="font-semibold">87%</div></div>
               </motion.div>
 
               <motion.div variants={staggerItem} className="absolute left-6 top-12 w-72 rounded-2xl bg-white p-4 shadow-2xl transform -rotate-1">
                 <div className="text-xs text-secondary font-semibold">Recommandé</div>
-                <h3 className="mt-2 text-lg font-semibold">Développeur Frontend</h3>
+                <h3 className="mt-2 text-base font-semibold md:text-lg">Développeur Frontend</h3>
                 <div className="mt-2 flex items-center justify-between text-sm text-muted-foreground"><div className="inline-flex items-center gap-2"><span className="rounded-full bg-secondary/10 px-2 py-0.5 text-secondary text-xs">Freelance</span> Lyon</div><div className="font-semibold">74%</div></div>
               </motion.div>
 

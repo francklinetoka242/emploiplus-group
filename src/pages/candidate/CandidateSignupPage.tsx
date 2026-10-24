@@ -108,7 +108,7 @@ export function CandidateSignupPage() {
           />
           <div className="hidden leading-tight sm:block">
             <div className="font-display font-bold text-foreground">EmploiPlus</div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Group</div>
+            <div className="text-xs uppercase tracking-wide text-muted-foreground">Group</div>
           </div>
         </Link>
       </header>
@@ -267,7 +267,7 @@ export function CandidateSignupPage() {
                             className="mt-1"
                           />
                         </FormControl>
-                        <FormLabel htmlFor="agreeTerms" className="cursor-pointer text-xs font-normal leading-5">
+                        <FormLabel htmlFor="agreeTerms" className="cursor-pointer text-xs font-normal leading-relaxed">
                           En cliquant sur Accepter et s’inscrire ou sur Continuer, vous acceptez les{" "}
                           <Link to="/cgu" className="link link-animated font-normal text-brand">
                             Conditions Générales d'Utilisation

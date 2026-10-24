@@ -64,6 +64,14 @@ export const FR: Dict = {
   "maelise.placeholder": "Écrivez votre question…",
   "maelise.send": "Envoyer le message",
   "maelise.thinking": "Maélise prépare une réponse…",
+  "maelise.disclaimer":
+    "Maélise est une IA et peut faire des erreurs. Pensez à vérifier ses réponses.",
+  "maelise.newConversation": "Nouvelle conversation",
+  "maelise.greeting": "Bonjour !",
+  "maelise.greetingNamed": "Bonjour, {name}",
+  "maelise.introTitle": "Comment puis-je vous aider ?",
+  "maelise.introDescription":
+    "Je peux vous accompagner dans votre recherche d'emploi, la préparation de votre CV et le suivi de vos candidatures.",
   "maelise.suggestion.jobs": "Trouver une offre d'emploi",
   "maelise.suggestion.cv": "Comment améliorer mon CV ?",
   "maelise.suggestion.application": "Comment fonctionne une candidature ?",
@@ -529,6 +537,14 @@ export const EN: Dict = {
   "maelise.placeholder": "Write your question…",
   "maelise.send": "Send message",
   "maelise.thinking": "Maélise is preparing an answer…",
+  "maelise.disclaimer":
+    "Maélise is an AI and can make mistakes. Remember to verify her answers.",
+  "maelise.newConversation": "New conversation",
+  "maelise.greeting": "Hello!",
+  "maelise.greetingNamed": "Hello, {name}",
+  "maelise.introTitle": "How can I help you?",
+  "maelise.introDescription":
+    "I can support your job search, help you prepare your CV, and keep track of your applications.",
   "maelise.suggestion.jobs": "Find a job",
   "maelise.suggestion.cv": "How can I improve my CV?",
   "maelise.suggestion.application": "How does an application work?",
@@ -563,6 +579,14 @@ export const LN: Dict = {
   "maelise.placeholder": "Koma motuna na yo…",
   "maelise.send": "Tinda nsango",
   "maelise.thinking": "Maélise azali kobongisa eyano…",
+  "maelise.disclaimer":
+    "Maélise azali AI mpe akoki kosala mabunga. Kanisá kotala biyano na ye.",
+  "maelise.newConversation": "Lisolo ya sika",
+  "maelise.greeting": "Mbote!",
+  "maelise.greetingNamed": "Mbote, {name}",
+  "maelise.introTitle": "Nakoki kosalisa yo na nini?",
+  "maelise.introDescription":
+    "Nakoki kosalisa yo na koluka mosala, kobongisa CV na yo mpe kolandela ba candidatures na yo.",
   "maelise.suggestion.jobs": "Luka mosala",
   "maelise.suggestion.cv": "Ndenge nini nakoki kobongisa CV na ngai?",
   "maelise.suggestion.application": "Ndenge nini candidature esalaka?",

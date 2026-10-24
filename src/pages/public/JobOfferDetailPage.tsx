@@ -47,7 +47,7 @@ function NotFoundPage() {
       />
       <div className="container-page py-20 md:py-28">
         <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-          <h1 className="font-display text-4xl font-bold text-foreground">404</h1>
+          <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">404</h1>
           <p className="mt-4 text-muted-foreground">Page introuvable.</p>
           <Link
             to="/"
@@ -654,14 +654,14 @@ export function JobOfferDetailPage() {
                       getLabel("jobs.detail.opportunity", "Opportunité")}
                   </div>
                   <div className="space-y-3">
-                    <h1 className="break-words font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                    <h1 className="break-words font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
                       {job.title}
                     </h1>
                     <p className="break-words text-base text-muted-foreground">
                       {job.company} · {location}
                     </p>
                   </div>
-                  <p className="max-w-3xl text-base leading-8 text-foreground/90">{description}</p>
+                  <p className="max-w-3xl text-base leading-relaxed text-foreground/90">{description}</p>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
@@ -695,7 +695,7 @@ export function JobOfferDetailPage() {
                   <FileText className="size-5" />
                 </div>
                 <div>
-                  <h2 className="font-display text-2xl font-semibold text-foreground">
+                  <h2 className="font-display text-xl font-semibold text-foreground md:text-2xl">
                     {getLabel("jobs.detail.descriptionTitle", "Description du poste")}
                   </h2>
                   <p className="text-sm text-muted-foreground">
@@ -703,7 +703,7 @@ export function JobOfferDetailPage() {
                   </p>
                 </div>
               </div>
-              <p className="mt-6 whitespace-pre-line text-base leading-8 text-foreground/90">
+              <p className="mt-6 whitespace-pre-line text-base leading-relaxed text-foreground/90">
                 {job.description}
               </p>
             </div>
@@ -715,7 +715,7 @@ export function JobOfferDetailPage() {
                     <BadgeCheck className="size-5" />
                   </div>
                   <div>
-                    <h3 className="font-display text-2xl font-semibold text-foreground">
+                    <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
                       {getLabel("jobs.detail.requirementsTitle", "Profil recherché")}
                     </h3>
                     <p className="text-sm text-muted-foreground">
@@ -727,7 +727,7 @@ export function JobOfferDetailPage() {
                   {requirementItems.map((item) => (
                     <li
                       key={item}
-                      className="flex gap-3 rounded-2xl border border-border/60 bg-background/70 p-3 text-sm leading-7 text-foreground/90"
+                      className="flex gap-3 rounded-2xl border border-border/60 bg-background/70 p-3 text-sm leading-relaxed text-foreground/90"
                     >
                       <span className="mt-2 size-2 rounded-full bg-brand" />
                       <span className="min-w-0 break-words">{item}</span>
@@ -739,7 +739,7 @@ export function JobOfferDetailPage() {
 
             {isExpired ? (
               <div className="border-t border-border/70 bg-card/40 p-8">
-                <h3 className="font-display text-2xl font-semibold text-foreground">
+                <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
                   Voici des offres similaires actuellement disponibles.
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
@@ -767,7 +767,7 @@ export function JobOfferDetailPage() {
                             <div className="text-sm font-semibold text-foreground">{similarJob.title}</div>
                             <div className="mt-1 text-sm text-muted-foreground">{similarJob.company}</div>
                           </div>
-                          <span className="rounded-full border border-brand/20 bg-brand/10 px-2 py-1 text-[11px] font-semibold uppercase text-brand">
+                          <span className="rounded-full border border-brand/20 bg-brand/10 px-2 py-1 text-xs font-semibold uppercase text-brand">
                             {getContractLabel(similarJob.contract_type)}
                           </span>
                         </div>
@@ -786,7 +786,7 @@ export function JobOfferDetailPage() {
               </div>
             ) : similarJobs.length > 0 ? (
               <div className="border-t border-border/70 bg-card/40 p-8">
-                <h3 className="font-display text-2xl font-semibold text-foreground">
+                <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
                   Vous pourriez également être intéressé
                 </h3>
                 <div className="mt-5 space-y-3">
@@ -801,7 +801,7 @@ export function JobOfferDetailPage() {
                           <div className="text-sm font-semibold text-foreground">{similarJob.title}</div>
                           <div className="mt-1 text-sm text-muted-foreground">{similarJob.company}</div>
                         </div>
-                        <span className="rounded-full border border-brand/20 bg-brand/10 px-2 py-1 text-[11px] font-semibold uppercase text-brand">
+                        <span className="rounded-full border border-brand/20 bg-brand/10 px-2 py-1 text-xs font-semibold uppercase text-brand">
                           {getContractLabel(similarJob.contract_type)}
                         </span>
                       </div>
@@ -818,8 +818,8 @@ export function JobOfferDetailPage() {
 
           <aside className="min-w-0 space-y-6 lg:sticky lg:top-24 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:overscroll-contain">
             <div className="rounded-xl border border-border/70 bg-card p-7">
-              <h3 className="font-display text-xl font-semibold text-foreground">{applyTitle}</h3>
-              <p className="mt-2 text-sm leading-7 text-muted-foreground">{applyDescription}</p>
+              <h3 className="font-display text-base font-semibold text-foreground md:text-lg">{applyTitle}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{applyDescription}</p>
               {isExpired ? (
                 <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
                   Cette offre n'est plus disponible.
@@ -881,7 +881,7 @@ export function JobOfferDetailPage() {
                     <Sparkles className="size-5" />
                   </div>
                   <div>
-                    <h3 className="font-display text-xl font-semibold text-muted-foreground">
+                    <h3 className="font-display text-base font-semibold text-muted-foreground md:text-lg">
                       Évaluation IA de votre candidature
                     </h3>
                     <p className="text-sm mt-2 text-muted-foreground">
@@ -911,7 +911,7 @@ export function JobOfferDetailPage() {
                     <Sparkles className="size-5" />
                   </div>
                   <div>
-                    <h3 className="font-display text-xl font-semibold text-foreground">
+                    <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
                       Évaluation IA de votre candidature
                     </h3>
                     <p className="text-sm text-muted-foreground">
@@ -1018,7 +1018,7 @@ export function JobOfferDetailPage() {
                         </div>
                       </div>
                       <p
-                        className="mt-3 whitespace-pre-line text-sm leading-7 text-muted-foreground"
+                        className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground"
                         style={
                           isLetterExpanded
                             ? undefined
@@ -1047,7 +1047,7 @@ export function JobOfferDetailPage() {
             )}
 
             <div className="border-t border-border/70 pt-7">
-              <h3 className="font-display text-xl font-semibold text-foreground">
+              <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
                 Informations utiles
               </h3>
               <div className="mt-5 space-y-3 text-sm text-muted-foreground">

@@ -304,7 +304,7 @@ export function AdminCandidatesPage() {
                             <div className="flex min-w-0 flex-wrap items-center gap-2">
                               <p className="truncate text-base font-semibold text-slate-900">{fullName}</p>
                               <span
-                                className={`inline-flex shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${emailConfirmedByUserId[candidate.user_id] ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}
+                                className={`inline-flex shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${emailConfirmedByUserId[candidate.user_id] ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}
                               >
                                 {emailConfirmedByUserId[candidate.user_id] ? "Email validé" : "Email à valider"}
                               </span>

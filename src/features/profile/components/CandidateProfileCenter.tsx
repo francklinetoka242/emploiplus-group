@@ -96,7 +96,7 @@ export function CandidateProfileCenter() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="candidate-profile-page space-y-6">
       <ProfileHeader
         name={profile ? `${profile.first_name ?? ""} ${profile.last_name ?? ""}`.trim() : "Profil candidat"}
         title={profile?.headline ?? ""}

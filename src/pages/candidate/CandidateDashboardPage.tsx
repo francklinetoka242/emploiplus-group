@@ -5,23 +5,16 @@ import { Button } from "@/components/ui/button";
 import { PaginationNav } from "@/components/ui/pagination";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { SaasCard, SaasCardHeader, SaasCardContent } from "@/components/candidate/SaasCard";
 import { SaasGrid } from "@/components/candidate/SaasLayout";
 import {
   ArrowRightIcon as ArrowRight,
-  CheckCircleIcon as CheckCircle2,
-  CircleIcon as Circle,
-  CaretDownIcon as ChevronDown,
   CaretLeftIcon as ChevronLeft,
-  CaretRightIcon as ChevronRight,
   TrendUpIcon as TrendingUp,
   CalendarBlankIcon as Calendar,
   MapPinIcon as MapPin,
   CurrencyDollarIcon as DollarSign,
-  BookOpenIcon as BookOpen,
   TargetIcon as Target,
-  PaperPlaneTiltIcon as Send,
 } from "@phosphor-icons/react";
 import { JobCard } from "@/features/jobs/components";
 import { getRecommendedJobsWithStatus, RecommendedJob } from "@/services/aiMatchingService";
@@ -38,31 +31,19 @@ const quickActions = [
     id: 1,
     title: "Compléter mon profil",
     description: "Remplissez vos informations personnelles",
-    icon: CheckCircle2,
     href: "/candidate/profile",
-    accentColor: "text-primary",
-    accentBackground: "bg-primary/10",
-    accentBorder: "border-primary/30",
   },
   {
     id: 2,
     title: "Consulter les guides",
     description: "Découvrez les fiches conseils utiles pour vos démarches",
-    icon: BookOpen,
     href: "/candidate/guides",
-    accentColor: "text-primary",
-    accentBackground: "bg-primary/10",
-    accentBorder: "border-primary/30",
   },
   {
     id: 3,
     title: "Voir mes candidatures",
     description: "Suivez le statut de vos candidatures",
-    icon: Send,
     href: "/candidate/applications",
-    accentColor: "text-primary",
-    accentBackground: "bg-primary/10",
-    accentBorder: "border-primary/30",
   },
 ];
 
@@ -96,8 +77,6 @@ export function CandidateDashboardPage() {
     error: profileDataError,
     refetch,
   } = useCandidateProfileData();
-  
-  const [isCompletionCollapsed, setIsCompletionCollapsed] = useState(true);
   
   // Diagnostic: Track renders
   const renderCountRef = useRef(0);
@@ -360,78 +339,6 @@ export function CandidateDashboardPage() {
   const profileCompletion = profileDataLoading || !profileDataReady ? 0 : completion.completionPercentage;
   const [animatedProfileCompletion, setAnimatedProfileCompletion] = useState(0);
 
-  const nextAction = useMemo(() => {
-    if (profileDataLoading) {
-      return {
-        title: "Préparation de votre tableau de bord",
-        description: "Nous calculons votre prochaine étape personnalisée.",
-        href: "/candidate/profile",
-      };
-    }
-
-    const cvLastUpdatedAt = profile?.cv_last_updated_at ? new Date(profile.cv_last_updated_at).getTime() : null;
-    const cvIsStale = Boolean(profile?.cv_text) && (!cvLastUpdatedAt || Date.now() - cvLastUpdatedAt > 1000 * 60 * 60 * 24 * 180);
-
-    if (cvIsStale) {
-      return {
-        title: "Mettre à jour votre CV",
-        description: "Votre CV n'a pas été mis à jour depuis plusieurs mois. Actualisez-le pour améliorer la qualité des recommandations.",
-        href: "/candidate/profile?tab=documents",
-      };
-    }
-
-    const profileMissingItems = completion.missingItems.filter((item) => item !== "CV");
-    if (profileMissingItems.length > 0) {
-      const missingLabel = profileMissingItems[0];
-      return {
-        title: "Compléter votre profil",
-        description: `Ajoutez votre ${missingLabel.toLowerCase()} pour améliorer vos recommandations et gagner en visibilité.`,
-        href: completionItemRoutes[missingLabel] ?? "/candidate/profile",
-      };
-    }
-
-    if (!hasCandidateCv(profile)) {
-      return {
-        title: "Ajouter votre CV",
-        description: "Ajoutez votre CV pour améliorer vos recommandations et votre visibilité.",
-        href: "/candidate/profile?tab=documents",
-      };
-    }
-
-    if (!hasAnalyzableCandidateCv(profile)) {
-      return {
-        title: "Analyser votre CV",
-        description: "Analysez votre CV pour recevoir des recommandations adaptées à votre parcours.",
-        href: "/candidate/profile?tab=documents",
-      };
-    }
-
-    if (preferences?.job_alerts_enabled === false) {
-      return {
-        title: "Activer les alertes emploi",
-        description: "Recevez les offres correspondantes à votre profil sans chercher activement.",
-        href: "/candidate/profile?tab=preferences",
-      };
-    }
-
-    if (preferences?.availability_status === "not_available") {
-      return {
-        title: "Mettre à jour votre disponibilité",
-        description: "Indiquez votre date de disponibilité pour aider les recruteurs à vous contacter au bon moment.",
-        href: "/candidate/profile?tab=preferences",
-      };
-    }
-
-    return {
-      title: "Consulter les offres recommandées",
-      description: "Explorez les opportunités qui correspondent le mieux à votre profil et à votre disponibilité.",
-      href: "/jobs#recommended-for-you",
-    };
-  }, [completion.missingItems, preferences?.job_alerts_enabled, preferences?.availability_status, profile, profileDataLoading]);
-
-  const nextActionSuccess = !profileDataLoading && hasAnalyzableCandidateCv(profile) && recommendedJobs.length > 0;
-  const nextActionMode = profileDataLoading ? "loading" : nextActionSuccess ? "success" : "active";
-
   useEffect(() => {
     if (!profile?.id || !profile?.user_id || profileDataLoading || !profileDataReady || profileCompletion >= 100 || hasCreatedProfileCompletionAlertRef.current) {
       return;
@@ -501,152 +408,63 @@ export function CandidateDashboardPage() {
             <span className="welcome-ring welcome-ring-four" />
             <span className="welcome-ring welcome-ring-five" />
           </div>
-          <div className="relative z-10 flex items-center justify-between gap-6">
-            <div className="max-w-2xl space-y-3">
-              <div className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-200">
-                Espace candidat
-              </div>
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Bienvenue, {firstName} !</h1>
+          <div className="relative z-10 flex items-center justify-between gap-4 sm:gap-6">
+            <div className="min-w-0 max-w-2xl space-y-3">
+              <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Bienvenue, {firstName} !</h1>
               <p className="max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
                 Bienvenue dans votre espace de candidat. Trouvez le poste idéal et suivez vos
                 candidatures.
               </p>
             </div>
+            <div
+              role="progressbar"
+              aria-label="Complétude du profil"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={profileCompletion}
+              aria-valuetext={`${profileCompletion}%`}
+              aria-busy={profileDataLoading || !profileDataReady}
+              className="flex shrink-0 flex-col items-center gap-1.5"
+            >
+              <div className="relative h-16 w-16 sm:h-20 sm:w-20">
+                <svg className="h-full w-full -rotate-90" viewBox="0 0 80 80" aria-hidden="true">
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="34"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="6"
+                    className="text-white/20"
+                  />
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="34"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    strokeDasharray={2 * Math.PI * 34}
+                    strokeDashoffset={2 * Math.PI * 34 * (1 - animatedProfileCompletion / 100)}
+                    className="text-primary transition-[stroke-dashoffset] duration-700 ease-out"
+                  />
+                </svg>
+                <span className="absolute inset-0 flex items-center justify-center text-sm font-bold tabular-nums text-white sm:text-base">
+                  {profileDataLoading || !profileDataReady ? "…" : `${profileCompletion}%`}
+                </span>
+              </div>
+              <span className="text-xs font-medium text-slate-200">Complétude</span>
+            </div>
           </div>
         </CardContent>
-      </Card>
-
-      <Card
-        className="next-action-card border-primary/15 bg-card shadow-sm"
-      >
-        <CardContent className="relative overflow-hidden p-5 sm:p-6">
-          {nextActionMode === "success" ? (
-            <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-              {Array.from({ length: 10 }).map((_, index) => (
-                <span
-                  key={index}
-                  className="petal"
-                  style={{
-                    left: `${10 + index * 9}%`,
-                    top: `${18 + (index % 3) * 22}%`,
-                    animationDelay: `${index * 120}ms`,
-                    animationDuration: `${2400 + index * 180}ms`,
-                    transform: `rotate(${index * 36}deg)`,
-                  }}
-                />
-              ))}
-            </div>
-          ) : null}
-
-          <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Ma prochaine action</p>
-                {nextActionMode === "success" ? (
-                  <span className="inline-flex items-center rounded-full border border-secondary/40 bg-secondary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-secondary">
-                    Réussite
-                  </span>
-                ) : null}
-              </div>
-              <h2 className="text-xl font-bold text-foreground">{nextAction.title}</h2>
-              <p className="max-w-2xl text-sm text-muted-foreground">{nextAction.description}</p>
-            </div>
-
-            <Link to={nextAction.href ?? "/candidate/profile"}>
-              <Button
-                variant="default"
-                className={`whitespace-nowrap transition-all duration-500 ${
-                  nextActionMode === "success" ? "shadow-lg shadow-emerald-200/80" : ""
-                }`}
-              >
-                Continuer
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Profile Completion */}
-      <Card className="overflow-hidden border-primary/15 shadow-sm">
-        <CardHeader className="bg-primary/[0.03] pb-5">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between gap-4 rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            onClick={() => setIsCompletionCollapsed((prev) => !prev)}
-            aria-expanded={!isCompletionCollapsed}
-            disabled={profileDataLoading}
-          >
-            <div className="min-w-0">
-              <CardTitle className="text-base sm:text-lg">Complétude de votre profil</CardTitle>
-              <CardDescription className="mt-1 max-w-xl text-xs sm:text-sm">
-                Complétez votre profil pour augmenter vos chances
-              </CardDescription>
-            </div>
-            <div className="flex shrink-0 items-center gap-3">
-              <div className="flex w-[132px] items-center gap-2 sm:w-[188px]">
-                {profileDataLoading ? (
-                  <>
-                    <Skeleton className="h-1.5 flex-1 sm:h-2" />
-                    <Skeleton className="h-7 w-12 sm:h-8 sm:w-14" />
-                  </>
-                ) : (
-                  <>
-                    <Progress
-                      value={animatedProfileCompletion}
-                      className="h-1.5 flex-1 [&>div]:duration-[2200ms] [&>div]:ease-out sm:h-2"
-                    />
-                    <p className="text-[0.875rem] font-bold tabular-nums leading-none text-primary sm:text-[1.05rem]">
-                      {profileCompletion}%
-                    </p>
-                  </>
-                )}
-              </div>
-              {isCompletionCollapsed ? (
-                <ChevronRight className="h-5 w-5 text-slate-500" />
-              ) : (
-                <ChevronDown className="h-5 w-5 text-slate-500" />
-              )}
-            </div>
-          </button>
-        </CardHeader>
-        {!isCompletionCollapsed ? (
-          <CardContent className="space-y-4 pt-5">
-            {profileDataLoading ? (
-              <div className="grid gap-3 sm:grid-cols-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Skeleton key={i} className="h-12 w-full rounded-xl" />
-                ))}
-              </div>
-            ) : (
-              <div className="grid gap-3 sm:grid-cols-2">
-                {completion.completionItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    to={completionItemRoutes[item.label] ?? "/candidate/profile?tab=profile"}
-                    className={`group flex min-h-12 items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 hover:-translate-y-0.5 hover:shadow-sm ${item.isCompleted ? "border-primary/20 bg-primary/5 text-foreground" : "border-border bg-muted/40 text-muted-foreground"}`}
-                  >
-                    {item.isCompleted ? (
-                      <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-primary" />
-                    ) : (
-                      <Circle className="h-5 w-5 flex-shrink-0 text-muted-foreground/60" />
-                    )}
-                    <span className="flex-1 font-medium">{item.label}</span>
-                    <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-1 group-hover:text-primary" />
-                  </Link>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        ) : null}
       </Card>
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-2xl font-bold text-foreground mb-4">Actions rapides</h2>
+        <h2 className="text-xl font-bold text-foreground mb-4 md:text-2xl">Actions rapides</h2>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {quickActions.map((action) => {
-            const Icon = action.icon;
             return (
               <Link
                 key={action.id}
@@ -654,21 +472,21 @@ export function CandidateDashboardPage() {
                 className="group rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <Card
-                  className={`h-full border ${action.accentBorder} bg-card shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg`}
+                  className="h-full min-h-32 border-border/70 bg-card shadow-none transition-all duration-300 group-hover:border-primary/30 group-hover:shadow-none"
                 >
-                  <CardContent className="flex h-full items-center gap-4 p-5">
-                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${action.accentBackground}`}>
-                      <Icon className={`h-6 w-6 ${action.accentColor}`} />
-                    </div>
-                    <div className="min-w-0 flex-1">
+                  <CardContent className="flex h-full min-h-32 items-center justify-between gap-3 p-4">
+                    <div className="min-w-0">
                       <h3 className="text-base font-semibold leading-tight text-foreground">
                         {action.title}
                       </h3>
-                      <p className="mt-1 text-sm leading-5 text-muted-foreground">
+                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                         {action.description}
                       </p>
+                      <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                        Accéder
+                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                      </span>
                     </div>
-                    <ArrowRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-foreground" />
                   </CardContent>
                 </Card>
               </Link>
@@ -679,8 +497,8 @@ export function CandidateDashboardPage() {
 
       {/* Recent Offers */}
       {/* Recommended Jobs */}
-      <Card className="overflow-hidden border-primary/15 shadow-sm">
-        <CardHeader className="flex flex-col gap-4 bg-primary/[0.03] sm:flex-row sm:items-center sm:justify-between">
+      <Card className="overflow-hidden border-0 bg-transparent shadow-none">
+        <CardHeader className="flex flex-col gap-4 bg-transparent sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">

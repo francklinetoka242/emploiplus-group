@@ -113,35 +113,88 @@ export async function getNotificationsForUser(userId: string): Promise<Notificat
     .or(`user_id.eq.${userId},and(user_id.is.null,type.in.(${BROADCAST_NOTIFICATION_TYPES.join(",")}))`)
     .order("created_at", { ascending: false });
 
+  if (error) {
+    return { data: null, error };
+  }
+
+  const notifications = (data ?? []).map((row) => normalizeNotification(row as Record<string, unknown>));
+  const broadcastIds = notifications
+    .filter((notification) => notification.user_id === null)
+    .map((notification) => notification.id);
+
+  if (broadcastIds.length === 0) {
+    return { data: notifications, error: null };
+  }
+
+  const { data: readReceipts, error: receiptsError } = await supabase
+    .from("notification_reads")
+    .select("notification_id, read_at")
+    .eq("user_id", userId)
+    .in("notification_id", broadcastIds);
+
+  if (receiptsError) {
+    return { data: null, error: receiptsError };
+  }
+
+  const receiptsByNotification = new Map(
+    (readReceipts ?? []).map((receipt) => [receipt.notification_id, receipt.read_at]),
+  );
+
   return {
-    data: (data ?? []).map((row) => normalizeNotification(row as Record<string, unknown>)),
-    error: error ?? null,
+    data: notifications.map((notification) => {
+      const readAt = receiptsByNotification.get(notification.id);
+      return readAt
+        ? { ...notification, is_read: true, read_at: readAt }
+        : notification;
+    }),
+    error: null,
   };
 }
 
 export async function getUnreadNotificationCount(userId: string): Promise<number> {
-  const { count, error } = await supabase
-    .from("notifications")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "active")
-    .or(`user_id.eq.${userId},and(user_id.is.null,type.in.(${BROADCAST_NOTIFICATION_TYPES.join(",")}))`)
-    .eq("is_read", false);
-
+  const { data, error } = await getNotificationsForUser(userId);
   if (error) {
     throw error;
   }
 
-  return count ?? 0;
+  return (data ?? []).filter((notification) => !notification.is_read).length;
 }
 
 export async function markNotificationsAsRead(ids: string[], userId: string) {
   if (ids.length === 0) return { error: null };
-  const { error } = await supabase
+
+  const { data: notifications, error: selectError } = await supabase
     .from("notifications")
-    .update({ is_read: true, read_at: new Date().toISOString() })
-    .in("id", ids)
-    .eq("user_id", userId);
-  return { error };
+    .select("id, user_id")
+    .in("id", ids);
+  if (selectError) return { error: selectError };
+
+  const personalIds = (notifications ?? [])
+    .filter((notification) => notification.user_id === userId)
+    .map((notification) => notification.id);
+  const broadcastIds = (notifications ?? [])
+    .filter((notification) => notification.user_id === null)
+    .map((notification) => notification.id);
+  const readAt = new Date().toISOString();
+
+  if (personalIds.length > 0) {
+    const { error } = await supabase
+      .from("notifications")
+      .update({ is_read: true, read_at: readAt })
+      .in("id", personalIds)
+      .eq("user_id", userId);
+    if (error) return { error };
+  }
+
+  if (broadcastIds.length > 0) {
+    const { error } = await supabase.from("notification_reads").upsert(
+      broadcastIds.map((notification_id) => ({ notification_id, user_id: userId, read_at: readAt })),
+      { onConflict: "notification_id,user_id" },
+    );
+    if (error) return { error };
+  }
+
+  return { error: null };
 }
 
 export async function maskNotificationsForUser(userId: string, type: NotificationType, title: string) {

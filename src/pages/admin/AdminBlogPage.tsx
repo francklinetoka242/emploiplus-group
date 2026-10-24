@@ -375,7 +375,7 @@ export function AdminBlogPage() {
         <div className="rounded-[1.25rem] border border-slate-200 bg-white/90 p-3 shadow-sm md:p-4">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
-              <p className="text-[9px] font-medium uppercase tracking-[0.22em] text-slate-500">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 Administration
               </p>
               <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">

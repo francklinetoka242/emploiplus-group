@@ -72,19 +72,19 @@ export function AdminSEOPage() {
                 <Sparkles className="h-3.5 w-3.5" />
               </div>
               <div className="min-w-0">
-                <p className="text-[8px] font-medium uppercase tracking-[0.2em] text-slate-500">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                   Administration
                 </p>
                 <h1 className="mt-0.5 text-lg font-semibold tracking-tight text-slate-900 md:text-xl">
                   Paramètres SEO
                 </h1>
-                <p className="mt-0.5 text-[11px] text-slate-500">
+                <p className="mt-0.5 text-xs text-slate-500">
                   Définissez les métadonnées de votre site depuis l’interface d’administration.
                 </p>
               </div>
             </div>
 
-            <div className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-medium text-emerald-700">
+            <div className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
               {statusMessage}
             </div>
           </div>
@@ -204,11 +204,11 @@ export function AdminSEOPage() {
 
           <div className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
             <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Aperçu
               </p>
               <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-slate-500">
+                <div className="border-b border-slate-100 bg-slate-50 px-3 py-2 text-xs font-medium uppercase tracking-wide text-slate-500">
                   emploiplus.group
                 </div>
                 <div className="space-y-3 p-4">
@@ -219,7 +219,7 @@ export function AdminSEOPage() {
                     {form.description ||
                       "Ajoutez une description pour aider les moteurs de recherche à comprendre votre site."}
                   </p>
-                  <div className="rounded-xl bg-slate-50 px-3 py-2 text-[11px] text-slate-500">
+                  <div className="rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-500">
                     <p>Mots-clés : {form.keywords || "Aucun mot-clé"}</p>
                     <p className="mt-1">Canonical : {form.canonical || BASE_URL}</p>
                     <p className="mt-1">Robots : {form.robots || "index,follow"}</p>

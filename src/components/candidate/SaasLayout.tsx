@@ -57,7 +57,7 @@ export function SaasPageHeader({ title, subtitle, action, icon }: SaasPageHeader
       <div className="flex items-start gap-3">
         {icon && <div className="flex-shrink-0 text-primary">{icon}</div>}
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">{title}</h1>
+          <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">{title}</h1>
           {subtitle && <p className="mt-2 text-slate-600">{subtitle}</p>}
         </div>
       </div>

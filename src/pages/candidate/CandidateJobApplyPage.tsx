@@ -715,7 +715,7 @@ export function CandidateJobApplyPage() {
       <div className="container-page py-20 md:py-28">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-foreground mb-4">Offre non trouvée</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4 md:text-3xl">Offre non trouvée</h1>
           <p className="text-muted-foreground mb-8">
             L'offre que vous cherchez n'existe pas ou a été supprimée.
           </p>
@@ -733,7 +733,7 @@ export function CandidateJobApplyPage() {
       <div className="container-page py-20 md:py-28">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-foreground mb-4">Non authentifié</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4 md:text-3xl">Non authentifié</h1>
           <p className="text-muted-foreground mb-8">
             Veuillez vous connecter pour postuler à cette offre.
           </p>

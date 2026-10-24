@@ -94,7 +94,7 @@ export function AdminPrivacyPolicyPage() {
                 <ShieldCheck className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] font-medium uppercase tracking-[0.22em] text-slate-500">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                   Administration
                 </p>
                 <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
@@ -106,7 +106,7 @@ export function AdminPrivacyPolicyPage() {
               </div>
             </div>
 
-            <div className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[10px] font-medium text-slate-600">
+            <div className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600">
               Texte public lié à Supabase
             </div>
           </div>

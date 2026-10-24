@@ -31,7 +31,7 @@ import {
   PlusCircleIcon as PlusCircle,
   BellIcon as Bell,
   HeartIcon as Heart,
-  PaperPlaneTiltIcon as Send,
+  PaperPlaneTiltIcon as   Send,
   CrownIcon as Crown,
   FilePlusIcon as FilePlus,
 } from "@phosphor-icons/react";
@@ -238,7 +238,7 @@ export function CandidateSidebar({
                   <div className="flex items-center justify-between px-2 pb-1">
                     <p
                       className={cn(
-                        "text-[10px] font-semibold uppercase tracking-[0.24em]",
+                        "text-xs font-semibold uppercase tracking-wide",
                         isDarkMode ? "text-slate-400" : "text-slate-500",
                       )}
                     >
@@ -383,7 +383,7 @@ export function CandidateSidebar({
               >
                 <p
                   className={cn(
-                    "px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.2em]",
+                    "px-2 pb-1 text-xs font-semibold uppercase tracking-wide",
                     isDarkMode ? "text-slate-400" : "text-slate-500",
                   )}
                 >
@@ -496,14 +496,7 @@ export function CandidateSidebar({
                   <ThemeSwitch checked={isDarkMode} onCheckedChange={setIsDarkMode} />
                 </div>
               </div>
-              <div
-                className={cn(
-                  "rounded-xl p-1.5",
-                  isDarkMode
-                    ? "border border-white/10 bg-slate-950/60"
-                    : "border border-slate-200 bg-slate-50",
-                )}
-              >
+              <div className="mt-2">
                 <EcoModeToggle />
               </div>
             </div>
@@ -562,7 +555,7 @@ export function CandidateSidebar({
               open ? "gap-2 px-1" : "justify-center",
             )}
           >
-            <img src="/Logo.png" alt="" className="h-8 w-8 rounded-lg object-cover" />
+            <img src="/Logo.png" alt="" className="h-7 w-7 rounded-lg object-cover" />
             {open && (
               <span className="font-display text-sm font-bold text-foreground">EmploiPlus</span>
             )}
@@ -620,7 +613,7 @@ export function CandidateSidebar({
                 {open && (
                   <p
                     className={cn(
-                      "px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.2em]",
+                      "px-2 pb-1 text-xs font-semibold uppercase tracking-wide",
                       isDarkMode ? "text-slate-400" : "text-slate-500",
                     )}
                   >
@@ -741,6 +734,11 @@ export function CandidateSidebar({
                   })}
                 </div>
               </div>
+              {open && (
+                <div className="mt-2">
+                  <EcoModeToggle />
+                </div>
+              )}
             </div>
           </nav>
 
@@ -753,9 +751,6 @@ export function CandidateSidebar({
           >
             {open ? (
               <>
-                <div className="mb-1.5">
-                  <EcoModeToggle />
-                </div>
                 <Button
                   onClick={onLogout}
                   className="w-full gap-2 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2 text-sm font-medium text-white"

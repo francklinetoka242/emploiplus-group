@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,7 +8,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { GearIcon as Settings, SignOutIcon as LogOut, CaretDownIcon as ChevronDown, ListIcon as Menu, CircleNotchIcon as Loader2, UserIcon as User } from "@phosphor-icons/react";
+import {
+  GearIcon as Settings,
+  SignOutIcon as LogOut,
+  CaretDownIcon as ChevronDown,
+  ListIcon as Menu,
+  CircleNotchIcon as Loader2,
+  UserIcon as User,
+} from "@phosphor-icons/react";
 import { NotificationsDropdown } from "./NotificationsDropdown";
 import { CandidateAvatar } from "./CandidateAvatar";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -17,10 +24,17 @@ import { cn } from "@/lib/utils";
 
 interface CandidateTopbarProps {
   onMenuToggle?: () => void;
+  onMaeliseToggle?: () => void;
+  isMaeliseCollapsed?: boolean;
   onLogout?: () => Promise<void> | void;
 }
 
-export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
+export function CandidateTopbar({
+  onMenuToggle,
+  onMaeliseToggle,
+  isMaeliseCollapsed = false,
+}: CandidateTopbarProps) {
+  const location = useLocation();
   const { profile, logout } = useCandidate();
   const {
     notifications,
@@ -47,7 +61,6 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
   const publicLinks = [
     { to: "/", label: "Accueil" },
     { to: "/services", label: "Services" },
-    { to: "/jobs", label: "Offres d'emploi" },
     { to: "/blog", label: "Blog" },
     { to: "/about", label: "À propos" },
     { to: "/faq", label: "FAQ" },
@@ -58,6 +71,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
     { to: "/services/externalisation", label: "Externalisation" },
     { to: "/services/conseil-formation", label: "Formation & Conseil" },
   ];
+  const isServicesActive = location.pathname.startsWith("/services");
 
   const handleLogout = async () => {
     await logout();
@@ -81,7 +95,12 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="h-auto rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                      className={cn(
+                        "h-auto rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
+                        isServicesActive
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                      )}
                     >
                       {link.label}
                       <ChevronDown className="ml-1 h-4 w-4" />
@@ -106,7 +125,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
                     cn(
                       "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
                       isActive
-                        ? "bg-accent text-white"
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )
                   }
@@ -120,15 +139,33 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
 
         {/* Right: Notifications and User Menu */}
         <div className="flex items-center gap-4">
+          {onMaeliseToggle && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={onMaeliseToggle}
+              aria-label={isMaeliseCollapsed ? "Ouvrir Maélise" : "Fermer Maélise"}
+              title={isMaeliseCollapsed ? "Ouvrir Maélise" : "Fermer Maélise"}
+              className="size-10 text-muted-foreground hover:text-foreground"
+            >
+              <img
+                src="/robot-maélise-IA.png"
+                alt=""
+                className="h-7 w-7 object-contain"
+              />
+            </Button>
+          )}
           {/* Notifications Dropdown */}
           {notificationsLoading ? (
             <Button variant="ghost" size="icon" disabled className="text-muted-foreground">
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="size-7 animate-spin" />
             </Button>
           ) : (
             <NotificationsDropdown
               notifications={notifications}
               unreadCount={unreadCount}
+              iconClassName="size-7"
               onMarkAsRead={markAsRead}
               onMarkAllAsRead={markAllAsRead}
               onDelete={deleteNotification}
@@ -143,7 +180,7 @@ export function CandidateTopbar({ onMenuToggle }: CandidateTopbarProps) {
                 aria-label="Ouvrir le menu du compte"
                 className="h-12 gap-3 rounded-2xl border border-transparent bg-transparent px-2.5 pr-3 shadow-none transition-colors hover:bg-muted data-[state=open]:border-border/70 data-[state=open]:bg-card data-[state=open]:shadow-sm data-[state=open]:hover:border-primary/25 data-[state=open]:hover:bg-primary/[0.03]"
               >
-                <CandidateAvatar name={userName} avatarUrl={avatarUrl} className="h-9 w-9 border" />
+                <CandidateAvatar name={userName} avatarUrl={avatarUrl} className="h-7 w-7 border" />
                 <div className="flex max-w-[190px] flex-col items-start text-left">
                   <p className="w-full truncate text-sm font-semibold text-foreground">{userName}</p>
                   {userEmail && <p className="w-full truncate text-xs text-muted-foreground">{userEmail}</p>}

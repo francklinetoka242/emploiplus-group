@@ -69,9 +69,9 @@ function WorkflowStep({ step, index }: StepProps) {
       </div>
       <div className="ml-16 space-y-4">
         <p className="text-sm uppercase tracking-[0.35em] text-secondary/80">{step.phase}</p>
-        <h3 className="text-2xl font-semibold text-white">{step.title}</h3>
-        <p className="text-sm leading-7 text-slate-300">{step.description}</p>
-        <p className="text-sm leading-7 text-slate-400">{step.details}</p>
+        <h3 className="text-base font-semibold text-white md:text-lg">{step.title}</h3>
+        <p className="text-sm leading-relaxed text-slate-300">{step.description}</p>
+        <p className="text-sm leading-relaxed text-slate-400">{step.details}</p>
       </div>
       <div className="pointer-events-none absolute left-8 top-20 h-8 w-8 rounded-full border border-white/10 bg-slate-950/80" />
     </motion.div>
@@ -87,10 +87,10 @@ export default function EnterpriseWorkflow() {
             <span className="inline-flex rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-secondary/80">
               Solutions Entreprises / BPO
             </span>
-            <h2 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            <h2 className="font-display text-xl font-bold tracking-tight text-white md:text-2xl">
               Un processus métier clair, puissant et parfaitement orchestré.
             </h2>
-            <p className="max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
+            <p className="max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
               Vos besoins sont traduits en un workflow précis, avec des points de contrôle,
               des connexions visuelles et une promesse de résultat opérationnel.
             </p>

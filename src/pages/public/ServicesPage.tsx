@@ -122,14 +122,14 @@ export function ServicesPage() {
           <div className="space-y-24">
             <section className="mx-4 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center sm:mx-6 lg:mx-8">
               <div className="space-y-8 slide-in-left slide-delay-1">
-                <div className="inline-flex items-center rounded-full bg-brand/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.3em] text-brand">
+                <div className="inline-flex items-center rounded-full bg-brand/10 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-brand">
                   Candidat
                 </div>
                 <div className="space-y-4">
-                  <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                  <h2 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
                     Un parcours candidat fluide et efficace
                   </h2>
-                  <p className="max-w-2xl text-base leading-8 text-muted-foreground">
+                  <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
                     Explorez les offres, préparez votre profil et postulez en quelques étapes. Tout
                     est pensé pour gagner du temps et vous mettre en valeur.
                   </p>
@@ -191,14 +191,14 @@ export function ServicesPage() {
               </div>
 
               <div className="space-y-8 slide-in-right slide-delay-1">
-                <div className="inline-flex items-center rounded-full bg-secondary/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.3em] text-secondary">
+                <div className="inline-flex items-center rounded-full bg-secondary/10 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-secondary">
                   Entreprise
                 </div>
                 <div className="space-y-4">
-                  <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                  <h2 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
                     Une solution d'externalisation globale et sur mesure
                   </h2>
-                  <p className="max-w-2xl text-base leading-8 text-muted-foreground">
+                  <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
                     BPO, gestion déléguée et pilotage opérationnel pour faire évoluer votre
                     organisation avec sérénité.
                   </p>

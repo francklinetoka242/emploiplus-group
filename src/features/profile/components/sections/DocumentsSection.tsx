@@ -29,6 +29,8 @@ interface DocumentsSectionProps {
   loading?: boolean;
   candidateId?: string | null;
   serverCvUrl?: string | null;
+  showDocumentStatus?: boolean;
+  showHeader?: boolean;
   onDeleteDocument?: (id: string) => void;
   onDeleteCv?: () => Promise<void> | void;
   onAddDocument?: (document: CandidateDocument | CandidateCVState, isCV?: boolean) => void;
@@ -40,6 +42,8 @@ export function DocumentsSection({
   loading,
   candidateId,
   serverCvUrl,
+  showDocumentStatus = true,
+  showHeader = true,
   onDeleteDocument,
   onDeleteCv,
   onAddDocument,
@@ -332,12 +336,16 @@ export function DocumentsSection({
   if (loading) {
     return (
       <div className="space-y-3">
-          <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
-            <FileText className="h-4 w-4 text-primary" />
-            Documents
-          </h2>
-          <p className="text-sm text-muted-foreground">Gérez vos documents importants pour votre candidature.</p>
-          <p className="text-sm text-slate-500">Chargement…</p>
+        {showHeader && (
+          <>
+            <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
+              <FileText className="h-4 w-4 text-primary" />
+              Documents
+            </h2>
+            <p className="text-sm text-muted-foreground">Gérez vos documents importants pour votre candidature.</p>
+          </>
+        )}
+        <p className="text-sm text-slate-500">Chargement…</p>
       </div>
     );
   }
@@ -346,17 +354,19 @@ export function DocumentsSection({
     <>
       {confirmationDialog}
       <div className="space-y-6">
-        <div>
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
-                <FileText className="h-4 w-4 text-primary" />
-                Documents
-              </h2>
-              <p className="mt-1 text-sm text-muted-foreground">Gérez vos documents importants pour votre candidature.</p>
+        {showHeader && (
+          <div>
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
+                  <FileText className="h-4 w-4 text-primary" />
+                  Documents
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">Gérez vos documents importants pour votre candidature.</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <section aria-labelledby="document-upload-title">
           <h3 id="document-upload-title" className="mb-3 text-base font-semibold text-foreground">
@@ -420,31 +430,31 @@ export function DocumentsSection({
 
         </section>
 
-        <section aria-labelledby="document-status-title">
-          <h3 id="document-status-title" className="mb-3 text-base font-semibold text-foreground">État des documents</h3>
-          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-                {DOCUMENT_TYPES.map((type) => {
-                  const isCompleted = completedTypes.has(type.value);
-                  return (
-                    <div
-                      key={type.value}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
-                        isCompleted
-                          ? "bg-primary/10 text-primary"
-                          : "bg-slate-50 text-slate-600"
-                      }`}
-                    >
-                      {isCompleted ? (
-                        <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
-                      ) : (
-                        <Circle className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                      )}
-                      <span className="text-sm">{type.label}</span>
-                    </div>
-                  );
-                })}
+        {showDocumentStatus && (
+          <section aria-labelledby="document-status-title">
+            <h3 id="document-status-title" className="mb-3 text-base font-semibold text-foreground">État des documents</h3>
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+              {DOCUMENT_TYPES.map((type) => {
+                const isCompleted = completedTypes.has(type.value);
+                return (
+                  <div
+                    key={type.value}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                      isCompleted ? "bg-primary/10 text-primary" : "bg-slate-50 text-slate-600"
+                    }`}
+                  >
+                    {isCompleted ? (
+                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                    ) : (
+                      <Circle className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                    )}
+                    <span className="text-sm">{type.label}</span>
+                  </div>
+                );
+              })}
             </div>
-        </section>
+          </section>
+        )}
 
         <section aria-labelledby="added-documents-title">
           <h3 id="added-documents-title" className="mb-3 text-base font-semibold text-foreground">Documents ajoutés</h3>

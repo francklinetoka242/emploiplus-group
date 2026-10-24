@@ -106,7 +106,7 @@ export default function AdminAnalyticsOffresPage() {
         <div className="rounded-[2rem] border border-slate-200 bg-white/90 p-5 shadow-sm md:p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
-              <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-slate-500">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 Administration
               </p>
               <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">

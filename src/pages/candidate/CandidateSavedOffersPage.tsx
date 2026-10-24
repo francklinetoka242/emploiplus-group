@@ -75,7 +75,6 @@ export function CandidateSavedOffersPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
-  const [showLimitNotice, setShowLimitNotice] = useState(false);
   const { confirm, confirmationDialog } = useConfirmDialog();
 
   const isFull = savedOffers.length >= MAX_SAVED_OFFERS;
@@ -178,41 +177,6 @@ export function CandidateSavedOffersPage() {
     <>
       {confirmationDialog}
       <div className="space-y-4">
-      <div className="overflow-hidden rounded-3xl bg-transparent shadow-none">
-        <div className="flex flex-col gap-3 bg-primary/[0.03] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-          <div className="flex min-w-0 items-start gap-2.5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-              <Bookmark className="h-4 w-4 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">Offres enregistrées</h1>
-              <p className="max-w-xl text-xs leading-5 text-muted-foreground sm:text-sm">
-                Gérez vos offres d'emploi favorites. Vous pouvez en enregistrer jusqu'à {MAX_SAVED_OFFERS}.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {isFull ? (
-              <Button
-                type="button"
-                size="icon"
-                variant="outline"
-                aria-label="Afficher les informations sur la limite d'offres enregistrées"
-                aria-expanded={showLimitNotice}
-                onClick={() => setShowLimitNotice((visible) => !visible)}
-                className="h-9 w-9 rounded-lg border-yellow-300 bg-yellow-50 font-bold text-yellow-800 hover:bg-yellow-100"
-              >
-                !
-              </Button>
-            ) : null}
-            <div className="w-fit rounded-lg border border-primary/15 bg-background px-3 py-2">
-              <span className="block text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">Enregistrées</span>
-              <span className="block text-lg font-bold leading-tight text-primary">{savedOffers.length}/{MAX_SAVED_OFFERS}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {error && (
         <Alert variant="destructive" className="rounded-2xl">
           <AlertCircle className="h-4 w-4" />
@@ -220,7 +184,7 @@ export function CandidateSavedOffersPage() {
         </Alert>
       )}
 
-      {isFull && showLimitNotice && (
+      {isFull && (
         <Alert className="rounded-2xl border-yellow-200 bg-yellow-50 px-3 py-2">
           <AlertCircle className="h-4 w-4 text-yellow-800" />
           <AlertDescription className="text-yellow-800">
@@ -244,22 +208,22 @@ export function CandidateSavedOffersPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card className="overflow-hidden border-0 bg-transparent shadow-none">
-          <CardHeader className="bg-primary/[0.03] p-5 sm:p-6">
+        <Card className="border-0 bg-transparent shadow-none">
+          <CardHeader className="bg-transparent p-5 sm:p-6">
             <CardTitle className="text-lg sm:text-xl">{savedOffersWithMeta.length} offre(s) enregistrée(s)</CardTitle>
             <CardDescription className="mt-1">Vos offres les plus récentes en premier</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="hidden overflow-x-auto sm:block">
-              <Table>
+            <div className="saved-offers-table hidden -mx-4 overflow-x-auto sm:-mx-6 sm:block lg:-mx-8">
+              <Table className="[&_th]:px-2 [&_td]:px-2">
                 <TableHeader>
                   <TableRow className="bg-muted/40 hover:bg-muted/40">
                     <TableHead>Titre</TableHead>
                     <TableHead>Entreprise</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Statut</TableHead>
-                    <TableHead>Enregistrée le</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="w-[18%] pr-0 text-right">Enregistrée le</TableHead>
+                    <TableHead className="w-[17%] pl-0 text-left">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -287,20 +251,20 @@ export function CandidateSavedOffersPage() {
                           {offer.statusLabel}
                         </span>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{offer.savedDate}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="grid grid-cols-[2.25rem_7rem_2.25rem] items-center justify-end gap-2">
-                          <Button asChild size="icon" variant="outline" className="h-9 w-9 border-primary/20 text-primary hover:bg-primary/5" title="Voir l'offre">
+                      <TableCell className="pr-0 text-right text-muted-foreground">{offer.savedDate}</TableCell>
+                      <TableCell className="w-[17%] pl-0 text-left">
+                        <div className="grid grid-cols-[2rem_6.5rem_2rem] items-center justify-start gap-1">
+                          <Button asChild size="icon" variant="outline" className="h-8 w-8 border-primary/20 text-primary hover:bg-primary/5" title="Voir l'offre">
                             <Link to={`/jobs/${offer.job_offers.slug}`} aria-label="Voir l'offre">
                               <Eye className="h-4 w-4" />
                             </Link>
                           </Button>
                           {offer.canApply ? (
-                            <Button asChild size="sm" className="h-9 w-full bg-brand text-brand-foreground hover:bg-brand/90">
+                            <Button asChild size="sm" className="h-8 w-full px-2 text-xs bg-brand text-brand-foreground hover:bg-brand/90">
                               <Link to={`/candidate/jobs/${offer.job_offers.slug}/apply`}>Postuler</Link>
                             </Button>
                           ) : (
-                            <span className="inline-flex h-9 w-full items-center justify-center rounded-lg border border-border bg-muted px-3 text-xs text-muted-foreground">
+                            <span className="inline-flex h-8 w-full items-center justify-center rounded-lg border border-border bg-muted px-2 text-[11px] text-muted-foreground">
                               {offer.job_offers.status === "archived" ? "Offre fermée" : offer.job_offers.status === "expired" ? "Offre expirée" : "Déjà postulé"}
                             </span>
                           )}
@@ -309,7 +273,7 @@ export function CandidateSavedOffersPage() {
                             variant="ghost"
                             onClick={() => handleDelete(offer.id)}
                             disabled={deleting === offer.id}
-                            className="h-9 w-9 p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                            className="h-8 w-8 p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                           >
                             {deleting === offer.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                           </Button>

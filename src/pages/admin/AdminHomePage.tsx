@@ -191,18 +191,18 @@ function AdminDashboardView() {
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white/90 p-3 shadow-sm backdrop-blur-sm sm:rounded-[1.25rem] sm:p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0 space-y-1.5 sm:space-y-2">
-            <p className="text-[9px] uppercase tracking-[0.22em] text-slate-500 sm:text-[10px]">
+            <p className="text-xs uppercase tracking-wide text-slate-500 sm:text-xs">
               {t("admin.dashboard.overview")}
             </p>
             <h1 className="truncate text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
               {t("admin.dashboard.title")}
             </h1>
-            <p className="max-w-2xl text-[11px] leading-5 text-slate-600 sm:text-xs">
+            <p className="max-w-2xl text-xs leading-relaxed text-slate-600 sm:text-xs">
               {t("admin.dashboard.description")}
             </p>
           </div>
 
-          <div className="flex items-center gap-2 self-start rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-700 sm:self-end sm:text-xs">
+          <div className="flex items-center gap-2 self-start rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-700 sm:self-end sm:text-xs">
             <Activity className="h-3 w-3 text-emerald-500" />
             <span>Dernière mise à jour : {lastUpdated}</span>
           </div>
@@ -212,7 +212,7 @@ function AdminDashboardView() {
           <button
             type="button"
             onClick={() => setRefreshKey((value) => value + 1)}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[10px] font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-200 sm:text-xs"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-200 sm:text-xs"
           >
             <RefreshCw className={`h-3 w-3 ${refreshing ? "animate-spin" : ""}`} />
             <span>{refreshing ? "Actualisation..." : "Rafraîchir"}</span>
@@ -247,14 +247,14 @@ function AdminDashboardView() {
               <div className={`inline-flex rounded-lg bg-gradient-to-br ${metric.tone} p-2 sm:p-2.5`}>
                 <Icon className="h-4 w-4 sm:h-4 sm:w-4" />
               </div>
-              <p className="mt-3 text-[10px] uppercase tracking-[0.18em] text-slate-500 sm:text-[11px]">
+              <p className="mt-3 text-xs uppercase tracking-wide text-slate-500 sm:text-xs">
                 {metric.label}
               </p>
               <p className="mt-2 text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
                 {metric.value}
               </p>
               {metric.details ? (
-                <div className="mt-2 space-y-0.5 text-[10px] leading-4 text-slate-600 sm:text-[11px]">
+                <div className="mt-2 space-y-0.5 text-xs leading-[1.5] text-slate-600 sm:text-xs">
                   {metric.details.map((detail) => (
                     <div key={detail}>{detail}</div>
                   ))}
@@ -278,7 +278,7 @@ function AdminDashboardView() {
         <Link to="/admin/jobs" className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.35rem] sm:p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">Système</p>
+              <p className="text-xs uppercase tracking-wide text-slate-500">Système</p>
               <h3 className="mt-1 text-lg font-semibold text-slate-900">Santé opérationnelle</h3>
             </div>
             <div className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600">
@@ -296,7 +296,7 @@ function AdminDashboardView() {
               <div className="flex h-full items-center justify-center rounded-full bg-background text-center text-xs font-semibold text-foreground">
                 <div>
                   <div className="text-xl">{operationalScore}</div>
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Score</div>
+                  <div className="text-xs uppercase tracking-wide text-slate-500">Score</div>
                 </div>
               </div>
             </div>
@@ -323,7 +323,7 @@ function AdminDashboardView() {
         <Link to="/admin/team" className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.35rem] sm:p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.2em] text-slate-500">Accès</p>
+              <p className="text-xs uppercase tracking-wide text-slate-500">Accès</p>
               <h3 className="mt-1 text-lg font-semibold text-slate-900">Répartition admin</h3>
             </div>
             <div className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">
@@ -350,11 +350,11 @@ function AdminDashboardView() {
 
           <div className="mt-5 grid grid-cols-2 gap-3">
             <div className="rounded-2xl border border-border bg-background/70 p-3">
-              <div className="text-[11px] uppercase tracking-[0.15em] text-slate-500">Actifs</div>
+              <div className="text-xs uppercase tracking-wide text-slate-500">Actifs</div>
               <div className="mt-1 text-2xl font-semibold text-foreground">{adminStats.active}</div>
             </div>
             <div className="rounded-2xl border border-border bg-background/70 p-3">
-              <div className="text-[11px] uppercase tracking-[0.15em] text-slate-500">Bloqués</div>
+              <div className="text-xs uppercase tracking-wide text-slate-500">Bloqués</div>
               <div className="mt-1 text-2xl font-semibold text-foreground">{adminStats.blocked}</div>
             </div>
           </div>
@@ -365,14 +365,14 @@ function AdminDashboardView() {
         <Link to="/admin/jobs" className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.2rem] sm:p-4">
           <div className="flex items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500 sm:text-xs">
+              <p className="text-xs uppercase tracking-wide text-slate-500 sm:text-xs">
                 {t("admin.dashboard.jobs.title")}
               </p>
               <h3 className="mt-1 text-sm font-semibold text-slate-900 sm:text-base truncate">
                 {t("admin.dashboard.jobs.subtitle")}
               </h3>
             </div>
-            <div className="rounded-2xl bg-emerald-500/10 px-2 py-1 text-[10px] font-medium text-emerald-600 whitespace-nowrap flex-shrink-0 sm:text-xs">Stable</div>
+            <div className="rounded-2xl bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-600 whitespace-nowrap flex-shrink-0 sm:text-xs">Stable</div>
           </div>
           <div className="mt-4 rounded-lg border border-border bg-background/70 p-3 sm:p-3.5">
             <div className="flex items-center gap-2 text-xs font-medium text-slate-700">
@@ -385,14 +385,14 @@ function AdminDashboardView() {
         <Link to="/admin/blog" className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.2rem] sm:p-4">
           <div className="flex items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500 sm:text-xs">
+              <p className="text-xs uppercase tracking-wide text-slate-500 sm:text-xs">
                 {t("admin.dashboard.blog.title")}
               </p>
               <h3 className="mt-1 text-sm font-semibold text-slate-900 sm:text-base truncate">
                 {t("admin.dashboard.blog.subtitle")}
               </h3>
             </div>
-            <div className="rounded-2xl bg-cyan-500/10 px-2 py-1 text-[10px] font-medium text-cyan-600 whitespace-nowrap flex-shrink-0 sm:text-xs">À la une</div>
+            <div className="rounded-2xl bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-600 whitespace-nowrap flex-shrink-0 sm:text-xs">À la une</div>
           </div>
           <div className="mt-4 rounded-lg border border-border bg-background/70 p-3 sm:p-3.5">
             <div className="flex items-center justify-between text-xs font-medium text-slate-700">
@@ -405,14 +405,14 @@ function AdminDashboardView() {
         <Link to="/admin/team" className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md sm:rounded-[1.2rem] sm:p-4">
           <div className="flex items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500 sm:text-xs">
+              <p className="text-xs uppercase tracking-wide text-slate-500 sm:text-xs">
                 {t("admin.dashboard.admin.title")}
               </p>
               <h3 className="mt-1 text-sm font-semibold text-slate-900 sm:text-base truncate">
                 {t("admin.dashboard.admin.subtitle")}
               </h3>
             </div>
-            <div className="rounded-2xl bg-slate-900 px-2 py-1 text-[10px] font-medium text-white whitespace-nowrap flex-shrink-0 sm:text-xs">
+            <div className="rounded-2xl bg-slate-900 px-2 py-1 text-xs font-medium text-white whitespace-nowrap flex-shrink-0 sm:text-xs">
               {adminStats.total}
             </div>
           </div>

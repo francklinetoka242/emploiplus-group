@@ -10,7 +10,7 @@ export default function HeroSection() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="grid gap-8 lg:grid-cols-2 items-center">
           <motion.div variants={fadeUp} className="space-y-6">
             <span className="inline-flex rounded-full bg-secondary/10 px-3 py-1 text-xs font-semibold text-secondary">Services</span>
-            <h1 className="text-4xl font-display font-bold">Des services pour trouver, préparer et réussir.</h1>
+            <h1 className="text-2xl font-display font-bold md:text-3xl">Des services pour trouver, préparer et réussir.</h1>
             <p className="text-lg text-muted-foreground max-w-xl">EmploiPlus Group accompagne les candidats et les entreprises avec une plateforme intelligente, des recommandations IA et un accompagnement humain de A à Z.</p>
 
             <div className="flex flex-wrap gap-3 mt-4">

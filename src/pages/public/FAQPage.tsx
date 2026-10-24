@@ -81,18 +81,15 @@ export default function FAQPage() {
         ]}
       />
 
-      <section className="container-page pb-20 md:pb-28">
+      <section className="container-page pt-0 pb-20 md:pb-28">
         <div className="mx-auto max-w-6xl">
-          <header className="grid gap-8 pb-12 pt-8 md:grid-cols-[1.1fr_0.9fr] md:items-end md:pt-14 md:pb-16">
+          <header className="grid gap-8 pb-12 pt-0 md:grid-cols-[1.1fr_0.9fr] md:items-end md:pb-16">
             <div>
-              <span className="inline-flex rounded-full border border-brand/30 bg-brand/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-brand">
-                FAQ
-              </span>
-              <h1 className="mt-5 max-w-2xl font-display text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+              <h1 className="mt-0 max-w-2xl font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
                 {t("faq.title")}
               </h1>
             </div>
-            <p className="max-w-md text-base leading-7 text-muted-foreground md:text-sm md:leading-6">
+            <p className="max-w-md text-base leading-relaxed text-muted-foreground md:text-sm md:leading-6">
               {t("faq.subtitle")}
             </p>
           </header>
@@ -130,7 +127,7 @@ export default function FAQPage() {
             ) : groupedFaqs.length === 0 ? (
               <div className="border-t border-border py-8 text-center">
                 <MessageSquareText className="mx-auto h-10 w-10 text-brand" />
-                <h2 className="mt-4 font-display text-2xl font-semibold text-foreground">
+                <h2 className="mt-4 font-display text-xl font-semibold text-foreground md:text-2xl">
                   Aucune réponse ne correspond à votre recherche.
                 </h2>
                 <p className="mt-2 text-muted-foreground">

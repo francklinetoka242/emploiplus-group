@@ -101,7 +101,7 @@ export function ContactPage() {
                     <Phone className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                       {t("contact.info.phoneLabel")}
                     </p>
                     <a
@@ -126,7 +126,7 @@ export function ContactPage() {
                     <Mail className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                       {t("contact.info.emailLabel")}
                     </p>
                     <a
@@ -151,7 +151,7 @@ export function ContactPage() {
                     <MapPin className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                       {t("contact.location.headquarter")}
                     </p>
                     <p className="text-lg font-bold text-primary">
@@ -173,7 +173,7 @@ export function ContactPage() {
           >
             <div className="w-full max-w-[560px] rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/8 via-card to-card p-6 md:p-7 shadow-sm">
               <div className="mb-6">
-                <h2 className="font-display text-2xl font-bold text-foreground">
+                <h2 className="font-display text-xl font-bold text-foreground md:text-2xl">
                   {t("contact.form.title")}
                 </h2>
                 <p className="mt-2 text-sm text-muted-foreground">

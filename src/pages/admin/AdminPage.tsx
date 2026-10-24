@@ -167,8 +167,10 @@ export function AdminPage() {
                 isMobile ? "px-4 pb-6 pt-0" : cn("min-w-0", sidebarOpen ? "lg:pl-60" : "lg:pl-12"),
               )}
             >
-              <main className="w-full min-h-[calc(100vh-2rem)] overflow-y-auto rounded-none border-0 bg-background p-4 sm:p-6 transition-all duration-300 lg:mt-4">
-                <Outlet />
+              <main className="min-h-[calc(100vh-2rem)] w-full overflow-y-auto rounded-t-[20px] border border-border bg-background p-4 transition-all duration-300 sm:p-6 lg:mt-4">
+                <div className="min-w-0 w-full">
+                  <Outlet />
+                </div>
               </main>
             </div>
           </div>

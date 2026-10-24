@@ -375,7 +375,7 @@ export function AdminTeamPage() {
         <div className="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-sm md:p-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
-              <p className="text-[9px] font-medium uppercase tracking-[0.22em] text-slate-500">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 Administration
               </p>
               <h1 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl">
@@ -449,7 +449,7 @@ export function AdminTeamPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex min-w-0 flex-wrap items-center gap-2">
                       <p className="truncate text-base font-semibold text-slate-900">{member.name}</p>
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-slate-600">
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-slate-600">
                         {member.role}
                       </span>
                     </div>
@@ -463,7 +463,7 @@ export function AdminTeamPage() {
 
                 <div className="flex items-center justify-between gap-2 md:justify-end">
                   <span
-                    className={`rounded-full px-2.5 py-1 text-[10px] font-medium ${member.isActive ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${member.isActive ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}
                   >
                     {member.isActive ? t("admin.team.status.active") : t("admin.team.status.blocked")}
                   </span>

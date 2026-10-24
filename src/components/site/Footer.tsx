@@ -21,7 +21,7 @@ export function SiteFooter() {
             />
             <div className="leading-tight text-white">
               <div className="font-display font-bold text-base">EmploiPlus</div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-white/70">Group</div>
+              <div className="text-xs uppercase tracking-wide text-white/70">Group</div>
             </div>
           </div>
         </div>

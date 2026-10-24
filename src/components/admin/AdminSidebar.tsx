@@ -163,7 +163,7 @@ export function AdminSidebar({
             {open && (
               <div className="min-w-0">
                 <p className="text-xs font-medium text-slate-800">Mode sombre</p>
-                <p className="truncate text-[10px] text-slate-500">Thème clair/sombre</p>
+                <p className="truncate text-xs text-slate-500">Thème clair/sombre</p>
               </div>
             )}
             <ThemeSwitch checked={darkMode} onCheckedChange={setDarkMode} />

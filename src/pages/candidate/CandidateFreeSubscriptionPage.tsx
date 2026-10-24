@@ -1,4 +1,4 @@
-﻿import {
+import {
   ArrowLeftIcon as ArrowLeft,
   BookmarkSimpleIcon as Bookmark,
   CheckIcon as Check,
@@ -83,30 +83,30 @@ export function CandidateFreeSubscriptionPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-primary/15 bg-primary/5 text-primary">
               <Cpu className="h-5 w-5" />
             </div>
-            <span className="inline-flex rounded-full border border-border bg-background px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="inline-flex rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Forfait gratuit
             </span>
           </div>
 
           <div className="mt-6 grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Accès de base
               </p>
-              <h1 className="mt-3 text-4xl font-black tracking-tight text-foreground sm:text-5xl">
+              <h1 className="mt-3 text-2xl font-black tracking-tight text-foreground md:text-3xl">
                 0 FCFA
               </h1>
               <p className="mt-5 text-2xl font-semibold text-foreground sm:text-3xl">
                 Jusqu’à 3 recommandations
               </p>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+              <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
                 Les offres affichées dépendent des correspondances réellement disponibles avec votre
                 profil.
               </p>
             </div>
 
             <div className="border-l border-border pl-0 lg:pl-6">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 En bref
               </p>
               <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
@@ -133,7 +133,7 @@ export function CandidateFreeSubscriptionPage() {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/5 text-primary">
                 <Sparkles className="h-4 w-4" />
               </div>
-              <h2 className="text-xl font-semibold text-foreground">Ce que ce forfait comprend</h2>
+              <h2 className="text-xl font-semibold text-foreground md:text-2xl">Ce que ce forfait comprend</h2>
             </div>
 
             <div className="space-y-3">
@@ -155,11 +155,11 @@ export function CandidateFreeSubscriptionPage() {
           </div>
 
           <div className="border border-border bg-background p-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Le point essentiel
             </p>
             <div className="mt-5 border-l border-primary/30 pl-4">
-              <p className="text-sm uppercase tracking-[0.2em] text-primary">Score</p>
+              <p className="text-sm uppercase tracking-wide text-primary">Score</p>
               <p className="mt-3 text-4xl font-black tracking-tight text-foreground">Identique</p>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 Le forfait ne modifie pas votre score. Il détermine uniquement le nombre de
@@ -174,14 +174,14 @@ export function CandidateFreeSubscriptionPage() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/10 text-secondary">
               <GitCompareArrows className="h-4 w-4" />
             </div>
-            <h2 className="text-xl font-semibold text-foreground">Les limites de ce forfait</h2>
+            <h2 className="text-xl font-semibold text-foreground md:text-2xl">Les limites de ce forfait</h2>
           </div>
 
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             {featureGroups.map(({ title, value, subtitle, icon: Icon }) => (
               <div key={title} className="border border-border bg-background p-4">
                 <div className="flex items-center justify-between gap-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {title}
                   </p>
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/5 text-primary">
@@ -197,8 +197,8 @@ export function CandidateFreeSubscriptionPage() {
 
         <section className="border-t border-border pt-6">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-xl font-semibold text-foreground">Comparatif rapide</h2>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <h2 className="text-xl font-semibold text-foreground md:text-2xl">Comparatif rapide</h2>
+            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Identique pour tous
             </span>
           </div>

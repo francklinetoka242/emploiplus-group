@@ -35,6 +35,8 @@ export function CandidateDocumentsPage() {
         loading={documentsLoading}
         candidateId={profile.id}
         serverCvUrl={profile?.cv_url}
+        showDocumentStatus={false}
+        showHeader={false}
         onDeleteDocument={deleteDocument}
         onDeleteCv={handleDeleteCv}
         onAddDocument={addDocument}

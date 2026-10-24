@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { deleteNotification as deleteNotificationFromApi, getNotificationsForUser, getUnreadNotificationCount, markNotificationsAsRead, NotificationRecord, updateNotification } from "@/integrations/supabase/notifications";
+import { deleteNotification as deleteNotificationFromApi, getNotificationsForUser, markNotificationsAsRead, NotificationRecord } from "@/integrations/supabase/notifications";
+import { toast } from "sonner";
 
 interface NotificationState {
   notifications: NotificationRecord[];
@@ -43,10 +44,7 @@ const loadNotifications = async () => {
       return;
     }
 
-    const [{ data, error: notifError }, unreadCount] = await Promise.all([
-      getNotificationsForUser(user.id),
-      getUnreadNotificationCount(user.id),
-    ]);
+    const { data, error: notifError } = await getNotificationsForUser(user.id);
     if (notifError) throw notifError;
 
     const notifications = Array.isArray(data) ? data : [];
@@ -57,6 +55,7 @@ const loadNotifications = async () => {
         (notif.user_id === user.id || notif.user_id === null) &&
         allowedTypes.includes(notif.type as (typeof allowedTypes)[number]),
     );
+    const unreadCount = userNotifications.filter((notification) => !notification.is_read).length;
 
     updateState({
       notifications: userNotifications,
@@ -98,19 +97,20 @@ export function useNotifications() {
       if (!user) return;
 
       const notification = notificationState.notifications.find((item) => item.id === notificationId);
-      if (!notification || notification.user_id !== user.id) return;
-      const { error: updateError } = await updateNotification(notificationId, { is_read: true, read_at: new Date().toISOString() }, user.id);
+      if (!notification || (notification.user_id !== user.id && notification.user_id !== null)) return;
+      const { error: updateError } = await markNotificationsAsRead([notificationId], user.id);
       if (updateError) throw updateError;
 
       const notifications = notificationState.notifications.map((notif) =>
-        notif.id === notificationId ? { ...notif, is_read: true } : notif,
+        notif.id === notificationId
+          ? { ...notif, is_read: true, read_at: new Date().toISOString() }
+          : notif,
       );
-      const unreadCount = notifications.filter(
-        (notif) => notif.user_id === user.id && !notif.is_read,
-      ).length;
+      const unreadCount = notifications.filter((notif) => !notif.is_read).length;
       updateState({ notifications, unreadCount });
     } catch (err) {
       console.error("Error marking notification as read:", err);
+      toast.error("Impossible de marquer la notification comme lue.");
     }
   }, []);
 
@@ -125,7 +125,7 @@ export function useNotifications() {
       if (!user) return;
 
       const unreadIds = notificationState.notifications
-        .filter((n) => n.user_id === user.id && !n.is_read)
+        .filter((n) => (n.user_id === user.id || n.user_id === null) && !n.is_read)
         .map((n) => n.id);
       if (unreadIds.length === 0) return;
 
@@ -134,14 +134,14 @@ export function useNotifications() {
 
       const notifications = notificationState.notifications.map((notif) => ({
         ...notif,
-        is_read: notif.user_id === user.id ? true : notif.is_read,
+        is_read: notif.user_id === user.id || notif.user_id === null ? true : notif.is_read,
+        read_at: notif.user_id === user.id || notif.user_id === null ? new Date().toISOString() : notif.read_at,
       }));
-      const unreadCount = notifications.filter(
-        (notif) => notif.user_id === user.id && !notif.is_read,
-      ).length;
+      const unreadCount = notifications.filter((notif) => !notif.is_read).length;
       updateState({ notifications, unreadCount });
     } catch (err) {
       console.error("Error marking all notifications as read:", err);
+      toast.error("Impossible de marquer toutes les notifications comme lues.");
     }
   }, []);
 
@@ -158,9 +158,7 @@ export function useNotifications() {
       if (deleteError) throw deleteError;
 
       const notifications = notificationState.notifications.filter((n) => n.id !== notificationId);
-      const unreadCount = notifications.filter(
-        (notif) => notif.user_id === user.id && !notif.is_read,
-      ).length;
+      const unreadCount = notifications.filter((notif) => !notif.is_read).length;
       updateState({ notifications, unreadCount });
     } catch (err) {
       console.error("Error deleting notification:", err);

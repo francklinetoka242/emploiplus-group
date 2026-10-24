@@ -47,7 +47,7 @@ export function SiteHeader() {
           />
           <div className="leading-tight hidden sm:block">
             <div className="font-display font-bold text-foreground">EmploiPlus</div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            <div className="text-xs uppercase tracking-wide text-muted-foreground">
               Group
             </div>
           </div>

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { jsPDF } from "jspdf";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -90,14 +90,14 @@ function TemplateThumbnail({ compact = false, className }: { compact?: boolean; 
       aria-hidden="true"
       className={cn("group/thumbnail relative aspect-[210/297] w-40 overflow-hidden bg-white p-4 shadow-sm transition duration-200 ease-out group-hover:scale-[1.03] group-hover:shadow-xl", className)}
     >
-      <span className="absolute inset-y-0 left-0 w-1 bg-slate-800" />
+      <span className="absolute inset-y-0 left-0 w-1 bg-primary" />
       <div className="mb-2 flex items-center gap-1 border-b border-slate-300 pb-2">
-        {compact && <span className="size-8 shrink-0 rounded-full bg-slate-700" />}
-        <div className="flex-1 space-y-1"><div className="h-1.5 w-3/4 bg-slate-700" /><div className="h-1 w-1/2 bg-slate-300" /></div>
+        {compact && <span className="size-8 shrink-0 rounded-full bg-primary/85" />}
+        <div className="flex-1 space-y-1"><div className="h-1.5 w-3/4 bg-primary" /><div className="h-1 w-1/2 bg-slate-300" /></div>
       </div>
       <div className={compact ? "grid grid-cols-[0.7fr_1.3fr] gap-2" : "space-y-2"}>
-        <div className="space-y-1.5"><div className="h-1 w-2/3 bg-slate-700" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /><div className="h-1 w-3/4 bg-slate-200" /><div className="h-1 w-full bg-slate-300" /><div className="h-1 w-4/5 bg-slate-200" /></div>
-        {compact ? <div className="space-y-1.5"><div className="h-1 w-2/3 bg-slate-700" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /><div className="h-1 w-full bg-slate-300" /><div className="h-1 w-4/5 bg-slate-200" /><div className="h-1 w-full bg-slate-200" /></div> : <div className="space-y-1.5"><div className="h-1 w-1/3 bg-slate-700" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /><div className="h-1 w-3/4 bg-slate-200" /></div>}
+        <div className="space-y-1.5"><div className="h-1 w-2/3 bg-primary" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /><div className="h-1 w-3/4 bg-slate-200" /><div className="h-1 w-full bg-slate-300" /><div className="h-1 w-4/5 bg-slate-200" /></div>
+        {compact ? <div className="space-y-1.5"><div className="h-1 w-2/3 bg-primary" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /><div className="h-1 w-full bg-slate-300" /><div className="h-1 w-4/5 bg-slate-200" /><div className="h-1 w-full bg-slate-200" /></div> : <div className="space-y-1.5"><div className="h-1 w-1/3 bg-primary" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /><div className="h-1 w-3/4 bg-slate-200" /></div>}
       </div>
     </div>
   );
@@ -158,7 +158,7 @@ function MinimalistCVPreview({ data }: { data: CVData }) {
   const renderLines = (value: string) => value.split("\n").map((line, index) => <p key={`${line}-${index}`} className={line ? "min-h-4" : "h-2"}>{line || " "}</p>);
   return (
     <article className="relative mx-auto aspect-[210/297] w-full max-w-[760px] overflow-hidden bg-white px-[9%] py-[7%] text-[clamp(7px,1.05vw,11px)] leading-[1.42] text-slate-800 shadow-lg">
-      <span className="absolute inset-y-0 left-0 w-1 bg-slate-800" aria-hidden="true" />
+      <span className="absolute inset-y-0 left-0 w-1 bg-primary" aria-hidden="true" />
       <header className="border-b border-slate-500 pb-3 text-center">
         <h1 className="font-display text-[clamp(20px,3.5vw,36px)] font-semibold tracking-wide">{data.name || "PRÉNOM NOM"}</h1>
         <p className="text-[clamp(10px,1.8vw,17px)]">{data.title || "Métier"}</p>
@@ -202,7 +202,7 @@ function CorporateCVPreview({ data }: { data: CVData }) {
   const heading = "mb-3 bg-slate-100 px-3 py-2 text-[0.9em] font-bold uppercase tracking-wide text-slate-700";
   return (
     <article className="relative mx-auto aspect-[210/297] w-full max-w-[760px] overflow-hidden bg-white text-[clamp(6px,0.9vw,10px)] leading-[1.45] text-slate-700 shadow-lg">
-      <header className="flex items-center gap-5 bg-slate-900 px-[7%] py-[6%] text-white"><div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-slate-700">{data.photo ? <img src={data.photo} alt="Portrait du CV" className="size-full object-cover" /> : <UserRound className="size-11 text-slate-200" />}</div><div><h1 className="text-[clamp(17px,3vw,32px)] font-bold">{data.name || "PRÉNOM NOM"}</h1><p className="mt-2 text-[clamp(9px,1.5vw,15px)] text-slate-300">{data.title || "Métier"}</p></div></header>
+      <header className="flex items-center gap-5 bg-primary px-[7%] py-[6%] text-white"><div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-primary/80">{data.photo ? <img src={data.photo} alt="Portrait du CV" className="size-full object-cover" /> : <UserRound className="size-11 text-slate-200" />}</div><div><h1 className="text-[clamp(17px,3vw,32px)] font-bold">{data.name || "PRÉNOM NOM"}</h1><p className="mt-2 text-[clamp(9px,1.5vw,15px)] text-white/75">{data.title || "Métier"}</p></div></header>
       <div className="grid grid-cols-[0.75fr_1.25fr] gap-6 px-[7%] py-8"><aside className="space-y-5"><section><h2 className={heading}>Contact</h2><p>{data.phone || "Téléphone"}</p><p>{data.email || "email@exemple.com"}</p><p>{data.address || "Ville, Pays"}</p></section><section><h2 className={heading}>Education</h2><div className="whitespace-pre-line">{entries(data.education || "Diplôme\nÉtablissement\nAnnée")}</div></section><section><h2 className={heading}>Skills</h2><ul className="space-y-2 pl-3">{(data.skills || "Communication, Organisation, Analyse").split(",").map((skill) => <li key={skill} className="list-disc">{skill.trim()}</li>)}</ul></section></aside><main className="space-y-5"><section><h2 className={heading}>Professional summary</h2><p>{data.about || "Présentez votre profil professionnel et vos principaux domaines d’expertise."}</p></section><section><h2 className={heading}>Experience</h2><div className="whitespace-pre-line">{entries(data.experience || "Poste | Entreprise\nDates\nDécrivez vos missions et résultats.")}</div></section></main></div>
     </article>
   );
@@ -486,62 +486,30 @@ export function CandidateCreateCVPage() {
     return (
       <div className="space-y-0 font-sans">
         {templateId && breadcrumb}
-        <div className={!templateId ? "grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(280px,0.8fr)] md:items-center" : undefined}>
         <header className={cn("max-w-3xl space-y-2", !templateId && "slide-in-left")}>
-          {!templateId && (
-            <>
-              <h1 className="font-display text-[28px] font-medium leading-tight text-foreground">
-                Un CV à la hauteur de votre parcours
-              </h1>
-              <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                Des modèles pensés pour être lus rapidement par les recruteurs et présenter votre expérience avec clarté.
-              </p>
-            </>
-          )}
           {modernCategory && <h1 className="text-2xl font-bold text-foreground">CV modernes</h1>}
           {modernCategory && <p className="mt-1 text-sm text-muted-foreground">Choisissez un modèle moderne pour créer votre CV.</p>}
           {premiumCategory && <h1 className="text-2xl font-bold text-foreground">CV premium</h1>}
           {premiumCategory && <p className="mt-1 text-sm text-muted-foreground">Choisissez un modèle premium pour créer votre CV.</p>}
         </header>
 
-        {!templateId && (
-          <section className="mt-6 grid grid-cols-3 border-y border-border/70 bg-background slide-in-right slide-delay-1 md:mt-0">
-            {["2|styles disponibles", "5 min|temps moyen de création", "PDF|prêt à télécharger"].map((stat, index) => {
-              const [value, label] = stat.split("|");
-              return (
-                <div key={label} className={cn("px-3 py-4 text-center", index > 0 && "border-l border-border/70")}>
-                  <p className="text-lg font-medium text-foreground">{value}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{label}</p>
-                </div>
-              );
-            })}
-          </section>
-        )}
-        </div>
-
         <section id={!templateId ? "cv-styles" : undefined} className="space-y-5 py-9">
-          {!templateId && (
-            <div className="text-center fade-up slide-delay-2">
-              <h2 className="font-display text-xl font-medium text-foreground">Choisissez votre style</h2>
-              <p className="mt-2 text-sm text-muted-foreground">Deux directions visuelles, une présentation professionnelle.</p>
-            </div>
-          )}
         <div className="grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3">
           {modernCategory && (
             <>
               <Card className="group overflow-hidden border-border/70 transition duration-200 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
                 <div className="flex h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><TemplateThumbnail className="w-24" /></div>
-                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">CV Moderne Épuré</CardTitle><CardDescription className="text-sm leading-5">Une mise en page claire et structurée pour une lecture rapide.</CardDescription></CardHeader>
+                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">CV Moderne Épuré</CardTitle><CardDescription className="text-sm leading-relaxed">Une mise en page claire et structurée pour une lecture rapide.</CardDescription></CardHeader>
                 <CardContent className="p-4 pt-0"><Button variant="outline" className="w-full justify-between border-border bg-transparent text-sm transition duration-200 ease-out hover:bg-muted" onClick={() => navigate("/candidate/create-cv/modern/epure")}>Créer ce CV<ArrowRight className="size-4" /></Button></CardContent>
               </Card>
               <Card className="group overflow-hidden border-border/70 transition duration-200 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
-                <div className="flex min-h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><div className="w-full max-w-[180px] overflow-hidden shadow-sm"><div className="flex items-center gap-2 bg-brand-deep p-3 text-white"><span className="size-7 rounded-full border border-white bg-slate-600" /><span className="h-2 w-2/3 bg-white/90" /></div><div className="grid grid-cols-[0.7fr_1.3fr] gap-2 bg-white p-3"><div className="space-y-2"><div className="h-2 w-full bg-slate-200" /><div className="h-1 w-4/5 bg-slate-300" /><div className="h-2 w-full bg-slate-200" /></div><div className="space-y-2"><div className="h-2 w-2/3 bg-slate-300" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /><div className="h-1 w-full bg-slate-200" /></div></div></div></div>
-                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">CV Corporate</CardTitle><CardDescription className="text-sm leading-5">En-tête sombre, colonne contact et expérience détaillée pour les profils confirmés.</CardDescription></CardHeader>
+                <div className="flex min-h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><div className="w-full max-w-[180px] overflow-hidden shadow-sm"><div className="flex items-center gap-2 bg-primary p-3 text-white"><span className="size-7 rounded-full border border-white bg-primary/80" /><span className="h-2 w-2/3 bg-white/90" /></div><div className="grid grid-cols-[0.7fr_1.3fr] gap-2 bg-white p-3"><div className="space-y-2"><div className="h-2 w-full bg-slate-200" /><div className="h-1 w-4/5 bg-slate-300" /><div className="h-2 w-full bg-slate-200" /></div><div className="space-y-2"><div className="h-2 w-2/3 bg-slate-300" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /><div className="h-1 w-full bg-slate-200" /></div></div></div></div>
+                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">CV Corporate</CardTitle><CardDescription className="text-sm leading-relaxed">En-tête sombre, colonne contact et expérience détaillée pour les profils confirmés.</CardDescription></CardHeader>
                 <CardContent className="p-4 pt-0"><Button variant="outline" className="w-full justify-between border-border bg-transparent text-sm transition duration-200 ease-out hover:bg-muted" onClick={() => navigate("/candidate/create-cv/modern/corporate")}>Créer ce CV<ArrowRight className="size-4" /></Button></CardContent>
               </Card>
               <Card className="group overflow-hidden border-border/70 transition duration-200 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
                 <div className="flex min-h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><div className="w-full max-w-[180px] overflow-hidden bg-white shadow-sm"><div className="flex h-12 items-center gap-2 bg-primary px-3"><span className="size-8 rounded-full border-2 border-white bg-slate-200" /><span className="h-2 w-1/2 bg-white/90" /></div><div className="grid grid-cols-[0.75fr_1.25fr] gap-2 p-3"><div className="space-y-2 border-r border-slate-200 pr-2"><div className="h-2 w-2/3 bg-primary" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-4/5 bg-slate-200" /></div><div className="space-y-2"><div className="h-2 w-1/2 bg-slate-600" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /></div></div></div></div>
-                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">CV Moderne Créatif</CardTitle><CardDescription className="text-sm leading-5">Photo, colonne latérale et accent graphique pour les profils marketing, design et communication.</CardDescription></CardHeader>
+                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">CV Moderne Créatif</CardTitle><CardDescription className="text-sm leading-relaxed">Photo, colonne latérale et accent graphique pour les profils marketing, design et communication.</CardDescription></CardHeader>
                 <CardContent className="p-4 pt-0"><Button variant="outline" className="w-full justify-between border-border bg-transparent text-sm transition duration-200 ease-out hover:bg-muted" onClick={() => navigate("/candidate/create-cv/modern/creative")}>Créer ce CV<ArrowRight className="size-4" /></Button></CardContent>
               </Card>
             </>
@@ -549,13 +517,13 @@ export function CandidateCreateCVPage() {
           {premiumCategory && (
             <>
               <Card className="group overflow-hidden border-border/70 transition duration-200 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
-                <div className="flex min-h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><div className="w-full max-w-[180px] overflow-hidden shadow-sm"><div className="flex items-center gap-2 bg-brand-deep p-3 text-white"><span className="size-7 rounded-full border border-white bg-slate-600" /><span className="h-2 w-2/3 bg-white/90" /></div><div className="grid grid-cols-[0.7fr_1.3fr] gap-2 bg-white p-3"><div className="space-y-2 bg-brand-deep p-2"><div className="h-2 w-full bg-white/80" /><div className="h-1 w-4/5 bg-white/40" /><div className="h-1 w-full bg-white/40" /></div><div className="space-y-2"><div className="h-2 w-2/3 bg-slate-700" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /></div></div></div></div>
-                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">CV Premium Signature</CardTitle><CardDescription className="text-sm leading-5">Une composition sombre et structurée pour les profils créatifs et les directions expérimentées.</CardDescription></CardHeader>
+                <div className="flex min-h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><div className="w-full max-w-[180px] overflow-hidden shadow-sm"><div className="flex items-center gap-2 bg-primary p-3 text-white"><span className="size-7 rounded-full border border-white bg-primary/80" /><span className="h-2 w-2/3 bg-white/90" /></div><div className="grid grid-cols-[0.7fr_1.3fr] gap-2 bg-white p-3"><div className="space-y-2 bg-primary p-2"><div className="h-2 w-full bg-white/80" /><div className="h-1 w-4/5 bg-white/40" /><div className="h-1 w-full bg-white/40" /></div><div className="space-y-2"><div className="h-2 w-2/3 bg-primary" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /></div></div></div></div>
+                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">CV Premium Signature</CardTitle><CardDescription className="text-sm leading-relaxed">Une composition sombre et structurée pour les profils créatifs et les directions expérimentées.</CardDescription></CardHeader>
                 <CardContent className="p-4 pt-0"><Button variant="outline" className="w-full justify-between border-border bg-transparent text-sm transition duration-200 ease-out hover:bg-muted" onClick={() => navigate("/candidate/create-cv/premium/signature")}>Créer ce CV<ArrowRight className="size-4" /></Button></CardContent>
               </Card>
               <Card className="group overflow-hidden border-border/70 transition duration-200 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
-                <div className="flex min-h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><div className="w-full max-w-[180px] overflow-hidden bg-white shadow-sm"><div className="flex h-12 items-center gap-2 bg-secondary px-3"><span className="size-8 rounded-full border-2 border-white bg-slate-300" /><span className="h-2 w-1/2 bg-white/90" /></div><div className="grid grid-cols-[0.75fr_1.25fr] gap-2 p-3"><div className="space-y-2 border-r border-slate-300 pr-2"><div className="h-2 w-2/3 bg-secondary" /><div className="h-1 w-full bg-slate-200" /><div className="h-2 w-2/3 bg-secondary" /></div><div className="space-y-2"><div className="h-2 w-1/2 bg-slate-700" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /></div></div></div></div>
-                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">CV Premium Éditorial</CardTitle><CardDescription className="text-sm leading-5">Une mise en page élégante en deux colonnes, conçue pour raconter un parcours complet.</CardDescription></CardHeader>
+                <div className="flex min-h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><div className="w-full max-w-[180px] overflow-hidden bg-white shadow-sm"><div className="flex h-12 items-center gap-2 bg-secondary px-3"><span className="size-8 rounded-full border-2 border-white bg-slate-300" /><span className="h-2 w-1/2 bg-white/90" /></div><div className="grid grid-cols-[0.75fr_1.25fr] gap-2 p-3"><div className="space-y-2 border-r border-slate-300 pr-2"><div className="h-2 w-2/3 bg-secondary" /><div className="h-1 w-full bg-slate-200" /><div className="h-2 w-2/3 bg-secondary" /></div><div className="space-y-2"><div className="h-2 w-1/2 bg-primary" /><div className="h-1 w-full bg-slate-200" /><div className="h-1 w-5/6 bg-slate-200" /></div></div></div></div>
+                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">CV Premium Éditorial</CardTitle><CardDescription className="text-sm leading-relaxed">Une mise en page élégante en deux colonnes, conçue pour raconter un parcours complet.</CardDescription></CardHeader>
                 <CardContent className="p-4 pt-0"><Button variant="outline" className="w-full justify-between border-border bg-transparent text-sm transition duration-200 ease-out hover:bg-muted" onClick={() => navigate("/candidate/create-cv/premium/editorial")}>Créer ce CV<ArrowRight className="size-4" /></Button></CardContent>
               </Card>
             </>
@@ -564,12 +532,12 @@ export function CandidateCreateCVPage() {
             <>
               <Card className="group overflow-hidden border-border/70 transition duration-200 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
                 <div className="flex h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><TemplateThumbnail className="w-24" /></div>
-                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">Modèle professionnel</CardTitle><CardDescription className="text-sm leading-5">Une présentation sobre sur une colonne, adaptée aux profils juridiques, financiers et juniors.</CardDescription></CardHeader>
+                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">Modèle professionnel</CardTitle><CardDescription className="text-sm leading-relaxed">Une présentation sobre sur une colonne, adaptée aux profils juridiques, financiers et juniors.</CardDescription></CardHeader>
                 <CardContent className="p-4 pt-0"><Button variant="outline" className="w-full justify-between border-border bg-transparent text-sm transition duration-200 ease-out hover:bg-muted" onClick={() => navigate("/candidate/create-cv/minimaliste/epure")}>Ouvrir ce modèle<ArrowRight className="size-4" /></Button></CardContent>
               </Card>
               <Card className="group overflow-hidden border-border/70 transition duration-200 ease-out hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
                 <div className="flex h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><TemplateThumbnail compact className="w-24" /></div>
-                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">Modèle moderne</CardTitle><CardDescription className="text-sm leading-5">Une structure en deux colonnes pour valoriser un parcours riche et polyvalent.</CardDescription></CardHeader>
+                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">Modèle moderne</CardTitle><CardDescription className="text-sm leading-relaxed">Une structure en deux colonnes pour valoriser un parcours riche et polyvalent.</CardDescription></CardHeader>
                 <CardContent className="p-4 pt-0"><Button variant="outline" className="w-full justify-between border-border bg-transparent text-sm transition duration-200 ease-out hover:bg-muted" onClick={() => navigate("/candidate/create-cv/minimaliste/ligne")}>Ouvrir ce modèle<ArrowRight className="size-4" /></Button></CardContent>
               </Card>
             </>
@@ -580,18 +548,18 @@ export function CandidateCreateCVPage() {
                 <CarouselContent className="after:block after:min-w-8">
                   <CarouselItem className="basis-full md:basis-1/3"><Card className="group overflow-hidden border-border/70 transition duration-300 ease-out hover:-translate-y-1 hover:scale-[1.015] hover:border-primary/40 hover:shadow-lg">
                 <div className="flex min-h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><TemplateThumbnail /></div>
-                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">Style minimaliste</CardTitle><CardDescription className="text-sm leading-5">Épuré, une colonne, idéal pour les profils juridiques, financiers et les parcours juniors.</CardDescription></CardHeader>
+                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">Style minimaliste</CardTitle><CardDescription className="text-sm leading-relaxed">Épuré, une colonne, idéal pour les profils juridiques, financiers et les parcours juniors.</CardDescription></CardHeader>
                 <CardContent className="p-4 pt-0"><Button className="group/button w-full justify-between bg-[linear-gradient(135deg,#1B2CE3_0%,#000079_100%)] text-sm text-white transition duration-300 ease-out hover:brightness-110 hover:shadow-md" onClick={() => navigate("/candidate/create-cv/minimaliste")}>Voir les modèles<ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-1" /></Button></CardContent>
                   </Card></CarouselItem>
                   <CarouselItem className="basis-full md:basis-1/3"><Card className="group overflow-hidden border-border/70 transition duration-300 ease-out hover:-translate-y-1 hover:scale-[1.015] hover:border-primary/40 hover:shadow-lg">
                 <div className="flex min-h-[170px] items-center justify-center overflow-hidden bg-muted p-4"><TemplateThumbnail compact /></div>
-                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">Style moderne</CardTitle><CardDescription className="text-sm leading-5">Deux colonnes avec bandeau latéral, pour les profils commerciaux, créatifs et polyvalents.</CardDescription></CardHeader>
+                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">Style moderne</CardTitle><CardDescription className="text-sm leading-relaxed">Deux colonnes avec bandeau latéral, pour les profils commerciaux, créatifs et polyvalents.</CardDescription></CardHeader>
                 <CardContent className="p-4 pt-0"><Button className="group/button w-full justify-between bg-[linear-gradient(135deg,#1B2CE3_0%,#000079_100%)] text-sm text-white transition duration-300 ease-out hover:brightness-110 hover:shadow-md" onClick={() => navigate("/candidate/create-cv/modern")}>Voir les modèles<ArrowRight className="size-4 transition-transform duration-300 group-hover/button:translate-x-1" /></Button></CardContent>
                   </Card></CarouselItem>
                   <CarouselItem className="basis-full md:basis-1/3"><Card className="group relative overflow-visible border-border/70 transition duration-300 ease-out hover:-translate-y-1 hover:scale-[1.015] hover:border-primary/40 hover:shadow-lg">
                 <div className="absolute left-4 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground"><Crown className="size-3.5" />Premium</div>
                 <div className="flex min-h-[170px] items-center justify-center overflow-hidden rounded-t-lg bg-muted p-4"><TemplateThumbnail compact /></div>
-                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">Style premium</CardTitle><CardDescription className="text-sm leading-5">Des modèles haut de gamme avec une présentation travaillée pour les profils expérimentés.</CardDescription></CardHeader>
+                <CardHeader className="space-y-2 p-4"><CardTitle className="font-display text-lg font-medium">Style premium</CardTitle><CardDescription className="text-sm leading-relaxed">Des modèles haut de gamme avec une présentation travaillée pour les profils expérimentés.</CardDescription></CardHeader>
                 <CardContent className="p-4 pt-0"><Button type="button" disabled aria-disabled="true" title="Réservé aux abonnés Premium" className="group/button w-full justify-between bg-[linear-gradient(135deg,#1B2CE3_0%,#000079_100%)] text-sm text-white transition duration-300 ease-out disabled:cursor-not-allowed disabled:opacity-100" onClick={(event) => event.preventDefault()}>Voir les modèles<Crown className="size-4" /></Button></CardContent>
                   </Card></CarouselItem>
                 </CarouselContent>
@@ -610,7 +578,7 @@ export function CandidateCreateCVPage() {
     <div className="space-y-8 py-6 font-sans">
       {breadcrumb}
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div><h1 className="font-display text-[32px] font-medium leading-tight text-foreground">Personnalisez votre CV</h1><p className="mt-2 text-base text-muted-foreground">Vos informations restent dans votre navigateur et ne sont jamais envoyées.</p></div>
+        <div><h1 className="font-display text-2xl font-medium leading-tight text-foreground md:text-3xl">Personnalisez votre CV</h1><p className="mt-2 text-base text-muted-foreground">Vos informations restent dans votre navigateur et ne sont jamais envoyées.</p></div>
         <div className="flex gap-2"><Button variant="outline" size="icon" aria-label="Visualiser le CV" title="Visualiser le CV" onClick={() => setPreviewOpen(true)}><Eye className="size-4" /></Button><Button variant="outline" size="icon" aria-label={previewCollapsed ? "Afficher l’aperçu" : "Réduire l’aperçu"} title={previewCollapsed ? "Afficher l’aperçu" : "Réduire l’aperçu"} onClick={() => setPreviewCollapsed((collapsed) => !collapsed)}>{previewCollapsed ? <PanelRightOpen className="size-4" /> : <PanelRightClose className="size-4" />}</Button><Button onClick={() => downloadCV(data)} className="gap-2 bg-slate-800 text-white hover:bg-slate-700"><Download className="size-4" />Télécharger en PDF</Button></div>
       </div>
       <div className={cn("grid justify-center gap-8 transition-[grid-template-columns] duration-600 ease-in-out", previewCollapsed ? "xl:grid-cols-[minmax(0,1fr)_0fr]" : "xl:grid-cols-[460px_minmax(0,1fr)]")}>

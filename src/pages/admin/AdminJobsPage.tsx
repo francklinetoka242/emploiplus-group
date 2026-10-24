@@ -803,7 +803,7 @@ export function AdminJobsPage() {
                             <span className="hidden sm:inline">•</span>
                             <span>{job.location_city || "—"}</span>
                           </div>
-                          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+                          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                             <span>
                               {job.publish_at
                                 ? new Date(job.publish_at).toLocaleDateString("fr-FR")

@@ -27,7 +27,7 @@ export function FilePreviewDialog({
           <DialogTitle className="truncate text-sm font-semibold text-foreground sm:text-lg">
             {title}
           </DialogTitle>
-          <DialogDescription className="mt-1 text-[11px] text-muted-foreground sm:text-sm">
+          <DialogDescription className="mt-1 text-xs text-muted-foreground sm:text-sm">
             {description}
           </DialogDescription>
         </div>

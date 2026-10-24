@@ -17,6 +17,7 @@ interface NotificationsDropdownProps {
   notifications: NotificationRecord[];
   unreadCount: number;
   loading?: boolean;
+  iconClassName?: string;
   onMarkAsRead: (id: string) => void;
   onMarkAllAsRead: () => void;
   onDelete: (id: string) => void;
@@ -46,6 +47,7 @@ export function NotificationsDropdown({
   notifications,
   unreadCount,
   loading = false,
+  iconClassName = "size-6",
   onMarkAsRead,
   onMarkAllAsRead,
   onDelete,
@@ -60,17 +62,20 @@ export function NotificationsDropdown({
           variant="ghost"
           size="icon"
           aria-label={hasUnread ? `Notifications, ${unreadCount} non lue${unreadCount > 1 ? "s" : ""}` : "Notifications"}
-          className="relative size-10 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/50"
+          className={`relative size-10 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/50 ${
+            iconClassName === "size-7" ? "[&_svg]:size-7" : ""
+          }`}
         >
           <BellRing
-            className={hasUnread ? "notification-bell-ring size-6" : "size-6"}
+            className={hasUnread ? `notification-bell-ring ${iconClassName}` : iconClassName}
             weight={hasUnread ? "fill" : "bold"}
             aria-hidden="true"
           />
           {hasUnread && (
-            <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full">
-              {unreadCount > 99 ? "99+" : unreadCount}
-            </span>
+            <span
+              aria-hidden="true"
+              className="absolute right-1 top-1 size-2 rounded-full bg-red-500 ring-2 ring-background"
+            />
           )}
         </Button>
       </DropdownMenuTrigger>

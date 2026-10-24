@@ -48,7 +48,7 @@ export function AdminDashboardCharts({
       <section className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm sm:rounded-[1.35rem] sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Activité</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Activité</p>
             <h3 className="mt-1 text-lg font-semibold text-foreground">Comparatif des indicateurs</h3>
           </div>
           <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">Actuel / repère</span>
@@ -82,7 +82,7 @@ export function AdminDashboardCharts({
 
       <section className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm sm:rounded-[1.35rem] sm:p-5">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Répartition</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Répartition</p>
           <h3 className="mt-1 text-lg font-semibold text-foreground">Vue radiale</h3>
         </div>
         <div className="mt-2 h-[260px] w-full min-w-0">

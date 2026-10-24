@@ -141,10 +141,10 @@ export default function ConseilFormationPage() {
           >
             <div className="mx-auto max-w-6xl grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.8fr)] lg:items-center lg:gap-16">
               <div className="max-w-3xl">
-                <h1 className="font-display text-4xl font-extrabold leading-tight tracking-tight text-white md:text-6xl">
+                <h1 className="font-display text-2xl font-extrabold leading-tight tracking-tight text-white md:text-3xl">
                   Choisissez notre expertise RH
                 </h1>
-                <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-200">
+                <p className="mt-6 max-w-3xl text-lg leading-relaxed text-slate-200">
                   Que vous soyez une PME ou une grande entreprise, notre équipe de consultants RH
                   expérimentés vous accompagne dans le développement de solutions adaptées à vos
                   objectifs, à vos besoins et à votre culture d’entreprise.
@@ -172,10 +172,10 @@ export default function ConseilFormationPage() {
           <section className="scroll-mt-20 border-b border-border py-14 md:py-20">
             <div className="mx-auto max-w-6xl px-6 md:px-10">
               <div className="max-w-3xl">
-                <h2 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                <h2 className="font-display text-xl font-bold tracking-tight text-foreground md:text-2xl">
                   Nos services de conseil & formation RH
                 </h2>
-                <p className="mt-5 text-base leading-8 text-muted-foreground">
+                <p className="mt-5 text-base leading-relaxed text-muted-foreground">
                   Nous vous accompagnons dans la gestion et le développement de vos ressources
                   humaines grâce à des prestations de conseil et de formation adaptées à votre
                   organisation et à vos enjeux.
@@ -249,10 +249,10 @@ export default function ConseilFormationPage() {
           <section className="scroll-mt-20 externalisation-full-bleed bg-brand py-14 text-brand-foreground md:py-20">
             <div className="mx-auto max-w-6xl px-5 md:px-8">
               <div className="mx-auto max-w-3xl text-center">
-                <h2 className="font-display text-3xl font-bold tracking-tight text-white md:text-4xl">
+                <h2 className="font-display text-xl font-bold tracking-tight text-white md:text-2xl">
                   Pourquoi choisir notre service de conseil & formation RH ?
                 </h2>
-                <p className="mt-5 text-base leading-8 text-white/80">
+                <p className="mt-5 text-base leading-relaxed text-white/80">
                   En faisant appel à notre expertise, vous bénéficiez de conseils personnalisés et
                   de formations adaptées pour répondre aux défis actuels de votre organisation.
                 </p>
@@ -264,7 +264,7 @@ export default function ConseilFormationPage() {
                       <Icon className="mt-1 size-4 shrink-0 text-cyan-300" aria-hidden="true" />
                       {title}
                     </h3>
-                    <p className="mt-3 text-sm leading-7 text-white/75">{description}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-white/75">{description}</p>
                   </article>
                 ))}
               </div>
@@ -282,10 +282,10 @@ export default function ConseilFormationPage() {
                   />
                 </div>
                 <div>
-                  <h2 className="mt-4 font-display text-3xl font-bold leading-tight tracking-tight text-foreground md:text-5xl">
+                  <h2 className="mt-4 font-display text-xl font-bold leading-tight tracking-tight text-foreground md:text-2xl">
                     Nos modalités d’intervention
                   </h2>
-                  <p className="mt-5 text-base leading-8 text-muted-foreground">
+                  <p className="mt-5 text-base leading-relaxed text-muted-foreground">
                     Nous sommes là pour vous conseiller, développer les compétences de vos équipes,
                     optimiser vos processus RH et vous aider à atteindre vos objectifs stratégiques.
                   </p>

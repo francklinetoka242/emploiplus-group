@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import heroBg from "@/assets/home/home-hero-background.webp";
 import heroMain from "@/assets/home/home-recruitment-image.webp";
 import enterpriseTeamImage from "@/assets/home/enterprise-team-03.webp";
@@ -35,18 +35,32 @@ import {
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { JobCard } from "@/features/jobs/components";
 
-function HeroSection() {
+function HeroSection({ isCandidateShellHome = false }: { isCandidateShellHome?: boolean }) {
   const { isEcoMode } = useEcoMode();
   const { t } = useI18n();
   const [servicesOpen, setServicesOpen] = useState(false);
 
   if (isEcoMode) {
     return (
-      <section className="relative overflow-hidden min-h-[400px] md:min-h-[420px] bg-slate-100">
-        <div className="relative z-10 container-page py-20 md:py-28">
+      <section
+        className={`relative overflow-hidden min-h-[340px] md:min-h-[360px] bg-slate-100 ${
+          isCandidateShellHome
+            ? "lg:min-h-[300px]"
+            : ""
+        }`}
+      >
+        <div
+          className={`relative z-10 container-page py-20 md:py-28 ${
+            isCandidateShellHome ? "lg:py-10" : ""
+          }`}
+        >
           <div className="grid items-center gap-12">
             <div>
-              <h1 className="mt-20 md:mt-24 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
+              <h1
+                className={`mt-20 md:mt-24 font-display text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 ${
+                  isCandidateShellHome ? "lg:mt-0" : ""
+                }`}
+              >
                 {t("home.hero.title")}
               </h1>
               <p className="mt-6 max-w-2xl text-base text-slate-700 leading-relaxed">
@@ -61,7 +75,11 @@ function HeroSection() {
 
   return (
     <motion.section
-      className="relative overflow-hidden min-h-[600px] md:min-h-[700px] bg-cover bg-center bg-no-repeat"
+      className={`relative overflow-hidden min-h-[480px] md:min-h-[560px] bg-cover bg-center bg-no-repeat ${
+        isCandidateShellHome
+          ? "lg:min-h-[420px]"
+          : ""
+      }`}
       style={{ backgroundImage: `url(${heroBg})` }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -78,11 +96,17 @@ function HeroSection() {
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.65),rgba(2,6,23,0.9))]" />
       <div className="absolute inset-0 bg-black/40" />
-      <div className="relative z-10 container-page py-20 md:py-28">
+      <div
+        className={`relative z-10 container-page py-20 md:py-28 ${
+          isCandidateShellHome ? "lg:py-12" : ""
+        }`}
+      >
         <div className="grid items-center gap-12">
           <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
             <motion.h1
-              className="mt-20 md:mt-24 font-display text-4xl md:text-6xl font-extrabold tracking-tight text-white"
+              className={`mt-20 md:mt-24 font-display text-3xl md:text-4xl font-extrabold tracking-tight text-white ${
+                isCandidateShellHome ? "lg:mt-8" : ""
+              }`}
               variants={fadeUp}
               transition={{ duration: 0.5, delay: 0.08 }}
             >
@@ -175,6 +199,8 @@ function AnimatedStat({
 }
 
 export function HomePage() {
+  const location = useLocation();
+  const isCandidateShellHome = location.pathname === "/candidate/public";
   const { t } = useI18n();
   const navigate = useNavigate();
   const { offers: homeJobs, loading: jobsLoading } = usePublishedJobOffers(2);
@@ -265,7 +291,7 @@ export function HomePage() {
   return (
     <div className="bg-background">
       <SEO {...DEFAULT_SEO} />
-      <HeroSection />
+      <HeroSection isCandidateShellHome={isCandidateShellHome} />
 
       {showScrollTop && (
         <button
@@ -355,7 +381,7 @@ export function HomePage() {
             variants={fadeUp}
           >
             <div>
-              <h2 className="font-display text-3xl md:text-4xl font-extrabold">
+              <h2 className="font-display text-xl md:text-2xl font-extrabold">
                 {t("home.blog.title")}
               </h2>
               <p className="mt-2 text-muted-foreground">{t("home.blog.subtitle")}</p>
@@ -409,11 +435,11 @@ export function HomePage() {
                       )}
                       <div className="flex flex-1 flex-col p-6">
                         {post.is_featured ? (
-                          <span className="mb-3 inline-flex w-fit items-center gap-2 rounded-full bg-orange-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-orange-600">
+                          <span className="mb-3 inline-flex w-fit items-center gap-2 rounded-full bg-orange-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-orange-600">
                             <span className="size-2 rounded-full bg-orange-500" />À la une
                           </span>
                         ) : null}
-                        <h3 className="font-display text-xl font-bold text-foreground">
+                        <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
                           {post.title}
                         </h3>
                         <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
@@ -482,7 +508,7 @@ export function HomePage() {
                         <span className="inline-block font-display text-3xl font-extrabold leading-none text-brand md:text-4xl">
                           {item.heading}
                         </span>
-                        <h2 className="mt-5 font-display text-3xl font-extrabold leading-tight text-slate-950 md:text-4xl">
+                        <h2 className="mt-5 font-display text-xl font-extrabold leading-tight text-slate-950 md:text-2xl">
                           {item.title}
                         </h2>
                         <p className="mt-5 text-base leading-relaxed text-slate-600">
@@ -541,7 +567,7 @@ export function HomePage() {
                             }}
                           >
                             <motion.div
-                              className={`pointer-events-auto absolute flex size-28 items-center justify-center rounded-full border border-white bg-white/95 p-4 text-center text-[0.68rem] font-semibold leading-4 text-slate-800 shadow-lg md:size-32 md:text-xs ${
+                              className={`pointer-events-auto absolute flex size-28 items-center justify-center rounded-full border border-white bg-white/95 p-4 text-center text-xs font-semibold leading-[1.5] text-slate-800 shadow-lg md:size-32 md:text-xs ${
                                 bulletIndex === 0
                                   ? "right-0 top-0"
                                   : bulletIndex === 1
@@ -609,7 +635,7 @@ export function HomePage() {
                           whileHover={{ y: -4 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <h2 className="font-display text-2xl font-extrabold leading-tight text-slate-950 md:text-3xl">
+                          <h2 className="font-display text-xl font-extrabold leading-tight text-slate-950 md:text-2xl">
                             {item.title}
                           </h2>
                           <p className="mt-4 text-sm leading-relaxed text-slate-600">
@@ -661,10 +687,10 @@ export function HomePage() {
                               ) : (
                                 <BarChart3 className="h-5 w-5 text-brand" />
                               )}
-                              <p className="mt-5 font-display text-base font-bold leading-5 text-slate-800">
+                              <p className="mt-5 font-display text-base font-bold leading-relaxed text-slate-800">
                                 {bullet}
                               </p>
-                              <p className="mt-3 text-xs leading-5 text-slate-500">
+                              <p className="mt-3 text-xs leading-relaxed text-slate-500">
                                 Une solution professionnelle adaptée à vos objectifs et à votre
                                 organisation.
                               </p>
@@ -753,10 +779,10 @@ export function HomePage() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-brand">
+              <p className="text-xs font-semibold uppercase tracking-wide text-brand">
                 Excellence du recrutement
               </p>
-              <h2 className="mt-3 max-w-2xl font-display text-3xl font-extrabold leading-tight text-foreground sm:text-[1.75rem]">
+              <h2 className="mt-3 max-w-2xl font-display text-xl font-extrabold leading-tight text-foreground md:text-2xl">
                 Développez vos talents pour faire grandir votre organisation
               </h2>
             </motion.div>
@@ -768,10 +794,10 @@ export function HomePage() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <h3 className="font-display text-xl font-bold text-foreground">
+              <h3 className="font-display text-base font-semibold text-foreground md:text-lg">
                 Les bons talents pour votre équipe
               </h3>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-[0.85rem] sm:leading-5">
+              <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-[0.85rem] sm:leading-relaxed">
                 Nous vous aidons à identifier les profils qui correspondent à vos besoins et à
                 construire des équipes engagées, compétentes et prêtes à contribuer durablement à
                 vos projets.
@@ -785,11 +811,11 @@ export function HomePage() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6 }}
             >
-              <p className="text-sm leading-5">
+              <p className="text-sm leading-relaxed">
                 Une approche structurée pour attirer, évaluer et accompagner les talents dont votre
                 organisation a besoin.
               </p>
-              <ul className="mt-4 space-y-2 text-sm leading-5">
+              <ul className="mt-4 space-y-2 text-sm leading-relaxed">
                 <li className="flex items-center gap-2">
                   <span aria-hidden="true">✓</span> 1 ans d’expérience
                 </li>
@@ -842,13 +868,13 @@ export function HomePage() {
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand">
+            <p className="text-xs font-semibold uppercase tracking-wide text-brand">
               Planifiez une consultation aujourd’hui
             </p>
-            <h2 className="mt-3 font-display text-2xl font-extrabold leading-tight text-foreground sm:text-xl">
+            <h2 className="mt-3 font-display text-xl font-extrabold leading-tight text-foreground md:text-2xl">
               Commencez votre parcours vers l’excellence des talents
             </h2>
-            <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-[9px] sm:leading-4">
+            <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-xs sm:leading-[1.5]">
               Échangeons sur vos enjeux et bénéficiez d’un accompagnement adapté pour trouver les
               compétences qui feront avancer votre activité.
             </p>

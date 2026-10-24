@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { usePageSEO } from "@/features/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { WarningCircleIcon as AlertCircle, BuildingsIcon as Building2, CalendarDotsIcon as CalendarDays, ClipboardTextIcon as ClipboardList, EyeIcon as Eye, TrashIcon as Trash2 } from "@phosphor-icons/react";
+import { WarningCircleIcon as AlertCircle, BuildingsIcon as Building2, CalendarDotsIcon as CalendarDays, EyeIcon as Eye, TrashIcon as Trash2 } from "@phosphor-icons/react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Table,
@@ -107,31 +107,9 @@ export function CandidateApplicationsPage() {
   return (
     <>
       {confirmationDialog}
-      <div className="min-w-0 w-full space-y-4 overflow-x-hidden pb-8 md:pb-12">
-      <div className="overflow-hidden rounded-3xl bg-transparent shadow-none">
-        <div className="flex flex-col gap-2 bg-primary/[0.03] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-          <div className="flex min-w-0 items-start gap-2.5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-              <ClipboardList className="h-4 w-4 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">Mes candidatures</h1>
-              <p className="max-w-xl text-xs leading-5 text-muted-foreground sm:text-sm">
-                Récapitulatif des offres auxquelles vous avez postulé. Les candidatures sont conservées pendant 30 jours.
-              </p>
-            </div>
-          </div>
-          {applications.length > 0 ? (
-            <div className="w-fit rounded-lg border border-primary/15 bg-background px-2.5 py-1.5">
-              <span className="block text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">Total</span>
-              <span className="block text-base font-bold leading-tight text-primary">{applications.length}</span>
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      <Card className="min-w-0 w-full overflow-hidden border-0 bg-transparent shadow-none">
-        <CardHeader className="bg-primary/[0.03] p-5 sm:p-6">
+      <div className="min-w-0 w-full space-y-4 pb-8 md:pb-12">
+      <Card className="min-w-0 w-full border-0 bg-transparent shadow-none">
+        <CardHeader className="bg-transparent p-5 sm:p-6">
           <CardTitle className="text-lg sm:text-xl">{applications.length} candidature(s)</CardTitle>
           <CardDescription className="mt-1">Vos candidatures les plus récentes en premier</CardDescription>
         </CardHeader>
@@ -149,14 +127,13 @@ export function CandidateApplicationsPage() {
           ) : (
             <>
               {/* Desktop / tablet: table */}
-              <div className="hidden min-w-0 max-w-full overflow-x-auto sm:block">
+              <div className="candidate-applications-table -mx-4 hidden min-w-0 overflow-x-auto sm:-mx-6 sm:block lg:-mx-8">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/40 hover:bg-muted/40">
                       <TableHead>Offre</TableHead>
                       <TableHead>Entreprise</TableHead>
                       <TableHead>Type</TableHead>
-                      <TableHead>Status</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -167,13 +144,8 @@ export function CandidateApplicationsPage() {
                         <TableCell className="max-w-[240px] font-semibold text-foreground">
                           <span className="line-clamp-2">{app.job_offers?.title || "-"}</span>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">{app.job_offers?.company || "-"}</TableCell>
+                        <TableCell className="text-muted-foreground">{app.job_offers?.company || "-"}                        </TableCell>
                         <TableCell className="text-muted-foreground">{app.job_offers?.contract_type || "-"}</TableCell>
-                        <TableCell>
-                          <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusBadgeColor(app.status)}`}>
-                            {getStatusLabel(app.status)}
-                          </span>
-                        </TableCell>
                         <TableCell className="whitespace-nowrap text-muted-foreground">
                           {new Date(app.applied_at).toLocaleDateString("fr-FR", {
                             day: "2-digit",
@@ -200,9 +172,9 @@ export function CandidateApplicationsPage() {
               </div>
 
               {/* Mobile: stacked cards */}
-              <div className="block space-y-4 p-4 sm:hidden">
+              <div className="-mx-4 block space-y-3 sm:hidden">
                 {applications.map((app: any) => (
-                  <Card key={app.id} className="border-border/80 shadow-sm">
+                  <Card key={app.id} className="rounded-none border-x-0 border-y border-border/80 shadow-none">
                     <CardHeader className="space-y-3 p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">

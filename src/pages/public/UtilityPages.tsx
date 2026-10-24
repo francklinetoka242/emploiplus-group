@@ -183,7 +183,7 @@ export function NotFoundPage() {
       />
       <div className="container-page py-20 md:py-28">
         <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-soft">
-          <h1 className="font-display text-4xl font-bold text-foreground">404</h1>
+          <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">404</h1>
           <p className="mt-4 text-muted-foreground">Page introuvable.</p>
           <Link
             to="/"
@@ -229,11 +229,11 @@ export function ServiceDetailPage() {
           <div className="space-y-8">
             <div className="space-y-4">
               {service.slug === "conseil-formation" ? null : (
-                <p className="text-sm uppercase tracking-[0.3em] text-brand font-semibold">
+                <p className="text-sm uppercase tracking-wide text-brand font-semibold">
                   {t("services.title")}
                 </p>
               )}
-              <h1 className="font-display text-4xl font-bold text-foreground">
+              <h1 className="font-display text-2xl font-bold text-foreground md:text-3xl">
                 {t(service.titleKey)}
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed">
@@ -250,7 +250,7 @@ export function ServiceDetailPage() {
               <div className="p-8">
                 {serviceDetail.sections.map((section) => (
                   <div key={section.id} id={section.id} className="scroll-mt-24">
-                    <h2 className="font-display text-2xl font-semibold text-foreground">
+                    <h2 className="font-display text-xl font-semibold text-foreground md:text-2xl">
                       {section.title}
                     </h2>
                     {section.list ? (

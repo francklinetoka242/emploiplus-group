@@ -89,7 +89,7 @@ export function CandidateNotificationsPage() {
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="-mx-4 space-y-3 sm:-mx-6 lg:-mx-8">
         {loading ? (
           <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center text-slate-600">
             <Loader2 className="w-6 h-6 mx-auto mb-2 animate-spin" />
@@ -99,7 +99,7 @@ export function CandidateNotificationsPage() {
           notificationsList.map((notification) => (
             <Card
               key={notification.id}
-              className={`overflow-hidden transition-all duration-200 ease-out cursor-pointer hover:shadow-md ${
+              className={`cursor-pointer rounded-none border-x-0 shadow-none transition-colors duration-200 ease-out hover:shadow-none ${
                 notification.read ? "opacity-75" : "border-blue-200 bg-blue-50 hover:bg-blue-100"
               }`}
               onClick={() => {

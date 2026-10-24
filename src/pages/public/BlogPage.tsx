@@ -52,10 +52,10 @@ export function BlogPage() {
         <div className="container-page relative z-10 max-w-6xl">
           <div className="mb-6 flex items-end justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand">Journal de l'Emploi</p>
-              <h1 className="mt-1 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{t("blog.title")}</h1>
+              <p className="text-xs font-semibold uppercase tracking-wide text-brand">Journal de l'Emploi</p>
+              <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">{t("blog.title")}</h1>
             </div>
-            <p className="hidden max-w-xs text-right text-sm leading-5 text-muted-foreground sm:block">{t("blog.subtitle")}</p>
+            <p className="hidden max-w-xs text-right text-sm leading-relaxed text-muted-foreground sm:block">{t("blog.subtitle")}</p>
           </div>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
             <div className="min-w-0">
@@ -65,10 +65,10 @@ export function BlogPage() {
                 ) : null}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
                 <div className="absolute bottom-0 left-0 max-w-3xl p-5 text-white sm:p-7">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-primary">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-primary">
                   <Star className="h-3 w-3" weight="fill" /> À la une
                   </span>
-                  <h2 className="mt-3 font-display text-2xl font-bold leading-tight sm:text-3xl">
+                  <h2 className="mt-3 font-display text-xl font-bold leading-tight md:text-2xl">
                     {featuredPost?.title || t("blog.title")}
                   </h2>
                   <p className="mt-2 line-clamp-2 text-xs text-white/75">
@@ -89,7 +89,7 @@ export function BlogPage() {
                 {posts.slice(0, 4).map((post) => (
                   <Link key={post.id} to={`/blog/${post.slug}`} className="flex gap-3 border-b border-primary/15 pb-3 last:border-0 last:pb-0">
                     <div className="h-12 w-14 shrink-0 overflow-hidden rounded-md bg-primary/10">{post.image && <img src={post.image} alt="" className="h-full w-full object-cover" />}</div>
-                    <div className="min-w-0"><p className="line-clamp-2 text-xs font-semibold leading-4 text-foreground">{post.title}</p><p className="mt-1 text-[10px] text-muted-foreground">{post.publish_at ? new Date(post.publish_at).toLocaleDateString("fr-FR") : "Article"}</p></div>
+                    <div className="min-w-0"><p className="line-clamp-2 text-xs font-semibold leading-[1.5] text-foreground">{post.title}</p><p className="mt-1 text-xs text-muted-foreground">{post.publish_at ? new Date(post.publish_at).toLocaleDateString("fr-FR") : "Article"}</p></div>
                   </Link>
                 ))}
               </div>
@@ -174,7 +174,7 @@ export function BlogPage() {
                                   <span className="text-xs text-slate-500">{new Date(post.publish_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                                 )}
                               </div>
-                              <h3 className="font-display text-lg font-bold text-foreground line-clamp-2">
+                              <h3 className="font-display text-base font-semibold text-foreground line-clamp-2 md:text-lg">
                                 {post.title}
                               </h3>
                               <p className="text-sm text-slate-600 leading-relaxed line-clamp-2">
@@ -221,7 +221,7 @@ export function BlogPage() {
                   <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-4 py-1.5 text-sm font-semibold text-slate-600">
                     Tous les articles
                   </span>
-                  <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-foreground">
+                  <h2 className="mt-4 font-display text-xl font-bold tracking-tight text-foreground md:text-2xl">
                     Conseils pour avancer
                   </h2>
                 </div>
@@ -264,7 +264,7 @@ export function BlogPage() {
                                     <span className="text-xs text-slate-500">{new Date(post.publish_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                                   )}
                                 </div>
-                                <h3 className="mt-3 font-display text-lg font-bold text-foreground line-clamp-2">
+                                <h3 className="mt-3 font-display text-base font-semibold text-foreground line-clamp-2 md:text-lg">
                                   {post.title}
                                 </h3>
                                 <p className="mt-3 flex-1 text-sm text-slate-600 leading-relaxed line-clamp-3">
@@ -325,7 +325,7 @@ export function BlogPage() {
                                     <span className="text-xs text-slate-500">{new Date(post.publish_at).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                                   )}
                                 </div>
-                                <h3 className="mt-3 font-display text-lg font-bold text-foreground line-clamp-2">
+                                <h3 className="mt-3 font-display text-base font-semibold text-foreground line-clamp-2 md:text-lg">
                                   {post.title}
                                 </h3>
                                 <p className="mt-3 flex-1 text-sm text-slate-600 leading-relaxed line-clamp-3">
