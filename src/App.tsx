@@ -7,6 +7,7 @@ import { AuthProvider } from "@/features/authentication/context/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { CandidateSidebarProvider } from "@/contexts/CandidateSidebarContext";
 import { CandidateLoadingIndicator } from "@/components/candidate/CandidateLoadingIndicator";
+import { CandidateAccountPageSkeleton } from "@/components/candidate/CandidateAccountPageSkeleton";
 import { PublicLayout } from "@/components/site/PublicLayout";
 import { useAuthContext } from "@/features/authentication/hooks/useAuthContext";
 import { ProtectedRoute } from "@/features/authentication/guards";
@@ -18,7 +19,6 @@ import {
 } from "@/features/candidates/api/candidateOnboardingApi";
 import {
   DashboardLayoutSkeleton,
-  CandidateDashboardSkeleton,
   CandidateAuthFormSkeleton,
   PublicPageSkeleton,
   JobsPageSkeleton,
@@ -295,7 +295,7 @@ function SharedPublicRouteShell() {
   if (showCandidateShell) {
     return withSuspense(
       <CandidateLayout>{content}</CandidateLayout>,
-      <CandidateDashboardSkeleton />,
+      <CandidateLoadingIndicator />,
     );
   }
 
@@ -487,19 +487,31 @@ function AppContent() {
       />
       <Route
         path="/candidate/forgot-password"
-        element={withSuspense(<CandidateForgotPasswordPage />, <CandidateDashboardSkeleton />)}
+        element={withSuspense(
+          <CandidateForgotPasswordPage />,
+          <CandidateAuthFormSkeleton />,
+        )}
       />
       <Route
         path="/candidate/reset-password"
-        element={withSuspense(<CandidateResetPasswordPage />, <CandidateDashboardSkeleton />)}
+        element={withSuspense(
+          <CandidateResetPasswordPage />,
+          <CandidateAuthFormSkeleton />,
+        )}
       />
       <Route
         path="/candidate/confirm"
-        element={withSuspense(<CandidateConfirmPage />, <CandidateDashboardSkeleton />)}
+        element={withSuspense(
+          <CandidateConfirmPage />,
+          <CandidateAuthFormSkeleton />,
+        )}
       />
       <Route
         path="/candidate/onboarding"
-        element={withSuspense(<CandidateOnboardingGate />, <CandidateDashboardSkeleton />)}
+        element={withSuspense(
+          <CandidateOnboardingGate />,
+          <CandidateAccountPageSkeleton page="onboarding" />,
+        )}
       />
       <Route
         path="/candidate"
@@ -516,7 +528,10 @@ function AppContent() {
         <Route index element={<Navigate to="/candidate/dashboard" replace />} />
         <Route
           path="dashboard"
-          element={withSuspense(<CandidateDashboardPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateDashboardPage />,
+            <CandidateAccountPageSkeleton page="dashboard" />,
+          )}
         />
         <Route path="public" element={withSuspense(<HomePage />, <PublicPageSkeleton />)} />
         <Route
@@ -532,52 +547,79 @@ function AppContent() {
         />
         <Route
           path="profile"
-          element={withSuspense(<CandidateProfilePage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateProfilePage />,
+            <CandidateAccountPageSkeleton page="profile" />,
+          )}
         />
         <Route
           path="profile/edit"
-          element={withSuspense(<CandidateProfileEditPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateProfileEditPage />,
+            <CandidateAccountPageSkeleton page="profile-edit" />,
+          )}
         />
         <Route
           path="create-cv"
-          element={withSuspense(<CandidateCreateCVPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateCreateCVPage />,
+            <CandidateAccountPageSkeleton page="cv-catalog" />,
+          )}
         />
         <Route
           path="create-cv/:templateId"
-          element={withSuspense(<CandidateCreateCVPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateCreateCVPage />,
+            <CandidateAccountPageSkeleton page="cv-catalog" />,
+          )}
         />
         <Route
           path="create-cv/:templateId/:modelId"
-          element={withSuspense(<CandidateCreateCVPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateCreateCVPage />,
+            <CandidateAccountPageSkeleton page="cv-editor" />,
+          )}
         />
         <Route
           path="documents"
-          element={withSuspense(<CandidateDocumentsPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateDocumentsPage />,
+            <CandidateAccountPageSkeleton page="documents" />,
+          )}
         />
         <Route
           path="guides"
-          element={withSuspense(<CandidateLocalGuidesPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateLocalGuidesPage />,
+            <CandidateAccountPageSkeleton page="guides" />,
+          )}
         />
         <Route
           path="subscription"
-          element={withSuspense(<CandidateSubscriptionPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateSubscriptionPage />,
+            <CandidateAccountPageSkeleton page="subscription" />,
+          )}
         />
         <Route
           path="subscription/free"
-          element={withSuspense(<CandidateFreeSubscriptionPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateFreeSubscriptionPage />,
+            <CandidateAccountPageSkeleton page="subscription-plan" />,
+          )}
         />
         <Route
           path="subscription/premium"
           element={withSuspense(
             <CandidatePremiumSubscriptionPage />,
-            <CandidateDashboardSkeleton />,
+            <CandidateAccountPageSkeleton page="subscription-plan" />,
           )}
         />
         <Route
           path="subscription/premium-plus"
           element={withSuspense(
             <CandidatePremiumPlusSubscriptionPage />,
-            <CandidateDashboardSkeleton />,
+            <CandidateAccountPageSkeleton page="subscription-plan" />,
           )}
         />
         {/* Backwards-compatible redirects */}
@@ -602,35 +644,59 @@ function AppContent() {
         />
         <Route
           path="applications"
-          element={withSuspense(<CandidateApplicationsPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateApplicationsPage />,
+            <CandidateAccountPageSkeleton page="applications" />,
+          )}
         />
         <Route
           path="applications/:id"
-          element={withSuspense(<CandidateApplicationDetailPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateApplicationDetailPage />,
+            <CandidateAccountPageSkeleton page="application-detail" />,
+          )}
         />
         <Route
           path="saved-jobs"
-          element={withSuspense(<CandidateSavedOffersPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateSavedOffersPage />,
+            <CandidateAccountPageSkeleton page="saved" />,
+          )}
         />
         <Route
           path="saved-offers"
-          element={withSuspense(<CandidateSavedOffersPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateSavedOffersPage />,
+            <CandidateAccountPageSkeleton page="saved" />,
+          )}
         />
         <Route
           path="notifications"
-          element={withSuspense(<CandidateNotificationsPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateNotificationsPage />,
+            <CandidateAccountPageSkeleton page="notifications" />,
+          )}
         />
         <Route
           path="account"
-          element={withSuspense(<CandidateSettingsPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateSettingsPage />,
+            <CandidateAccountPageSkeleton page="settings" />,
+          )}
         />
         <Route
           path="settings"
-          element={withSuspense(<CandidateSettingsPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateSettingsPage />,
+            <CandidateAccountPageSkeleton page="settings" />,
+          )}
         />
         <Route
           path="jobs/:slug/apply"
-          element={withSuspense(<CandidateJobApplyPage />, <CandidateDashboardSkeleton />)}
+          element={withSuspense(
+            <CandidateJobApplyPage />,
+            <CandidateAccountPageSkeleton page="job-apply" />,
+          )}
         />
       </Route>
 

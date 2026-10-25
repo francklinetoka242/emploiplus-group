@@ -21,6 +21,7 @@ import {
 import { useCandidate } from "@/hooks/useCandidate";
 import { useCandidateApplications } from "@/features/candidates/hooks/useCandidateApplications";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
+import { CandidateAccountPageSkeleton } from "@/components/candidate/CandidateAccountPageSkeleton";
 
 interface Application {
   id: string;
@@ -97,11 +98,7 @@ export function CandidateApplicationsPage() {
   };
 
   if (profileLoading || loading) {
-    return (
-      <div className="flex min-h-[320px] items-center justify-center">
-        <p className="text-sm text-muted-foreground">Chargement...</p>
-      </div>
-    );
+    return <CandidateAccountPageSkeleton page="applications" />;
   }
 
   return (

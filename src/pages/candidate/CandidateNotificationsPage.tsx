@@ -18,10 +18,10 @@ import {
 import {
   TrashIcon as Trash2,
   CheckCircleIcon as CheckCircle2,
-  CircleNotchIcon as Loader2,
   ArrowRightIcon as ArrowRight,
 } from "@phosphor-icons/react";
 import { useNotifications } from "@/hooks/useNotifications";
+import { CandidateAccountPageSkeleton } from "@/components/candidate/CandidateAccountPageSkeleton";
 
 const typeColors: Record<string, string> = {
   candidature: "bg-green-100 text-green-800",
@@ -108,6 +108,10 @@ export function CandidateNotificationsPage() {
     }
   };
 
+  if (loading) {
+    return <CandidateAccountPageSkeleton page="notifications" />;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -120,20 +124,13 @@ export function CandidateNotificationsPage() {
               : "Toutes les notifications sont lues."}
           </div>
 
-          <Button variant="outline" disabled={unreadCount === 0 || loading} onClick={markAllAsRead}>
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Chargement...
-              </>
-            ) : (
-              "Marquer tout comme lu"
-            )}
+          <Button variant="outline" disabled={unreadCount === 0} onClick={markAllAsRead}>
+            Marquer tout comme lu
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            disabled={selectedNotificationIds.length === 0 || loading || isDeleting}
+            disabled={selectedNotificationIds.length === 0 || isDeleting}
             onClick={() => setDeleteDialogOpen(true)}
             aria-label={`Supprimer ${selectedNotificationIds.length} notification${selectedNotificationIds.length === 1 ? "" : "s"} sélectionnée${selectedNotificationIds.length === 1 ? "" : "s"}`}
             title="Supprimer les notifications sélectionnées"
@@ -177,14 +174,7 @@ export function CandidateNotificationsPage() {
       )}
 
       <div className="-mx-4 space-y-3 sm:-mx-6 lg:-mx-8">
-        {loading ? (
-          <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center text-slate-600">
-            <Loader2 className="w-6 h-6 mx-auto mb-2 animate-spin" />
-            Chargement des notifications…
-          </div>
-        ) : (
-          <>
-            {notificationsList.length > 0 && (
+        {notificationsList.length > 0 && (
               <div className="flex items-center gap-2 px-4 sm:px-6 lg:px-8">
                 <Checkbox
                   id="select-all-notifications"
@@ -195,7 +185,7 @@ export function CandidateNotificationsPage() {
                         ? "indeterminate"
                         : false
                   }
-                  disabled={loading || isDeleting}
+                  disabled={isDeleting}
                   onCheckedChange={(checked) => {
                     setSelectedIds(
                       checked === true
@@ -294,10 +284,8 @@ export function CandidateNotificationsPage() {
                 </CardContent>
               </Card>
             ))}
-          </>
-        )}
 
-        {!loading && notificationsList.length === 0 && (
+        {notificationsList.length === 0 && (
           <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center text-slate-600">
             Aucune notification à afficher.
           </div>

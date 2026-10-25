@@ -29,7 +29,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
+import { CandidateAccountPageSkeleton } from "@/components/candidate/CandidateAccountPageSkeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { ALLOWED_DOCUMENT_MIME_TYPES, MAX_DOCUMENT_SIZE_BYTES } from "@/services/storageService";
@@ -70,47 +70,6 @@ function Breadcrumb({ jobTitle }: { jobTitle: string }) {
       <span className="text-border/60">/</span>
       <span className="font-semibold text-foreground">Postuler</span>
     </nav>
-  );
-}
-
-// Skeleton Loaders
-function HeroSkeleton() {
-  return (
-    <div className="mb-8 border border-border/80 bg-card p-8">
-      <div className="flex flex-col md:flex-row gap-6 items-start">
-        <Skeleton className="h-24 w-24 rounded-2xl shrink-0" />
-        <div className="flex-1 space-y-3">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-8 w-full max-w-lg" />
-          <div className="flex flex-wrap gap-2 mt-4">
-            <Skeleton className="h-6 w-20" />
-            <Skeleton className="h-6 w-20" />
-            <Skeleton className="h-6 w-20" />
-          </div>
-        </div>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-border/60">
-        <Skeleton className="h-12 rounded-lg" />
-        <Skeleton className="h-12 rounded-lg" />
-        <Skeleton className="h-12 rounded-lg" />
-        <Skeleton className="h-12 rounded-lg" />
-      </div>
-    </div>
-  );
-}
-
-function FormSectionSkeleton() {
-  return (
-    <Card className="rounded-none border border-border/80 mb-4">
-      <CardHeader className="pb-3 px-6 pt-6">
-        <Skeleton className="h-5 w-32" />
-      </CardHeader>
-      <CardContent className="px-6 pb-6 space-y-4">
-        <Skeleton className="h-16 rounded-lg" />
-        <Skeleton className="h-16 rounded-lg" />
-        <Skeleton className="h-10 w-32 rounded-lg mt-4" />
-      </CardContent>
-    </Card>
   );
 }
 
@@ -665,18 +624,7 @@ export function CandidateJobApplyPage() {
   // Loading state
   if (jobLoading || profileLoading) {
     return (
-      <div className="container-page py-8 md:py-12">
-        <Button variant="ghost" size="sm" onClick={handleCancel} className="gap-2 mb-8">
-          <ArrowLeft className="h-4 w-4" />
-          Retour
-        </Button>
-        <HeroSkeleton />
-        <div className="space-y-4">
-          <FormSectionSkeleton />
-          <FormSectionSkeleton />
-          <FormSectionSkeleton />
-        </div>
-      </div>
+      <CandidateAccountPageSkeleton page="job-apply" />
     );
   }
 

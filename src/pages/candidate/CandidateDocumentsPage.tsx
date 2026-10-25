@@ -4,6 +4,7 @@ import { useCandidateDocuments } from "@/features/candidates/hooks/useCandidateD
 import { DocumentsSection } from "@/features/profile/components/sections/DocumentsSection";
 import { usePageSEO } from "@/features/seo";
 import { deleteCandidateCV } from "@/features/candidates/api/documentsApi";
+import { CandidateAccountPageSkeleton } from "@/components/candidate/CandidateAccountPageSkeleton";
 
 export function CandidateDocumentsPage() {
   const { profile, loading } = useCandidate();
@@ -53,6 +54,10 @@ export function CandidateDocumentsPage() {
       />
     );
   }, [loading, profile, cv, documents, documentsLoading, deleteDocument, addDocument]);
+
+  if (loading || documentsLoading) {
+    return <CandidateAccountPageSkeleton page="documents" />;
+  }
 
   return <div className="space-y-6">{content}</div>;
 }

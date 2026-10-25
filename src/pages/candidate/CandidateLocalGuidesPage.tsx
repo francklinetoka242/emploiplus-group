@@ -9,6 +9,7 @@ import { FilePreviewDialog } from "@/components/site/FilePreviewDialog";
 import { fetchLocalGuides } from "@/features/local-guides/localGuideService";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import type { LocalGuideRecord } from "@/features/local-guides/types";
+import { CandidateAccountPageSkeleton } from "@/components/candidate/CandidateAccountPageSkeleton";
 
 const categoryColors: Record<string, string> = {
   Salaires: "border border-slate-200 bg-slate-100 text-slate-700",
@@ -50,15 +51,7 @@ export function CandidateLocalGuidesPage() {
   const cards = useMemo(() => guides, [guides]);
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="rounded-3xl border border-border bg-card p-6">
-          <div className="h-8 w-48 animate-pulse rounded-full bg-muted" />
-          <div className="mt-4 h-4 w-full animate-pulse rounded-full bg-muted" />
-          <div className="mt-3 h-4 w-3/4 animate-pulse rounded-full bg-muted" />
-        </div>
-      </div>
-    );
+    return <CandidateAccountPageSkeleton page="guides" />;
   }
 
   if (error) {

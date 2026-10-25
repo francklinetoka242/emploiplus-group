@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useCandidate } from "@/features/candidates/hooks/useCandidate";
 import { useCandidateExperiences } from "../hooks/useCandidateExperiences";
@@ -22,6 +22,7 @@ import { CompletionSection } from "./sections/CompletionSection";
 import ProfessionalPresentationSection from "./sections/ProfessionalPresentationSection";
 import { deleteCandidateCV } from "@/features/candidates/api/documentsApi";
 import type { ProfileTabValue } from "../types";
+import { CandidateAccountPageSkeleton } from "@/components/candidate/CandidateAccountPageSkeleton";
 
 export function CandidateProfileCenter() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,12 +35,12 @@ export function CandidateProfileCenter() {
   const { preferences, loading: preferencesLoading, savePreferences } = useCandidatePreferences(profile?.id);
   const { cv, documents, loading: documentsLoading, deleteDocument, addDocument } = useCandidateDocuments(profile?.id);
 
-  const handleDeleteCv = async () => {
+  const handleDeleteCv = useCallback(async () => {
     if (profile?.id) {
       await deleteCandidateCV(profile.id);
       await refetch();
     }
-  };
+  }, [profile?.id, refetch]);
 
   useEffect(() => {
     const handleCvUploaded = (event: Event) => {
@@ -86,7 +87,7 @@ export function CandidateProfileCenter() {
       default:
         return <ProfileSection profile={profile} onSave={async (updates) => { await updateProfile(updates); }} loading={profileLoading} error={profileError} />;
     }
-  }, [currentTab, profile, updateProfile, profileLoading, profileError, experiences, experiencesLoading, createExperience, updateExperience, deleteExperience, educations, educationsLoading, createEducation, updateEducation, deleteEducation, skills, skillsLoading, createSkill, deleteSkill, languages, languagesLoading, createLanguage, updateLanguage, deleteLanguage, preferences, preferencesLoading, savePreferences, cv, documents, documentsLoading, deleteDocument, addDocument, completion]);
+  }, [currentTab, profile, updateProfile, profileLoading, profileError, experiences, experiencesLoading, createExperience, updateExperience, deleteExperience, educations, educationsLoading, createEducation, updateEducation, deleteEducation, skills, skillsLoading, createSkill, deleteSkill, languages, languagesLoading, createLanguage, updateLanguage, deleteLanguage, preferences, preferencesLoading, savePreferences, cv, documents, documentsLoading, deleteDocument, addDocument, completion, handleDeleteCv]);
 
   const handleTabChange = (tab: ProfileTabValue) => {
     setCurrentTab(tab);
@@ -94,6 +95,27 @@ export function CandidateProfileCenter() {
     next.set("tab", tab);
     setSearchParams(next, { replace: true });
   };
+
+  const isCurrentTabLoading =
+    profileLoading ||
+    (currentTab === "experience" && experiencesLoading) ||
+    (currentTab === "education" && educationsLoading) ||
+    (currentTab === "skills" && skillsLoading) ||
+    (currentTab === "languages" && languagesLoading) ||
+    (currentTab === "preferences" && preferencesLoading) ||
+    (currentTab === "documents" && documentsLoading) ||
+    (currentTab === "completion" &&
+      (experiencesLoading ||
+        educationsLoading ||
+        skillsLoading ||
+        languagesLoading ||
+        preferencesLoading)) ||
+    (currentTab === "pdf" &&
+      (experiencesLoading || educationsLoading || skillsLoading || languagesLoading));
+
+  if (isCurrentTabLoading) {
+    return <CandidateAccountPageSkeleton page="profile" />;
+  }
 
   return (
     <div className="candidate-profile-page space-y-6">

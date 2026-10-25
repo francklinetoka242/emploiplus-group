@@ -511,26 +511,37 @@ export function CandidateSidebar({
                 <EcoModeToggle />
               </div>
             </div>
-          </nav>
-
-          {/* Footer - Logout (mobile) */}
-          <div
-            className={cn(
-              "px-3 py-2",
-              isDarkMode ? "border-t border-white/5" : "border-t border-slate-200",
-            )}
-          >
-            <Button
-              onClick={() => {
-                onOpenChange?.(false);
-                onLogout?.();
-              }}
-              className="w-full gap-2 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2 text-sm font-medium text-white"
-              variant="ghost"
+            <div
+              className={cn(
+                "mt-2 border-t px-1 pt-2",
+                isDarkMode ? "border-white/5" : "border-slate-200",
+              )}
             >
-              <LogOut className="h-4 w-4 text-white" /> Déconnexion
-            </Button>
-          </div>
+              <Button
+                onClick={() => {
+                  onOpenChange?.(false);
+                  onLogout?.();
+                }}
+                className={cn(
+                  `relative flex w-full items-center gap-2.5 rounded-xl px-3 py-1.5 text-left ${sidebarHoverMotion}`,
+                  isDarkMode
+                    ? "bg-transparent text-slate-200 hover:bg-white/5"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200/70",
+                )}
+                variant="ghost"
+              >
+                <div
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-lg",
+                    isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
+                  )}
+                >
+                  <LogOut className="h-5 w-5" />
+                </div>
+                <span className="truncate text-sm font-medium">Déconnexion</span>
+              </Button>
+            </div>
+          </nav>
         </aside>
       </>
     );
@@ -762,56 +773,76 @@ export function CandidateSidebar({
                 </div>
               )}
             </div>
-          </nav>
-
-          {/* Footer - desktop */}
-          <div
-            className={cn(
-              "px-2 py-2",
-              isDarkMode ? "border-t border-white/5" : "border-t border-slate-200",
-            )}
-          >
-            {open ? (
-              <>
+            <div
+              className={cn(
+                "mt-2 border-t px-1 pt-2",
+                isDarkMode ? "border-white/5" : "border-slate-200",
+              )}
+            >
+              {open ? (
                 <Button
                   onClick={onLogout}
-                  className="w-full gap-2 rounded-lg bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2 text-sm font-medium text-white"
+                  className={cn(
+                    `group relative flex w-full items-center gap-2 rounded-lg px-3 py-1 ${sidebarHoverMotion}`,
+                    isDarkMode
+                      ? "text-slate-200 hover:bg-white/5"
+                      : "text-slate-700 hover:bg-slate-50",
+                  )}
                   variant="ghost"
                 >
-                  <LogOut className="h-4 w-4 text-white" /> Déconnexion
-                </Button>
-              </>
-            ) : (
-              <div className="flex items-center justify-end">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      onClick={onLogout}
-                      size="icon"
-                      className={cn(
-                        "h-10 w-10 rounded-lg",
-                        isDarkMode ? "bg-slate-800/50" : "bg-slate-100 text-slate-900",
-                      )}
-                      variant="ghost"
-                    >
-                      <LogOut className="h-5 w-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="right"
+                  <div
                     className={cn(
-                      "rounded-lg text-xs font-medium",
+                      "relative flex h-8 w-8 items-center justify-center rounded-lg",
+                      isDarkMode ? "text-slate-200" : "bg-slate-100 text-slate-700",
+                    )}
+                  >
+                    <LogOut className="h-5 w-5" />
+                  </div>
+                  <span
+                    className={cn(
+                      "text-sm font-medium",
                       isDarkMode
-                        ? "border border-white/10 bg-slate-900 text-slate-100"
-                        : "border border-slate-200 bg-white text-slate-900",
+                        ? "text-slate-300 group-hover:text-slate-100"
+                        : "text-slate-700 group-hover:text-slate-900",
                     )}
                   >
                     Déconnexion
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            )}
-          </div>
+                  </span>
+                </Button>
+              ) : (
+                <div className="flex items-center justify-end">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={onLogout}
+                        size="icon"
+                        className={cn(
+                          "h-10 w-10 rounded-lg",
+                          isDarkMode
+                            ? "text-slate-200 hover:bg-white/5"
+                            : "text-slate-700 hover:bg-slate-50",
+                        )}
+                        variant="ghost"
+                      >
+                        <LogOut className="h-5 w-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="right"
+                      className={cn(
+                        "rounded-lg text-xs font-medium",
+                        isDarkMode
+                          ? "border border-white/10 bg-slate-900 text-slate-100"
+                          : "border border-slate-200 bg-white text-slate-900",
+                      )}
+                    >
+                      Déconnexion
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              )}
+            </div>
+          </nav>
         </TooltipProvider>
       </aside>
     </>

@@ -20,6 +20,7 @@ import { JobCard } from "@/features/jobs/components";
 import { getRecommendedJobsWithStatus, RecommendedJob } from "@/services/aiMatchingService";
 import { getCandidateCvAnalysisState, hasAnalyzableCandidateCv, hasCandidateCv } from "@/features/candidates/api/cvApi";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CandidateAccountPageSkeleton } from "@/components/candidate/CandidateAccountPageSkeleton";
 import { useProfileCompletion } from "@/features/profile/hooks/useProfileCompletion";
 import { useCandidateProfileData } from "@/features/candidates/hooks/useCandidateProfileData";
 import { diagnosticLogger } from "@/services/diagnosticLogger";
@@ -395,6 +396,10 @@ export function CandidateDashboardPage() {
   const firstName = profile?.first_name || "Candidat";
   const fullName = profile ? `${profile.first_name} ${profile.last_name}`.trim() : "Jean Dupont";
   const email = profile?.email || "jean.dupont@example.com";
+
+  if (profileDataLoading) {
+    return <CandidateAccountPageSkeleton page="dashboard" />;
+  }
 
   return (
     <div className={mobileApp ? "space-y-4 pt-0" : "space-y-8"}>

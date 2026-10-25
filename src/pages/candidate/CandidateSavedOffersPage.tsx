@@ -33,6 +33,7 @@ import {
 import { getCandidateApplications } from "@/features/candidates/api/applicationsApi";
 import { notifySavedOfferExpirations } from "@/integrations/supabase/notifications";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
+import { CandidateAccountPageSkeleton } from "@/components/candidate/CandidateAccountPageSkeleton";
 
 interface SavedOffer {
   id: string;
@@ -166,11 +167,7 @@ export function CandidateSavedOffersPage() {
   );
 
   if (profileLoading || loading) {
-    return (
-      <div className="flex min-h-[320px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <CandidateAccountPageSkeleton page="saved" />;
   }
 
   return (

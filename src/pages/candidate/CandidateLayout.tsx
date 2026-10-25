@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { CandidateSidebar } from "@/components/candidate/CandidateSidebar";
 import { CandidateMobileHeader } from "@/components/candidate/CandidateMobileHeader";
@@ -49,70 +49,11 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   const toggleMaelise = () => setIsMaeliseCollapsed((previous) => !previous);
   const isJobDetailPage = location.pathname.startsWith("/jobs/");
   const isCandidateHomePage = location.pathname === "/candidate/public";
-  const keepHeaderVisible =
-    location.pathname === "/candidate/public/jobs" || location.pathname === "/candidate/profile";
-  const mainRef = useRef<HTMLElement | null>(null);
-  const lastMainScrollTopRef = useRef(0);
-  const lastWindowScrollTopRef = useRef(0);
-  const [headerVisible, setHeaderVisible] = useState(true);
-
-  useEffect(() => {
-    setHeaderVisible(true);
-    lastMainScrollTopRef.current = mainRef.current?.scrollTop ?? 0;
-    lastWindowScrollTopRef.current = window.scrollY;
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (keepHeaderVisible) {
-      setHeaderVisible(true);
-      return;
-    }
-
-    const scrollContainer = mainRef.current;
-    const canScrollContainer = () =>
-      Boolean(scrollContainer && scrollContainer.scrollHeight > scrollContainer.clientHeight + 1);
-    const updateHeaderVisibility = (
-      currentScrollTop: number,
-      lastScrollTopRef: React.MutableRefObject<number>,
-    ) => {
-      const scrollDelta = currentScrollTop - lastScrollTopRef.current;
-
-      if (currentScrollTop <= 0 || scrollDelta < -4) {
-        setHeaderVisible((visible) => (visible ? visible : true));
-      } else if (scrollDelta > 4) {
-        setHeaderVisible((visible) => (visible ? false : visible));
-      }
-
-      lastScrollTopRef.current = currentScrollTop;
-    };
-
-    const handleContainerScroll = () =>
-      updateHeaderVisibility(scrollContainer?.scrollTop ?? 0, lastMainScrollTopRef);
-    const handleWindowScroll = () => {
-      if (!canScrollContainer()) updateHeaderVisibility(window.scrollY, lastWindowScrollTopRef);
-    };
-
-    scrollContainer?.addEventListener("scroll", handleContainerScroll, { passive: true });
-    window.addEventListener("scroll", handleWindowScroll, { passive: true });
-
-    lastMainScrollTopRef.current = scrollContainer?.scrollTop ?? 0;
-    lastWindowScrollTopRef.current = window.scrollY;
-
-    return () => {
-      scrollContainer?.removeEventListener("scroll", handleContainerScroll);
-      window.removeEventListener("scroll", handleWindowScroll);
-    };
-  }, [keepHeaderVisible]);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
       {/* Mobile Header (visible uniquement sur mobile) */}
-      <div
-        className={cn(
-          "grid overflow-hidden transition-[grid-template-rows,transform] duration-600 md:hidden",
-          headerVisible ? "grid-rows-[1fr] translate-y-0" : "grid-rows-[0fr] -translate-y-full",
-        )}
-      >
+      <div className="overflow-hidden md:hidden">
         <div className="min-h-0">
           <CandidateMobileHeader
             title={pageTitle}
@@ -138,12 +79,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
           )}
         >
           {/* Topbar Desktop */}
-          <div
-            className={cn(
-              "grid overflow-hidden transition-[grid-template-rows,transform] duration-600",
-              headerVisible ? "grid-rows-[1fr] translate-y-0" : "grid-rows-[0fr] -translate-y-full",
-            )}
-          >
+          <div className="overflow-hidden">
             <div className="min-h-0">
               <CandidateTopbar
                 onMenuToggle={() => setOpen(!open)}
@@ -157,7 +93,6 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
           <div className="flex min-h-0 flex-1 flex-col gap-3 min-[900px]:flex-row">
             <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-t-[20px] border border-border bg-background">
               <main
-                ref={mainRef}
                 className={cn(
                   "candidate-main-scroll min-h-0 min-w-0 flex-1 touch-pan-y overflow-y-auto overflow-x-clip overscroll-y-contain bg-background lg:flex lg:flex-col",
                   isJobDetailPage && "lg:overflow-hidden lg:overflow-y-hidden",
