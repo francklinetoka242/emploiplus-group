@@ -51,7 +51,7 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
   const isCandidateHomePage = location.pathname === "/candidate/public";
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground md:h-screen md:overflow-hidden">
+    <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-background text-foreground">
       {/* Mobile Header (visible uniquement sur mobile) */}
       <div className="overflow-hidden md:hidden">
         <div className="min-h-0">
@@ -67,14 +67,14 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
       <CandidateSidebar open={open} onOpenChange={setOpen} onLogout={logout} isDrawer={true} />
 
       {/* Layout Desktop */}
-      <div className="flex flex-1 flex-col md:min-h-0 md:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         {/* Sidebar Desktop (visible uniquement sur desktop) */}
         <CandidateSidebar open={open} onOpenChange={setOpen} onLogout={logout} isDrawer={false} />
 
         {/* Contenu principal */}
         <div
           className={cn(
-            "flex min-w-0 flex-1 flex-col bg-slate-100 transition-all duration-300 ease-in-out dark:bg-slate-900 md:min-h-0",
+            "flex min-h-0 min-w-0 flex-1 flex-col bg-slate-100 transition-all duration-300 ease-in-out dark:bg-slate-900",
             open ? "md:ml-60" : "md:ml-12",
           )}
         >
@@ -90,11 +90,11 @@ export function CandidateAppShell({ children, pageTitle = "Mon Espace" }: Candid
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col gap-3 min-[900px]:flex-row md:min-h-0">
-            <div className="flex min-w-0 flex-1 flex-col rounded-t-[20px] border border-border bg-background md:min-h-0 md:overflow-hidden">
+          <div className="flex min-h-0 flex-1 flex-col gap-3 min-[900px]:flex-row">
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col rounded-t-[20px] border border-border bg-background overflow-hidden">
               <main
                 className={cn(
-                  "candidate-main-scroll min-w-0 flex-1 touch-pan-y overflow-x-clip bg-background md:min-h-0 md:overflow-y-auto md:overscroll-y-contain lg:flex lg:flex-col",
+                  "candidate-main-scroll min-h-0 min-w-0 flex-1 touch-pan-y overflow-x-clip overflow-y-auto overscroll-y-contain bg-background lg:flex lg:flex-col",
                   isJobDetailPage && "lg:overflow-hidden lg:overflow-y-hidden",
                 )}
               >

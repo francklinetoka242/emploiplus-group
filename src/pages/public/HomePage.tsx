@@ -205,13 +205,26 @@ export function HomePage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 200;
-      setShowScrollTop(nearBottom);
+      const scrollElement = document.scrollingElement;
+      if (!scrollElement) {
+        setShowScrollTop(false);
+        return;
+      }
+
+      const distanceFromBottom =
+        scrollElement.scrollHeight - scrollElement.scrollTop - scrollElement.clientHeight;
+      setShowScrollTop(
+        scrollElement.scrollHeight > scrollElement.clientHeight && distanceFromBottom <= 120,
+      );
     };
 
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, []);
 
   const getContractLabel = (contractType?: string | null) => {
@@ -294,7 +307,7 @@ export function HomePage() {
           type="button"
           aria-label="Retour en haut"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-5 right-5 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-lg shadow-slate-200/60 transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/40 md:bottom-7 md:right-7"
+          className="fixed bottom-20 right-5 z-[60] inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-lg shadow-slate-200/60 transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/40 md:bottom-24 md:right-7"
         >
           <ArrowUp className="h-5 w-5" />
         </button>
