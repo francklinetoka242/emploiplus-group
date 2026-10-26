@@ -77,10 +77,22 @@ export const FR: Dict = {
   "maelise.suggestion.application": "Comment fonctionne une candidature ?",
   "maelise.suggestion.services": "Que propose EmploiPlus ?",
   "home.hero.title": "Construisons votre avenir professionnel.",
+  "home.hero.eyebrow": "Emploi et ressources humaines en Afrique centrale",
   "home.hero.subtitle":
-    "Emploiplus Group est une entreprise spécialisée dans les services d'employabilité, Externalisation, et la gestion déléguée des ressources humaines basée en Afrique centrale.",
-  "home.hero.cta.jobs": "Voir les offres",
-  "home.hero.cta.services": "Nos services",
+    "Offres d'emploi, accompagnement à l'employabilité et gestion déléguée des ressources humaines pour les candidats et les entreprises.",
+  "home.hero.search.query.label": "Poste ou mot-clé",
+  "home.hero.search.query.placeholder": "Ex. : comptable, assistant RH",
+  "home.hero.search.city.label": "Ville",
+  "home.hero.search.city.placeholder": "Brazzaville, Pointe-Noire...",
+  "home.hero.search.submit": "Rechercher",
+  "home.hero.link.jobs": "Parcourir toutes les offres",
+  "home.hero.link.business": "Je recrute ou j'externalise",
+  "home.hero.links.label": "Liens utiles",
+  "home.hero.offers.singular": "{count} offre à pourvoir en ce moment",
+  "home.hero.offers.plural": "{count} offres à pourvoir en ce moment",
+  "home.seo.title": "Emploi et ressources humaines en Afrique centrale",
+  "home.seo.description":
+    "Offres d'emploi, accompagnement à l'employabilité et gestion déléguée des ressources humaines en Afrique centrale.",
   "home.stats.jobs": "Offres diffusées",
   "home.stats.companies": "Entreprises partenaires",
   "home.stats.readers": "Lecteurs / mois",
@@ -258,7 +270,7 @@ export const FR: Dict = {
     "Réponses rapides aux questions les plus fréquentes des candidats et des entreprises.",
   "faq.services.title": "Quels services propose EmploiPlus Group ?",
   "faq.services.answer":
-    "Emploiplus Group est une entreprise spécialisée dans les services d'employabilité, Externalisation, et la gestion déléguée des ressources humaines basée en Afrique centrale.",
+    "EmploiPlus Group est une entreprise spécialisée dans les services d'employabilité, Externalisation, et la gestion déléguée des ressources humaines basée en Afrique centrale.",
   "faq.apply.title": "Comment postuler à un emploi sur le site ?",
   "faq.apply.answer":
     "Pour postuler à une offre, rendez-vous sur la page Offre d'emploi, cliquez sur le bouton de candidature et utilisez les options proposées : email, WhatsApp ou lien externe selon l'annonce. Vous pouvez aussi créer un compte candidat pour suivre plus facilement vos candidatures.",
@@ -537,8 +549,7 @@ export const EN: Dict = {
   "maelise.placeholder": "Write your question…",
   "maelise.send": "Send message",
   "maelise.thinking": "Maélise is preparing an answer…",
-  "maelise.disclaimer":
-    "Maélise is an AI and can make mistakes. Remember to verify her answers.",
+  "maelise.disclaimer": "Maélise is an AI and can make mistakes. Remember to verify her answers.",
   "maelise.newConversation": "New conversation",
   "maelise.greeting": "Hello!",
   "maelise.greetingNamed": "Hello, {name}",
@@ -549,6 +560,23 @@ export const EN: Dict = {
   "maelise.suggestion.cv": "How can I improve my CV?",
   "maelise.suggestion.application": "How does an application work?",
   "maelise.suggestion.services": "What does EmploiPlus offer?",
+  "home.hero.title": "Let's build your professional future.",
+  "home.hero.eyebrow": "Employment and human resources in Central Africa",
+  "home.hero.subtitle":
+    "Job opportunities, employability support, and delegated human resources management for candidates and businesses.",
+  "home.hero.search.query.label": "Job title or keyword",
+  "home.hero.search.query.placeholder": "E.g. accountant, HR assistant",
+  "home.hero.search.city.label": "City",
+  "home.hero.search.city.placeholder": "Brazzaville, Pointe-Noire...",
+  "home.hero.search.submit": "Search",
+  "home.hero.link.jobs": "Browse all jobs",
+  "home.hero.link.business": "I’m hiring or outsourcing",
+  "home.hero.links.label": "Useful links",
+  "home.hero.offers.singular": "{count} job available right now",
+  "home.hero.offers.plural": "{count} jobs available right now",
+  "home.seo.title": "Employment and human resources in Central Africa",
+  "home.seo.description":
+    "Job opportunities, employability support, and delegated human resources management in Central Africa.",
 };
 
 export const LN: Dict = {
@@ -579,8 +607,7 @@ export const LN: Dict = {
   "maelise.placeholder": "Koma motuna na yo…",
   "maelise.send": "Tinda nsango",
   "maelise.thinking": "Maélise azali kobongisa eyano…",
-  "maelise.disclaimer":
-    "Maélise azali AI mpe akoki kosala mabunga. Kanisá kotala biyano na ye.",
+  "maelise.disclaimer": "Maélise azali AI mpe akoki kosala mabunga. Kanisá kotala biyano na ye.",
   "maelise.newConversation": "Lisolo ya sika",
   "maelise.greeting": "Mbote!",
   "maelise.greetingNamed": "Mbote, {name}",
@@ -588,6 +615,23 @@ export const LN: Dict = {
   "maelise.introDescription":
     "Nakoki kosalisa yo na koluka mosala, kobongisa CV na yo mpe kolandela ba candidatures na yo.",
   "maelise.suggestion.jobs": "Luka mosala",
+  "home.hero.title": "Tótonga lobi ya mosala na yo.",
+  "home.hero.eyebrow": "Misala mpe makambo ya bato na Afrika ya ntei",
+  "home.hero.subtitle":
+    "Mabaku ya mosala, lisalisi mpo na kozwa mosala, mpe boyangeli ya makambo ya bato mpo na baluki-mosala mpe bakompanyi.",
+  "home.hero.search.query.label": "Mosala to liloba ya koluka",
+  "home.hero.search.query.placeholder": "Ndakisa: comptable, assistant RH",
+  "home.hero.search.city.label": "Engumba",
+  "home.hero.search.city.placeholder": "Brazzaville, Pointe-Noire...",
+  "home.hero.search.submit": "Luka",
+  "home.hero.link.jobs": "Tala misala nyonso",
+  "home.hero.link.business": "Nazali koluka bato to kopesa mosala mosusu",
+  "home.hero.links.label": "Ba lien ya ntina",
+  "home.hero.offers.singular": "Mosala {count} ezali sikoyo",
+  "home.hero.offers.plural": "Misala {count} ezali sikoyo",
+  "home.seo.title": "Misala mpe makambo ya bato na Afrika ya ntei",
+  "home.seo.description":
+    "Mabaku ya mosala, lisalisi mpo na kozwa mosala, mpe boyangeli ya makambo ya bato na Afrika ya ntei.",
   "maelise.suggestion.cv": "Ndenge nini nakoki kobongisa CV na ngai?",
   "maelise.suggestion.application": "Ndenge nini candidature esalaka?",
   "maelise.suggestion.services": "EmploiPlus epesaka nini?",

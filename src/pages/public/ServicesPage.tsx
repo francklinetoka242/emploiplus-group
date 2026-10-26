@@ -1,111 +1,7 @@
-import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  BriefcaseIcon as Briefcase,
-  CheckIcon as Check,
-  UserIcon as User,
-  BellIcon as Bell,
-  LightningIcon as Zap,
-  EyeIcon as Eye,
-  MapPinIcon as MapPin,
-  UsersIcon as Users,
-  StackIcon as Layers,
-  TrendUpIcon as TrendingUp,
-} from "@phosphor-icons/react";
-import { AIIcon } from "@/components/ui/AIIcon";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
-import candidateIllustration1 from "@/assets/services/candidate-section/candidate-step-01.webp";
-import candidateIllustration2 from "@/assets/services/candidate-section/candidate-step-02.webp";
-import candidateIllustration3 from "@/assets/services/candidate-section/candidate-step-03.webp";
-import candidateIllustration4 from "@/assets/services/candidate-section/candidate-step-04.webp";
-import candidateIllustration5 from "@/assets/services/candidate-section/candidate-step-05.webp";
-import candidateIllustration6 from "@/assets/services/candidate-section/candidate-step-06.webp";
-import candidateIllustration7 from "@/assets/services/candidate-section/candidate-step-07.webp";
 import enterpriseIllustration from "@/assets/services/candidate-journey/success-management.webp";
-
-const candidateSlides = [
-  { src: candidateIllustration1, alt: "Parcours candidat - vue 1" },
-  { src: candidateIllustration2, alt: "Parcours candidat - vue 2" },
-  { src: candidateIllustration3, alt: "Parcours candidat - vue 3" },
-  { src: candidateIllustration4, alt: "Parcours candidat - vue 4" },
-  { src: candidateIllustration5, alt: "Parcours candidat - vue 5" },
-  { src: candidateIllustration6, alt: "Parcours candidat - vue 6" },
-  { src: candidateIllustration7, alt: "Parcours candidat - vue 7" },
-];
-
-function CandidateCarousel() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const isMobileAppUserAgent =
-    typeof navigator !== "undefined" && navigator.userAgent.includes("EmploiPlusApp");
-
-  useEffect(() => {
-    if (isMobileAppUserAgent) {
-      return;
-    }
-
-    const timer = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % candidateSlides.length);
-    }, 4000);
-
-    return () => window.clearInterval(timer);
-  }, [isMobileAppUserAgent]);
-
-  const positionedSlides = candidateSlides.map((image, index) => {
-    let offset = (index - activeIndex + candidateSlides.length) % candidateSlides.length;
-    if (offset > candidateSlides.length / 2) {
-      offset -= candidateSlides.length;
-    }
-
-    return { image, offset };
-  });
-
-  return (
-    <div className="mx-auto w-full max-w-[520px] overflow-x-clip slide-in-right slide-delay-1">
-      <div className="relative rounded-[1.8rem] bg-transparent p-0 shadow-none">
-        <div className="relative mx-auto aspect-[9/20.5] w-[220px] sm:w-[250px]">
-          {positionedSlides.map(({ image, offset }) => (
-            <div
-              key={image.src}
-              className="absolute inset-0 overflow-hidden rounded-[1.3rem] bg-white transition-[transform,opacity] duration-700 ease-out will-change-transform"
-              style={{
-                opacity: offset === 0 ? 1 : Math.abs(offset) === 1 ? 0.5 : 0,
-                transform:
-                  offset === 0
-                    ? "translate3d(0, 0, 0) scale(1)"
-                    : offset === -1
-                      ? "translate3d(clamp(-175px, -30vw, -80px), 0, 0) scale(0.7)"
-                      : offset === 1
-                        ? "translate3d(clamp(80px, 30vw, 175px), 0, 0) scale(0.7)"
-                        : offset < 0
-                          ? "translate3d(clamp(-250px, -42vw, -130px), 0, 0) scale(0.5)"
-                          : "translate3d(clamp(130px, 42vw, 250px), 0, 0) scale(0.5)",
-                zIndex: offset === 0 ? 5 : Math.abs(offset) === 1 ? 2 : 1,
-              }}
-            >
-              <img
-                src={image.src}
-                alt={offset === 0 ? image.alt : ""}
-                aria-hidden={offset !== 0}
-                className="h-full w-full object-contain bg-white"
-              />
-            </div>
-          ))}
-        </div>
-        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
-          {candidateSlides.map((image, index) => (
-            <span
-              key={`${image.alt}-${index}`}
-              className={`h-2.5 w-2.5 rounded-full transition-all ${
-                index === activeIndex ? "bg-brand scale-110" : "bg-white/70"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function ServicesPage() {
   return (
@@ -120,130 +16,84 @@ export function ServicesPage() {
       <main className="bg-background pb-20 pt-0">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="space-y-24">
-            <section className="mx-4 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center sm:mx-6 lg:mx-8">
-              <div className="space-y-8 slide-in-left slide-delay-1">
-                <div className="inline-flex items-center rounded-full bg-brand/10 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-brand">
-                  Candidat
-                </div>
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-                    Un parcours candidat fluide et efficace
-                  </h2>
-                  <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-                    Explorez les offres, préparez votre profil et postulez en quelques étapes. Tout
-                    est pensé pour gagner du temps et vous mettre en valeur.
-                  </p>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {[
-                    {
-                      icon: <AIIcon className="h-5 w-5" />,
-                      label: "Matching intelligent adapté à votre profil",
-                    },
-                    {
-                      icon: <Bell className="h-5 w-5" weight="duotone" />,
-                      label: "Offres recommandées et mises à jour",
-                    },
-                    {
-                      icon: <Zap className="h-5 w-5" weight="duotone" />,
-                      label: "Candidature express en quelques clics",
-                    },
-                    {
-                      icon: <Eye className="h-5 w-5" weight="duotone" />,
-                      label: "Outils de visibilité professionnelle",
-                    },
-                  ].map(({ icon, label }, index) => (
-                    <div
-                      key={label}
-                      className={
-                        `border-b border-border px-1 py-4 text-foreground/80 transition-colors duration-200 hover:border-brand slide-in-up` +
-                        ` slide-delay-${index + 2}`
-                      }
-                    >
-                      <div className="flex items-center gap-3 text-brand">
-                        {icon}
-                        <span className="font-semibold text-slate-900">{label}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <Link
-                  to="/services/hub-candidat-intelligent"
-                  className="inline-flex items-center justify-center rounded-full bg-brand px-7 py-3 text-sm font-semibold text-brand-foreground transition duration-300 hover:bg-brand/90 slide-in-up slide-delay-4"
-                >
-                  Découvrir l'espace candidat
-                </Link>
-              </div>
-
-              <CandidateCarousel />
-            </section>
-
-            <section className="grid gap-10 border-t border-slate-200/80 pt-16 lg:grid-cols-[0.95fr_1.05fr] lg:pt-20 items-center">
-              <div className="relative overflow-hidden rounded-[2rem] bg-card slide-in-left slide-delay-1">
+            <section className="grid items-center gap-10 border-t border-border pt-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:pt-20">
+              <div className="relative overflow-hidden slide-in-left slide-delay-1">
                 <img
                   src={enterpriseIllustration}
-                  alt="Solutions entreprise et BPO"
-                  className="h-full w-full object-cover transition duration-500 ease-out hover:scale-105"
+                  alt="Équipe en réunion autour de solutions de gestion et de performance"
+                  className="aspect-[4/3] h-full w-full object-cover"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/10 via-transparent to-transparent" />
               </div>
 
-              <div className="space-y-8 slide-in-right slide-delay-1">
-                <div className="inline-flex items-center rounded-full bg-secondary/10 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-secondary">
-                  Entreprise
-                </div>
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-                    Une solution d'externalisation globale et sur mesure
+              <div className="space-y-7 slide-in-right slide-delay-1">
+                <div className="max-w-3xl space-y-3">
+                  <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+                    Des solutions RH pour chaque étape de votre organisation
                   </h2>
-                  <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-                    BPO, gestion déléguée et pilotage opérationnel pour faire évoluer votre
-                    organisation avec sérénité.
+                  <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
+                    Du renfort immédiat au conseil de long terme, nous mobilisons les bonnes
+                    compétences et prenons en charge les opérations qui permettent à vos équipes
+                    d’avancer.
                   </p>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="divide-y divide-border border-y border-border">
                   {[
                     {
-                      icon: MapPin,
-                      label: "Cadrage précis des besoins opérationnels",
+                      number: "01",
+                      title: "Mise à disposition & intérim",
+                      description:
+                        "Des collaborateurs sélectionnés pour un remplacement, un besoin ponctuel ou un renfort durable, avec gestion administrative et suivi RH.",
+                      to: "/services/mise-disposition-rh",
+                      link: "Découvrir l’intérim",
                     },
                     {
-                      icon: Users,
-                      label: "Ressources qualifiées et compétences clés",
+                      number: "02",
+                      title: "Recrutement & chasse de tête",
+                      description:
+                        "Une recherche structurée, de la définition du poste à l’évaluation des profils, jusqu’à leur présentation et leur intégration.",
+                      to: "/services/recrutement",
+                      link: "Explorer le recrutement",
                     },
                     {
-                      icon: Layers,
-                      label: "Pilotage continu et reporting clair",
+                      number: "03",
+                      title: "Externalisation administrative et RH",
+                      description:
+                        "La gestion de la paie, des dossiers du personnel et des opérations administratives ou techniques, adaptée à votre activité.",
+                      to: "/services/externalisation",
+                      link: "Voir l’externalisation",
                     },
                     {
-                      icon: TrendingUp,
-                      label: "Valorisation de la performance d'entreprise",
+                      number: "04",
+                      title: "Conseil & formation RH",
+                      description:
+                        "Des expertises en développement des compétences, carrières, rémunération, relations sociales et transformation RH.",
+                      to: "/services/conseil-formation",
+                      link: "Découvrir le conseil RH",
                     },
-                  ].map(({ icon: Icon, label }, index) => (
-                    <div
-                      key={label}
-                      className={
-                        `border-b border-border px-1 py-4 text-foreground/80 transition-colors duration-200 hover:border-secondary slide-in-up` +
-                        ` slide-delay-${index + 2}`
-                      }
+                  ].map(({ number, title, description, to, link }) => (
+                    <article
+                      key={title}
+                      className="grid gap-x-4 gap-y-2 py-5 sm:grid-cols-[2.5rem_minmax(0,1fr)] sm:gap-y-1"
                     >
-                      <div className="flex items-center gap-3 text-secondary">
-                        <Icon className="h-5 w-5" weight="duotone" />
-                        <span className="font-semibold text-slate-900">{label}</span>
+                      <span className="row-span-2 pt-0.5 text-xs tabular-nums text-muted-foreground">
+                        {number}
+                      </span>
+                      <div>
+                        <h3 className="font-semibold text-foreground">{title}</h3>
+                        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                          {description}
+                        </p>
                       </div>
-                    </div>
+                      <Link
+                        to={to}
+                        className="text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:col-start-2"
+                      >
+                        {link} <span aria-hidden="true">→</span>
+                      </Link>
+                    </article>
                   ))}
                 </div>
-
-                <Link
-                  to="/services/externalisation"
-                  className="inline-flex items-center justify-center rounded-full bg-secondary px-7 py-3 text-sm font-semibold text-secondary-foreground transition duration-300 hover:bg-secondary/90 slide-in-up slide-delay-4"
-                >
-                  Découvrir nos solutions
-                </Link>
               </div>
             </section>
           </div>

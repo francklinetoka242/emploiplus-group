@@ -47,9 +47,7 @@ export function SiteHeader() {
           />
           <div className="leading-tight hidden sm:block">
             <div className="font-display font-bold text-foreground">EmploiPlus</div>
-            <div className="text-xs uppercase tracking-wide text-muted-foreground">
-              Group
-            </div>
+            <div className="text-xs uppercase tracking-wide text-muted-foreground">Group</div>
           </div>
         </Link>
 
@@ -128,7 +126,7 @@ export function SiteHeader() {
                 size="sm"
                 className="hidden md:inline-flex border-border/70 bg-background/80 px-3 text-sm font-medium hover:bg-accent"
               >
-                <Link to="/candidate/login">connexion</Link>
+                <Link to="/candidate/login">Connexion</Link>
               </Button>
               <Button
                 asChild
@@ -207,7 +205,7 @@ export function SiteHeader() {
                   className="justify-center"
                   onClick={() => setOpen(false)}
                 >
-                  <Link to="/candidate/login">connexion</Link>
+                  <Link to="/candidate/login">Connexion</Link>
                 </Button>
                 <Button
                   asChild

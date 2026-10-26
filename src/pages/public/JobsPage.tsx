@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   CurrencyCircleDollarIcon as BadgeDollarSign,
   IdentificationBadgeIcon as BriefcaseBusiness,
@@ -72,16 +72,17 @@ export function JobsPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { user, isLoading, roles } = useAuthContext();
   const { profile } = useCandidate();
   const isCandidateShell = Boolean(user && (roles.includes("candidate") || profile?.id));
   const canUseAdvancedFilters = Boolean(user);
   const { preferences } = useCandidateJobPreferences(profile?.id);
   const mobileApp = isMobileApp();
-  const [searchInput, setSearchInput] = React.useState("");
+  const [searchInput, setSearchInput] = React.useState(() => searchParams.get("q") ?? "");
   const [companyInput, setCompanyInput] = React.useState("");
   const [contractTypeInput, setContractTypeInput] = React.useState("");
-  const [locationInput, setLocationInput] = React.useState("");
+  const [locationInput, setLocationInput] = React.useState(() => searchParams.get("ville") ?? "");
   const [domainInput, setDomainInput] = React.useState("");
   const [locationOpen, setLocationOpen] = React.useState(false);
   const [advancedFiltersPromptOpen, setAdvancedFiltersPromptOpen] = React.useState(false);
@@ -91,9 +92,9 @@ export function JobsPage() {
   const [appliedFilters, setAppliedFilters] = React.useState<JobSearchCriteria>({
     status: "published" as const,
     limit: 100,
-    query: "",
+    query: searchParams.get("q") ?? "",
     company: "",
-    location: "",
+    location: searchParams.get("ville") ?? "",
     contractType: "",
   });
   const [filtersOpen, setFiltersOpen] = React.useState(false);

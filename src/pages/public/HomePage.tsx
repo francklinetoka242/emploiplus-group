@@ -1,31 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import heroBg from "@/assets/home/home-hero-background.webp";
 import heroMain from "@/assets/home/home-recruitment-image.webp";
 import enterpriseTeamImage from "@/assets/home/enterprise-team-03.webp";
 import mainJcImage from "@/assets/home/main-j-c.webp";
-import { useEcoMode } from "@/contexts/EcoModeContext";
 import logoMonago from "@/assets/partners/logo-monago.webp";
 import { Button } from "@/components/ui/button";
-import { SERVICE_NAV_LINKS } from "@/constants/serviceNavigation";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { DEFAULT_SEO, BASE_URL } from "@/features/seo";
 import { SectionHeader } from "@/components/page/SectionHeader";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
-import { usePublishedJobOffers, usePublishedBlogPosts } from "@/features/jobs/hooks";
+import { usePublishedBlogPosts } from "@/features/jobs/hooks";
 import { fadeUp, staggerContainer, staggerItem } from "@/lib/animations/animations";
 import {
-  CurrencyCircleDollarIcon as BadgeDollarSign,
-  IdentificationBadgeIcon as BriefcaseBusiness,
-  BuildingsIcon as Building2,
   ClipboardTextIcon as ClipboardCheck,
   UsersIcon as Users,
-  CalendarDotsIcon as CalendarDays,
   ArrowSquareOutIcon as ExternalLink,
-  EnvelopeIcon as Mail,
-  MapPinIcon as MapPin,
   ChartBarIcon as BarChart3,
   HandshakeIcon as Handshake,
   BookOpenIcon as BookOpen,
@@ -34,139 +25,7 @@ import {
 import { AIIcon } from "@/components/ui/AIIcon";
 import { ShareButtons } from "@/components/site/ShareButtons";
 import { JobCard } from "@/features/jobs/components";
-
-function HeroSection({ isCandidateShellHome = false }: { isCandidateShellHome?: boolean }) {
-  const { isEcoMode } = useEcoMode();
-  const { t } = useI18n();
-  const [servicesOpen, setServicesOpen] = useState(false);
-
-  if (isEcoMode) {
-    return (
-      <section
-        className={`relative overflow-hidden min-h-[340px] md:min-h-[360px] bg-slate-100 ${
-          isCandidateShellHome ? "lg:min-h-[300px]" : ""
-        }`}
-      >
-        <div
-          className={`relative z-10 container-page py-20 md:py-28 ${
-            isCandidateShellHome ? "lg:py-10" : ""
-          }`}
-        >
-          <div className="grid items-center gap-12">
-            <div>
-              <h1
-                className={`mt-20 md:mt-24 font-display text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 ${
-                  isCandidateShellHome ? "lg:mt-0" : ""
-                }`}
-              >
-                {t("home.hero.title")}
-              </h1>
-              <p className="mt-6 max-w-2xl text-base text-slate-700 leading-relaxed">
-                {t("home.hero.subtitle")}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <motion.section
-      className={`relative overflow-hidden min-h-[480px] md:min-h-[560px] bg-cover bg-center bg-no-repeat ${
-        isCandidateShellHome ? "lg:min-h-[420px]" : ""
-      }`}
-      style={{ backgroundImage: `url(${heroBg})` }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <img
-        src={heroBg}
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-cover"
-        loading="eager"
-        fetchPriority="high"
-        decoding="async"
-      />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.65),rgba(2,6,23,0.9))]" />
-      <div className="absolute inset-0 bg-black/40" />
-      <div
-        className={`relative z-10 container-page py-20 md:py-28 ${
-          isCandidateShellHome ? "lg:py-12" : ""
-        }`}
-      >
-        <div className="grid items-center gap-12">
-          <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
-            <motion.h1
-              className={`mt-20 md:mt-24 font-display text-3xl md:text-4xl font-extrabold tracking-tight text-white ${
-                isCandidateShellHome ? "lg:mt-8" : ""
-              }`}
-              variants={fadeUp}
-              transition={{ duration: 0.5, delay: 0.08 }}
-            >
-              {t("home.hero.title")}
-            </motion.h1>
-            <motion.p
-              className="mt-6 max-w-2xl text-base text-white/90 leading-relaxed"
-              variants={fadeUp}
-              transition={{ duration: 0.5, delay: 0.16 }}
-            >
-              {t("home.hero.subtitle")}
-            </motion.p>
-            <motion.div
-              className="mt-10 flex flex-wrap gap-3"
-              variants={fadeUp}
-              transition={{ duration: 0.5, delay: 0.24 }}
-            >
-              <Button
-                asChild
-                size="lg"
-                className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-brand"
-              >
-                <Link to="/jobs">{t("home.hero.cta.jobs")}</Link>
-              </Button>
-              <div
-                className="relative"
-                onMouseEnter={() => setServicesOpen(true)}
-                onMouseLeave={() => setServicesOpen(false)}
-              >
-                <Button
-                  size="lg"
-                  aria-expanded={servicesOpen}
-                  aria-haspopup="menu"
-                  onClick={() => setServicesOpen((isOpen) => !isOpen)}
-                  className="bg-accent text-secondary-foreground hover:bg-accent/90 shadow-lg"
-                >
-                  {t("home.hero.cta.services")}
-                </Button>
-                {servicesOpen ? (
-                  <div
-                    role="menu"
-                    className="absolute left-0 top-full z-50 mt-1 w-max max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-background/80 p-2 shadow-lg backdrop-blur-md"
-                  >
-                    {SERVICE_NAV_LINKS.map((service) => (
-                      <Link
-                        key={service.to}
-                        to={service.to}
-                        role="menuitem"
-                        onClick={() => setServicesOpen(false)}
-                        className="block whitespace-nowrap rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                      >
-                        {service.label}
-                      </Link>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </div>
-    </motion.section>
-  );
-}
+import { HeroSection } from "@/components/home/HeroSection";
 
 function AnimatedStat({
   value,
@@ -199,7 +58,6 @@ export function HomePage() {
   const isCandidateShellHome = location.pathname === "/candidate/public";
   const { t } = useI18n();
   const navigate = useNavigate();
-  const { offers: homeJobs, loading: jobsLoading } = usePublishedJobOffers(2);
   const { posts: homePosts, loading: postsLoading } = usePublishedBlogPosts(3);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -299,7 +157,7 @@ export function HomePage() {
 
   return (
     <div className="bg-background">
-      <SEO {...DEFAULT_SEO} />
+      <SEO {...DEFAULT_SEO} title={t("home.seo.title")} description={t("home.seo.description")} />
       <HeroSection isCandidateShellHome={isCandidateShellHome} />
 
       {showScrollTop && (
