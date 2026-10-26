@@ -113,7 +113,18 @@ function sitemapGeneratorPlugin(env: Record<string, string>) {
     async closeBundle() {
       const hostname = "https://emploiplus-group.com".replace(/\/$/, "");
 
-      const staticRoutes = ["/", "/about", "/services", "/jobs", "/blog", "/contact"];
+      const staticRoutes = [
+        "/",
+        "/about",
+        "/services",
+        "/services/mise-disposition-rh",
+        "/services/recrutement",
+        "/services/externalisation",
+        "/services/conseil-formation",
+        "/jobs",
+        "/blog",
+        "/contact",
+      ];
 
       const now = new Date().toISOString();
 

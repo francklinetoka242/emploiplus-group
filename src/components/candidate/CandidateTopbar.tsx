@@ -69,7 +69,7 @@ export function CandidateTopbar({
     { to: "/services/mise-disposition-rh", label: "Mise à disposition" },
     { to: "/services/recrutement", label: "Recrutement" },
     { to: "/services/externalisation", label: "Externalisation" },
-    { to: "/services/conseil-formation", label: "Formation & Conseil" },
+    { to: "/services/conseil-formation", label: "Conseil & formation RH" },
   ];
   const isServicesActive = location.pathname.startsWith("/services");
 

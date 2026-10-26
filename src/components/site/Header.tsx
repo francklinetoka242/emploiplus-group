@@ -91,7 +91,7 @@ export function SiteHeader() {
                         onClick={() => setServicesOpen(false)}
                         className="block whitespace-nowrap rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                       >
-                        {service.label}
+                        {service.labelKey ? t(service.labelKey) : service.label}
                       </NavLink>
                     ))}
                   </div>
@@ -180,7 +180,7 @@ export function SiteHeader() {
                           }}
                           className="link link-animated block rounded-md px-3 py-2 text-sm hover:bg-accent"
                         >
-                          {service.label}
+                          {service.labelKey ? t(service.labelKey) : service.label}
                         </Link>
                       ))}
                     </div>

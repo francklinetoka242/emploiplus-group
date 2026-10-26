@@ -1,18 +1,32 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useSearchParams } from "react-router-dom";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { Button } from "@/components/ui/button";
 import { PhoneIcon as Phone, EnvelopeIcon as Mail, MapPinIcon as MapPin, PaperPlaneTiltIcon as Send, CheckCircleIcon as CheckCircle } from "@phosphor-icons/react";
 import { staggerContainer, staggerItem, fadeUp } from "@/lib/animations/animations";
+import { readContactSubject } from "@/features/services/contactSubject";
 
 export function ContactPage() {
   const { t } = useI18n();
-  const [formData, setFormData] = React.useState({ name: "", email: "", subject: "", message: "" });
+  const [searchParams] = useSearchParams();
+  const querySubject = readContactSubject(searchParams.toString());
+  const [formData, setFormData] = React.useState(() => ({
+    name: "",
+    email: "",
+    subject: querySubject,
+    message: "",
+  }));
   const [submitted, setSubmitted] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitError, setSubmitError] = React.useState("");
+
+  React.useEffect(() => {
+    if (!querySubject) return;
+    setFormData((current) => ({ ...current, subject: querySubject }));
+  }, [querySubject]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

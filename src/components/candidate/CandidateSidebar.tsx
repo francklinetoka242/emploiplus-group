@@ -62,7 +62,7 @@ const publicServiceItems = [
   { id: "service-hr", label: "Mise à disposition", href: "/services/mise-disposition-rh" },
   { id: "service-recruitment", label: "Recrutement", href: "/services/recrutement" },
   { id: "service-outsourcing", label: "Externalisation", href: "/services/externalisation" },
-  { id: "service-training", label: "Formation & Conseil", href: "/services/conseil-formation" },
+  { id: "service-training", label: "Conseil & formation RH", href: "/services/conseil-formation" },
 ];
 
 const menuItems = [
