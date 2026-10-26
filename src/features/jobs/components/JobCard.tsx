@@ -36,6 +36,8 @@ export type JobCardProps = {
   onApplyClick?: () => void;
   hideRequirementsSection?: boolean;
   matchScore?: number;
+  headerActions?: React.ReactNode;
+  shadowless?: boolean;
   variant?: "card" | "list";
 };
 
@@ -52,6 +54,8 @@ export function JobCard({
   onApplyClick,
   hideRequirementsSection = false,
   matchScore,
+  headerActions,
+  shadowless = false,
   variant = "card",
 }: JobCardProps) {
   const [isApplyOpen, setIsApplyOpen] = React.useState(false);
@@ -100,6 +104,7 @@ export function JobCard({
             </h3>
           </div>
           <div className="flex min-w-0 flex-wrap items-center gap-2 sm:justify-end">
+            {headerActions}
             {typeof matchScore === "number" ? (
               <span className="inline-flex items-center rounded-full border border-secondary/20 bg-secondary/10 px-2.5 py-1 text-xs font-semibold text-secondary">
                 {Math.round(Math.max(0, Math.min(100, matchScore)))}% de match
@@ -216,13 +221,15 @@ export function JobCard({
               type="button"
               size="sm"
               disabled={isExpired}
-              className="h-10 rounded-xl bg-brand px-4 font-semibold text-brand-foreground shadow-sm hover:bg-brand/90"
+              className={`h-10 rounded-xl bg-brand px-4 font-semibold text-brand-foreground hover:bg-brand/90 ${shadowless ? "shadow-none" : "shadow-sm"}`}
               onClick={handleApplyClick}
             >
               Postuler
             </Button>
             {!onApplyClick && isApplyOpen ? (
-              <div className="absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-border bg-card p-2 shadow-lg">
+              <div
+                className={`absolute right-0 z-10 mt-2 w-44 rounded-2xl border border-border bg-card p-2 ${shadowless ? "shadow-none" : "shadow-lg"}`}
+              >
                 {applyOptions.map((option) => {
                   const Icon = option.icon;
                   return (
@@ -244,7 +251,12 @@ export function JobCard({
         ) : null}
         {shareUrl ? (
           <div className="ml-auto">
-            <ShareButtons url={shareUrl} text={shareText} variant="compact" />
+            <ShareButtons
+              url={shareUrl}
+              text={shareText}
+              variant="compact"
+              shadowless={shadowless}
+            />
           </div>
         ) : null}
       </div>

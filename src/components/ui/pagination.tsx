@@ -10,6 +10,7 @@ interface PaginationNavProps {
   onPageChange: (page: number) => void;
   disabled?: boolean;
   className?: string;
+  appearance?: "default" | "minimal";
 }
 
 export function PaginationNav({
@@ -18,8 +19,12 @@ export function PaginationNav({
   onPageChange,
   disabled = false,
   className,
+  appearance = "default",
 }: PaginationNavProps) {
   if (totalPages <= 1) return null;
+
+  const buttonBackground =
+    appearance === "minimal" ? "bg-transparent hover:bg-transparent" : "bg-muted/50 hover:bg-muted";
 
   return (
     <nav
@@ -28,11 +33,14 @@ export function PaginationNav({
     >
       <button
         type="button"
-        className="rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+        className={cn(
+          "rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground transition disabled:pointer-events-none disabled:opacity-50",
+          buttonBackground,
+        )}
         onClick={() => onPageChange(Math.max(1, currentPage - 1))}
         disabled={disabled || currentPage <= 1}
       >
-        Previous
+        Précédent
       </button>
       <div className="flex items-center gap-x-1">
         {Array.from({ length: totalPages }, (_, index) => {
@@ -41,7 +49,10 @@ export function PaginationNav({
             <button
               key={page}
               type="button"
-              className="h-9 w-9 rounded-lg border border-border bg-muted/50 text-sm font-medium text-foreground transition hover:bg-muted aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground disabled:pointer-events-none disabled:opacity-50"
+              className={cn(
+                "h-9 w-9 rounded-lg border border-border text-sm font-medium text-foreground transition aria-[current=page]:bg-primary aria-[current=page]:text-primary-foreground disabled:pointer-events-none disabled:opacity-50",
+                buttonBackground,
+              )}
               aria-current={page === currentPage ? "page" : undefined}
               onClick={() => onPageChange(page)}
               disabled={disabled || page === currentPage}
@@ -53,11 +64,14 @@ export function PaginationNav({
       </div>
       <button
         type="button"
-        className="rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted disabled:pointer-events-none disabled:opacity-50"
+        className={cn(
+          "rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground transition disabled:pointer-events-none disabled:opacity-50",
+          buttonBackground,
+        )}
         onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
         disabled={disabled || currentPage >= totalPages}
       >
-        Next
+        Suivant
       </button>
     </nav>
   );
@@ -110,25 +124,25 @@ const PaginationPrevious = ({
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
-    aria-label="Go to previous page"
+    aria-label="Aller à la page précédente"
     size="default"
     className={cn("gap-1 pl-2.5", className)}
     {...props}
   >
     <ChevronLeft className="h-4 w-4" />
-    <span>Previous</span>
+    <span>Précédent</span>
   </PaginationLink>
 );
 PaginationPrevious.displayName = "PaginationPrevious";
 
 const PaginationNext = ({ className, ...props }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
-    aria-label="Go to next page"
+    aria-label="Aller à la page suivante"
     size="default"
     className={cn("gap-1 pr-2.5", className)}
     {...props}
   >
-    <span>Next</span>
+    <span>Suivant</span>
     <ChevronRight className="h-4 w-4" />
   </PaginationLink>
 );
@@ -141,7 +155,7 @@ const PaginationEllipsis = ({ className, ...props }: React.ComponentProps<"span"
     {...props}
   >
     <MoreHorizontal className="h-4 w-4" />
-    <span className="sr-only">More pages</span>
+    <span className="sr-only">Plus de pages</span>
   </span>
 );
 PaginationEllipsis.displayName = "PaginationEllipsis";

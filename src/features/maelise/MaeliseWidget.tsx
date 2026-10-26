@@ -169,6 +169,18 @@ export function MaeliseWidget({
   }, [isOpen]);
 
   useEffect(() => {
+    const handlePrefill = (event: Event) => {
+      if (!(event instanceof CustomEvent) || typeof event.detail !== "string") return;
+
+      setDraft(event.detail.slice(0, 550));
+      window.requestAnimationFrame(() => inputRef.current?.focus());
+    };
+
+    window.addEventListener("maelise:prefill", handlePrefill);
+    return () => window.removeEventListener("maelise:prefill", handlePrefill);
+  }, []);
+
+  useEffect(() => {
     const speechWindow = window as SpeechRecognitionWindow;
     const Recognition = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
     if (!Recognition) return;

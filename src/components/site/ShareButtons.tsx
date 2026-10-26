@@ -30,6 +30,7 @@ export function ShareButtons({
   showCopyLink = true,
   showQuickActions = false,
   showFacebookAndLinkedIn = true,
+  shadowless = false,
   shareData,
 }: {
   url: string;
@@ -39,6 +40,7 @@ export function ShareButtons({
   showCopyLink?: boolean;
   showQuickActions?: boolean;
   showFacebookAndLinkedIn?: boolean;
+  shadowless?: boolean;
   shareData?: ShareJobData;
 }) {
   const { t } = useI18n();
@@ -111,7 +113,7 @@ export function ShareButtons({
             size="icon"
             onClick={() => setOpen((value) => !value)}
             aria-label="Partager l'offre"
-            className="h-10 w-10 rounded-full border-border bg-background text-brand shadow-sm transition-colors hover:bg-primary/10 hover:text-brand [&_svg]:size-5"
+            className={`h-10 w-10 rounded-full border-border bg-background text-brand transition-colors hover:bg-primary/10 hover:text-brand [&_svg]:size-5 ${shadowless ? "shadow-none" : "shadow-sm"}`}
           >
             <Share2 className="size-5" />
           </Button>
@@ -160,7 +162,7 @@ export function ShareButtons({
                 onClick={copy}
                 title={copied ? t("common.copied") : t("cta.copyLink")}
                 aria-label={copied ? t("common.copied") : t("cta.copyLink")}
-                className="h-9 w-9 rounded-full border-border bg-background/90 shadow-sm"
+                className={`h-9 w-9 rounded-full border-border bg-background/90 ${shadowless ? "shadow-none" : "shadow-sm"}`}
               >
                 {copied ? <Check className="size-4" /> : <Link2 className="size-4" />}
               </Button>
@@ -168,7 +170,9 @@ export function ShareButtons({
           </>
         ) : null}
         {open ? (
-          <div className="absolute right-0 top-full z-50 mt-2 flex min-w-[180px] items-center gap-2 rounded-2xl border border-border bg-card p-2 shadow-elev">
+          <div
+            className={`absolute right-0 top-full z-50 mt-2 flex min-w-[180px] items-center gap-2 rounded-2xl border border-border bg-card p-2 ${shadowless ? "shadow-none" : "shadow-elev"}`}
+          >
             <a
               href={links.whatsapp}
               target="_blank"

@@ -5,17 +5,18 @@ import {
   SealCheckIcon as BadgeCheck,
   BookmarkSimpleIcon as Bookmark,
   BookmarkSimpleIcon as BookmarkCheck,
-  IdentificationBadgeIcon as BriefcaseBusiness,
-  BuildingsIcon as Building2,
+  BuildingsIcon as Buildings,
+  MapPinAreaIcon as MapPinArea,
+  HandshakeIcon as Handshake,
+  CoinsIcon as Coins,
   CalendarDotsIcon as CalendarDays,
+  HourglassIcon as Hourglass,
   ClipboardIcon as Clipboard,
   ClipboardTextIcon as ClipboardCheck,
-  ClockIcon as Clock3,
-  CurrencyDollarIcon as DollarSign,
   FileTextIcon as FileText,
-  MapPinIcon as MapPin,
   PaperPlaneTiltIcon as Send,
 } from "@phosphor-icons/react";
+import { Icon as UiIcon } from "@/components/ui/Icon";
 import { AIIcon } from "@/components/ui/AIIcon";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
@@ -573,22 +574,22 @@ export function JobOfferDetailPage() {
 
   const overviewItems = [
     {
-      icon: Building2,
+      icon: Buildings,
       label: getLabel("jobs.detail.company", "Entreprise"),
       value: job.company,
     },
     {
-      icon: MapPin,
+      icon: MapPinArea,
       label: getLabel("jobs.detail.location", "Localisation"),
       value: location,
     },
     {
-      icon: BriefcaseBusiness,
+      icon: Handshake,
       label: getLabel("jobs.detail.contractType", "Type de contrat"),
       value: getContractLabel(job.contract_type),
     },
     {
-      icon: DollarSign,
+      icon: Coins,
       label: t("admin.jobs.field.salary"),
       value: job.salary || getLabel("jobs.detail.salaryNotSpecified", "Non précisé"),
     },
@@ -598,7 +599,7 @@ export function JobOfferDetailPage() {
       value: formatDate(job.publish_at) || getLabel("jobs.detail.notSpecified", "À préciser"),
     },
     {
-      icon: Clock3,
+      icon: Hourglass,
       label: getLabel("jobs.detail.deadline", "Date limite"),
       value: formatDate(job.deadline) || getLabel("jobs.detail.notSpecified", "À préciser"),
     },
@@ -678,10 +679,10 @@ export function JobOfferDetailPage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              {overviewItems.map(({ icon: Icon, label, value }) => (
+              {overviewItems.map(({ icon, label, value }) => (
                 <div key={label} className="border-b border-border/70 p-4">
                   <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <Icon className="size-4 text-brand" />
+                    <UiIcon icon={icon} className="size-4 text-brand" />
                     {label}
                   </div>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">{value}</p>
@@ -857,7 +858,7 @@ export function JobOfferDetailPage() {
                       {savedOfferState ? (
                         <BookmarkCheck className="size-4 text-primary" weight="fill" />
                       ) : (
-                        <Bookmark className="size-4" weight="bold" />
+                        <Bookmark className="size-4" weight="duotone" />
                       )}
                     </button>
                   ) : null}

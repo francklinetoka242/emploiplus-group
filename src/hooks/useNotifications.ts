@@ -34,54 +34,64 @@ const updateState = (partial: Partial<NotificationState>) => {
   notifySubscribers();
 };
 
-const loadNotifications = async () => {
-  try {
-    updateState({ loading: true, error: null });
+let notificationLoadPromise: Promise<void> | null = null;
 
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-    if (authError) throw authError;
+const loadNotifications = () => {
+  if (notificationLoadPromise) return notificationLoadPromise;
 
-    if (!user) {
-      updateState({ notifications: [], unreadCount: 0, loading: false });
-      return;
+  notificationLoadPromise = (async () => {
+    try {
+      updateState({ loading: true, error: null });
+
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+      if (authError) throw authError;
+
+      if (!user) {
+        updateState({ notifications: [], unreadCount: 0, loading: false });
+        return;
+      }
+
+      const { data, error: notifError } = await getNotificationsForUser(user.id);
+      if (notifError) throw notifError;
+
+      const notifications = Array.isArray(data) ? data : [];
+      const allowedTypes = [
+        "admin",
+        "offre",
+        "candidature",
+        "evenement",
+        "job",
+        "contact",
+        "blog",
+      ] as const;
+      const userNotifications = notifications.filter(
+        (notif: NotificationRecord) =>
+          notif.status === "active" &&
+          (notif.user_id === user.id || notif.user_id === null) &&
+          allowedTypes.includes(notif.type as (typeof allowedTypes)[number]),
+      );
+      const unreadCount = userNotifications.filter((notification) => !notification.is_read).length;
+
+      updateState({
+        notifications: userNotifications,
+        unreadCount,
+        loading: false,
+        error: null,
+      });
+    } catch (err) {
+      const errorMsg =
+        err instanceof Error ? err.message : "Erreur lors du chargement des notifications";
+      updateState({ error: errorMsg, loading: false });
+      console.error("Error loading notifications:", err);
+    } finally {
+      notificationLoadPromise = null;
     }
+  })();
 
-    const { data, error: notifError } = await getNotificationsForUser(user.id);
-    if (notifError) throw notifError;
-
-    const notifications = Array.isArray(data) ? data : [];
-    const allowedTypes = [
-      "admin",
-      "offre",
-      "candidature",
-      "evenement",
-      "job",
-      "contact",
-      "blog",
-    ] as const;
-    const userNotifications = notifications.filter(
-      (notif: NotificationRecord) =>
-        notif.status === "active" &&
-        (notif.user_id === user.id || notif.user_id === null) &&
-        allowedTypes.includes(notif.type as (typeof allowedTypes)[number]),
-    );
-    const unreadCount = userNotifications.filter((notification) => !notification.is_read).length;
-
-    updateState({
-      notifications: userNotifications,
-      unreadCount,
-      loading: false,
-      error: null,
-    });
-  } catch (err) {
-    const errorMsg =
-      err instanceof Error ? err.message : "Erreur lors du chargement des notifications";
-    updateState({ error: errorMsg, loading: false });
-    console.error("Error loading notifications:", err);
-  }
+  return notificationLoadPromise;
 };
 
 export function useNotifications() {

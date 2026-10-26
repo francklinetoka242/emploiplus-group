@@ -5,18 +5,22 @@ import { cn } from "@/lib/utils";
 import {
   BellIcon as Bell,
   BriefcaseIcon as Briefcase,
-  CaretLeftIcon as ChevronLeft,
-  CaretRightIcon as ChevronRight,
   FileTextIcon as FileText,
+  NewspaperClippingIcon,
+  NotebookIcon,
+  QuestionIcon,
   SquaresFourIcon as LayoutDashboard,
   SignOutIcon as LogOut,
   ScrollIcon as ScrollText,
   ShieldCheckIcon as ShieldCheck,
   MagnifyingGlassIcon as Search,
   UsersIcon as Users,
+  UsersThreeIcon,
   ChartBarIcon as BarChart3,
+  SidebarSimpleIcon,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
+import { Icon as UiIcon } from "@/components/ui/Icon";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 
 type AdminView =
@@ -84,15 +88,15 @@ export function AdminSidebar({
     { id: "jobs", label: t("admin.sidebar.jobs") || "Offres", icon: Briefcase },
     { id: "analytics-offres", label: "Analytics-Offres", icon: BarChart3 },
     { id: "candidates", label: t("admin.sidebar.candidates") || "Utilisateur", icon: Users },
-    { id: "guides", label: "Fiches-doc", icon: FileText },
-    { id: "blog", label: t("admin.sidebar.blog") || "Blog", icon: FileText },
+    { id: "guides", label: "Fiches-doc", icon: NotebookIcon },
+    { id: "blog", label: t("admin.sidebar.blog") || "Blog", icon: NewspaperClippingIcon },
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "seo", label: t("admin.sidebar.seo") || "SEO", icon: Search },
     { id: "privacy", label: "Politique-Conf", icon: ShieldCheck },
     { id: "legal", label: "Mentions Légales", icon: ScrollText },
     { id: "cgu", label: "CGU", icon: FileText },
-    { id: "team", label: t("admin.sidebar.team") || "Équipe", icon: Users },
-    { id: "faq", label: t("admin.sidebar.faq") || "FAQ", icon: FileText },
+    { id: "team", label: t("admin.sidebar.team") || "Équipe", icon: UsersThreeIcon },
+    { id: "faq", label: t("admin.sidebar.faq") || "FAQ", icon: QuestionIcon },
   ];
 
   return (
@@ -111,7 +115,7 @@ export function AdminSidebar({
         className="absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-muted hover:text-primary"
         aria-label={open ? t("admin.sidebar.collapse") : t("admin.sidebar.expand")}
       >
-        {open ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        <SidebarSimpleIcon className={cn("h-4 w-4", !open && "rotate-180")} />
       </button>
 
       <nav
@@ -138,9 +142,16 @@ export function AdminSidebar({
                 )}
                 title={item.label}
               >
-                <Icon
-                  className={cn("h-4 w-4 flex-shrink-0", !open && "mx-auto")}
-                  weight={active ? "fill" : "bold"}
+                <UiIcon
+                  icon={Icon}
+                  size={16}
+                  color="currentColor"
+                  className={cn(
+                    "h-4 w-4 flex-shrink-0",
+                    active ? "text-primary" : "text-slate-500",
+                    !open && "mx-auto",
+                  )}
+                  weight={active ? "fill" : "duotone"}
                   aria-hidden="true"
                 />
                 <span className={cn("text-sm font-medium", open ? "" : "hidden")}>

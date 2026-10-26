@@ -276,7 +276,7 @@ function DocumentCard({
             e.stopPropagation();
             window.open((document as CandidateDocument).url, "_blank", "noopener,noreferrer");
           }}
-          className="shrink-0 p-2 rounded-lg hover:bg-secondary transition-colors"
+          className="shrink-0 p-2 rounded-lg hover:bg-brand/5 transition-colors"
         >
           <Eye className="h-4 w-4 text-brand" />
         </button>
@@ -633,7 +633,7 @@ export function CandidateJobApplyPage() {
     return (
       <div className="container-page py-20 md:py-28">
         <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
+          <AlertCircle className="h-12 w-12 text-brand mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-foreground mb-4 md:text-3xl">Offre non trouvée</h1>
           <p className="text-muted-foreground mb-8">
             L'offre que vous cherchez n'existe pas ou a été supprimée.
@@ -651,7 +651,7 @@ export function CandidateJobApplyPage() {
     return (
       <div className="container-page py-20 md:py-28">
         <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
+          <AlertCircle className="h-12 w-12 text-brand mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-foreground mb-4 md:text-3xl">Non authentifié</h1>
           <p className="text-muted-foreground mb-8">
             Veuillez vous connecter pour postuler à cette offre.
@@ -678,7 +678,7 @@ export function CandidateJobApplyPage() {
           variant="ghost"
           size="sm"
           onClick={handleCancel}
-          className="gap-2 hover:bg-secondary"
+          className="gap-2 hover:bg-brand/5"
         >
           <ArrowLeft className="h-4 w-4" />
           Retour
@@ -698,7 +698,7 @@ export function CandidateJobApplyPage() {
           className="border border-border/80 rounded-none overflow-hidden transition-all duration-300 animate-fade-in w-full max-w-full"
           style={{ animationDelay: "0.2s" }}
         >
-          <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-secondary/20">
+          <CardHeader className="pb-4 px-6 pt-6 border-b border-border/60 bg-brand/5">
             <CardTitle className="text-base">Documents enregistrés</CardTitle>
             <CardDescription className="text-xs mt-1">
               Sélectionnez les documents à transmettre
@@ -708,8 +708,8 @@ export function CandidateJobApplyPage() {
             {documentsLoading ? (
               <p className="text-sm text-muted-foreground">Chargement de vos documents...</p>
             ) : !hasDocuments ? (
-              <Alert className="border-yellow-200/60 bg-yellow-50/80">
-                <AlertCircle className="h-4 w-4 text-yellow-700" />
+              <Alert className="border-brand/20 bg-brand/5">
+                <AlertCircle className="h-4 w-4 text-brand" />
                 <AlertDescription className="text-sm text-foreground/80 ml-2">
                   Vous n'avez pas encore enregistré de documents.
                   <br />
@@ -741,7 +741,7 @@ export function CandidateJobApplyPage() {
           className="border border-border/80 rounded-none overflow-hidden transition-all duration-300 animate-fade-in w-full max-w-full"
           style={{ animationDelay: "0.3s" }}
         >
-          <CardHeader className="p-0 border-b border-border/60 bg-secondary/20">
+          <CardHeader className="p-0 border-b border-border/60 bg-brand/5">
             <button
               type="button"
               aria-expanded={temporaryDocumentsExpanded}
@@ -775,7 +775,7 @@ export function CandidateJobApplyPage() {
               <div className="flex flex-col items-center gap-3">
                 <div
                   className={`h-12 w-12 rounded-full flex items-center justify-center transition-all ${
-                    isDragging ? "bg-brand/20 text-brand" : "bg-secondary text-muted-foreground"
+                    isDragging ? "bg-brand/20 text-brand" : "bg-brand/10 text-brand"
                   }`}
                 >
                   <Upload className="h-6 w-6" />
@@ -825,7 +825,7 @@ export function CandidateJobApplyPage() {
                     </div>
                     <button
                       onClick={() => removeTemporaryDocument(doc.id)}
-                      className="p-2 rounded-lg hover:bg-secondary transition-colors shrink-0"
+                      className="p-2 rounded-lg hover:bg-brand/5 transition-colors shrink-0"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -848,7 +848,7 @@ export function CandidateJobApplyPage() {
           className="border border-border/80 rounded-none overflow-hidden transition-all duration-300 animate-fade-in w-full max-w-full"
           style={{ animationDelay: "0.3s" }}
         >
-          <CardHeader className="p-0 border-b border-border/60 bg-secondary/20">
+          <CardHeader className="p-0 border-b border-border/60 bg-brand/5">
             <button
               type="button"
               aria-expanded={recruiterMessageExpanded}
@@ -978,13 +978,13 @@ export function CandidateJobApplyPage() {
         {/* Action Buttons */}
         <div className="space-y-3">
           {!submissionChannelAvailable && (
-            <Alert className="border-amber-200/70 bg-amber-50/80 text-amber-950">
-              <AlertCircle className="h-4 w-4 text-amber-700" />
+            <Alert className="border-brand/20 bg-brand/5 text-foreground">
+              <AlertCircle className="h-4 w-4 text-brand" />
               <AlertDescription className="ml-2">
-                <p className="font-semibold text-amber-950">
+                <p className="font-semibold text-foreground">
                   Candidature momentanément indisponible
                 </p>
-                <p className="mt-1 text-sm text-amber-900">
+                <p className="mt-1 text-sm text-foreground/80">
                   Cette offre ne possède actuellement aucune adresse de réception des candidatures.
                   Le recrutement n'est donc pas disponible pour le moment. Nous vous invitons à
                   consulter d'autres offres ou à revenir ultérieurement.

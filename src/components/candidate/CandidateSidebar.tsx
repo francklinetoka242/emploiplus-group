@@ -17,27 +17,31 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/comp
 import { useCandidate } from "@/hooks/useCandidate";
 import {
   HouseIcon as Home,
-  UserIcon as User,
   SignOutIcon as LogOut,
-  CaretLeftIcon as ChevronLeft,
-  ListIcon as Menu,
   XIcon as X,
   IdentificationBadgeIcon as BriefcaseBusiness,
   BookOpenIcon as BookOpen,
   InfoIcon as Info,
   EnvelopeIcon as Mail,
-  MagnifyingGlassIcon as Search,
   CaretDownIcon as ChevronDown,
-  PlusCircleIcon as PlusCircle,
-  BellIcon as Bell,
-  HeartIcon as Heart,
-  PaperPlaneTiltIcon as Send,
-  CrownIcon as Crown,
-  FilePlusIcon as FilePlus,
+  BriefcaseIcon,
+  SquaresFourIcon,
+  UserCircleIcon,
+  FolderOpenIcon,
+  NotePencilIcon,
+  NotebookIcon,
+  PaperPlaneTiltIcon,
+  BookmarkSimpleIcon,
+  BellRingingIcon,
+  DiamondIcon,
+  GearSixIcon,
+  LifebuoyIcon,
+  SidebarSimpleIcon,
 } from "@phosphor-icons/react";
 import EcoModeToggle from "@/components/sidebar/EcoModeToggle";
 import { ThemeSwitch } from "@/components/ui/theme-switch";
 import { useEcoMode } from "@/contexts/EcoModeContext";
+import { Icon as UiIcon } from "@/components/ui/Icon";
 
 interface CandidateSidebarProps {
   open?: boolean;
@@ -62,20 +66,40 @@ const publicServiceItems = [
 ];
 
 const menuItems = [
-  { id: "dashboard", label: "Tableau de bord", icon: Home, href: "/candidate/dashboard" },
-  { id: "profile", label: "Mon profil", icon: User, href: "/candidate/profile" },
-  { id: "documents", label: "Documents", icon: PlusCircle, href: "/candidate/documents" },
-  { id: "create-cv", label: "Création-CV", icon: FilePlus, href: "/candidate/create-cv" },
-  { id: "guides", label: "Fiches", icon: BookOpen, href: "/candidate/guides" },
-  { id: "applications", label: "Mes candidatures", icon: Send, href: "/candidate/applications" },
-  { id: "saved", label: "Offres enregistrées", icon: Heart, href: "/candidate/saved-jobs" },
-  { id: "notifications", label: "Notifications", icon: Bell, href: "/candidate/notifications" },
-  { id: "subscription", label: "Abonnement", icon: Crown, href: "/candidate/subscription" },
-  { id: "settings", label: "Compte", icon: User, href: "/candidate/account" },
+  {
+    id: "dashboard",
+    label: "Tableau de bord",
+    icon: SquaresFourIcon,
+    href: "/candidate/dashboard",
+  },
+  { id: "profile", label: "Mon profil", icon: UserCircleIcon, href: "/candidate/profile" },
+  { id: "documents", label: "Documents", icon: FolderOpenIcon, href: "/candidate/documents" },
+  { id: "create-cv", label: "Création-CV", icon: NotePencilIcon, href: "/candidate/create-cv" },
+  { id: "guides", label: "Fiches", icon: NotebookIcon, href: "/candidate/guides" },
+  {
+    id: "applications",
+    label: "Mes candidatures",
+    icon: PaperPlaneTiltIcon,
+    href: "/candidate/applications",
+  },
+  {
+    id: "saved",
+    label: "Offres enregistrées",
+    icon: BookmarkSimpleIcon,
+    href: "/candidate/saved-jobs",
+  },
+  {
+    id: "notifications",
+    label: "Notifications",
+    icon: BellRingingIcon,
+    href: "/candidate/notifications",
+  },
+  { id: "subscription", label: "Abonnement", icon: DiamondIcon, href: "/candidate/subscription" },
+  { id: "settings", label: "Compte", icon: GearSixIcon, href: "/candidate/account" },
   {
     id: "support",
     label: "Centre d'aide",
-    icon: Info,
+    icon: LifebuoyIcon,
     href: "https://support.emploiplus-group.com",
     external: true,
   },
@@ -294,7 +318,13 @@ export function CandidateSidebar({
                                   : "bg-slate-100 text-slate-700",
                             )}
                           >
-                            <Icon className="h-5 w-5" weight={active ? "fill" : "bold"} />
+                            <UiIcon
+                              icon={Icon}
+                              size={20}
+                              color="currentColor"
+                              className="h-5 w-5"
+                              weight={active ? "fill" : "duotone"}
+                            />
                           </div>
                           <span
                             className={cn(
@@ -358,19 +388,29 @@ export function CandidateSidebar({
                 to="/jobs"
                 onClick={handleMenuClick}
                 className={cn(
-                  `relative flex items-center gap-2.5 rounded-xl px-3 py-1.5 ${sidebarHoverMotion}`,
-                  isDarkMode
-                    ? "bg-transparent text-slate-200 hover:bg-white/5"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200/70",
+                  `group relative flex items-center gap-2.5 rounded-xl px-3 py-1.5 ${sidebarHoverMotion}`,
+                  isActive("/jobs")
+                    ? "bg-primary/10 text-primary"
+                    : isDarkMode
+                      ? "bg-transparent text-slate-200 hover:bg-white/5"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200/70",
                 )}
               >
                 <div
                   className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-lg",
-                    isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
+                    "flex h-9 w-9 items-center justify-center rounded-lg transition-colors duration-150",
+                    isActive("/jobs")
+                      ? "bg-primary/10 text-primary"
+                      : isDarkMode
+                        ? "bg-slate-950/90 text-slate-500 group-hover:text-primary"
+                        : "bg-slate-100 text-slate-500 group-hover:text-primary",
                   )}
                 >
-                  <Search className="h-5 w-5" />
+                  <BriefcaseIcon
+                    size={22}
+                    weight={isActive("/jobs") ? "fill" : "duotone"}
+                    className="transition-colors duration-150"
+                  />
                 </div>
                 <span className="truncate text-sm font-medium">Emplois</span>
               </Link>
@@ -400,15 +440,21 @@ export function CandidateSidebar({
                       <>
                         <div
                           className={cn(
-                            "flex h-9 w-9 items-center justify-center rounded-lg",
+                            "flex h-9 w-9 items-center justify-center rounded-lg transition-colors duration-150",
                             active
-                              ? "text-white"
+                              ? "bg-primary/10 text-primary"
                               : isDarkMode
-                                ? "bg-slate-950/90 text-white"
-                                : "bg-slate-100 text-slate-700",
+                                ? "bg-slate-950/90 text-slate-500 group-hover:text-primary"
+                                : "bg-slate-100 text-slate-500 group-hover:text-primary",
                           )}
                         >
-                          <Icon className="h-5 w-5" weight={active ? "fill" : "bold"} />
+                          <UiIcon
+                            icon={Icon}
+                            size={22}
+                            color="currentColor"
+                            className="transition-colors duration-150"
+                            weight={active ? "fill" : "duotone"}
+                          />
                         </div>
                         <span
                           className={cn(
@@ -443,7 +489,7 @@ export function CandidateSidebar({
                             setSupportDialogOpen(true);
                           }}
                           className={cn(
-                            `relative flex w-full items-center gap-2.5 rounded-lg px-3 py-1.5 text-left ${sidebarHoverMotion}`,
+                            `group relative flex w-full items-center gap-2.5 rounded-lg px-3 py-1.5 text-left ${sidebarHoverMotion}`,
                             active
                               ? "bg-secondary text-white"
                               : isDarkMode
@@ -462,7 +508,7 @@ export function CandidateSidebar({
                         to={item.href}
                         onClick={handleMenuClick}
                         className={cn(
-                          `relative flex items-center gap-2.5 rounded-lg px-3 py-1.5 ${sidebarHoverMotion}`,
+                          `group relative flex items-center gap-2.5 rounded-lg px-3 py-1.5 ${sidebarHoverMotion}`,
                           active
                             ? "bg-secondary text-white"
                             : isDarkMode
@@ -492,14 +538,22 @@ export function CandidateSidebar({
                   )}
                 >
                   <div className="min-w-0 flex-1">
-                    <p
-                      className={cn(
-                        "text-sm font-medium",
-                        isDarkMode ? "text-slate-200" : "text-slate-800",
-                      )}
-                    >
-                      Mode sombre
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p
+                        className={cn(
+                          "text-sm font-medium",
+                          isDarkMode ? "text-slate-200" : "text-slate-800",
+                        )}
+                      >
+                        Mode sombre
+                      </p>
+                      <span
+                        aria-hidden="true"
+                        className="shrink-0 rounded-full bg-red-600 px-1.5 py-0.5 text-[8px] font-bold leading-none text-white"
+                      >
+                        Nouveau
+                      </span>
+                    </div>
                     <p className={cn("text-xs", isDarkMode ? "text-slate-400" : "text-slate-500")}>
                       {isDarkMode ? "Activé" : "Désactivé"}
                     </p>
@@ -594,7 +648,7 @@ export function CandidateSidebar({
             )}
             aria-label={open ? "Réduire le menu candidat" : "Agrandir le menu candidat"}
           >
-            {open ? <ChevronLeft className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            <SidebarSimpleIcon size={22} className={!open ? "rotate-180" : undefined} />
           </Button>
         </div>
 
@@ -606,23 +660,31 @@ export function CandidateSidebar({
                 onClick={handleMenuClick}
                 className={cn(
                   cn(
-                    `relative mt-3 flex items-center rounded-lg ${sidebarHoverMotion}`,
+                    `group relative mt-3 flex items-center rounded-lg ${sidebarHoverMotion}`,
                     open ? "gap-2 px-3 py-1" : "justify-center gap-1 px-1 py-1",
                   ),
-                  isDarkMode
-                    ? "bg-transparent text-slate-200 hover:bg-white/5"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200/70",
+                  isActive("/jobs")
+                    ? "bg-primary/10 text-primary"
+                    : isDarkMode
+                      ? "bg-transparent text-slate-200 hover:bg-white/5"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200/70",
                 )}
               >
                 <div
                   className={cn(
-                    open
-                      ? "flex h-8 w-8 items-center justify-center rounded-lg"
-                      : "flex h-8 w-8 items-center justify-center rounded-lg",
-                    isDarkMode ? "bg-slate-950/90 text-white" : "bg-slate-100 text-slate-700",
+                    "flex h-8 w-8 items-center justify-center rounded-lg transition-colors duration-150",
+                    isActive("/jobs")
+                      ? "bg-primary/10 text-primary"
+                      : isDarkMode
+                        ? "bg-slate-950/90 text-slate-500 group-hover:text-primary"
+                        : "bg-slate-100 text-slate-500 group-hover:text-primary",
                   )}
                 >
-                  <Search className="h-5 w-5" />
+                  <BriefcaseIcon
+                    size={22}
+                    weight={isActive("/jobs") ? "fill" : "duotone"}
+                    className="transition-colors duration-150"
+                  />
                 </div>
                 {open && <span className="truncate text-sm font-medium">Emplois</span>}
               </Link>
@@ -647,24 +709,20 @@ export function CandidateSidebar({
                       <>
                         <div
                           className={cn(
-                            "relative flex h-8 w-8 items-center justify-center rounded-lg",
+                            "relative flex h-8 w-8 items-center justify-center rounded-lg transition-colors duration-150",
                             active
-                              ? "text-primary"
+                              ? "bg-primary/10 text-primary"
                               : isDarkMode
-                                ? "text-slate-200"
-                                : "bg-slate-100 text-slate-700",
+                                ? "text-slate-500 group-hover:text-primary"
+                                : "bg-slate-100 text-slate-500 group-hover:text-primary",
                           )}
                         >
-                          <Icon
-                            className={cn(
-                              "h-5 w-5",
-                              active
-                                ? "text-primary"
-                                : isDarkMode
-                                  ? "text-slate-200"
-                                  : "text-slate-700",
-                            )}
-                            weight={active ? "fill" : "bold"}
+                          <UiIcon
+                            icon={Icon}
+                            size={22}
+                            color="currentColor"
+                            className="transition-colors duration-150"
+                            weight={active ? "fill" : "duotone"}
                           />
                           {isNew && !open && (
                             <span

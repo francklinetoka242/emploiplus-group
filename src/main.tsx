@@ -15,7 +15,7 @@ import { IconContext } from "@phosphor-icons/react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <IconContext.Provider value={{ weight: "bold" }}>
+    <IconContext.Provider value={{ weight: "duotone" }}>
       <HelmetProvider>
         <EcoModeProvider>
           <BrowserRouter>
