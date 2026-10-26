@@ -39,6 +39,7 @@ export type JobCardProps = {
   headerActions?: React.ReactNode;
   shadowless?: boolean;
   editorial?: boolean;
+  transparentBackground?: boolean;
   variant?: "card" | "list";
 };
 
@@ -58,6 +59,7 @@ export function JobCard({
   headerActions,
   shadowless = false,
   editorial = false,
+  transparentBackground = false,
   variant = "card",
 }: JobCardProps) {
   const [isApplyOpen, setIsApplyOpen] = React.useState(false);
@@ -94,7 +96,7 @@ export function JobCard({
       className={`relative flex min-w-0 w-full max-w-full overflow-hidden shadow-none transition-colors duration-200 ${
         editorial
           ? "h-auto flex-col border-0 border-b border-border bg-transparent py-5 first:pt-0 hover:border-border focus-within:border-border"
-          : `h-full border border-border bg-card hover:border-border/80 focus-within:border-brand/40 ${isList ? "flex-col gap-4 rounded-md p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5" : "flex-col rounded-md p-5"}`
+          : `h-full border border-border ${transparentBackground ? "bg-transparent" : "bg-card"} hover:border-border/80 focus-within:border-brand/40 ${isList ? "flex-col gap-4 rounded-md p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5" : "flex-col rounded-md p-5"}`
       } ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`}
       style={{ animationDelay: `${index * 120}ms` }}
     >

@@ -59,6 +59,10 @@ import { useCandidatePreferences as useCandidateJobPreferences } from "@/feature
 import { getRecommendedJobs, type RecommendedJob } from "@/services/aiMatchingService";
 import { hasAnalyzableCandidateCv, hasCandidateCv } from "@/features/candidates/api/cvApi";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  compareJobOffersByValidityThenDate,
+  isJobOfferExpired,
+} from "@/features/jobs/utils/jobOfferOrdering";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Sheet,
@@ -328,12 +332,8 @@ export function JobsPage() {
           break;
         }
         case "date":
-        default: {
-          const leftDate = new Date(left.publish_at ?? left.created_at ?? 0).getTime();
-          const rightDate = new Date(right.publish_at ?? right.created_at ?? 0).getTime();
-          if (leftDate !== rightDate) return rightDate - leftDate;
-          break;
-        }
+        default:
+          return compareJobOffersByValidityThenDate(left, right);
       }
 
       return (right.publish_at ?? right.created_at ?? "").localeCompare(
@@ -539,17 +539,13 @@ export function JobsPage() {
         <div className="grid min-w-0 gap-8">
           <div className="flex min-w-0 flex-col gap-6 text-foreground/90 leading-relaxed">
             <div
-              className={`order-1 sticky top-0 z-40 isolate mt-0 mb-0 w-full min-w-0 self-start rounded-[1.25rem] ${
-                isCandidateShell ? "bg-transparent" : "bg-card/95 backdrop-blur-sm"
-              }`}
+              className="order-1 sticky top-0 z-40 isolate mt-0 mb-0 w-full min-w-0 self-start rounded-[1.25rem] bg-transparent"
               style={{
                 top: mobileApp || isCandidateShell ? 0 : 64,
               }}
             >
               <div
-                className={`flex min-w-0 flex-col overflow-hidden rounded-[1.25rem] border-0 shadow-none ring-0 ${
-                  isCandidateShell ? "bg-transparent" : "bg-card"
-                }`}
+                className="flex min-w-0 flex-col overflow-hidden rounded-[1.25rem] border-0 bg-transparent shadow-none ring-0"
               >
                 <form
                   onSubmit={handleSearchSubmit}
@@ -1188,7 +1184,7 @@ export function JobsPage() {
                 <p className="text-sm text-muted-foreground">
                   Tri :{" "}
                   {sortBy === "date"
-                    ? "plus récentes"
+                    ? "offres valides d’abord"
                     : sortBy === "relevance"
                       ? "pertinence"
                       : sortBy === "salary-high"
@@ -1218,10 +1214,8 @@ export function JobsPage() {
                         .trim();
                       const contractLabel = getContractLabel(job.contract_type);
                       const tags = (job.tags || []).filter(Boolean).slice(0, 3);
-                      const deadlineValue = job.deadline || null;
-                      const isExpired = Boolean(
-                        deadlineValue && new Date(deadlineValue).getTime() < Date.now(),
-                      );
+                      const deadlineValue = job.deadline || job.expires_at || null;
+                      const isExpired = isJobOfferExpired(job);
                       const shareUrl =
                         typeof window !== "undefined"
                           ? `${window.location.origin}/jobs/${job.slug}`
@@ -1241,6 +1235,7 @@ export function JobsPage() {
                           index={i}
                           hideRequirementsSection
                           variant="list"
+                          transparentBackground={!isCandidateShell}
                           onApplyClick={() => handleApplyClick(job.slug)}
                         />
                       );
