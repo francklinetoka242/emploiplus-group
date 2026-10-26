@@ -27,32 +27,34 @@ export function DashboardAdvice({ guides, onRetry }: DashboardAdviceProps) {
 
   return (
     <DashboardSection
+      eyebrow="Pour avancer"
       title="Un conseil pour avancer"
       description="Des ressources utiles et des questions pour votre recherche."
-      icon="ChatCircleDots"
     >
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid gap-8 lg:grid-cols-2 lg:divide-x lg:divide-border">
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-foreground">Demandez conseil à Maelise</h3>
-          <div className="flex flex-wrap gap-2">
+          <h3 className="mb-3 text-sm font-semibold text-foreground">
+            Posez une question à Maelise
+          </h3>
+          <div className="flex flex-col items-start gap-2">
             {suggestionKeys.map((key) => (
               <Button
                 key={key}
                 type="button"
-                variant="outline"
+                variant="link"
                 size="sm"
                 onClick={() => openMaelise(t(key))}
-                className="h-auto whitespace-normal rounded-full py-2 text-left"
+                className="h-auto whitespace-normal px-0 text-left"
               >
                 {t(key)}
               </Button>
             ))}
           </div>
         </div>
-        <div className="rounded-xl border border-border/70 bg-muted/30 p-4">
+        <div className="lg:pl-8">
           <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-            <DashboardIcon name="FileText" size={18} className="text-primary" />
-            Conseil du jour
+            <DashboardIcon name="FileText" size={17} className="text-muted-foreground" />
+            <span>Conseil du jour</span>
           </div>
           {guides.loading ? (
             <div
@@ -60,8 +62,8 @@ export function DashboardAdvice({ guides, onRetry }: DashboardAdviceProps) {
               role="status"
               aria-label="Chargement du conseil du jour"
             >
-              <Skeleton className="h-5 w-3/4" />
-              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-5 w-3/4 rounded-sm" />
+              <Skeleton className="h-12 w-full rounded-sm" />
             </div>
           ) : guides.error ? (
             <div className="mt-3" role="alert">

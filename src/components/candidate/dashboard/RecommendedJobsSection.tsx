@@ -1,11 +1,9 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PaginationNav } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { RecommendedStatus } from "@/features/candidates/dashboard/dashboardTypes";
 import type { RecommendedJob } from "@/services/aiMatchingService";
-import { DashboardIcon } from "./DashboardIcon";
 import { RecommendedJobEntry } from "./RecommendedJobEntry";
 import { RecommendedJobsEmptyState } from "./RecommendedJobsEmptyState";
 
@@ -37,40 +35,39 @@ export function RecommendedJobsSection({
   onSaved,
 }: RecommendedJobsSectionProps) {
   return (
-    <Card
+    <section
       id="recommended-jobs"
-      className="scroll-mt-6 overflow-hidden rounded-2xl border-border/70 shadow-none"
+      aria-labelledby="recommended-jobs-title"
+      className="scroll-mt-6 min-w-0 border-t border-border py-9 sm:py-10"
     >
-      <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 items-start gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <DashboardIcon name="Briefcase" />
-          </span>
-          <div>
-            <CardTitle className="text-base sm:text-lg">
-              Offres recommandées pour votre profil
-            </CardTitle>
-            <CardDescription className="mt-1">
-              Suggestions basées sur votre CV et votre profil.
-            </CardDescription>
-          </div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-medium tracking-wide text-muted-foreground">
+            Sélection personnalisée
+          </p>
+          <h2 id="recommended-jobs-title" className="mt-1 text-lg font-semibold text-foreground">
+            Offres recommandées pour votre profil
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Suggestions basées sur votre CV et votre profil.
+          </p>
         </div>
         <Link to="/jobs#recommended-for-you" className="shrink-0">
-          <Button variant="outline" size="sm" className="w-full sm:w-auto">
-            Voir toutes les offres <DashboardIcon name="ArrowRight" size={17} className="ml-2" />
+          <Button variant="link" size="sm" className="h-auto w-full px-0 sm:w-auto">
+            Voir toutes les offres
           </Button>
         </Link>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      </div>
+      <div className="mt-5">
         {loading ? (
-          <div className="space-y-3" role="status" aria-label="Chargement des recommandations">
-            <Skeleton className="h-28 rounded-2xl" />
-            <Skeleton className="h-28 rounded-2xl" />
-            <Skeleton className="h-28 rounded-2xl" />
+          <div role="status" aria-label="Chargement des recommandations">
+            <Skeleton className="h-28 rounded-sm" />
+            <Skeleton className="mt-4 h-28 rounded-sm" />
+            <Skeleton className="mt-4 h-28 rounded-sm" />
           </div>
         ) : jobs.length > 0 ? (
           <>
-            {jobs.map((offer, index) => (
+            {jobs.slice(0, 2).map((offer, index) => (
               <RecommendedJobEntry
                 key={offer.id}
                 offer={offer}
@@ -91,7 +88,7 @@ export function RecommendedJobsSection({
         ) : (
           <RecommendedJobsEmptyState status={status} error={error} onRetry={onRetry} />
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

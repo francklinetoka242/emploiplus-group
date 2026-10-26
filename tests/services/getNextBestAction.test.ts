@@ -64,9 +64,23 @@ test("prioritizes a CV older than 180 days", () => {
   assert.equal(action?.id, "update-cv");
 });
 
-test("prioritizes a saved-offer deadline within seven days", () => {
-  const action = getNextBestAction(createInput({ urgentDeadline: "2026-10-30T12:00:00.000Z" }));
+test("returns the saved offer details for an upcoming deadline", () => {
+  const action = getNextBestAction(
+    createInput({
+      urgentDeadline: "2026-10-30T12:00:00.000Z",
+      urgentOffer: {
+        title: "Responsable RH",
+        company: "EmploiPlus",
+        href: "/jobs/responsable-rh",
+      },
+    }),
+  );
   assert.equal(action?.id, "upcoming-deadline");
+  assert.equal(
+    `${action?.messagePrefix}${action?.messageHighlight}${action?.messageSuffix}`,
+    "L’offre Responsable RH chez EmploiPlus se termine dans 5 jours.",
+  );
+  assert.equal(action?.href, "/jobs/responsable-rh");
 });
 
 test("does not treat expired or distant deadlines as urgent", () => {
@@ -89,7 +103,10 @@ test("recommends available jobs before Maelise", () => {
     createInput({ recommendedJobsCount: 2, assistantAvailable: true }),
   );
   assert.equal(action?.id, "recommended-jobs");
-  assert.equal(action?.title, "Découvrez vos recommandations");
+  assert.equal(
+    `${action?.messagePrefix}${action?.messageSuffix}`,
+    "2 offres correspondent à votre profil.",
+  );
 });
 
 test("falls back to Maelise when there are no higher-priority actions", () => {
@@ -100,4 +117,39 @@ test("falls back to Maelise when there are no higher-priority actions", () => {
 
 test("returns null when no action is available", () => {
   assert.equal(getNextBestAction(createInput()), null);
+});
+
+test("uses the first missing criterion in the profile action text", () => {
+  const action = getNextBestAction(
+    createInput({
+      profileCompletion: {
+        completionPercentage: 90,
+        missingItems: ["Résumé professionnel"],
+        completionItems: [
+          {
+            id: "professional-summary",
+            label: "Résumé professionnel",
+            route: "/candidate/profile?tab=profile",
+            weight: 1,
+            isCompleted: false,
+          },
+        ],
+      },
+    }),
+  );
+  assert.equal(
+    `${action?.messagePrefix}${action?.messageHighlight}${action?.messageSuffix}`,
+    "Il vous manque votre bio pour compléter votre profil.",
+  );
+});
+
+test("uses distinct factual copy for missing and stale CV actions", () => {
+  const missing = getNextBestAction(createInput({ profile: { cv_url: null } }));
+  const stale = getNextBestAction(
+    createInput({
+      profile: { cv_url: "candidate/cv.pdf", cv_last_updated_at: "2026-04-27T11:59:59.000Z" },
+    }),
+  );
+  assert.match(missing?.messagePrefix ?? "", /CV n’est pas encore ajouté/);
+  assert.match(stale?.messagePrefix ?? "", /date de plus de 6 mois/);
 });

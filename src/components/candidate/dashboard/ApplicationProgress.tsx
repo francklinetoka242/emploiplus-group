@@ -22,11 +22,12 @@ export function ApplicationProgress({
 }: ApplicationProgressProps) {
   return (
     <DashboardSection
+      eyebrow="Activité"
       title="Suivi de vos candidatures"
       description="Statut actuel des candidatures et rythme d’envoi sur huit semaines."
-      icon="PaperPlaneTilt"
+      borderTop={false}
     >
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="space-y-7">
         <ApplicationStatusList
           counts={statusCounts.data}
           loading={statusCounts.loading}
@@ -34,12 +35,9 @@ export function ApplicationProgress({
           onRetry={onRetryStatuses}
         />
         {activity.loading ? (
-          <Skeleton className="h-40 rounded-xl" />
+          <Skeleton className="h-40 rounded-sm" />
         ) : activity.error ? (
-          <div
-            className="rounded-xl border border-destructive/20 bg-destructive/5 p-4"
-            role="alert"
-          >
+          <div className="py-3 text-sm text-destructive" role="alert">
             <p className="text-sm text-destructive">{activity.error}</p>
             <Button variant="ghost" size="sm" onClick={onRetry} className="mt-2">
               Réessayer

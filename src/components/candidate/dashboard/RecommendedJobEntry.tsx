@@ -65,6 +65,7 @@ export function RecommendedJobEntry({
       isExpired={isExpired}
       index={index}
       shadowless
+      editorial
       onApplyClick={() => navigate(`/candidate/jobs/${offer.slug}/apply`)}
       headerActions={
         <div className="flex shrink-0 items-center gap-2">

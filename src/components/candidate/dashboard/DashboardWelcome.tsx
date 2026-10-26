@@ -15,6 +15,8 @@ interface DashboardWelcomeProps {
   inProgressApplications: number;
   applicationCount: number;
   recommendedCount: number;
+  hideDeadlineMessage: boolean;
+  hideRecommendationMessage: boolean;
 }
 
 function getGreeting(hour: number): string {
@@ -28,6 +30,8 @@ export function DashboardWelcome({
   inProgressApplications,
   applicationCount,
   recommendedCount,
+  hideDeadlineMessage,
+  hideRecommendationMessage,
 }: DashboardWelcomeProps) {
   const reduceMotion = useReducedMotion();
   const { isEcoMode } = useEcoMode();
@@ -41,12 +45,12 @@ export function DashboardWelcome({
       initial={animate ? { opacity: 0, y: 8 } : false}
       animate={{ opacity: 1, y: 0 }}
       transition={animate ? { duration: 0.25 } : { duration: 0 }}
-      className="relative isolate grid min-w-0 grid-cols-1 items-center gap-5 overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary to-blue-700 p-5 text-white sm:p-7 md:grid-cols-[minmax(0,1fr)_auto] md:gap-8 dark:from-blue-700 dark:via-blue-800 dark:to-blue-900"
+      className="relative isolate grid min-h-48 min-w-0 grid-cols-1 items-center gap-5 overflow-hidden rounded-lg bg-gradient-to-br from-primary to-blue-700 p-5 text-white sm:p-7 md:grid-cols-[minmax(0,1fr)_auto] dark:from-blue-700 dark:to-blue-900"
       aria-labelledby="candidate-dashboard-welcome"
     >
       <svg
         viewBox="0 0 500 260"
-        className="pointer-events-none absolute inset-y-0 right-0 -z-10 h-full w-[70%] opacity-20"
+        className="pointer-events-none absolute inset-y-0 right-0 -z-10 h-full w-[55%] opacity-[0.08]"
         aria-hidden="true"
       >
         <circle cx="420" cy="20" r="120" fill="none" stroke="white" strokeWidth="1.5" />
@@ -54,17 +58,19 @@ export function DashboardWelcome({
         <path d="M220 260 500 0M300 260 500 80M390 260 500 160" stroke="white" strokeWidth="1" />
       </svg>
       <div className="relative min-w-0">
-        <p className="text-sm font-medium tracking-wide text-white/75">
-          {getGreeting(new Date().getHours())}
-        </p>
-        <h1
-          id="candidate-dashboard-welcome"
-          className="mt-1 break-words text-3xl font-bold tracking-tight text-white sm:text-4xl"
-        >
-          {firstName}
-        </h1>
-        <p className="mt-3 inline-flex max-w-full items-center gap-2 rounded-full border border-white/20 bg-white/15 px-3 py-1.5 text-xs font-medium text-white/90 sm:text-sm">
-          <DashboardIcon name="CalendarDots" size={17} />
+        <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
+          <p className="text-2xl font-medium tracking-tight text-white/85 sm:text-3xl">
+            {getGreeting(new Date().getHours())}
+          </p>
+          <h1
+            id="candidate-dashboard-welcome"
+            className="break-words text-2xl font-semibold tracking-tight text-white sm:text-3xl"
+          >
+            {firstName}
+          </h1>
+        </div>
+        <p className="mt-2 inline-flex max-w-full items-center gap-2 text-xs text-white/75 sm:text-sm">
+          <DashboardIcon name="CalendarDots" size={16} />
           <span>{today}</span>
         </p>
         <DashboardWelcomeMessage
@@ -72,6 +78,8 @@ export function DashboardWelcome({
           inProgressApplications={inProgressApplications}
           applicationCount={applicationCount}
           recommendedCount={recommendedCount}
+          hideDeadline={hideDeadlineMessage}
+          hideRecommendations={hideRecommendationMessage}
         />
       </div>
       <DashboardProfileCompletion completion={completion} animate={animate} />

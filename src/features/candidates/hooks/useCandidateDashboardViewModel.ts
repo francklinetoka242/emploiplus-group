@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useProfileCompletion } from "@/features/profile/hooks/useProfileCompletion";
 import { countApplicationsByStatus } from "@/features/candidates/dashboard/applicationActivity";
 import { getNextBestAction } from "@/features/candidates/dashboard/getNextBestAction";
-import { getUpcomingSavedOfferDeadline } from "@/features/candidates/dashboard/getUpcomingSavedOfferDeadline";
+import { getSavedOfferDeadlineSummary } from "@/features/candidates/dashboard/savedOfferDeadlines";
 import type { useCandidateDashboardData } from "./useCandidateDashboardData";
 
 type DashboardData = ReturnType<typeof useCandidateDashboardData>;
@@ -18,10 +18,11 @@ export function useCandidateDashboardViewModel(dashboard: DashboardData) {
     preferences: dashboard.preferences,
   });
   const profileCompletion = dashboard.isReady ? completion.completionPercentage : 0;
-  const nearestDeadline = useMemo(
-    () => getUpcomingSavedOfferDeadline(dashboard.savedOffers.data),
+  const nearestSavedOffer = useMemo(
+    () => getSavedOfferDeadlineSummary(dashboard.savedOffers.data).upcoming[0] ?? null,
     [dashboard.savedOffers.data],
   );
+  const nearestDeadline = nearestSavedOffer?.deadline ?? null;
   const applicationStatusCounts = useMemo(
     () => countApplicationsByStatus(dashboard.allApplications.data),
     [dashboard.allApplications.data],
@@ -43,6 +44,13 @@ export function useCandidateDashboardViewModel(dashboard: DashboardData) {
     profileCompletion: completion,
     profile: dashboard.profile,
     urgentDeadline: nearestDeadline,
+    urgentOffer: nearestSavedOffer
+      ? {
+          title: nearestSavedOffer.job.title,
+          company: nearestSavedOffer.job.company,
+          href: `/jobs/${nearestSavedOffer.job.slug}`,
+        }
+      : null,
     recommendedJobsCount: dashboard.recommendations.jobs.length,
     assistantAvailable: true,
   });

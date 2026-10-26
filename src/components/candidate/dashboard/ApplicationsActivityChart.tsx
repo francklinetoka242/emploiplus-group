@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { useEcoMode } from "@/contexts/EcoModeContext";
 import { groupApplicationsByWeek } from "@/features/candidates/dashboard/applicationActivity";
 import type { CandidateApplicationActivity } from "@/features/candidates/api/applicationsApi";
-import { DashboardIcon } from "./DashboardIcon";
 
 interface ApplicationsActivityChartProps {
   applications: CandidateApplicationActivity[];
@@ -40,18 +39,15 @@ export function ApplicationsActivityChart({
         {summary}
       </p>
       {applications.length === 0 ? (
-        <div className="flex min-h-48 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 p-5 text-center">
-          <span className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <DashboardIcon name="PaperPlaneTilt" size={22} />
-          </span>
-          <p className="mt-3 max-w-xs text-sm leading-5 text-muted-foreground">
+        <div className="flex min-h-28 flex-col items-start justify-center gap-2 py-4">
+          <p className="max-w-xs text-sm leading-5 text-muted-foreground">
             {totalApplications === null
               ? "L’activité récente est momentanément indisponible."
               : totalApplications > 0
                 ? "Aucune candidature envoyée ces 8 dernières semaines."
                 : "Votre prochaine opportunité peut commencer ici."}
           </p>
-          <Button asChild variant="outline" size="sm" className="mt-3">
+          <Button asChild variant="link" size="sm" className="h-auto px-0">
             <Link to="/jobs">Voir les offres</Link>
           </Button>
         </div>

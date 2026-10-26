@@ -5,10 +5,7 @@ interface DashboardDataErrorProps {
 
 export function DashboardDataError({ message, onRetry }: DashboardDataErrorProps) {
   return (
-    <div
-      className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive"
-      role="alert"
-    >
+    <div className="py-3 text-sm text-destructive" role="alert">
       <p>{message}</p>
       <button
         type="button"

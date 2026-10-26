@@ -5,6 +5,8 @@ interface DashboardWelcomeMessageProps {
   inProgressApplications: number;
   applicationCount: number;
   recommendedCount: number;
+  hideDeadline: boolean;
+  hideRecommendations: boolean;
 }
 
 type ContextType = "deadline" | "applications" | "recommendations" | "neutral";
@@ -22,11 +24,13 @@ function getContextMessage({
   inProgressApplications,
   applicationCount,
   recommendedCount,
+  hideDeadline,
+  hideRecommendations,
 }: DashboardWelcomeMessageProps): ContextMessage {
-  if (deadlineDays !== null) {
+  if (deadlineDays !== null && !hideDeadline) {
     return {
       type: "deadline",
-      label: "ÉCHÉANCE PROCHE",
+      label: "Échéance proche",
       prefix: "Une de vos offres enregistrées se termine ",
       highlight:
         deadlineDays === 0
@@ -38,7 +42,7 @@ function getContextMessage({
   if (inProgressApplications > 0) {
     return {
       type: "applications",
-      label: "EN COURS",
+      label: "En cours",
       prefix: "Vous avez ",
       highlight: `${inProgressApplications} candidature${inProgressApplications > 1 ? "s" : ""}`,
       suffix: " en cours.",
@@ -47,16 +51,16 @@ function getContextMessage({
   if (applicationCount > 0) {
     return {
       type: "applications",
-      label: "CANDIDATURES ENVOYÉES",
+      label: "Candidatures envoyées",
       prefix: "Vous avez ",
       highlight: `${applicationCount} candidature${applicationCount > 1 ? "s" : ""} envoyée${applicationCount > 1 ? "s" : ""}`,
       suffix: ".",
     };
   }
-  if (recommendedCount > 0) {
+  if (recommendedCount > 0 && !hideRecommendations) {
     return {
       type: "recommendations",
-      label: "POUR VOUS",
+      label: "Pour vous",
       prefix: "Des ",
       highlight: "offres recommandées",
       suffix: " sont disponibles selon votre profil.",
@@ -64,7 +68,7 @@ function getContextMessage({
   }
   return {
     type: "neutral",
-    label: "VOTRE ESPACE",
+    label: "Votre espace",
     prefix: "",
     highlight: "Retrouvez ici vos démarches et les offres adaptées à votre profil.",
     suffix: "",
@@ -77,7 +81,7 @@ const contextStyles: Record<
 > = {
   deadline: {
     icon: "Hourglass",
-    tone: "text-[color-mix(in_srgb,var(--secondary)_45%,white)]",
+    tone: "text-[#f5d76e]",
   },
   applications: { icon: "PaperPlaneTilt", tone: "text-white" },
   recommendations: { icon: "Sparkle", tone: "text-white" },
@@ -89,20 +93,13 @@ export function DashboardWelcomeMessage(props: DashboardWelcomeMessageProps) {
   const style = contextStyles[message.type];
 
   return (
-    <div className="mt-4 rounded-xl border border-white/20 bg-white/10 p-4 sm:p-5">
-      <p className="text-[10px] font-semibold tracking-[0.14em] text-white/70">{message.label}</p>
-      <div className="mt-2 flex min-w-0 items-center gap-3">
-        <span
-          className={`flex size-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 ${style.tone}`}
-        >
-          <DashboardIcon name={style.icon} size={21} />
-        </span>
-        <p className="min-w-0 text-sm leading-6 text-white/90">
-          {message.prefix}
-          <span className={`font-semibold ${style.tone}`}>{message.highlight}</span>
-          {message.suffix}
-        </p>
-      </div>
+    <div className="mt-4 flex min-w-0 items-start gap-2 text-sm leading-6 text-white/90">
+      <DashboardIcon name={style.icon} size={18} className={`mt-1 shrink-0 ${style.tone}`} />
+      <p className="min-w-0">
+        {message.prefix}
+        <span className={`font-semibold ${style.tone}`}>{message.highlight}</span>
+        {message.suffix}
+      </p>
     </div>
   );
 }

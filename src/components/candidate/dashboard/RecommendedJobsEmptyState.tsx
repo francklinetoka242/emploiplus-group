@@ -25,10 +25,7 @@ export function RecommendedJobsEmptyState({
   const failed = status === "error" || status === "cv_analysis_failed";
 
   return (
-    <div
-      className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground"
-      role={failed ? "alert" : "status"}
-    >
+    <div className="py-3 text-sm text-muted-foreground" role={failed ? "alert" : "status"}>
       <p>{status === "error" && error ? error : messages[status]}</p>
       {failed && (
         <Button variant="ghost" size="sm" onClick={onRetry} className="mt-2">

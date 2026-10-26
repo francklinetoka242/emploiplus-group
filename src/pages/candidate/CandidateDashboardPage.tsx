@@ -41,7 +41,7 @@ export function CandidateDashboardPage() {
   }
 
   return (
-    <div className={mobileApp ? "space-y-4 pt-0" : "space-y-5"}>
+    <div className={mobileApp ? "pt-0" : ""}>
       {dashboard.error && (
         <DashboardDataError message={dashboard.error} onRetry={() => void dashboard.refetch()} />
       )}
@@ -52,8 +52,12 @@ export function CandidateDashboardPage() {
         inProgressApplications={viewModel.inProgressApplications}
         applicationCount={viewModel.applicationCount.data ?? 0}
         recommendedCount={recommendations.jobs.length}
+        hideDeadlineMessage={viewModel.action?.id === "upcoming-deadline"}
+        hideRecommendationMessage={viewModel.action?.id === "recommended-jobs"}
       />
-      <NextBestAction action={viewModel.action} />
+      <div className="py-6">
+        <NextBestAction action={viewModel.action} />
+      </div>
       <DashboardEntrance delay={0.08}>
         <DashboardIndicators
           applicationCount={viewModel.applicationCount}
@@ -71,17 +75,19 @@ export function CandidateDashboardPage() {
         />
       </DashboardEntrance>
       <DashboardEntrance delay={0.12}>
-        <div className="grid gap-5 xl:grid-cols-2">
+        <div className="grid gap-x-8 lg:grid-cols-2 lg:divide-x lg:divide-border">
           <ApplicationProgress
             activity={dashboard.applications}
             statusCounts={viewModel.applicationStatusCounts}
             onRetry={() => void dashboard.reloadApplications()}
             onRetryStatuses={() => void dashboard.reloadAllApplications()}
           />
-          <UpcomingDeadlines
-            savedOffers={dashboard.savedOffers}
-            onRetry={() => void dashboard.reloadSavedOffers()}
-          />
+          <div className="lg:pl-8">
+            <UpcomingDeadlines
+              savedOffers={dashboard.savedOffers}
+              onRetry={() => void dashboard.reloadSavedOffers()}
+            />
+          </div>
         </div>
       </DashboardEntrance>
       <DashboardEntrance delay={0.16}>

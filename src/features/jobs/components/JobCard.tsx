@@ -38,6 +38,7 @@ export type JobCardProps = {
   matchScore?: number;
   headerActions?: React.ReactNode;
   shadowless?: boolean;
+  editorial?: boolean;
   variant?: "card" | "list";
 };
 
@@ -56,6 +57,7 @@ export function JobCard({
   matchScore,
   headerActions,
   shadowless = false,
+  editorial = false,
   variant = "card",
 }: JobCardProps) {
   const [isApplyOpen, setIsApplyOpen] = React.useState(false);
@@ -89,7 +91,11 @@ export function JobCard({
 
   return (
     <article
-      className={`relative flex h-full min-w-0 w-full max-w-full overflow-hidden border border-border bg-card shadow-none transition-colors duration-200 hover:border-border/80 focus-within:border-brand/40 ${isList ? "flex-col gap-4 rounded-xl p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5" : "flex-col rounded-xl p-5"} ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`}
+      className={`relative flex min-w-0 w-full max-w-full overflow-hidden shadow-none transition-colors duration-200 ${
+        editorial
+          ? "h-auto flex-col border-0 border-b border-border bg-transparent py-5 first:pt-0 hover:border-border focus-within:border-border"
+          : `h-full border border-border bg-card hover:border-border/80 focus-within:border-brand/40 ${isList ? "flex-col gap-4 rounded-md p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5" : "flex-col rounded-md p-5"}`
+      } ${isExpired ? "opacity-70 grayscale-[0.2]" : ""}`}
       style={{ animationDelay: `${index * 120}ms` }}
     >
       <div className={`relative z-10 min-w-0 ${isList ? "flex-1" : ""}`}>
@@ -209,7 +215,7 @@ export function JobCard({
       >
         <Link
           to={detailUrl}
-          className="inline-flex min-h-10 items-center justify-center gap-1 rounded-xl border border-border px-3.5 py-2 text-sm font-semibold text-foreground transition hover:border-brand/40 hover:bg-brand/5 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:ring-offset-2"
+          className={`inline-flex min-h-10 items-center justify-center gap-1 ${editorial ? "rounded-md" : "rounded-xl"} border border-border px-3.5 py-2 text-sm font-semibold text-foreground transition hover:border-brand/40 hover:bg-brand/5 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:ring-offset-2`}
           aria-label={`Voir plus : ${job.title}`}
         >
           Voir l'offre
@@ -221,7 +227,7 @@ export function JobCard({
               type="button"
               size="sm"
               disabled={isExpired}
-              className={`h-10 rounded-xl bg-brand px-4 font-semibold text-brand-foreground hover:bg-brand/90 ${shadowless ? "shadow-none" : "shadow-sm"}`}
+              className={`h-10 ${editorial ? "rounded-md" : "rounded-xl"} bg-brand px-4 font-semibold text-brand-foreground hover:bg-brand/90 ${shadowless ? "shadow-none" : "shadow-sm"}`}
               onClick={handleApplyClick}
             >
               Postuler
