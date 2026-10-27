@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { MagicWand } from "@phosphor-icons/react";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
 import { jobService } from "@/features/jobs/api";
+import { extractJobOfferFromImage } from "@/services/jobImportService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,6 +34,14 @@ function createSlug(value: string) {
       .replace(/--+/g, "-")
       .replace(/^-+|-+$/g, "") || `item-${Date.now()}`
   );
+}
+
+function normalizeCityName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
 }
 
 export function AdminJobCreatePage() {
@@ -63,10 +73,74 @@ export function AdminJobCreatePage() {
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
   const [savedOfferId, setSavedOfferId] = React.useState<string | null>(null);
+  const [importing, setImporting] = React.useState(false);
+  const [importError, setImportError] = React.useState<string | null>(null);
+  const [toCheck, setToCheck] = React.useState<string[]>([]);
+  const photoInputRef = React.useRef<HTMLInputElement>(null);
+
+  const matchCity = (city: string | null) => {
+    if (!city) return null;
+    return (
+      centralAfricaCityGroups
+        .flatMap((group) => group.cities)
+        .find((candidate) => normalizeCityName(candidate) === normalizeCityName(city)) ?? null
+    );
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type, checked } = event.target as HTMLInputElement;
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+  };
+
+  const handleImportPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = "";
+    if (!file) return;
+
+    setImporting(true);
+    setImportError(null);
+    setToCheck([]);
+
+    try {
+      const offer = await extractJobOfferFromImage(file);
+      const matchedCity = matchCity(offer.location_city);
+      const warnings = [...offer.a_verifier];
+
+      if (offer.location_city && !matchedCity) {
+        warnings.push(
+          t("admin.jobs.create.import.cityWarning").replace("{city}", offer.location_city),
+        );
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        title: offer.title ?? prev.title,
+        company: offer.company ?? prev.company,
+        location_city: matchedCity ?? prev.location_city,
+        location_country: offer.location_country ?? prev.location_country,
+        contract_type: offer.contract_type ?? prev.contract_type,
+        salary: offer.salary ?? prev.salary,
+        application_email: offer.application_email ?? prev.application_email,
+        application_whatsapp: offer.application_whatsapp ?? prev.application_whatsapp,
+        external_link: offer.external_link ?? prev.external_link,
+        deadline: offer.deadline ?? prev.deadline,
+        description: offer.description ?? prev.description,
+        requirements: offer.requirements ?? prev.requirements,
+        keywords: offer.tags.length ? offer.tags.join(", ") : prev.keywords,
+        seo_description: offer.seo_description ?? prev.seo_description,
+        status: "published",
+      }));
+      setToCheck(warnings);
+    } catch (error) {
+      console.error("Job photo import error", error);
+      setImportError(
+        error instanceof Error && error.message.trim()
+          ? error.message
+          : t("admin.jobs.create.import.error"),
+      );
+    } finally {
+      setImporting(false);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -120,7 +194,15 @@ export function AdminJobCreatePage() {
         const created = await jobService.createOffer(payload as JobOfferInsert);
         setSavedOfferId(created.id);
       }
-      setSuccess(t("admin.jobs.create.publishedMessage"));
+      const successMessageKey =
+        form.status === "draft"
+          ? "admin.jobs.create.draftMessage"
+          : form.status === "archived"
+            ? "admin.jobs.create.archivedMessage"
+            : form.status === "expired"
+              ? "admin.jobs.create.expiredMessage"
+              : "admin.jobs.create.publishedMessage";
+      setSuccess(t(successMessageKey));
       navigate("/admin/jobs");
     } catch (err) {
       console.error("Job create error", err);
@@ -154,6 +236,45 @@ export function AdminJobCreatePage() {
         </div>
       </div>
       <form onSubmit={handleSubmit} className="grid gap-6">
+        <div className="space-y-3 rounded-2xl border border-dashed border-border bg-card p-5">
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="hidden"
+            aria-label={t("admin.jobs.create.import.button")}
+            onChange={handleImportPhoto}
+          />
+          <p className="text-sm text-muted-foreground">
+            {t("admin.jobs.create.import.description")}
+          </p>
+          <Button
+            type="button"
+            onClick={() => photoInputRef.current?.click()}
+            disabled={importing || saving}
+            className="inline-flex items-center gap-2"
+          >
+            <MagicWand size={18} weight="duotone" />
+            {importing
+              ? t("admin.jobs.create.import.loading")
+              : t("admin.jobs.create.import.button")}
+          </Button>
+          {importError ? (
+            <p className="text-sm text-destructive" role="alert">
+              {importError}
+            </p>
+          ) : null}
+          {toCheck.length > 0 ? (
+            <div className="space-y-1 text-sm text-amber-700">
+              <p>{t("admin.jobs.create.import.verify")}</p>
+              <ul className="list-disc space-y-1 pl-5">
+                {toCheck.map((item, index) => (
+                  <li key={`${item}-${index}`}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
         <div className="rounded-3xl border border-border bg-card p-8 shadow-soft grid gap-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
@@ -350,7 +471,11 @@ export function AdminJobCreatePage() {
               <label className="block text-sm font-semibold text-foreground mb-2">
                 {t("admin.jobs.field.deadline")}
               </label>
-              <DateInput name="deadline" value={form.deadline} onChange={(value) => setForm((prev) => ({ ...prev, deadline: value }))} />
+              <DateInput
+                name="deadline"
+                value={form.deadline}
+                onChange={(value) => setForm((prev) => ({ ...prev, deadline: value }))}
+              />
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">

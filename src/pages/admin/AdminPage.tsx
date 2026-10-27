@@ -1,6 +1,5 @@
-import type { Session } from "@supabase/supabase-js";
 import React from "react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useI18n } from "@/i18n";
 import { usePageSEO, BASE_URL } from "@/features/seo";
 import { supabase } from "@/integrations/supabase/client";
@@ -101,47 +100,47 @@ export function AdminPage() {
     <>
       {seo}
       <ErrorBoundary>
-        <div className="min-h-screen bg-background">
+        <div className="admin-account-shell flex h-dvh min-h-0 flex-col overflow-hidden bg-background text-foreground">
           {/* Mobile Header */}
           {isMobile && (
-            <div className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-card px-4 py-3 shadow-sm lg:hidden">
+            <header className="relative z-40 flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-4 lg:hidden">
               <button
+                type="button"
                 onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-background/80 text-foreground transition hover:bg-background"
-                aria-label="Toggle menu"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                aria-label={mobileSidebarOpen ? "Fermer le menu" : "Ouvrir le menu"}
+                aria-expanded={mobileSidebarOpen}
               >
                 {mobileSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
-              <span className="text-sm font-semibold text-foreground">Emploi+ Admin</span>
+              <span className="text-xs font-semibold tracking-tight text-foreground">
+                EmploiPlus Group
+              </span>
               <div className="w-10" />
-            </div>
+            </header>
           )}
 
           {/* Mobile Sidebar Overlay */}
           {isMobile && mobileSidebarOpen && (
             <div
-              className="fixed inset-0 top-[57px] z-30 bg-black/50 lg:hidden"
+              className="fixed inset-0 z-30 bg-slate-950/40 backdrop-blur-[2px] lg:hidden"
               onClick={() => setMobileSidebarOpen(false)}
+              aria-hidden="true"
             />
           )}
 
           {/* Main Container */}
-          <div
-            className={cn(
-              "relative min-h-[calc(100vh-57px)] lg:min-h-screen",
-              isMobile ? "flex flex-col" : "",
-            )}
-          >
+          <div className="relative flex min-h-0 flex-1">
             {/* Sidebar */}
             <div
               className={cn(
-                "transition-all duration-300",
+                "z-40 shrink-0 transition-all duration-300",
                 isMobile
                   ? cn(
-                      "fixed inset-y-[57px] left-0 z-40 w-60 overflow-y-auto transform transition-transform duration-300",
+                      "fixed inset-y-14 left-0 w-60 overflow-y-auto transition-transform duration-300",
                       mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
                     )
-                  : cn("fixed inset-y-0 left-0 z-30 h-screen", sidebarOpen ? "w-60" : "w-12"),
+                  : cn("relative h-full", sidebarOpen ? "w-60" : "w-12"),
               )}
             >
               <AdminSidebar
@@ -163,12 +162,12 @@ export function AdminPage() {
             {/* Content Area */}
             <div
               className={cn(
-                "w-full flex-1 transition-all duration-300",
-                isMobile ? "px-4 pb-6 pt-0" : cn("min-w-0", sidebarOpen ? "lg:pl-60" : "lg:pl-12"),
+                "flex min-h-0 min-w-0 flex-1 flex-col bg-slate-100 transition-all duration-300 dark:bg-slate-900",
+                isMobile ? "px-1 pb-1 pt-1 sm:px-2 sm:pb-2" : "px-2 py-2",
               )}
             >
-              <main className="min-h-[calc(100vh-2rem)] w-full overflow-y-auto rounded-t-[20px] border border-border bg-background p-4 transition-all duration-300 sm:p-6 lg:mt-4">
-                <div className="min-w-0 w-full">
+              <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">
+                <div className="min-w-0 w-full flex-1 px-2 py-3 sm:px-3 sm:py-4">
                   <Outlet />
                 </div>
               </main>

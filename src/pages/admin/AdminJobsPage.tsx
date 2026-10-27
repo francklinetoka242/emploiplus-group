@@ -10,8 +10,10 @@ import {
   ArrowClockwiseIcon as RefreshCw,
   TrashIcon as Trash2,
   CloudArrowUpIcon as UploadCloud,
+  MagicWand,
 } from "@phosphor-icons/react";
-import { uploadFileToStorage } from "@/services/storageService";
+import { uploadImageToStorage } from "@/services/storageService";
+import { extractJobOfferFromImage } from "@/services/jobImportService";
 import { useI18n } from "@/i18n";
 import SEO from "@/components/SEO";
 import { BASE_URL } from "@/features/seo";
@@ -86,6 +88,14 @@ function formatDateInput(value?: string | null) {
   return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
 }
 
+function normalizeCityName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
 const PAGE_SIZE = 10;
 
 export function AdminJobsPage() {
@@ -98,6 +108,10 @@ export function AdminJobsPage() {
   const [loading, setLoading] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
   const [uploadingImage, setUploadingImage] = React.useState(false);
+  const [importingOffer, setImportingOffer] = React.useState(false);
+  const [importOfferError, setImportOfferError] = React.useState<string | null>(null);
+  const [importOfferWarnings, setImportOfferWarnings] = React.useState<string[]>([]);
+  const importOfferInputRef = React.useRef<HTMLInputElement>(null);
   const [actionLoadingId, setActionLoadingId] = React.useState<string | null>(null);
   const [page, setPage] = React.useState(1);
   const [totalJobs, setTotalJobs] = React.useState(0);
@@ -111,6 +125,61 @@ export function AdminJobsPage() {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type, checked } = event.target as HTMLInputElement;
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+  };
+
+  const handleImportOfferPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = "";
+    if (!file) return;
+
+    setImportingOffer(true);
+    setImportOfferError(null);
+    setImportOfferWarnings([]);
+
+    try {
+      const offer = await extractJobOfferFromImage(file);
+      const importedCity = offer.location_city;
+      const matchedCity = importedCity
+        ? (centralAfricaCityGroups
+            .flatMap((group) => group.cities)
+            .find((city) => normalizeCityName(city) === normalizeCityName(importedCity)) ?? null)
+        : null;
+      const warnings = [...offer.a_verifier];
+
+      if (offer.location_city && !matchedCity) {
+        warnings.push(
+          t("admin.jobs.create.import.cityWarning").replace("{city}", offer.location_city),
+        );
+      }
+
+      setForm((previous) => ({
+        ...previous,
+        title: offer.title ?? previous.title,
+        company: offer.company ?? previous.company,
+        location_city: matchedCity ?? previous.location_city,
+        contract_type: offer.contract_type ?? previous.contract_type,
+        salary: offer.salary ?? previous.salary,
+        application_email: offer.application_email ?? previous.application_email,
+        application_whatsapp: offer.application_whatsapp ?? previous.application_whatsapp,
+        external_link: offer.external_link ?? previous.external_link,
+        deadline: offer.deadline ?? previous.deadline,
+        description: offer.description ?? previous.description,
+        requirements: offer.requirements ?? previous.requirements,
+        keywords: offer.tags.length ? offer.tags.join(", ") : previous.keywords,
+        seo_description: offer.seo_description ?? previous.seo_description,
+        status: "published",
+      }));
+      setImportOfferWarnings(warnings);
+    } catch (error) {
+      console.error("Job photo import error", error);
+      setImportOfferError(
+        error instanceof Error && error.message.trim()
+          ? error.message
+          : t("admin.jobs.create.import.error"),
+      );
+    } finally {
+      setImportingOffer(false);
+    }
   };
 
   const loadJobs = React.useCallback(
@@ -177,7 +246,7 @@ export function AdminJobsPage() {
     setMessage(null);
 
     try {
-      const { url: publicUrl } = await uploadFileToStorage(
+      const { url: publicUrl } = await uploadImageToStorage(
         file,
         "job-offers",
         import.meta.env.VITE_SUPABASE_OFFRES_BUCKET || undefined,
@@ -197,6 +266,8 @@ export function AdminJobsPage() {
   const resetForm = () => {
     setForm(createEmptyForm());
     setEditingId(null);
+    setImportOfferError(null);
+    setImportOfferWarnings([]);
     setMessage(null);
     setShowForm(false);
   };
@@ -430,6 +501,47 @@ export function AdminJobsPage() {
 
         {showForm ? (
           <form onSubmit={handleSubmit} className="grid gap-6">
+            {!editingId ? (
+              <div className="space-y-3 rounded-[1.5rem] border border-dashed border-border bg-background p-5 shadow-soft">
+                <input
+                  ref={importOfferInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  aria-label={t("admin.jobs.create.import.button")}
+                  onChange={handleImportOfferPhoto}
+                />
+                <p className="text-sm text-muted-foreground">
+                  {t("admin.jobs.create.import.description")}
+                </p>
+                <Button
+                  type="button"
+                  onClick={() => importOfferInputRef.current?.click()}
+                  disabled={importingOffer || submitting}
+                  className="inline-flex items-center gap-2"
+                >
+                  <MagicWand size={18} weight="duotone" />
+                  {importingOffer
+                    ? t("admin.jobs.create.import.loading")
+                    : t("admin.jobs.create.import.button")}
+                </Button>
+                {importOfferError ? (
+                  <p className="text-sm text-destructive" role="alert">
+                    {importOfferError}
+                  </p>
+                ) : null}
+                {importOfferWarnings.length > 0 ? (
+                  <div className="space-y-1 text-sm text-amber-700">
+                    <p>{t("admin.jobs.create.import.verify")}</p>
+                    <ul className="list-disc space-y-1 pl-5">
+                      {importOfferWarnings.map((warning, index) => (
+                        <li key={`${warning}-${index}`}>{warning}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
             <div className="rounded-[2rem] border border-border bg-background p-8 shadow-soft">
               <div className="mb-6 flex items-center justify-between">
                 <div>
@@ -861,7 +973,7 @@ export function AdminJobsPage() {
                             aria-label="Supprimer l'offre"
                             title="Supprimer l'offre"
                           >
-                            <Trash2 className="size-4" />
+                            <Trash2 className="size-4 text-red-600" />
                           </Button>
                         </div>
                       </div>

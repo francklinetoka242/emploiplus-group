@@ -64,7 +64,7 @@
       "destination": "/api/send-email"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ],

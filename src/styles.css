@@ -7,6 +7,39 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.admin-account-shell,
+.admin-account-shell *,
+.admin-account-shell *::before,
+.admin-account-shell *::after {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.admin-account-shell main [class*="rounded-"] {
+  border-radius: 0 !important;
+}
+
+.admin-account-shell main div[class*="bg-white"],
+.admin-account-shell main section[class*="bg-white"],
+.admin-account-shell main div[class*="bg-card"],
+.admin-account-shell main section[class*="bg-card"] {
+  background-color: transparent !important;
+}
+
+.admin-account-shell main div[class*="rounded-"][class*="bg-"]:has(svg) {
+  border-radius: 0 !important;
+  background-color: transparent !important;
+}
+
+.admin-account-shell main button[class*="rounded-full"]:has(svg) {
+  border-radius: 0 !important;
+  background-color: transparent !important;
+}
+
+.admin-account-shell main svg:not([class*="text-red"]):not([class*="text-destructive"]) {
+  color: #334155 !important;
+}
+
 .link.link-animated {
   position: relative;
   text-decoration: none;
